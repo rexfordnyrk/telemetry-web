@@ -695,6 +695,13 @@ const Dashboard: React.FC = () => {
     },
   ];
 
+  // Initialize Peity charts after component mounts
+  useEffect(() => {
+    if (typeof $ !== "undefined" && $.fn.peity) {
+      $(".data-attributes span").peity("donut");
+    }
+  }, []);
+
   const campaignStats = [
     {
       title: "Campaigns",
