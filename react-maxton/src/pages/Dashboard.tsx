@@ -357,7 +357,7 @@ const Dashboard: React.FC = () => {
     },
   };
 
-  // SafeApexChart 6 - Donut SafeApexChart (Device Type)
+  // Chart 6 - Donut Chart (Device Type)
   const chart6Options = {
     series: [58, 25, 25],
     chart: {
@@ -406,7 +406,7 @@ const Dashboard: React.FC = () => {
     ],
   };
 
-  // SafeApexChart 7 - Area SafeApexChart (Total Accounts)
+  // Chart 7 - Area Chart (Total Accounts)
   const chart7Options = {
     series: [
       {
@@ -477,7 +477,7 @@ const Dashboard: React.FC = () => {
     },
   };
 
-  // SafeApexChart 8 - Area SafeApexChart (Visitors Growth)
+  // Chart 8 - Area Chart (Visitors Growth)
   const chart8Options = {
     series: [
       {
