@@ -35,3 +35,16 @@
 .chart-container2 {
   position: relative;
 }
+
+/* Fix sidebar scrolling */
+.sidebar-wrapper {
+  height: 100vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.sidebar-nav {
+  height: calc(100vh - 80px); /* Subtract header height */
+  overflow-y: auto;
+  overflow-x: hidden;
+}
