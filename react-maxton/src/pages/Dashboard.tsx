@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { Card, Row, Col, Dropdown, Table } from "react-bootstrap";
 import SafeApexChart from "../components/SafeApexChart";
 import MainLayout from "../layouts/MainLayout";
