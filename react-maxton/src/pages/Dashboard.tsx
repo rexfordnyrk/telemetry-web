@@ -655,10 +655,10 @@ const Dashboard: React.FC = () => {
               </div>
               <div className="chart-container2">
                 <Chart
-                  options={areaChartOptions}
-                  series={areaChartOptions.series}
-                  type="area"
-                  height={105}
+                  options={chart1Options}
+                  series={chart1Options.series}
+                  type="radialBar"
+                  height={180}
                 />
               </div>
               <div className="text-center">
@@ -697,10 +697,10 @@ const Dashboard: React.FC = () => {
               </div>
               <div className="chart-container2">
                 <Chart
-                  options={radialChartOptions}
-                  series={radialChartOptions.series}
-                  type="radialBar"
-                  height={180}
+                  options={chart2Options}
+                  series={chart2Options.series}
+                  type="area"
+                  height={105}
                 />
               </div>
               <div className="text-center">
@@ -807,10 +807,10 @@ const Dashboard: React.FC = () => {
               </div>
               <div className="mt-4">
                 <Chart
-                  options={monthlyRevenueChartOptions}
-                  series={monthlyRevenueChartOptions.series}
-                  type="line"
-                  height={160}
+                  options={chart5Options}
+                  series={chart5Options.series}
+                  type="bar"
+                  height={280}
                 />
               </div>
               <p>Avrage monthly sale for every author</p>
@@ -860,10 +860,10 @@ const Dashboard: React.FC = () => {
                     <h6 className="mb-0">Total Views</h6>
                   </div>
                   <Chart
-                    options={pieChartOptions}
-                    series={pieChartOptions.series}
+                    options={chart6Options}
+                    series={chart6Options.series}
                     type="donut"
-                    height={200}
+                    height={290}
                   />
                 </div>
                 <div className="d-flex flex-column gap-3">
