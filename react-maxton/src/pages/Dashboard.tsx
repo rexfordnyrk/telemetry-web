@@ -1472,7 +1472,7 @@ const Dashboard: React.FC = () => {
                 </span>
               </div>
               <div className="table-responsive">
-                <Table className="align-middle">
+                <Table className="table align-middle">
                   <thead>
                     <tr>
                       <th>Item Name</th>
@@ -1496,11 +1496,11 @@ const Dashboard: React.FC = () => {
                                 alt=""
                               />
                             </div>
-                            <p className="mb-0">{order.product}</p>
+                            <p className="mb-0 text-body">{order.product}</p>
                           </div>
                         </td>
-                        <td>{order.amount}</td>
-                        <td>{order.vendor}</td>
+                        <td className="text-body">{order.amount}</td>
+                        <td className="text-body">{order.vendor}</td>
                         <td>
                           <p
                             className={`dash-lable mb-0 ${order.statusClass} bg-opacity-10 text-${order.statusClass.replace("bg-", "")} rounded-2`}
@@ -1510,7 +1510,7 @@ const Dashboard: React.FC = () => {
                         </td>
                         <td>
                           <div className="d-flex align-items-center gap-1">
-                            <p className="mb-0">{order.rating}</p>
+                            <p className="mb-0 text-body">{order.rating}</p>
                             <i className="material-icons-outlined text-warning fs-6">
                               star
                             </i>
