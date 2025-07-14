@@ -5,35 +5,78 @@ declare const $: any;
 
 const EcommerceDashboard: React.FC = () => {
   useEffect(() => {
-    // Initialize charts after component mounts
+    // Initialize charts after component mounts using exact dashboard2.js configurations
     const initCharts = () => {
       try {
-        // Chart 1 - Total Orders
         if (typeof window !== "undefined" && (window as any).ApexCharts) {
+          // Chart 1 - Total Orders (exactly from dashboard2.js)
           const chart1Options = {
-            chart: {
-              type: "line",
-              height: 60,
-              sparkline: { enabled: true },
-              toolbar: { show: false },
-            },
             series: [
               {
-                data: [4, 10, 9, 7, 9, 10, 11, 8, 10],
+                name: "Total Sales",
+                data: [25, 66, 41, 59, 25, 44, 12, 36, 9, 21],
               },
             ],
+            chart: {
+              height: 60,
+              type: "area",
+              sparkline: {
+                enabled: true,
+              },
+              zoom: {
+                enabled: false,
+              },
+            },
+            dataLabels: {
+              enabled: false,
+            },
             stroke: {
-              width: 2,
-              curve: "straight",
+              width: 1.5,
+              curve: "smooth",
+            },
+            fill: {
+              type: "gradient",
+              gradient: {
+                shade: "dark",
+                gradientToColors: ["#0d6efd"],
+                shadeIntensity: 1,
+                type: "vertical",
+                opacityFrom: 0.7,
+                opacityTo: 0.0,
+              },
             },
             colors: ["#0d6efd"],
             tooltip: {
-              fixed: { enabled: false },
-              x: { show: false },
-              y: {
-                title: { formatter: () => "" },
+              theme: "dark",
+              fixed: {
+                enabled: false,
               },
-              marker: { show: false },
+              x: {
+                show: false,
+              },
+              y: {
+                title: {
+                  formatter: function (e) {
+                    return "";
+                  },
+                },
+              },
+              marker: {
+                show: false,
+              },
+            },
+            xaxis: {
+              categories: [
+                "Jan",
+                "Feb",
+                "Mar",
+                "Apr",
+                "May",
+                "Jun",
+                "Jul",
+                "Aug",
+                "Sep",
+              ],
             },
           };
 
@@ -45,31 +88,74 @@ const EcommerceDashboard: React.FC = () => {
             ).render();
           }
 
-          // Chart 2 - Total Sales
+          // Chart 2 - Total Sales (exactly from dashboard2.js)
           const chart2Options = {
-            chart: {
-              type: "line",
-              height: 60,
-              sparkline: { enabled: true },
-              toolbar: { show: false },
-            },
             series: [
               {
-                data: [4, 10, 9, 7, 9, 10, 11, 8, 10],
+                name: "Orders",
+                data: [12, 14, 7, 47, 32, 44, 14, 55, 41, 69],
               },
             ],
-            stroke: {
-              width: 2,
-              curve: "straight",
-            },
-            colors: ["#198754"],
-            tooltip: {
-              fixed: { enabled: false },
-              x: { show: false },
-              y: {
-                title: { formatter: () => "" },
+            chart: {
+              height: 60,
+              type: "area",
+              sparkline: {
+                enabled: true,
               },
-              marker: { show: false },
+              zoom: {
+                enabled: false,
+              },
+            },
+            dataLabels: {
+              enabled: false,
+            },
+            stroke: {
+              width: 1.5,
+              curve: "smooth",
+            },
+            fill: {
+              type: "gradient",
+              gradient: {
+                shade: "dark",
+                gradientToColors: ["#17ad37"],
+                shadeIntensity: 1,
+                type: "vertical",
+                opacityFrom: 0.7,
+                opacityTo: 0.0,
+              },
+            },
+            colors: ["#98ec2d"],
+            tooltip: {
+              theme: "dark",
+              fixed: {
+                enabled: false,
+              },
+              x: {
+                show: false,
+              },
+              y: {
+                title: {
+                  formatter: function (e) {
+                    return "";
+                  },
+                },
+              },
+              marker: {
+                show: false,
+              },
+            },
+            xaxis: {
+              categories: [
+                "Jan",
+                "Feb",
+                "Mar",
+                "Apr",
+                "May",
+                "Jun",
+                "Jul",
+                "Aug",
+                "Sep",
+              ],
             },
           };
 
@@ -81,31 +167,75 @@ const EcommerceDashboard: React.FC = () => {
             ).render();
           }
 
-          // Chart 3 - Total Visits
+          // Chart 3 - Total Visits (exactly from dashboard2.js)
           const chart3Options = {
-            chart: {
-              type: "line",
-              height: 60,
-              sparkline: { enabled: true },
-              toolbar: { show: false },
-            },
             series: [
               {
-                data: [4, 10, 9, 7, 9, 10, 11, 8, 10],
+                name: "Orders",
+                data: [47, 45, 74, 32, 56, 31, 44, 33, 45, 19],
               },
             ],
-            stroke: {
-              width: 2,
-              curve: "straight",
-            },
-            colors: ["#0dcaf0"],
-            tooltip: {
-              fixed: { enabled: false },
-              x: { show: false },
-              y: {
-                title: { formatter: () => "" },
+            chart: {
+              height: 60,
+              type: "area",
+              sparkline: {
+                enabled: true,
               },
-              marker: { show: false },
+              zoom: {
+                enabled: false,
+              },
+            },
+            dataLabels: {
+              enabled: false,
+            },
+            stroke: {
+              width: 1.5,
+              curve: "smooth",
+            },
+            fill: {
+              type: "gradient",
+              gradient: {
+                shade: "dark",
+                gradientToColors: ["#2af598"],
+                shadeIntensity: 1,
+                type: "vertical",
+                opacityFrom: 0.5,
+                opacityTo: 0.1,
+                stops: [0, 100, 100, 100],
+              },
+            },
+            colors: ["#009efd"],
+            tooltip: {
+              theme: "dark",
+              fixed: {
+                enabled: false,
+              },
+              x: {
+                show: false,
+              },
+              y: {
+                title: {
+                  formatter: function (e) {
+                    return "";
+                  },
+                },
+              },
+              marker: {
+                show: false,
+              },
+            },
+            xaxis: {
+              categories: [
+                "Jan",
+                "Feb",
+                "Mar",
+                "Apr",
+                "May",
+                "Jun",
+                "Jul",
+                "Aug",
+                "Sep",
+              ],
             },
           };
 
@@ -117,31 +247,82 @@ const EcommerceDashboard: React.FC = () => {
             ).render();
           }
 
-          // Chart 4 - Bounce Rate
+          // Chart 4 - Bounce Rate (exactly from dashboard2.js)
           const chart4Options = {
-            chart: {
-              type: "line",
-              height: 60,
-              sparkline: { enabled: true },
-              toolbar: { show: false },
-            },
             series: [
               {
-                data: [4, 10, 9, 7, 9, 10, 11, 8, 10],
+                name: "Orders",
+                data: [35, 65, 47, 35, 44, 32, 27, 54, 44, 61],
               },
             ],
+            chart: {
+              height: 60,
+              type: "bar",
+              sparkline: {
+                enabled: true,
+              },
+              zoom: {
+                enabled: false,
+              },
+            },
+            dataLabels: {
+              enabled: false,
+            },
             stroke: {
-              width: 2,
-              curve: "straight",
+              width: 1.5,
+              curve: "smooth",
+            },
+            fill: {
+              type: "gradient",
+              gradient: {
+                shade: "dark",
+                gradientToColors: ["#fe6225"],
+                shadeIntensity: 1,
+                type: "vertical",
+                opacityFrom: 1,
+                opacityTo: 1,
+                stops: [0, 100, 100, 100],
+              },
             },
             colors: ["#ffc107"],
-            tooltip: {
-              fixed: { enabled: false },
-              x: { show: false },
-              y: {
-                title: { formatter: () => "" },
+            plotOptions: {
+              bar: {
+                horizontal: false,
+                borderRadius: 3,
+                columnWidth: "48%",
               },
-              marker: { show: false },
+            },
+            tooltip: {
+              theme: "dark",
+              fixed: {
+                enabled: false,
+              },
+              x: {
+                show: false,
+              },
+              y: {
+                title: {
+                  formatter: function (e) {
+                    return "";
+                  },
+                },
+              },
+              marker: {
+                show: false,
+              },
+            },
+            xaxis: {
+              categories: [
+                "Jan",
+                "Feb",
+                "Mar",
+                "Apr",
+                "May",
+                "Jun",
+                "Jul",
+                "Aug",
+                "Sep",
+              ],
             },
           };
 
@@ -153,34 +334,95 @@ const EcommerceDashboard: React.FC = () => {
             ).render();
           }
 
-          // Chart 5 - Sales & Views
+          // Chart 5 - Sales & Views (exactly from dashboard2.js)
           const chart5Options = {
-            chart: {
-              height: 350,
-              type: "area",
-            },
-            dataLabels: { enabled: false },
-            stroke: { curve: "smooth" },
             series: [
               {
                 name: "Sales",
-                data: [31, 40, 28, 51, 42, 109, 100],
+                data: [20, 5, 60, 10, 30, 20, 25, 15, 31],
               },
               {
                 name: "Views",
-                data: [11, 32, 45, 32, 34, 52, 41],
+                data: [17, 10, 45, 15, 25, 15, 40, 10, 24],
               },
             ],
+            chart: {
+              foreColor: "#9ba7b2",
+              height: 235,
+              type: "bar",
+              toolbar: {
+                show: false,
+              },
+              sparkline: {
+                enabled: false,
+              },
+              zoom: {
+                enabled: false,
+              },
+            },
+            dataLabels: {
+              enabled: false,
+            },
+            stroke: {
+              width: 4,
+              curve: "smooth",
+              colors: ["transparent"],
+            },
+            fill: {
+              type: "gradient",
+              gradient: {
+                shade: "dark",
+                gradientToColors: ["#ffd200", "#00c6fb"],
+                shadeIntensity: 1,
+                type: "vertical",
+                stops: [0, 100, 100, 100],
+              },
+            },
+            colors: ["#ff6a00", "#005bea"],
+            plotOptions: {
+              bar: {
+                horizontal: false,
+                borderRadius: 4,
+                borderRadiusApplication: "around",
+                borderRadiusWhenStacked: "last",
+                columnWidth: "55%",
+              },
+            },
+            grid: {
+              show: false,
+              borderColor: "rgba(0, 0, 0, 0.15)",
+              strokeDashArray: 4,
+            },
+            tooltip: {
+              theme: "dark",
+              fixed: {
+                enabled: true,
+              },
+              x: {
+                show: true,
+              },
+              y: {
+                title: {
+                  formatter: function (e) {
+                    return "";
+                  },
+                },
+              },
+              marker: {
+                show: false,
+              },
+            },
             xaxis: {
-              type: "datetime",
               categories: [
-                "2018-09-19T00:00:00",
-                "2018-09-19T01:30:00",
-                "2018-09-19T02:30:00",
-                "2018-09-19T03:30:00",
-                "2018-09-19T04:30:00",
-                "2018-09-19T05:30:00",
-                "2018-09-19T06:30:00",
+                "Jan",
+                "Feb",
+                "Mar",
+                "Apr",
+                "May",
+                "Jun",
+                "Jul",
+                "Aug",
+                "Sep",
               ],
             },
           };
@@ -193,21 +435,53 @@ const EcommerceDashboard: React.FC = () => {
             ).render();
           }
 
-          // Chart 6 - Order Status Pie Chart
+          // Chart 6 - Order Status (exactly from dashboard2.js)
           const chart6Options = {
+            series: [58, 25, 25],
             chart: {
+              height: 290,
               type: "donut",
-              height: 200,
             },
-            series: [68, 25, 14],
-            labels: ["Sales", "Product", "Income"],
-            colors: ["#0d6efd", "#dc3545", "#198754"],
-            legend: { show: false },
-            tooltip: {
-              y: {
-                formatter: (val: number) => `${val}%`,
+            legend: {
+              position: "bottom",
+              show: false,
+            },
+            fill: {
+              type: "gradient",
+              gradient: {
+                shade: "dark",
+                gradientToColors: ["#ee0979", "#17ad37", "#ec6ead"],
+                shadeIntensity: 1,
+                type: "vertical",
+                opacityFrom: 1,
+                opacityTo: 1,
               },
             },
+            colors: ["#ff6a00", "#98ec2d", "#3494e6"],
+            dataLabels: {
+              enabled: false,
+            },
+            plotOptions: {
+              pie: {
+                donut: {
+                  size: "85%",
+                },
+              },
+            },
+            responsive: [
+              {
+                breakpoint: 480,
+                options: {
+                  chart: {
+                    height: 270,
+                  },
+                  legend: {
+                    position: "bottom",
+                    show: false,
+                  },
+                },
+              },
+            ],
           };
 
           const chart6Element = document.querySelector("#chart6");
@@ -218,24 +492,83 @@ const EcommerceDashboard: React.FC = () => {
             ).render();
           }
 
-          // Chart 8 - Monthly Budget
+          // Chart 8 - Monthly Budget (exactly from dashboard2.js)
           const chart8Options = {
+            series: [78],
             chart: {
+              height: 260,
               type: "radialBar",
-              height: 200,
+              toolbar: {
+                show: false,
+              },
             },
-            series: [75],
-            colors: ["#0dcaf0"],
             plotOptions: {
               radialBar: {
+                startAngle: -135,
+                endAngle: 225,
                 hollow: {
-                  size: "60%",
+                  margin: 0,
+                  size: "80%",
+                  background: "transparent",
+                  image: undefined,
+                  imageOffsetX: 0,
+                  imageOffsetY: 0,
+                  position: "front",
+                  dropShadow: {
+                    enabled: false,
+                    top: 3,
+                    left: 0,
+                    blur: 4,
+                    opacity: 0.24,
+                  },
+                },
+                track: {
+                  background: "rgba(255, 255, 255, 0.12)",
+                  strokeWidth: "67%",
+                  margin: 0,
+                  dropShadow: {
+                    enabled: false,
+                    top: -3,
+                    left: 0,
+                    blur: 4,
+                    opacity: 0.35,
+                  },
                 },
                 dataLabels: {
-                  show: false,
+                  show: true,
+                  name: {
+                    offsetY: -10,
+                    show: false,
+                    color: "#888",
+                    fontSize: "17px",
+                  },
+                  value: {
+                    offsetY: 10,
+                    color: "#111",
+                    fontSize: "24px",
+                    show: true,
+                  },
                 },
               },
             },
+            fill: {
+              type: "gradient",
+              gradient: {
+                shade: "dark",
+                type: "horizontal",
+                shadeIntensity: 0.5,
+                gradientToColors: ["#005bea"],
+                inverseColors: true,
+                opacityFrom: 1,
+                opacityTo: 1,
+                stops: [0, 100],
+              },
+            },
+            colors: ["#98ec2d"],
+            stroke: {
+              lineCap: "round",
+            },
+            labels: ["Total Orders"],
           };
 
           const chart8Element = document.querySelector("#chart8");
@@ -246,26 +579,83 @@ const EcommerceDashboard: React.FC = () => {
             ).render();
           }
 
-          // Chart 9 - Total Profit
+          // Chart 9 - Total Profit (exactly from dashboard2.js)
           const chart9Options = {
-            chart: {
-              type: "area",
-              height: 150,
-              sparkline: { enabled: true },
-            },
             series: [
               {
-                data: [
-                  47, 45, 54, 38, 56, 24, 65, 31, 37, 39, 62, 51, 35, 41, 35,
-                  27, 93, 53, 61, 27, 54, 43, 19, 46,
-                ],
+                name: "Weekly Sales",
+                data: [8, 10, 25, 18, 38, 24, 20, 16, 7],
               },
             ],
-            stroke: { curve: "smooth" },
-            fill: {
-              opacity: 0.3,
+            chart: {
+              height: 160,
+              type: "bar",
+              sparkline: {
+                enabled: true,
+              },
+              zoom: {
+                enabled: false,
+              },
             },
-            colors: ["#198754"],
+            dataLabels: {
+              enabled: false,
+            },
+            stroke: {
+              width: 1,
+              curve: "smooth",
+              color: ["transparent"],
+            },
+            fill: {
+              type: "gradient",
+              gradient: {
+                shade: "dark",
+                gradientToColors: ["#7928ca"],
+                shadeIntensity: 1,
+                type: "vertical",
+              },
+            },
+            colors: ["#ff0080"],
+            plotOptions: {
+              bar: {
+                horizontal: false,
+                borderRadius: 4,
+                borderRadiusApplication: "around",
+                borderRadiusWhenStacked: "last",
+                columnWidth: "45%",
+              },
+            },
+            tooltip: {
+              theme: "dark",
+              fixed: {
+                enabled: false,
+              },
+              x: {
+                show: false,
+              },
+              y: {
+                title: {
+                  formatter: function (e) {
+                    return "";
+                  },
+                },
+              },
+              marker: {
+                show: false,
+              },
+            },
+            xaxis: {
+              categories: [
+                "Jan",
+                "Feb",
+                "Mar",
+                "Apr",
+                "May",
+                "Jun",
+                "Jul",
+                "Aug",
+                "Sep",
+              ],
+            },
           };
 
           const chart9Element = document.querySelector("#chart9");
@@ -286,7 +676,7 @@ const EcommerceDashboard: React.FC = () => {
       }
     };
 
-    const timer = setTimeout(initCharts, 100);
+    const timer = setTimeout(initCharts, 500);
     return () => clearTimeout(timer);
   }, []);
 
