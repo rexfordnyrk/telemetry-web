@@ -69,32 +69,61 @@ const SidebarItem: React.FC<SidebarItemProps> = ({ item, level = 0 }) => {
 
   // Render single item (leaf node)
   if (item.path) {
+    if (level === 0) {
+      // Top level item
+      return (
+        <li className={location.pathname === item.path ? "mm-active" : ""}>
+          <NavLink
+            to={item.path}
+            className={({ isActive }) => (isActive ? "mm-active" : "")}
+          >
+            <div className="parent-icon">
+              <i className="material-icons-outlined">{item.icon}</i>
+            </div>
+            <div className="menu-title">{item.title}</div>
+          </NavLink>
+        </li>
+      );
+    } else {
+      // Submenu item
+      return (
+        <li className={location.pathname === item.path ? "mm-active" : ""}>
+          <NavLink
+            to={item.path}
+            className={({ isActive }) => (isActive ? "mm-active" : "")}
+          >
+            <i className="material-icons-outlined">{item.icon}</i>
+            {item.title}
+          </NavLink>
+        </li>
+      );
+    }
+  }
+
+  // Render item without path (not clickable)
+  if (level === 0) {
+    // Top level item
     return (
-      <li className={location.pathname === item.path ? "mm-active" : ""}>
-        <NavLink
-          to={item.path}
-          className={({ isActive }) => (isActive ? "mm-active" : "")}
-        >
+      <li>
+        <a href="javascript:;" onClick={(e) => e.preventDefault()}>
           <div className="parent-icon">
             <i className="material-icons-outlined">{item.icon}</i>
           </div>
           <div className="menu-title">{item.title}</div>
-        </NavLink>
+        </a>
+      </li>
+    );
+  } else {
+    // Submenu item
+    return (
+      <li>
+        <a href="javascript:;" onClick={(e) => e.preventDefault()}>
+          <i className="material-icons-outlined">{item.icon}</i>
+          {item.title}
+        </a>
       </li>
     );
   }
-
-  // Render item without path (not clickable)
-  return (
-    <li>
-      <a href="javascript:;" onClick={(e) => e.preventDefault()}>
-        <div className="parent-icon">
-          <i className="material-icons-outlined">{item.icon}</i>
-        </div>
-        <div className="menu-title">{item.title}</div>
-      </a>
-    </li>
-  );
 };
 
 const Sidebar: React.FC = () => {
