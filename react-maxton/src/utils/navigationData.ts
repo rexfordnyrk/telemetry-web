@@ -209,7 +209,7 @@ export const navigationData: NavigationItem[] = [
   {
     id: "charts-maps-label",
     title: "Charts & Maps",
-    icon: null,
+    icon: undefined,
     children: [],
   },
   {
