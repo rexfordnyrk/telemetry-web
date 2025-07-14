@@ -56,7 +56,7 @@ const EcommerceDashboard: React.FC = () => {
               },
               y: {
                 title: {
-                  formatter: function (e) {
+                  formatter: function (e: any) {
                     return "";
                   },
                 },
@@ -135,7 +135,7 @@ const EcommerceDashboard: React.FC = () => {
               },
               y: {
                 title: {
-                  formatter: function (e) {
+                  formatter: function (e: any) {
                     return "";
                   },
                 },
@@ -215,7 +215,7 @@ const EcommerceDashboard: React.FC = () => {
               },
               y: {
                 title: {
-                  formatter: function (e) {
+                  formatter: function (e: any) {
                     return "";
                   },
                 },
@@ -302,7 +302,7 @@ const EcommerceDashboard: React.FC = () => {
               },
               y: {
                 title: {
-                  formatter: function (e) {
+                  formatter: function (e: any) {
                     return "";
                   },
                 },
@@ -403,7 +403,7 @@ const EcommerceDashboard: React.FC = () => {
               },
               y: {
                 title: {
-                  formatter: function (e) {
+                  formatter: function (e: any) {
                     return "";
                   },
                 },
@@ -634,7 +634,7 @@ const EcommerceDashboard: React.FC = () => {
               },
               y: {
                 title: {
-                  formatter: function (e) {
+                  formatter: function (e: any) {
                     return "";
                   },
                 },
