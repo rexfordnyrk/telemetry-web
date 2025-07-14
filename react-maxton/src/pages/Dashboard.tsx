@@ -934,14 +934,12 @@ const Dashboard: React.FC = () => {
                 </Dropdown>
               </div>
               <div className="chart-container2">
-                <SafeChart>
-                  <Chart
-                    options={chart1Options}
-                    series={chart1Options.series}
-                    type="radialBar"
-                    height={180}
-                  />
-                </SafeChart>
+                <SafeApexChart
+                  options={chart1Options}
+                  series={chart1Options.series}
+                  type="radialBar"
+                  height={180}
+                />
               </div>
               <div className="text-center">
                 <p className="mb-0 font-12">
@@ -977,14 +975,12 @@ const Dashboard: React.FC = () => {
                 </Dropdown>
               </div>
               <div className="chart-container2">
-                <SafeChart>
-                  <Chart
-                    options={chart2Options}
-                    series={chart2Options.series}
-                    type="area"
-                    height={105}
-                  />
-                </SafeChart>
+                <SafeApexChart
+                  options={chart2Options}
+                  series={chart2Options.series}
+                  type="area"
+                  height={105}
+                />
               </div>
               <div className="text-center">
                 <p className="mb-0 font-12">
