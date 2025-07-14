@@ -61,6 +61,7 @@ function App() {
               path="/dashboard/ecommerce"
               element={<EcommerceDashboard />}
             />
+            <Route path="/widgets/data" element={<WidgetsData />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Router>
