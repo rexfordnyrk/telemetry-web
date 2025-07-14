@@ -15,6 +15,16 @@ function App() {
 
     // Add global error handler to prevent app crashes
     const handleError = (event: ErrorEvent) => {
+      // Specifically handle ApexCharts node errors
+      if (
+        event.error &&
+        event.error.message &&
+        event.error.message.includes("node")
+      ) {
+        console.warn("Chart-related error suppressed:", event.error.message);
+        event.preventDefault();
+        return true;
+      }
       console.warn("Global error caught:", event.error);
       // Prevent the error from breaking the app
       event.preventDefault();
