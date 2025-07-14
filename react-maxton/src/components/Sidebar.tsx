@@ -160,10 +160,27 @@ const SidebarItem: React.FC<SidebarItemProps> = ({ item, level = 0 }) => {
 
 const Sidebar: React.FC = () => {
   const { setSidebarToggled } = useLayout();
+  const sidebarRef = useRef<HTMLElement>(null);
+  const metismenuRef = useRef<HTMLUListElement>(null);
 
   const handleSidebarClose = () => {
     setSidebarToggled(false);
   };
+
+  useEffect(() => {
+    // Initialize MetisMenu when component mounts
+    if (typeof $ !== "undefined" && $.fn.metisMenu && metismenuRef.current) {
+      $(metismenuRef.current).metisMenu();
+    }
+
+    // Initialize Perfect Scrollbar
+    if (typeof PerfectScrollbar !== "undefined" && sidebarRef.current) {
+      new PerfectScrollbar(sidebarRef.current, {
+        wheelPropagation: false,
+        suppressScrollX: true,
+      });
+    }
+  }, []);
 
   return (
     <aside className="sidebar-wrapper">
