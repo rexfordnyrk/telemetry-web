@@ -1130,7 +1130,7 @@ const Dashboard: React.FC = () => {
                     <SafeApexChart
                       options={chart4Options}
                       series={chart4Options.series}
-                      type="area"
+                      type="line"
                       height={105}
                     />
                   </div>
