@@ -2,9 +2,9 @@
 @import "bootstrap/dist/css/bootstrap.min.css";
 
 /* Import theme assets CSS */
-@import "./assets/css/bootstrap-extended.css";
-@import "./assets/css/extra-icons.css";
-@import "./assets/css/pace.min.css";
+/* @import './assets/css/bootstrap-extended.css';
+@import './assets/css/extra-icons.css';
+@import './assets/css/pace.min.css'; */
 
 /* Import Google Fonts */
 @import url("https://fonts.googleapis.com/css2?family=Noto+Sans:wght@300;400;500;600&display=swap");
