@@ -1,7 +1,10 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Card, Row, Col, Dropdown, Table } from "react-bootstrap";
 import Chart from "react-apexcharts";
 import MainLayout from "../layouts/MainLayout";
+
+// Declare jQuery for Peity charts
+declare const $: any;
 
 const Dashboard: React.FC = () => {
   // Chart 1 - Radial Bar Chart (Active Users)
