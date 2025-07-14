@@ -1,0 +1,37 @@
+/* Custom fixes for Maxton dashboard */
+
+/* Social Leads Peity Charts */
+.data-attributes span {
+  display: inline-block;
+}
+
+.data-attributes svg {
+  vertical-align: middle;
+}
+
+/* Table text visibility improvements */
+.table td.text-body,
+.table th {
+  color: var(--bs-body-color) !important;
+}
+
+.table td p.text-body {
+  color: var(--bs-body-color) !important;
+}
+
+/* Ensure proper dropdown positioning */
+.dropdown-menu-end {
+  --bs-position: end;
+}
+
+/* Social leads layout improvements */
+.social-leads-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+/* Chart container improvements */
+.chart-container2 {
+  position: relative;
+}
