@@ -183,7 +183,7 @@ const Sidebar: React.FC = () => {
   }, []);
 
   return (
-    <aside className="sidebar-wrapper">
+    <aside className="sidebar-wrapper" ref={sidebarRef} data-simplebar="true">
       <div className="sidebar-header">
         <div className="logo-icon">
           <img src="assets/images/logo-icon.png" className="logo-img" alt="" />
@@ -197,7 +197,7 @@ const Sidebar: React.FC = () => {
       </div>
 
       <div className="sidebar-nav">
-        <ul className="metismenu" id="sidenav">
+        <ul className="metismenu" id="sidenav" ref={metismenuRef}>
           {navigationData.map((item) => (
             <SidebarItem key={item.id} item={item} />
           ))}
