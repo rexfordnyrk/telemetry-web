@@ -6,77 +6,6 @@ import MainLayout from "../layouts/MainLayout";
 const Dashboard: React.FC = () => {
   // Chart 1 - Radial Bar Chart (Active Users)
   const chart1Options = {
-    series: [
-      {
-        name: "Net Sales",
-        data: [4, 10, 25, 12, 25, 18, 40, 22, 7],
-      },
-    ],
-    chart: {
-      height: 105,
-      type: "area" as const,
-      sparkline: {
-        enabled: true,
-      },
-      zoom: {
-        enabled: false,
-      },
-    },
-    dataLabels: {
-      enabled: false,
-    },
-    stroke: {
-      width: 1.7,
-      curve: "smooth" as const,
-    },
-    fill: {
-      type: "gradient",
-      gradient: {
-        shade: "dark",
-        gradientToColors: ["#02c27a"],
-        shadeIntensity: 1,
-        type: "vertical",
-        opacityFrom: 0.5,
-        opacityTo: 0.0,
-      },
-    },
-    colors: ["#02c27a"],
-    tooltip: {
-      theme: "dark",
-      fixed: {
-        enabled: false,
-      },
-      x: {
-        show: false,
-      },
-      y: {
-        title: {
-          formatter: function () {
-            return "";
-          },
-        },
-      },
-      marker: {
-        show: false,
-      },
-    },
-    xaxis: {
-      categories: [
-        "Jan",
-        "Feb",
-        "Mar",
-        "Apr",
-        "May",
-        "Jun",
-        "Jul",
-        "Aug",
-        "Sep",
-      ],
-    },
-  };
-
-  // Chart 2 - Area Chart (Total Users)
-  const chart2Options = {
     series: [78],
     chart: {
       height: 180,
@@ -122,18 +51,89 @@ const Dashboard: React.FC = () => {
         shade: "dark",
         type: "horizontal",
         shadeIntensity: 0.5,
-        gradientToColors: ["#0866ff"],
+        gradientToColors: ["#ffd200"],
         inverseColors: true,
         opacityFrom: 1,
         opacityTo: 1,
         stops: [0, 100],
       },
     },
-    colors: ["#fc185a"],
+    colors: ["#ee0979"],
     stroke: {
       lineCap: "round" as const,
     },
     labels: ["Total Orders"],
+  };
+
+  // Chart 2 - Area Chart (Total Users)
+  const chart2Options = {
+    series: [
+      {
+        name: "Net Sales",
+        data: [4, 10, 25, 12, 25, 18, 40, 22, 7],
+      },
+    ],
+    chart: {
+      height: 105,
+      type: "area" as const,
+      sparkline: {
+        enabled: true,
+      },
+      zoom: {
+        enabled: false,
+      },
+    },
+    dataLabels: {
+      enabled: false,
+    },
+    stroke: {
+      width: 3,
+      curve: "smooth" as const,
+    },
+    fill: {
+      type: "gradient",
+      gradient: {
+        shade: "dark",
+        gradientToColors: ["#0866ff"],
+        shadeIntensity: 1,
+        type: "vertical",
+        opacityFrom: 0.5,
+        opacityTo: 0.0,
+      },
+    },
+    colors: ["#02c27a"],
+    tooltip: {
+      theme: "dark",
+      fixed: {
+        enabled: false,
+      },
+      x: {
+        show: false,
+      },
+      y: {
+        title: {
+          formatter: function () {
+            return "";
+          },
+        },
+      },
+      marker: {
+        show: false,
+      },
+    },
+    xaxis: {
+      categories: [
+        "Jan",
+        "Feb",
+        "Mar",
+        "Apr",
+        "May",
+        "Jun",
+        "Jul",
+        "Aug",
+        "Sep",
+      ],
+    },
   };
 
   // Chart 3 - Bar Chart (Total Clicks)
