@@ -935,10 +935,10 @@ const Dashboard: React.FC = () => {
                   </div>
                   <div className="chart-container2">
                     <Chart
-                      options={totalClicksChartOptions}
-                      series={totalClicksChartOptions.series}
-                      type="area"
-                      height={105}
+                      options={chart3Options}
+                      series={chart3Options.series}
+                      type="bar"
+                      height={120}
                     />
                   </div>
                   <div className="text-center">
@@ -976,8 +976,8 @@ const Dashboard: React.FC = () => {
                   </div>
                   <div className="chart-container2">
                     <Chart
-                      options={totalViewsChartOptions}
-                      series={totalViewsChartOptions.series}
+                      options={chart4Options}
+                      series={chart4Options.series}
                       type="area"
                       height={105}
                     />
@@ -1009,10 +1009,10 @@ const Dashboard: React.FC = () => {
               <p className="mb-0">Total Accounts</p>
               <div>
                 <Chart
-                  options={totalAccountsChartOptions}
-                  series={totalAccountsChartOptions.series}
-                  type="line"
-                  height={60}
+                  options={chart7Options}
+                  series={chart7Options.series}
+                  type="area"
+                  height={105}
                 />
               </div>
             </Card.Body>
@@ -1080,10 +1080,10 @@ const Dashboard: React.FC = () => {
             <Card.Body>
               <div>
                 <Chart
-                  options={visitorsGrowthChartOptions}
-                  series={visitorsGrowthChartOptions.series}
-                  type="line"
-                  height={120}
+                  options={chart8Options}
+                  series={chart8Options.series}
+                  type="area"
+                  height={210}
                 />
               </div>
               <div className="d-flex align-items-center gap-3 mt-4">
