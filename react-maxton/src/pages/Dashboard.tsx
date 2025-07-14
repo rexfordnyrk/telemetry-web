@@ -695,38 +695,7 @@ const Dashboard: React.FC = () => {
     },
   ];
 
-  // Initialize Peity charts after component mounts
-  useEffect(() => {
-    let mounted = true;
-
-    const initSafeApexCharts = () => {
-      if (!mounted) return;
-
-      try {
-        if (typeof $ !== "undefined" && $.fn.peity) {
-          const chartElements = document.querySelectorAll(
-            ".data-attributes span",
-          );
-          chartElements.forEach((element) => {
-            if (mounted && !element.hasAttribute("data-peity-initialized")) {
-              $(element).peity("donut");
-              element.setAttribute("data-peity-initialized", "true");
-            }
-          });
-        }
-      } catch (error) {
-        console.warn("Peity charts initialization failed:", error);
-      }
-    };
-
-    // Use a small delay to ensure DOM is ready
-    const timer = setTimeout(initSafeApexCharts, 300);
-
-    return () => {
-      mounted = false;
-      clearTimeout(timer);
-    };
-  }, []);
+  // Peity charts are now handled by external JS to prevent React conflicts
 
   const campaignStats = [
     {
