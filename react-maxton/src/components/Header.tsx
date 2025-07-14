@@ -22,7 +22,7 @@ const Header: React.FC<HeaderProps> = ({
   const [searchActive, setSearchActive] = useState(false);
 
   const handleToggleSidebar = () => {
-    setSidebarToggled((prev) => !prev);
+    setSidebarToggled((prev: boolean) => !prev);
   };
 
   const toggleSearch = () => {
