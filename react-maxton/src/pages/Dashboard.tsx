@@ -1336,13 +1336,36 @@ const Dashboard: React.FC = () => {
                       <p className="mb-0 fs-6">{lead.percentage}</p>
                     </div>
                     <div>
-                      <p className="mb-0 data-attributes">
-                        <span
-                          data-peity={`{ "fill": ["${lead.color}", "rgb(255 255 255 / 10%)"], "innerRadius": 14, "radius": 18 }`}
+                      <div
+                        className="circular-progress"
+                        style={{
+                          width: "36px",
+                          height: "36px",
+                          borderRadius: "50%",
+                          background: `conic-gradient(${lead.color} 0deg ${(parseInt(lead.percentage.replace("%", "")) / 100) * 360}deg, rgba(255, 255, 255, 0.15) ${(parseInt(lead.percentage.replace("%", "")) / 100) * 360}deg 360deg)`,
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          position: "relative",
+                        }}
+                      >
+                        <div
+                          style={{
+                            width: "24px",
+                            height: "24px",
+                            borderRadius: "50%",
+                            backgroundColor: "var(--bs-body-bg, #ffffff)",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            fontSize: "9px",
+                            fontWeight: "600",
+                            color: lead.color,
+                          }}
                         >
-                          {lead.data}
-                        </span>
-                      </p>
+                          {parseInt(lead.percentage.replace("%", ""))}
+                        </div>
+                      </div>
                     </div>
                   </div>
                 ))}
