@@ -549,153 +549,6 @@ const Dashboard: React.FC = () => {
     },
   };
 
-  // Chart 4 - Total Clicks
-  const totalClicksChartOptions = {
-    series: [
-      {
-        name: "Clicks",
-        data: [4, 10, 25, 12, 25, 18, 40, 22, 7],
-      },
-    ],
-    chart: {
-      height: 105,
-      type: "area" as const,
-      sparkline: {
-        enabled: true,
-      },
-    },
-    colors: ["#fc185a"],
-    fill: {
-      type: "gradient",
-      gradient: {
-        shade: "dark",
-        gradientToColors: ["#fc185a"],
-        shadeIntensity: 1,
-        type: "vertical",
-        opacityFrom: 0.5,
-        opacityTo: 0.0,
-      },
-    },
-    stroke: {
-      width: 1.7,
-      curve: "smooth" as const,
-    },
-    dataLabels: {
-      enabled: false,
-    },
-  };
-
-  // Chart 5 - Total Views
-  const totalViewsChartOptions = {
-    series: [
-      {
-        name: "Views",
-        data: [4, 10, 25, 12, 25, 18, 40, 22, 7],
-      },
-    ],
-    chart: {
-      height: 105,
-      type: "area" as const,
-      sparkline: {
-        enabled: true,
-      },
-    },
-    colors: ["#0dcaf0"],
-    fill: {
-      type: "gradient",
-      gradient: {
-        shade: "dark",
-        gradientToColors: ["#0dcaf0"],
-        shadeIntensity: 1,
-        type: "vertical",
-        opacityFrom: 0.5,
-        opacityTo: 0.0,
-      },
-    },
-    stroke: {
-      width: 1.7,
-      curve: "smooth" as const,
-    },
-    dataLabels: {
-      enabled: false,
-    },
-  };
-
-  // Chart 6 - Monthly Revenue
-  const monthlyRevenueChartOptions = {
-    series: [
-      {
-        name: "Revenue",
-        data: [450, 650, 410, 560, 750, 650, 850, 560, 750, 650, 850, 560],
-      },
-    ],
-    chart: {
-      height: 160,
-      type: "line" as const,
-      sparkline: {
-        enabled: true,
-      },
-    },
-    colors: ["#0d6efd"],
-    stroke: {
-      width: 3,
-      curve: "smooth" as const,
-    },
-    dataLabels: {
-      enabled: false,
-    },
-  };
-
-  // Chart 7 - Total Accounts
-  const totalAccountsChartOptions = {
-    series: [
-      {
-        name: "Accounts",
-        data: [24, 35, 25, 45, 35, 55, 45, 65, 55, 75, 65, 85],
-      },
-    ],
-    chart: {
-      height: 60,
-      type: "line" as const,
-      sparkline: {
-        enabled: true,
-      },
-    },
-    colors: ["#02c27a"],
-    stroke: {
-      width: 2,
-      curve: "smooth" as const,
-    },
-    dataLabels: {
-      enabled: false,
-    },
-  };
-
-  // Chart 8 - Visitors Growth
-  const visitorsGrowthChartOptions = {
-    series: [
-      {
-        name: "Visitors",
-        data: [24, 35, 25, 45, 35, 55, 45, 65, 55, 75, 65, 85],
-      },
-    ],
-    chart: {
-      height: 120,
-      type: "line" as const,
-      sparkline: {
-        enabled: true,
-      },
-    },
-    colors: ["#0d6efd"],
-    stroke: {
-      width: 3,
-      curve: "smooth" as const,
-    },
-    dataLabels: {
-      enabled: false,
-    },
-  };
-
   const recentOrders = [
     {
       id: 1,
@@ -949,7 +802,7 @@ const Dashboard: React.FC = () => {
       </div>
 
       <Row>
-        {/* Welcome Card */}
+        {/* Row 1: Welcome Card + Active Users + Total Users */}
         <Col xxl={8} className="d-flex align-items-stretch">
           <Card className="w-100 overflow-hidden rounded-4">
             <Card.Body className="position-relative p-4">
@@ -1020,7 +873,6 @@ const Dashboard: React.FC = () => {
           </Card>
         </Col>
 
-        {/* Active Users Card */}
         <Col xl={6} xxl={2} className="d-flex align-items-stretch">
           <Card className="w-100 rounded-4">
             <Card.Body>
@@ -1062,7 +914,6 @@ const Dashboard: React.FC = () => {
           </Card>
         </Col>
 
-        {/* Total Users Card */}
         <Col xl={6} xxl={2} className="d-flex align-items-stretch">
           <Card className="w-100 rounded-4">
             <Card.Body>
@@ -1105,92 +956,7 @@ const Dashboard: React.FC = () => {
           </Card>
         </Col>
 
-        {/* Total Clicks Card */}
-        <Col xl={6} xxl={2} className="d-flex align-items-stretch">
-          <Card className="w-100 rounded-4">
-            <Card.Body>
-              <div className="d-flex align-items-start justify-content-between mb-1">
-                <div>
-                  <h5 className="mb-0">82.7K</h5>
-                  <p className="mb-0">Total Clicks</p>
-                </div>
-                <Dropdown>
-                  <Dropdown.Toggle
-                    variant="link"
-                    className="dropdown-toggle-nocaret options"
-                  >
-                    <span className="material-icons-outlined fs-5">
-                      more_vert
-                    </span>
-                  </Dropdown.Toggle>
-                  <Dropdown.Menu>
-                    <Dropdown.Item>Action</Dropdown.Item>
-                    <Dropdown.Item>Another action</Dropdown.Item>
-                    <Dropdown.Item>Something else here</Dropdown.Item>
-                  </Dropdown.Menu>
-                </Dropdown>
-              </div>
-              <div className="chart-container2">
-                <Chart
-                  options={totalClicksChartOptions}
-                  series={totalClicksChartOptions.series}
-                  type="area"
-                  height={105}
-                />
-              </div>
-              <div className="text-center">
-                <p className="mb-0 font-12">
-                  <span className="text-success me-1">12.5%</span> from last
-                  month
-                </p>
-              </div>
-            </Card.Body>
-          </Card>
-        </Col>
-
-        {/* Total Views Card */}
-        <Col xl={6} xxl={2} className="d-flex align-items-stretch">
-          <Card className="w-100 rounded-4">
-            <Card.Body>
-              <div className="d-flex align-items-start justify-content-between mb-1">
-                <div>
-                  <h5 className="mb-0">68.4K</h5>
-                  <p className="mb-0">Total Views</p>
-                </div>
-                <Dropdown>
-                  <Dropdown.Toggle
-                    variant="link"
-                    className="dropdown-toggle-nocaret options"
-                  >
-                    <span className="material-icons-outlined fs-5">
-                      more_vert
-                    </span>
-                  </Dropdown.Toggle>
-                  <Dropdown.Menu>
-                    <Dropdown.Item>Action</Dropdown.Item>
-                    <Dropdown.Item>Another action</Dropdown.Item>
-                    <Dropdown.Item>Something else here</Dropdown.Item>
-                  </Dropdown.Menu>
-                </Dropdown>
-              </div>
-              <div className="chart-container2">
-                <Chart
-                  options={totalViewsChartOptions}
-                  series={totalViewsChartOptions.series}
-                  type="area"
-                  height={105}
-                />
-              </div>
-              <div className="text-center">
-                <p className="mb-0 font-12">
-                  35K users increased from last month
-                </p>
-              </div>
-            </Card.Body>
-          </Card>
-        </Col>
-
-        {/* Monthly Revenue Card */}
+        {/* Row 2: Monthly Revenue + Device Type + Nested Section (Total Clicks, Total Views, Total Accounts) */}
         <Col xl={6} xxl={4} className="d-flex align-items-stretch">
           <Card className="w-100 rounded-4">
             <Card.Body>
@@ -1221,7 +987,6 @@ const Dashboard: React.FC = () => {
           </Card>
         </Col>
 
-        {/* Device Type Card */}
         <Col xl={6} xxl={4} className="d-flex align-items-stretch">
           <Card className="w-100 rounded-4">
             <Card.Body>
@@ -1298,7 +1063,6 @@ const Dashboard: React.FC = () => {
           </Card>
         </Col>
 
-        {/* Total Accounts and small cards */}
         <Col xxl={4}>
           <Row>
             <Col md={6} className="d-flex align-items-stretch">
@@ -1342,7 +1106,7 @@ const Dashboard: React.FC = () => {
                 </Card.Body>
               </Card>
             </Col>
-            <Col md={6} className="d-flex align-items-stretch">
+            <Col sm={6} className="d-flex align-items-stretch">
               <Card className="w-100 rounded-4">
                 <Card.Body>
                   <div className="d-flex align-items-start justify-content-between mb-1">
@@ -1411,7 +1175,7 @@ const Dashboard: React.FC = () => {
           </Card>
         </Col>
 
-        {/* Campaign Stats */}
+        {/* Row 3: Campaign Stats + Visitors Growth + Social Leads */}
         <Col xl={6} xxl={4} className="d-flex align-items-stretch">
           <Card className="w-100 rounded-4">
             <Card.Body>
@@ -1466,7 +1230,6 @@ const Dashboard: React.FC = () => {
           </Card>
         </Col>
 
-        {/* Visitors Growth */}
         <Col xl={6} xxl={4} className="d-flex align-items-stretch">
           <Card className="w-100 rounded-4">
             <Card.Body>
@@ -1529,7 +1292,6 @@ const Dashboard: React.FC = () => {
           </Card>
         </Col>
 
-        {/* Social Leads */}
         <Col xl={6} xxl={4} className="d-flex align-items-stretch">
           <Card className="w-100 rounded-4">
             <Card.Body>
@@ -1579,7 +1341,7 @@ const Dashboard: React.FC = () => {
           </Card>
         </Col>
 
-        {/* New Users */}
+        {/* Row 4: New Users + Recent Orders */}
         <Col xl={6} xxl={4} className="d-flex align-items-stretch">
           <Card className="w-100 rounded-4">
             <Card.Header className="border-0 p-3 border-bottom">
@@ -1656,7 +1418,6 @@ const Dashboard: React.FC = () => {
           </Card>
         </Col>
 
-        {/* Recent Orders Table */}
         <Col lg={12} xxl={8} className="d-flex align-items-stretch">
           <Card className="w-100 rounded-4">
             <Card.Body>
