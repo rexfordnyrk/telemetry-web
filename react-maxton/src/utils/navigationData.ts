@@ -159,7 +159,7 @@ export const navigationData: NavigationItem[] = [
   {
     id: "forms-tables-label",
     title: "Forms & Tables",
-    icon: null,
+    icon: undefined,
     children: [],
   },
   {
