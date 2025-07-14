@@ -7,7 +7,6 @@ import { navigationData } from "../utils/navigationData";
 
 // Declare global libraries
 declare const $: any;
-declare const PerfectScrollbar: any;
 
 interface SidebarItemProps {
   item: NavigationItem;
