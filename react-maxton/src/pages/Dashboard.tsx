@@ -68,7 +68,7 @@ const Dashboard: React.FC = () => {
     labels: ["Total Orders"],
   };
 
-  // SafeApexChart 2 - Area SafeApexChart (Total Users)
+  // Chart 2 - Area Chart (Total Users)
   const chart2Options = {
     series: [
       {
@@ -139,7 +139,7 @@ const Dashboard: React.FC = () => {
     },
   };
 
-  // SafeApexChart 3 - Bar SafeApexChart (Total Clicks)
+  // Chart 3 - Bar Chart (Total Clicks)
   const chart3Options = {
     series: [
       {
@@ -212,7 +212,7 @@ const Dashboard: React.FC = () => {
     },
   };
 
-  // SafeApexChart 4 - Area SafeApexChart (Total Views)
+  // Chart 4 - Area Chart (Total Views)
   const chart4Options = {
     series: [
       {
@@ -283,7 +283,7 @@ const Dashboard: React.FC = () => {
     },
   };
 
-  // SafeApexChart 5 - Bar SafeApexChart (Monthly Revenue)
+  // Chart 5 - Bar Chart (Monthly Revenue)
   const chart5Options = {
     series: [
       {
