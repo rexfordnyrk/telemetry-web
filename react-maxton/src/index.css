@@ -1,13 +1,9 @@
-/* Import Bootstrap CSS */
-@import "bootstrap/dist/css/bootstrap.min.css";
-
-/* Import Google Fonts */
+/* Fonts */
 @import url("https://fonts.googleapis.com/css2?family=Noto+Sans:wght@300;400;500;600&display=swap");
 @import url("https://fonts.googleapis.com/css?family=Material+Icons+Outlined");
-@import url("https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css");
 
-/* Import our custom theme SCSS */
-@import "./theme.scss";
+/* Remove Tabler Icons - not in original */
+/* @import url("https://cdn.jsdelivr.net/npm/@tabler/icons@latest/tabler-icons.min.css"); */
 
 body {
   margin: 0;
@@ -32,36 +28,4 @@ code {
   min-height: 100vh;
 }
 
-/* Additional utility classes */
-.navbar-nav .nav-link {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #494949;
-  width: 45px;
-  height: 45px;
-  border-radius: 50%;
-  transition: all 0.3s;
-}
-
-.navbar-nav .nav-link:hover,
-.navbar-nav .nav-link:focus {
-  background-color: #efefef;
-}
-
-/* Ensure dropdown menus work properly */
-.dropdown-menu {
-  border-radius: 1rem;
-  border: 0;
-  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
-}
-
-/* Fix card styling */
-.card {
-  border: 1px solid rgba(0, 0, 0, 0.125);
-  border-radius: 0.5rem;
-}
-
-.rounded-4 {
-  border-radius: 1rem !important;
-}
+/* Let Perfect Scrollbar handle sidebar scrolling */

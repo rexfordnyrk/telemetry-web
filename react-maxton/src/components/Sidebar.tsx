@@ -1,9 +1,12 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import { Collapse } from "react-bootstrap";
 import { useLayout } from "../context/LayoutContext";
 import { NavigationItem } from "../types";
 import { navigationData } from "../utils/navigationData";
+
+// Declare global libraries
+declare const $: any;
 
 interface SidebarItemProps {
   item: NavigationItem;
@@ -40,79 +43,162 @@ const SidebarItem: React.FC<SidebarItemProps> = ({ item, level = 0 }) => {
 
   // Render item with children (submenu)
   if (item.children && item.children.length > 0) {
+    if (level === 0) {
+      // Top level item with children
+      return (
+        <li className={isActive ? "mm-active" : ""}>
+          <a
+            href="javascript:;"
+            className={`has-arrow ${isActive ? "mm-active" : ""}`}
+            onClick={(e) => {
+              e.preventDefault();
+              setIsOpen(!isOpen);
+            }}
+            aria-expanded={isOpen}
+          >
+            <div className="parent-icon">
+              <i className="material-icons-outlined">{item.icon}</i>
+            </div>
+            <div className="menu-title">{item.title}</div>
+          </a>
+          <Collapse in={isOpen}>
+            <ul className={`mm-collapse ${isOpen ? "mm-show" : ""}`}>
+              {item.children.map((child) => (
+                <SidebarItem key={child.id} item={child} level={level + 1} />
+              ))}
+            </ul>
+          </Collapse>
+        </li>
+      );
+    } else {
+      // Submenu item with children
+      return (
+        <li className={isActive ? "mm-active" : ""}>
+          <a
+            href="javascript:;"
+            className={`has-arrow ${isActive ? "mm-active" : ""}`}
+            onClick={(e) => {
+              e.preventDefault();
+              setIsOpen(!isOpen);
+            }}
+            aria-expanded={isOpen}
+          >
+            <i className="material-icons-outlined">{item.icon}</i>
+            {item.title}
+          </a>
+          <Collapse in={isOpen}>
+            <ul className={`mm-collapse ${isOpen ? "mm-show" : ""}`}>
+              {item.children.map((child) => (
+                <SidebarItem key={child.id} item={child} level={level + 1} />
+              ))}
+            </ul>
+          </Collapse>
+        </li>
+      );
+    }
+  }
+
+  // Render single item (leaf node)
+  if (item.path) {
+    if (level === 0) {
+      // Top level item
+      return (
+        <li className={location.pathname === item.path ? "mm-active" : ""}>
+          <NavLink
+            to={item.path}
+            className={({ isActive }) => (isActive ? "mm-active" : "")}
+          >
+            <div className="parent-icon">
+              <i className="material-icons-outlined">{item.icon}</i>
+            </div>
+            <div className="menu-title">{item.title}</div>
+          </NavLink>
+        </li>
+      );
+    } else {
+      // Submenu item
+      return (
+        <li className={location.pathname === item.path ? "mm-active" : ""}>
+          <NavLink
+            to={item.path}
+            className={({ isActive }) => (isActive ? "mm-active" : "")}
+          >
+            <i className="material-icons-outlined">{item.icon}</i>
+            {item.title}
+          </NavLink>
+        </li>
+      );
+    }
+  }
+
+  // Render item without path (not clickable)
+  if (level === 0) {
+    // Top level item
     return (
-      <li className={isActive ? "mm-active" : ""}>
-        <a
-          href="#"
-          className={`has-arrow ${isActive ? "mm-active" : ""}`}
-          onClick={(e) => {
-            e.preventDefault();
-            setIsOpen(!isOpen);
-          }}
-          aria-expanded={isOpen}
-        >
+      <li>
+        <a href="javascript:;" onClick={(e) => e.preventDefault()}>
           <div className="parent-icon">
             <i className="material-icons-outlined">{item.icon}</i>
           </div>
           <div className="menu-title">{item.title}</div>
         </a>
-        <Collapse in={isOpen}>
-          <ul className={`mm-collapse ${isOpen ? "mm-show" : ""}`}>
-            {item.children.map((child) => (
-              <SidebarItem key={child.id} item={child} level={level + 1} />
-            ))}
-          </ul>
-        </Collapse>
       </li>
     );
-  }
-
-  // Render single item (leaf node)
-  if (item.path) {
+  } else {
+    // Submenu item
     return (
-      <li className={location.pathname === item.path ? "mm-active" : ""}>
-        <NavLink
-          to={item.path}
-          className={({ isActive }) => (isActive ? "mm-active" : "")}
-        >
-          {item.icon && <i className="material-icons-outlined">{item.icon}</i>}
+      <li>
+        <a href="javascript:;" onClick={(e) => e.preventDefault()}>
+          <i className="material-icons-outlined">{item.icon}</i>
           {item.title}
-        </NavLink>
+        </a>
       </li>
     );
   }
-
-  // Render item without path (not clickable)
-  return (
-    <li>
-      <a href="#" onClick={(e) => e.preventDefault()}>
-        {item.icon && (
-          <div className="parent-icon">
-            <i className="material-icons-outlined">{item.icon}</i>
-          </div>
-        )}
-        <div className="menu-title">{item.title}</div>
-      </a>
-    </li>
-  );
 };
 
 const Sidebar: React.FC = () => {
   const { setSidebarToggled } = useLayout();
+  const metismenuRef = useRef<HTMLUListElement>(null);
 
   const handleSidebarClose = () => {
     setSidebarToggled(false);
   };
 
+  useEffect(() => {
+    // Initialize MetisMenu when component mounts
+    if (typeof $ !== "undefined" && $.fn.metisMenu && metismenuRef.current) {
+      try {
+        $(metismenuRef.current).metisMenu();
+      } catch (error) {
+        console.warn("MetisMenu initialization failed:", error);
+      }
+    }
+
+    // Don't initialize PerfectScrollbar in React - let the main.js handle it
+    // This prevents cleanup issues during unmounting
+
+    // Cleanup function - minimal cleanup to avoid errors
+    return () => {
+      // Only cleanup MetisMenu if needed
+      try {
+        if (typeof $ !== "undefined") {
+          const currentRef = metismenuRef.current;
+          if (currentRef) {
+            $(currentRef).off();
+          }
+        }
+      } catch (error) {
+        // Silently ignore cleanup errors
+      }
+    };
+  }, []);
+
   return (
-    <aside className="sidebar-wrapper" data-simplebar="true">
+    <aside className="sidebar-wrapper">
       <div className="sidebar-header">
         <div className="logo-icon">
-          <img
-            src="/assets/images/logo-icon.png"
-            className="logo-img"
-            alt="Logo"
-          />
+          <img src="assets/images/logo-icon.png" className="logo-img" alt="" />
         </div>
         <div className="logo-name flex-grow-1">
           <h5 className="mb-0">Maxton</h5>
@@ -123,7 +209,7 @@ const Sidebar: React.FC = () => {
       </div>
 
       <div className="sidebar-nav">
-        <ul className="metismenu" id="sidenav">
+        <ul className="metismenu" id="sidenav" ref={metismenuRef}>
           {navigationData.map((item) => (
             <SidebarItem key={item.id} item={item} />
           ))}

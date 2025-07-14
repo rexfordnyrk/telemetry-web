@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />
@@ -24,7 +24,92 @@
       work correctly both with client-side routing and a non-root public URL.
       Learn how to configure a non-root public URL by running `npm run build`.
     -->
-    <title>React App</title>
+    <title>Maxton | Bootstrap 5 Admin Dashboard Template</title>
+    <!-- Favicon -->
+    <link
+      rel="icon"
+      href="%PUBLIC_URL%/assets/images/favicon-32x32.png"
+      type="image/png"
+    />
+
+    <!-- Pace Loader -->
+    <link href="%PUBLIC_URL%/assets/css/pace.min.css" rel="stylesheet" />
+    <script src="%PUBLIC_URL%/assets/js/pace.min.js"></script>
+
+    <!-- Plugins -->
+    <link
+      href="%PUBLIC_URL%/assets/plugins/perfect-scrollbar/css/perfect-scrollbar.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="%PUBLIC_URL%/assets/plugins/metismenu/metisMenu.min.css"
+    />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="%PUBLIC_URL%/assets/plugins/metismenu/mm-vertical.css"
+    />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="%PUBLIC_URL%/assets/plugins/simplebar/css/simplebar.css"
+    />
+
+    <!-- Bootstrap CSS -->
+    <link href="%PUBLIC_URL%/assets/css/bootstrap.min.css" rel="stylesheet" />
+
+    <!-- Main CSS -->
+    <link
+      href="%PUBLIC_URL%/assets/css/bootstrap-extended.css"
+      rel="stylesheet"
+    />
+    <link href="%PUBLIC_URL%/sass/main.css" rel="stylesheet" />
+    <link href="%PUBLIC_URL%/sass/dark-theme.css" rel="stylesheet" />
+    <link href="%PUBLIC_URL%/sass/blue-theme.css" rel="stylesheet" />
+    <link href="%PUBLIC_URL%/sass/semi-dark.css" rel="stylesheet" />
+    <link href="%PUBLIC_URL%/sass/bordered-theme.css" rel="stylesheet" />
+    <link href="%PUBLIC_URL%/sass/responsive.css" rel="stylesheet" />
+
+    <!-- JavaScript Files in correct order -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/peity/3.3.0/jquery.peity.min.js"></script>
+    <script src="%PUBLIC_URL%/assets/js/bootstrap.bundle.min.js"></script>
+    <script src="%PUBLIC_URL%/assets/plugins/perfect-scrollbar/js/perfect-scrollbar.js"></script>
+    <script src="%PUBLIC_URL%/assets/plugins/metismenu/metisMenu.min.js"></script>
+    <script src="%PUBLIC_URL%/assets/plugins/simplebar/js/simplebar.min.js"></script>
+    <script src="%PUBLIC_URL%/assets/plugins/peity/jquery.peity.min.js"></script>
+    <script src="%PUBLIC_URL%/assets/plugins/apexchart/apexcharts.min.js"></script>
+    <script src="%PUBLIC_URL%/assets/js/main.js"></script>
+
+    <!-- Initialize after React is ready -->
+    <script>
+      // Wait for React to fully mount before initializing
+      setTimeout(function () {
+        try {
+          // Initialize Peity charts
+          if (typeof $ !== "undefined" && $.fn.peity) {
+            $(".data-attributes span").each(function () {
+              if (!$(this).hasClass("peity-initialized")) {
+                $(this).peity("donut");
+                $(this).addClass("peity-initialized");
+              }
+            });
+          }
+
+          // Initialize user-list PerfectScrollbar only if element exists
+          if (
+            document.querySelector(".user-list") &&
+            typeof PerfectScrollbar !== "undefined"
+          ) {
+            new PerfectScrollbar(".user-list");
+          }
+        } catch (error) {
+          console.warn("Initialization failed:", error);
+        }
+      }, 1000);
+    </script>
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>

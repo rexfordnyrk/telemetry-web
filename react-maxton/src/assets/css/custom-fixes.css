@@ -1,0 +1,57 @@
+/* Custom fixes for Maxton dashboard */
+
+/* Social Leads Peity Charts */
+.data-attributes span {
+  display: inline-block;
+}
+
+.data-attributes svg {
+  vertical-align: middle;
+}
+
+/* Table text visibility improvements for blue theme */
+[data-bs-theme="blue-theme"] .table td,
+[data-bs-theme="blue-theme"] .table th,
+[data-bs-theme="blue-theme"] .table td p,
+[data-bs-theme="blue-theme"] .table tbody tr td {
+  color: var(--bs-body-color) !important;
+}
+
+/* Make sure all table text inherits the theme color */
+.table {
+  color: var(--bs-body-color);
+}
+
+.table td p {
+  color: inherit;
+}
+
+/* Ensure proper dropdown positioning */
+.dropdown-menu-end {
+  --bs-position: end;
+}
+
+/* Social leads layout improvements */
+.social-leads-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+/* Chart container improvements */
+.chart-container2 {
+  position: relative;
+}
+
+/* Fix sidebar scrolling */
+.sidebar-wrapper {
+  height: 100vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.sidebar-nav {
+  height: calc(100vh - 80px); /* Subtract header height */
+  overflow-y: auto;
+  overflow-x: hidden;
+}
