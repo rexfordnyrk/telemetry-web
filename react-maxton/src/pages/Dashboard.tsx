@@ -936,12 +936,14 @@ const Dashboard: React.FC = () => {
                 </Dropdown>
               </div>
               <div className="chart-container2">
-                <Chart
-                  options={chart1Options}
-                  series={chart1Options.series}
-                  type="radialBar"
-                  height={180}
-                />
+                <SafeChart>
+                  <Chart
+                    options={chart1Options}
+                    series={chart1Options.series}
+                    type="radialBar"
+                    height={180}
+                  />
+                </SafeChart>
               </div>
               <div className="text-center">
                 <p className="mb-0 font-12">
