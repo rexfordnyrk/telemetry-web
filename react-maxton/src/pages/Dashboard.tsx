@@ -979,12 +979,14 @@ const Dashboard: React.FC = () => {
                 </Dropdown>
               </div>
               <div className="chart-container2">
-                <Chart
-                  options={chart2Options}
-                  series={chart2Options.series}
-                  type="area"
-                  height={105}
-                />
+                <SafeChart>
+                  <Chart
+                    options={chart2Options}
+                    series={chart2Options.series}
+                    type="area"
+                    height={105}
+                  />
+                </SafeChart>
               </div>
               <div className="text-center">
                 <p className="mb-0 font-12">
