@@ -43,7 +43,7 @@ const SidebarItem: React.FC<SidebarItemProps> = ({ item, level = 0 }) => {
     return (
       <li className={isActive ? "mm-active" : ""}>
         <a
-          href="#"
+          href="javascript:;"
           className={`has-arrow ${isActive ? "mm-active" : ""}`}
           onClick={(e) => {
             e.preventDefault();
@@ -75,16 +75,10 @@ const SidebarItem: React.FC<SidebarItemProps> = ({ item, level = 0 }) => {
           to={item.path}
           className={({ isActive }) => (isActive ? "mm-active" : "")}
         >
-          {level === 0 && item.icon && (
-            <div className="parent-icon">
-              <i className="material-icons-outlined">{item.icon}</i>
-            </div>
-          )}
-          {level > 0 && item.icon && (
+          <div className="parent-icon">
             <i className="material-icons-outlined">{item.icon}</i>
-          )}
-          {level === 0 && <div className="menu-title">{item.title}</div>}
-          {level > 0 && item.title}
+          </div>
+          <div className="menu-title">{item.title}</div>
         </NavLink>
       </li>
     );
@@ -93,17 +87,11 @@ const SidebarItem: React.FC<SidebarItemProps> = ({ item, level = 0 }) => {
   // Render item without path (not clickable)
   return (
     <li>
-      <a href="#" onClick={(e) => e.preventDefault()}>
-        {level === 0 && item.icon && (
-          <div className="parent-icon">
-            <i className="material-icons-outlined">{item.icon}</i>
-          </div>
-        )}
-        {level > 0 && item.icon && (
+      <a href="javascript:;" onClick={(e) => e.preventDefault()}>
+        <div className="parent-icon">
           <i className="material-icons-outlined">{item.icon}</i>
-        )}
-        {level === 0 && <div className="menu-title">{item.title}</div>}
-        {level > 0 && item.title}
+        </div>
+        <div className="menu-title">{item.title}</div>
       </a>
     </li>
   );
@@ -120,11 +108,7 @@ const Sidebar: React.FC = () => {
     <aside className="sidebar-wrapper" data-simplebar="true">
       <div className="sidebar-header">
         <div className="logo-icon">
-          <img
-            src="/assets/images/logo-icon.png"
-            className="logo-img"
-            alt="Logo"
-          />
+          <img src="assets/images/logo-icon.png" className="logo-img" alt="" />
         </div>
         <div className="logo-name flex-grow-1">
           <h5 className="mb-0">Maxton</h5>
