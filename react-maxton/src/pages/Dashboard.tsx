@@ -1,13 +1,13 @@
 import React, { useEffect } from "react";
 import { Card, Row, Col, Dropdown, Table } from "react-bootstrap";
-import SafeApexChart from "../components/SafeApexChart";
+import SafeApexSafeApexChart from "../components/SafeApexSafeApexChart";
 import MainLayout from "../layouts/MainLayout";
 
 // Declare jQuery for Peity charts
 declare const $: any;
 
 const Dashboard: React.FC = () => {
-  // Chart 1 - Radial Bar Chart (Active Users)
+  // SafeApexChart 1 - Radial Bar SafeApexChart (Active Users)
   const chart1Options = {
     series: [78],
     chart: {
@@ -68,7 +68,7 @@ const Dashboard: React.FC = () => {
     labels: ["Total Orders"],
   };
 
-  // Chart 2 - Area Chart (Total Users)
+  // SafeApexChart 2 - Area SafeApexChart (Total Users)
   const chart2Options = {
     series: [
       {
@@ -139,7 +139,7 @@ const Dashboard: React.FC = () => {
     },
   };
 
-  // Chart 3 - Bar Chart (Total Clicks)
+  // SafeApexChart 3 - Bar SafeApexChart (Total Clicks)
   const chart3Options = {
     series: [
       {
@@ -212,7 +212,7 @@ const Dashboard: React.FC = () => {
     },
   };
 
-  // Chart 4 - Area Chart (Total Views)
+  // SafeApexChart 4 - Area SafeApexChart (Total Views)
   const chart4Options = {
     series: [
       {
@@ -283,7 +283,7 @@ const Dashboard: React.FC = () => {
     },
   };
 
-  // Chart 5 - Bar Chart (Monthly Revenue)
+  // SafeApexChart 5 - Bar SafeApexChart (Monthly Revenue)
   const chart5Options = {
     series: [
       {
@@ -357,7 +357,7 @@ const Dashboard: React.FC = () => {
     },
   };
 
-  // Chart 6 - Donut Chart (Device Type)
+  // SafeApexChart 6 - Donut SafeApexChart (Device Type)
   const chart6Options = {
     series: [58, 25, 25],
     chart: {
@@ -406,7 +406,7 @@ const Dashboard: React.FC = () => {
     ],
   };
 
-  // Chart 7 - Area Chart (Total Accounts)
+  // SafeApexChart 7 - Area SafeApexChart (Total Accounts)
   const chart7Options = {
     series: [
       {
@@ -477,7 +477,7 @@ const Dashboard: React.FC = () => {
     },
   };
 
-  // Chart 8 - Area Chart (Visitors Growth)
+  // SafeApexChart 8 - Area SafeApexChart (Visitors Growth)
   const chart8Options = {
     series: [
       {
@@ -699,7 +699,7 @@ const Dashboard: React.FC = () => {
   useEffect(() => {
     let mounted = true;
 
-    const initCharts = () => {
+    const initSafeApexCharts = () => {
       if (!mounted) return;
 
       try {
@@ -720,7 +720,7 @@ const Dashboard: React.FC = () => {
     };
 
     // Use a small delay to ensure DOM is ready
-    const timer = setTimeout(initCharts, 300);
+    const timer = setTimeout(initSafeApexCharts, 300);
 
     return () => {
       mounted = false;
@@ -934,7 +934,7 @@ const Dashboard: React.FC = () => {
                 </Dropdown>
               </div>
               <div className="chart-container2">
-                <SafeApexChart
+                <SafeApexSafeApexChart
                   options={chart1Options}
                   series={chart1Options.series}
                   type="radialBar"
@@ -975,7 +975,7 @@ const Dashboard: React.FC = () => {
                 </Dropdown>
               </div>
               <div className="chart-container2">
-                <SafeApexChart
+                <SafeApexSafeApexChart
                   options={chart2Options}
                   series={chart2Options.series}
                   type="area"
@@ -1000,7 +1000,7 @@ const Dashboard: React.FC = () => {
                 <h6 className="mb-0">Monthly Revenue</h6>
               </div>
               <div className="mt-4">
-                <Chart
+                <SafeApexChart
                   options={chart5Options}
                   series={chart5Options.series}
                   type="bar"
@@ -1052,7 +1052,7 @@ const Dashboard: React.FC = () => {
                     <h2 className="mb-1">68%</h2>
                     <h6 className="mb-0">Total Views</h6>
                   </div>
-                  <Chart
+                  <SafeApexChart
                     options={chart6Options}
                     series={chart6Options.series}
                     type="donut"
@@ -1126,7 +1126,7 @@ const Dashboard: React.FC = () => {
                     </Dropdown>
                   </div>
                   <div className="chart-container2">
-                    <Chart
+                    <SafeApexChart
                       options={chart3Options}
                       series={chart3Options.series}
                       type="bar"
@@ -1167,7 +1167,7 @@ const Dashboard: React.FC = () => {
                     </Dropdown>
                   </div>
                   <div className="chart-container2">
-                    <Chart
+                    <SafeApexChart
                       options={chart4Options}
                       series={chart4Options.series}
                       type="area"
@@ -1200,7 +1200,7 @@ const Dashboard: React.FC = () => {
               </div>
               <p className="mb-0">Total Accounts</p>
               <div>
-                <Chart
+                <SafeApexChart
                   options={chart7Options}
                   series={chart7Options.series}
                   type="area"
@@ -1270,7 +1270,7 @@ const Dashboard: React.FC = () => {
           <Card className="w-100 rounded-4">
             <Card.Body>
               <div>
-                <Chart
+                <SafeApexChart
                   options={chart8Options}
                   series={chart8Options.series}
                   type="area"
