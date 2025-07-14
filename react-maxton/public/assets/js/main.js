@@ -12,6 +12,25 @@ $(function () {
     new PerfectScrollbar(".search-content");
   }
 
+  // Initialize sidebar PerfectScrollbar with safety checks
+  function initSidebarScrollbar() {
+    const sidebarWrapper = document.querySelector(".sidebar-wrapper");
+    if (sidebarWrapper && !sidebarWrapper.hasAttribute("data-ps-initialized")) {
+      try {
+        new PerfectScrollbar(sidebarWrapper, {
+          wheelPropagation: false,
+          suppressScrollX: true,
+        });
+        sidebarWrapper.setAttribute("data-ps-initialized", "true");
+      } catch (error) {
+        console.warn("Sidebar PerfectScrollbar initialization failed:", error);
+      }
+    }
+  }
+
+  // Initialize after a short delay to ensure React components are mounted
+  setTimeout(initSidebarScrollbar, 500);
+
   // new PerfectScrollbar(".mega-menu-widgets")
 
   /* toggle button */
