@@ -12,7 +12,6 @@ function App() {
         <Routes>
           <Route path="/" element={<Dashboard />} />
           <Route path="/dashboard/ecommerce" element={<Dashboard />} />
-          {/* Add more routes as needed */}
         </Routes>
       </Router>
     </LayoutProvider>
