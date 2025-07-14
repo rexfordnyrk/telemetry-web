@@ -40,31 +40,59 @@ const SidebarItem: React.FC<SidebarItemProps> = ({ item, level = 0 }) => {
 
   // Render item with children (submenu)
   if (item.children && item.children.length > 0) {
-    return (
-      <li className={isActive ? "mm-active" : ""}>
-        <a
-          href="javascript:;"
-          className={`has-arrow ${isActive ? "mm-active" : ""}`}
-          onClick={(e) => {
-            e.preventDefault();
-            setIsOpen(!isOpen);
-          }}
-          aria-expanded={isOpen}
-        >
-          <div className="parent-icon">
+    if (level === 0) {
+      // Top level item with children
+      return (
+        <li className={isActive ? "mm-active" : ""}>
+          <a
+            href="javascript:;"
+            className={`has-arrow ${isActive ? "mm-active" : ""}`}
+            onClick={(e) => {
+              e.preventDefault();
+              setIsOpen(!isOpen);
+            }}
+            aria-expanded={isOpen}
+          >
+            <div className="parent-icon">
+              <i className="material-icons-outlined">{item.icon}</i>
+            </div>
+            <div className="menu-title">{item.title}</div>
+          </a>
+          <Collapse in={isOpen}>
+            <ul className={`mm-collapse ${isOpen ? "mm-show" : ""}`}>
+              {item.children.map((child) => (
+                <SidebarItem key={child.id} item={child} level={level + 1} />
+              ))}
+            </ul>
+          </Collapse>
+        </li>
+      );
+    } else {
+      // Submenu item with children
+      return (
+        <li className={isActive ? "mm-active" : ""}>
+          <a
+            href="javascript:;"
+            className={`has-arrow ${isActive ? "mm-active" : ""}`}
+            onClick={(e) => {
+              e.preventDefault();
+              setIsOpen(!isOpen);
+            }}
+            aria-expanded={isOpen}
+          >
             <i className="material-icons-outlined">{item.icon}</i>
-          </div>
-          <div className="menu-title">{item.title}</div>
-        </a>
-        <Collapse in={isOpen}>
-          <ul className={`mm-collapse ${isOpen ? "mm-show" : ""}`}>
-            {item.children.map((child) => (
-              <SidebarItem key={child.id} item={child} level={level + 1} />
-            ))}
-          </ul>
-        </Collapse>
-      </li>
-    );
+            {item.title}
+          </a>
+          <Collapse in={isOpen}>
+            <ul className={`mm-collapse ${isOpen ? "mm-show" : ""}`}>
+              {item.children.map((child) => (
+                <SidebarItem key={child.id} item={child} level={level + 1} />
+              ))}
+            </ul>
+          </Collapse>
+        </li>
+      );
+    }
   }
 
   // Render single item (leaf node)
