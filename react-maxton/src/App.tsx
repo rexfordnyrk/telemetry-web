@@ -12,6 +12,31 @@ function App() {
     // Set the theme to match original HTML
     document.documentElement.setAttribute("data-bs-theme", "blue-theme");
     document.documentElement.setAttribute("lang", "en");
+
+    // Add global error handler to prevent app crashes
+    const handleError = (event: ErrorEvent) => {
+      console.warn("Global error caught:", event.error);
+      // Prevent the error from breaking the app
+      event.preventDefault();
+      return true;
+    };
+
+    const handleUnhandledRejection = (event: PromiseRejectionEvent) => {
+      console.warn("Unhandled promise rejection:", event.reason);
+      // Prevent unhandled rejections from breaking the app
+      event.preventDefault();
+    };
+
+    window.addEventListener("error", handleError);
+    window.addEventListener("unhandledrejection", handleUnhandledRejection);
+
+    return () => {
+      window.removeEventListener("error", handleError);
+      window.removeEventListener(
+        "unhandledrejection",
+        handleUnhandledRejection,
+      );
+    };
   }, []);
 
   return (
