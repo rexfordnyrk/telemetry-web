@@ -68,7 +68,7 @@ export interface DashboardStat {
 export interface LayoutContextType {
   sidebarToggled: boolean;
   theme: ThemeVariant;
-  setSidebarToggled: (toggled: boolean) => void;
+  setSidebarToggled: React.Dispatch<React.SetStateAction<boolean>>;
   setTheme: (theme: ThemeVariant) => void;
 }
 
