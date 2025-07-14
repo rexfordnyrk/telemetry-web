@@ -56,7 +56,10 @@ function App() {
         <Router>
           <Routes>
             <Route path="/" element={<Dashboard />} />
-            <Route path="/dashboard/ecommerce" element={<Dashboard />} />
+            <Route
+              path="/dashboard/ecommerce"
+              element={<EcommerceDashboard />}
+            />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Router>
