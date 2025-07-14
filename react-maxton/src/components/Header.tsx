@@ -134,7 +134,7 @@ const Header: React.FC<HeaderProps> = ({
                 alt="Language"
               />
             </Dropdown.Toggle>
-            <Dropdown.Menu>
+            <Dropdown.Menu className="dropdown-menu-end">
               <Dropdown.Item className="d-flex align-items-center py-2">
                 <img src="/assets/images/county/01.png" width="20" alt="" />
                 <span className="ms-2">English</span>
@@ -180,7 +180,7 @@ const Header: React.FC<HeaderProps> = ({
             >
               <i className="material-icons-outlined">done_all</i>
             </Dropdown.Toggle>
-            <Dropdown.Menu className="mega-menu shadow-lg p-4 p-lg-5">
+            <Dropdown.Menu className="dropdown-menu-end mega-menu shadow-lg p-4 p-lg-5">
               <div className="mega-menu-widgets">
                 <div className="row row-cols-1 row-cols-lg-2 row-cols-xl-3 g-4 g-lg-5">
                   <div className="col">
