@@ -168,8 +168,6 @@ const Sidebar: React.FC = () => {
   };
 
   useEffect(() => {
-    let perfectScrollbarInstance: any = null;
-
     // Initialize MetisMenu when component mounts
     if (typeof $ !== "undefined" && $.fn.metisMenu && metismenuRef.current) {
       try {
@@ -179,35 +177,18 @@ const Sidebar: React.FC = () => {
       }
     }
 
-    // Initialize Perfect Scrollbar with delay to ensure DOM is ready
-    const initPerfectScrollbar = () => {
-      if (typeof PerfectScrollbar !== "undefined" && sidebarRef.current) {
-        try {
-          perfectScrollbarInstance = new PerfectScrollbar(sidebarRef.current, {
-            wheelPropagation: false,
-            suppressScrollX: true,
-          });
-        } catch (error) {
-          console.warn("PerfectScrollbar initialization failed:", error);
-        }
-      }
-    };
+    // Don't initialize PerfectScrollbar in React - let the main.js handle it
+    // This prevents cleanup issues during unmounting
 
-    // Use a small delay to ensure all elements are rendered
-    const timer = setTimeout(initPerfectScrollbar, 100);
-
-    // Cleanup function
+    // Cleanup function - minimal cleanup to avoid errors
     return () => {
-      clearTimeout(timer);
-      if (
-        perfectScrollbarInstance &&
-        typeof perfectScrollbarInstance.destroy === "function"
-      ) {
-        try {
-          perfectScrollbarInstance.destroy();
-        } catch (error) {
-          console.warn("PerfectScrollbar cleanup failed:", error);
+      // Only cleanup MetisMenu if needed
+      try {
+        if (typeof $ !== "undefined" && metismenuRef.current) {
+          $(metismenuRef.current).off();
         }
+      } catch (error) {
+        // Silently ignore cleanup errors
       }
     };
   }, []);
