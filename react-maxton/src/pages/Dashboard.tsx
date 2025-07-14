@@ -507,8 +507,8 @@ const Dashboard: React.FC = () => {
   ];
 
   return (
-    <MainLayout title="Dashboard">
-      {/* Breadcrumb */}
+    <MainLayout>
+      {/* Custom Breadcrumb with Actions */}
       <div className="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
         <div className="breadcrumb-title pe-3">Dashboard</div>
         <div className="ps-3">
