@@ -1,6 +1,5 @@
 import React, { useEffect } from "react";
 import MainLayout from "../layouts/MainLayout";
-import SafeApexChart from "../components/SafeApexChart";
 
 declare const $: any;
 
