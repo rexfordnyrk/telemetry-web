@@ -84,22 +84,22 @@
     <script src="%PUBLIC_URL%/assets/js/main.js"></script>
     <script src="%PUBLIC_URL%/assets/js/dashboard1.js"></script>
 
-    <!-- Initialize Peity Charts -->
+    <!-- Initialize after React is ready -->
     <script>
-      $(document).ready(function () {
-        // Initialize Peity charts
-        if (typeof $.fn.peity !== "undefined") {
-          $(".data-attributes span").peity("donut");
+      // Wait for React to fully mount before initializing
+      setTimeout(function () {
+        try {
+          // Initialize user-list PerfectScrollbar only if element exists
+          if (
+            document.querySelector(".user-list") &&
+            typeof PerfectScrollbar !== "undefined"
+          ) {
+            new PerfectScrollbar(".user-list");
+          }
+        } catch (error) {
+          console.warn("User list scrollbar initialization failed:", error);
         }
-
-        // Initialize PerfectScrollbar only if element exists
-        if (
-          document.querySelector(".user-list") &&
-          typeof PerfectScrollbar !== "undefined"
-        ) {
-          new PerfectScrollbar(".user-list");
-        }
-      });
+      }, 1000);
     </script>
   </head>
   <body>
