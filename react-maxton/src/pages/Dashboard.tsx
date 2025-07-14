@@ -209,6 +209,346 @@ const Dashboard: React.FC = () => {
     },
   };
 
+  // Chart 4 - Area Chart (Total Views)
+  const chart4Options = {
+    series: [
+      {
+        name: "Net Sales",
+        data: [4, 10, 25, 12, 25, 18, 40, 22, 7],
+      },
+    ],
+    chart: {
+      height: 105,
+      type: "area" as const,
+      sparkline: {
+        enabled: true,
+      },
+      zoom: {
+        enabled: false,
+      },
+    },
+    dataLabels: {
+      enabled: false,
+    },
+    stroke: {
+      width: 3,
+      curve: "smooth" as const,
+    },
+    fill: {
+      type: "gradient",
+      gradient: {
+        shade: "dark",
+        gradientToColors: ["#0866ff"],
+        shadeIntensity: 1,
+        type: "vertical",
+        opacityFrom: 0.5,
+        opacityTo: 0.0,
+      },
+    },
+    colors: ["#0dcaf0"],
+    tooltip: {
+      theme: "dark",
+      fixed: {
+        enabled: false,
+      },
+      x: {
+        show: false,
+      },
+      y: {
+        title: {
+          formatter: function () {
+            return "";
+          },
+        },
+      },
+      marker: {
+        show: false,
+      },
+    },
+    xaxis: {
+      categories: [
+        "Jan",
+        "Feb",
+        "Mar",
+        "Apr",
+        "May",
+        "Jun",
+        "Jul",
+        "Aug",
+        "Sep",
+      ],
+    },
+  };
+
+  // Chart 5 - Bar Chart (Monthly Revenue)
+  const chart5Options = {
+    series: [
+      {
+        name: "Desktops",
+        data: [14, 41, 35, 51, 25, 18, 21, 35, 15],
+      },
+    ],
+    chart: {
+      foreColor: "#9ba7b2",
+      height: 280,
+      type: "bar" as const,
+      toolbar: {
+        show: false,
+      },
+      sparkline: {
+        enabled: false,
+      },
+      zoom: {
+        enabled: false,
+      },
+    },
+    dataLabels: {
+      enabled: false,
+    },
+    stroke: {
+      width: 1,
+      curve: "smooth" as const,
+    },
+    plotOptions: {
+      bar: {
+        horizontal: false,
+        borderRadius: 4,
+        columnWidth: "45%",
+      },
+    },
+    fill: {
+      type: "gradient",
+      gradient: {
+        shade: "dark",
+        gradientToColors: ["#009efd"],
+        shadeIntensity: 1,
+        type: "vertical",
+        opacityFrom: 1,
+        opacityTo: 1,
+        stops: [0, 100, 100, 100],
+      },
+    },
+    colors: ["#2af598"],
+    grid: {
+      show: true,
+      borderColor: "rgba(255, 255, 255, 0.1)",
+    },
+    xaxis: {
+      categories: [
+        "Jan",
+        "Feb",
+        "Mar",
+        "Apr",
+        "May",
+        "Jun",
+        "Jul",
+        "Aug",
+        "Sep",
+      ],
+    },
+    tooltip: {
+      theme: "dark",
+      marker: {
+        show: false,
+      },
+    },
+  };
+
+  // Chart 6 - Donut Chart (Device Type)
+  const chart6Options = {
+    series: [58, 25, 25],
+    chart: {
+      height: 290,
+      type: "donut" as const,
+    },
+    legend: {
+      position: "bottom" as const,
+      show: false,
+    },
+    fill: {
+      type: "gradient",
+      gradient: {
+        shade: "dark",
+        gradientToColors: ["#ee0979", "#17ad37", "#ec6ead"],
+        shadeIntensity: 1,
+        type: "vertical",
+        opacityFrom: 1,
+        opacityTo: 1,
+      },
+    },
+    colors: ["#ff6a00", "#98ec2d", "#3494e6"],
+    dataLabels: {
+      enabled: false,
+    },
+    plotOptions: {
+      pie: {
+        donut: {
+          size: "85%",
+        },
+      },
+    },
+    responsive: [
+      {
+        breakpoint: 480,
+        options: {
+          chart: {
+            height: 270,
+          },
+          legend: {
+            position: "bottom" as const,
+            show: false,
+          },
+        },
+      },
+    ],
+  };
+
+  // Chart 7 - Area Chart (Total Accounts)
+  const chart7Options = {
+    series: [
+      {
+        name: "Total Accounts",
+        data: [4, 10, 25, 12, 25, 18, 40, 22, 7],
+      },
+    ],
+    chart: {
+      height: 105,
+      type: "area" as const,
+      sparkline: {
+        enabled: true,
+      },
+      zoom: {
+        enabled: false,
+      },
+    },
+    dataLabels: {
+      enabled: false,
+    },
+    stroke: {
+      width: 3,
+      curve: "smooth" as const,
+    },
+    fill: {
+      type: "gradient",
+      gradient: {
+        shade: "dark",
+        gradientToColors: ["#fc185a"],
+        shadeIntensity: 1,
+        type: "vertical",
+        opacityFrom: 0.8,
+        opacityTo: 0.2,
+      },
+    },
+    colors: ["#ffc107"],
+    tooltip: {
+      theme: "dark",
+      fixed: {
+        enabled: false,
+      },
+      x: {
+        show: false,
+      },
+      y: {
+        title: {
+          formatter: function () {
+            return "";
+          },
+        },
+      },
+      marker: {
+        show: false,
+      },
+    },
+    xaxis: {
+      categories: [
+        "Jan",
+        "Feb",
+        "Mar",
+        "Apr",
+        "May",
+        "Jun",
+        "Jul",
+        "Aug",
+        "Sep",
+      ],
+    },
+  };
+
+  // Chart 8 - Area Chart (Visitors Growth)
+  const chart8Options = {
+    series: [
+      {
+        name: "Total Sales",
+        data: [4, 10, 25, 12, 25, 18, 40, 22, 7],
+      },
+    ],
+    chart: {
+      height: 210,
+      type: "area" as const,
+      sparkline: {
+        enabled: true,
+      },
+      zoom: {
+        enabled: false,
+      },
+    },
+    dataLabels: {
+      enabled: false,
+    },
+    stroke: {
+      width: 3,
+      curve: "straight" as const,
+    },
+    fill: {
+      type: "gradient",
+      gradient: {
+        shade: "dark",
+        gradientToColors: ["#17ad37"],
+        shadeIntensity: 1,
+        type: "vertical",
+        opacityFrom: 0.7,
+        opacityTo: 0.0,
+      },
+    },
+    colors: ["#98ec2d"],
+    tooltip: {
+      theme: "dark",
+      fixed: {
+        enabled: false,
+      },
+      x: {
+        show: false,
+      },
+      y: {
+        title: {
+          formatter: function () {
+            return "";
+          },
+        },
+      },
+      marker: {
+        show: false,
+      },
+    },
+    markers: {
+      show: false,
+      size: 5,
+    },
+    xaxis: {
+      categories: [
+        "Jan",
+        "Feb",
+        "Mar",
+        "Apr",
+        "May",
+        "Jun",
+        "Jul",
+        "Aug",
+        "Sep",
+      ],
+    },
+  };
+
   // Chart 4 - Total Clicks
   const totalClicksChartOptions = {
     series: [
