@@ -903,7 +903,7 @@ const Dashboard: React.FC = () => {
                 </Dropdown>
               </div>
               <div className="chart-container2">
-                <SafeApexSafeApexChart
+                <SafeApexChart
                   options={chart1Options}
                   series={chart1Options.series}
                   type="radialBar"
@@ -944,7 +944,7 @@ const Dashboard: React.FC = () => {
                 </Dropdown>
               </div>
               <div className="chart-container2">
-                <SafeApexSafeApexChart
+                <SafeApexChart
                   options={chart2Options}
                   series={chart2Options.series}
                   type="area"
