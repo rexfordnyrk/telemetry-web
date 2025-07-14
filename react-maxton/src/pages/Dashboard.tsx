@@ -211,17 +211,17 @@ const Dashboard: React.FC = () => {
     },
   };
 
-  // Chart 4 - Area Chart (Total Views)
+  // Chart 4 - Line Chart (Total Views)
   const chart4Options = {
     series: [
       {
         name: "Net Sales",
-        data: [4, 10, 25, 12, 25, 18, 40, 22, 7],
+        data: [4, 25, 14, 34, 10, 39],
       },
     ],
     chart: {
       height: 105,
-      type: "area" as const,
+      type: "line" as const,
       sparkline: {
         enabled: true,
       },
@@ -234,20 +234,21 @@ const Dashboard: React.FC = () => {
     },
     stroke: {
       width: 3,
-      curve: "smooth" as const,
+      curve: "straight" as const,
     },
     fill: {
       type: "gradient",
       gradient: {
         shade: "dark",
-        gradientToColors: ["#0866ff"],
+        gradientToColors: ["#00f2fe"],
         shadeIntensity: 1,
         type: "vertical",
-        opacityFrom: 0.5,
-        opacityTo: 0.0,
+        opacityFrom: 1,
+        opacityTo: 1,
+        stops: [0, 100, 100, 100],
       },
     },
-    colors: ["#0dcaf0"],
+    colors: ["#ee0979"],
     tooltip: {
       theme: "dark",
       fixed: {
@@ -267,18 +268,9 @@ const Dashboard: React.FC = () => {
         show: false,
       },
     },
-    xaxis: {
-      categories: [
-        "Jan",
-        "Feb",
-        "Mar",
-        "Apr",
-        "May",
-        "Jun",
-        "Jul",
-        "Aug",
-        "Sep",
-      ],
+    markers: {
+      show: false,
+      size: 5,
     },
   };
 
