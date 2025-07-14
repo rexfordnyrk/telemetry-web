@@ -17,6 +17,9 @@
 /* Import Blue Theme */
 @import "./assets/sass/blue-theme.css";
 
+/* Import custom fixes */
+@import "./assets/css/custom-fixes.css";
+
 body {
   margin: 0;
   font-family: "Noto Sans", sans-serif;
