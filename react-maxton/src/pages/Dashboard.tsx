@@ -3,8 +3,7 @@ import { Card, Row, Col, Dropdown, Table } from "react-bootstrap";
 import SafeApexChart from "../components/SafeApexChart";
 import MainLayout from "../layouts/MainLayout";
 
-// Declare jQuery for Peity charts
-declare const $: any;
+// jQuery and Peity charts are handled by external JS
 
 const Dashboard: React.FC = () => {
   // Chart 1 - Radial Bar Chart (Active Users)
