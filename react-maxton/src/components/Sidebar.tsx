@@ -193,7 +193,7 @@ const Sidebar: React.FC = () => {
   }, []);
 
   return (
-    <aside className="sidebar-wrapper" ref={sidebarRef}>
+    <aside className="sidebar-wrapper">
       <div className="sidebar-header">
         <div className="logo-icon">
           <img src="assets/images/logo-icon.png" className="logo-img" alt="" />
