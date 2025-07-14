@@ -9,21 +9,21 @@
   vertical-align: middle;
 }
 
-/* Table text visibility improvements for dark theme */
-.table td,
-.table th {
-  color: inherit;
+/* Table text visibility improvements for blue theme */
+[data-bs-theme="blue-theme"] .table td,
+[data-bs-theme="blue-theme"] .table th,
+[data-bs-theme="blue-theme"] .table td p,
+[data-bs-theme="blue-theme"] .table tbody tr td {
+  color: var(--bs-body-color) !important;
+}
+
+/* Make sure all table text inherits the theme color */
+.table {
+  color: var(--bs-body-color);
 }
 
 .table td p {
   color: inherit;
-}
-
-/* Ensure table text is visible in blue theme */
-[data-bs-theme="blue-theme"] .table td,
-[data-bs-theme="blue-theme"] .table th,
-[data-bs-theme="blue-theme"] .table td p {
-  color: var(--bs-body-color, #ffffff) !important;
 }
 
 /* Ensure proper dropdown positioning */
