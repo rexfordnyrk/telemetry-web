@@ -182,8 +182,11 @@ const Sidebar: React.FC = () => {
     return () => {
       // Only cleanup MetisMenu if needed
       try {
-        if (typeof $ !== "undefined" && metismenuRef.current) {
-          $(metismenuRef.current).off();
+        if (typeof $ !== "undefined") {
+          const currentRef = metismenuRef.current;
+          if (currentRef) {
+            $(currentRef).off();
+          }
         }
       } catch (error) {
         // Silently ignore cleanup errors
