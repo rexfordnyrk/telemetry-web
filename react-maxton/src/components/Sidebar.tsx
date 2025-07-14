@@ -213,7 +213,7 @@ const Sidebar: React.FC = () => {
   }, []);
 
   return (
-    <aside className="sidebar-wrapper" ref={sidebarRef} data-simplebar="true">
+    <aside className="sidebar-wrapper" ref={sidebarRef}>
       <div className="sidebar-header">
         <div className="logo-icon">
           <img src="assets/images/logo-icon.png" className="logo-img" alt="" />
