@@ -75,8 +75,16 @@ const SidebarItem: React.FC<SidebarItemProps> = ({ item, level = 0 }) => {
           to={item.path}
           className={({ isActive }) => (isActive ? "mm-active" : "")}
         >
-          {item.icon && <i className="material-icons-outlined">{item.icon}</i>}
-          {item.title}
+          {level === 0 && item.icon && (
+            <div className="parent-icon">
+              <i className="material-icons-outlined">{item.icon}</i>
+            </div>
+          )}
+          {level > 0 && item.icon && (
+            <i className="material-icons-outlined">{item.icon}</i>
+          )}
+          {level === 0 && <div className="menu-title">{item.title}</div>}
+          {level > 0 && item.title}
         </NavLink>
       </li>
     );
@@ -86,12 +94,16 @@ const SidebarItem: React.FC<SidebarItemProps> = ({ item, level = 0 }) => {
   return (
     <li>
       <a href="#" onClick={(e) => e.preventDefault()}>
-        {item.icon && (
+        {level === 0 && item.icon && (
           <div className="parent-icon">
             <i className="material-icons-outlined">{item.icon}</i>
           </div>
         )}
-        <div className="menu-title">{item.title}</div>
+        {level > 0 && item.icon && (
+          <i className="material-icons-outlined">{item.icon}</i>
+        )}
+        {level === 0 && <div className="menu-title">{item.title}</div>}
+        {level > 0 && item.title}
       </a>
     </li>
   );
