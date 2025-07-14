@@ -1,9 +1,13 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import { Collapse } from "react-bootstrap";
 import { useLayout } from "../context/LayoutContext";
 import { NavigationItem } from "../types";
 import { navigationData } from "../utils/navigationData";
+
+// Declare global libraries
+declare const $: any;
+declare const PerfectScrollbar: any;
 
 interface SidebarItemProps {
   item: NavigationItem;
