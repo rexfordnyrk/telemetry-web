@@ -160,7 +160,6 @@ const SidebarItem: React.FC<SidebarItemProps> = ({ item, level = 0 }) => {
 
 const Sidebar: React.FC = () => {
   const { setSidebarToggled } = useLayout();
-  const sidebarRef = useRef<HTMLElement>(null);
   const metismenuRef = useRef<HTMLUListElement>(null);
 
   const handleSidebarClose = () => {
