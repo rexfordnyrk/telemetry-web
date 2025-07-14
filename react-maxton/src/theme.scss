@@ -1,8 +1,27 @@
-/* We'll use bootstrap from CDN in index.css instead */
+/*
+Template Name: Maxton Admin
+Author: codervent
+Email: codervent@gmail.com
+File: main.scss
 
-/* Google Fonts */
-@import url("https://fonts.googleapis.com/css2?family=Noto+Sans:wght@300;400;500;600&display=swap");
-@import url("https://fonts.googleapis.com/css?family=Material+Icons+Outlined");
+Table of Index
+
+  --Genral
+  --aligns
+  --dropdown animation
+  --header
+  --mini sidebar
+  --main content
+  --page footer
+  --Metis Menu
+  --order offcanvas
+  --utilities
+  --alerts
+  --authentication
+  --switcher
+
+*/
+/* Genral*/
 @import url("https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css");
 
 /* Theme Variables */
