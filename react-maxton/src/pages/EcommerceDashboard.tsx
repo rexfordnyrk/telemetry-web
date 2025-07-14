@@ -740,7 +740,7 @@ const EcommerceDashboard: React.FC = () => {
                       Congratulations <span className="fw-600">Jhon</span>
                     </h5>
                     <img
-                      src="assets/images/apps/party-popper.png"
+                      src="/assets/images/apps/party-popper.png"
                       width="24"
                       height="24"
                       alt=""
@@ -756,7 +756,7 @@ const EcommerceDashboard: React.FC = () => {
                       </button>
                     </div>
                     <img
-                      src="assets/images/apps/gift-box-3.png"
+                      src="/assets/images/apps/gift-box-3.png"
                       width="100"
                       alt=""
                     />
@@ -1084,7 +1084,7 @@ const EcommerceDashboard: React.FC = () => {
                     <div className="d-flex align-items-center gap-3">
                       <div className="social-icon d-flex align-items-center gap-3 flex-grow-1">
                         <img
-                          src="assets/images/apps/17.png"
+                          src="/assets/images/apps/17.png"
                           width="40"
                           alt=""
                         />
@@ -1101,7 +1101,7 @@ const EcommerceDashboard: React.FC = () => {
                     <div className="d-flex align-items-center gap-3">
                       <div className="social-icon d-flex align-items-center gap-3 flex-grow-1">
                         <img
-                          src="assets/images/apps/twitter-circle.png"
+                          src="/assets/images/apps/twitter-circle.png"
                           width="40"
                           alt=""
                         />
@@ -1118,7 +1118,7 @@ const EcommerceDashboard: React.FC = () => {
                     <div className="d-flex align-items-center gap-3">
                       <div className="social-icon d-flex align-items-center gap-3 flex-grow-1">
                         <img
-                          src="assets/images/apps/03.png"
+                          src="/assets/images/apps/03.png"
                           width="40"
                           alt=""
                         />
@@ -1135,7 +1135,7 @@ const EcommerceDashboard: React.FC = () => {
                     <div className="d-flex align-items-center gap-3">
                       <div className="social-icon d-flex align-items-center gap-3 flex-grow-1">
                         <img
-                          src="assets/images/apps/19.png"
+                          src="/assets/images/apps/19.png"
                           width="40"
                           alt=""
                         />
@@ -1152,7 +1152,7 @@ const EcommerceDashboard: React.FC = () => {
                     <div className="d-flex align-items-center gap-3">
                       <div className="social-icon d-flex align-items-center gap-3 flex-grow-1">
                         <img
-                          src="assets/images/apps/20.png"
+                          src="/assets/images/apps/20.png"
                           width="40"
                           alt=""
                         />
@@ -1210,7 +1210,7 @@ const EcommerceDashboard: React.FC = () => {
                 <div className="d-flex flex-column gap-4">
                   <div className="d-flex align-items-center gap-3">
                     <img
-                      src="assets/images/top-products/01.png"
+                      src="/assets/images/top-products/01.png"
                       width="55"
                       className="rounded-circle"
                       alt=""
@@ -1226,7 +1226,7 @@ const EcommerceDashboard: React.FC = () => {
                   </div>
                   <div className="d-flex align-items-center gap-3">
                     <img
-                      src="assets/images/top-products/02.png"
+                      src="/assets/images/top-products/02.png"
                       width="55"
                       className="rounded-circle"
                       alt=""
@@ -1242,7 +1242,7 @@ const EcommerceDashboard: React.FC = () => {
                   </div>
                   <div className="d-flex align-items-center gap-3">
                     <img
-                      src="assets/images/top-products/04.png"
+                      src="/assets/images/top-products/04.png"
                       width="55"
                       className="rounded-circle"
                       alt=""
@@ -1260,7 +1260,7 @@ const EcommerceDashboard: React.FC = () => {
                   </div>
                   <div className="d-flex align-items-center gap-3">
                     <img
-                      src="assets/images/top-products/05.png"
+                      src="/assets/images/top-products/05.png"
                       width="55"
                       className="rounded-circle"
                       alt=""
@@ -1276,7 +1276,7 @@ const EcommerceDashboard: React.FC = () => {
                   </div>
                   <div className="d-flex align-items-center gap-3">
                     <img
-                      src="assets/images/top-products/06.png"
+                      src="/assets/images/top-products/06.png"
                       width="55"
                       className="rounded-circle"
                       alt=""
@@ -1333,7 +1333,7 @@ const EcommerceDashboard: React.FC = () => {
                 <div className="d-flex flex-column gap-4">
                   <div className="d-flex align-items-center gap-3">
                     <img
-                      src="assets/images/avatars/01.png"
+                      src="/assets/images/avatars/01.png"
                       width="55"
                       className="rounded-circle"
                       alt=""
@@ -1362,7 +1362,7 @@ const EcommerceDashboard: React.FC = () => {
                   </div>
                   <div className="d-flex align-items-center gap-3">
                     <img
-                      src="assets/images/avatars/02.png"
+                      src="/assets/images/avatars/02.png"
                       width="55"
                       className="rounded-circle"
                       alt=""
@@ -1389,7 +1389,7 @@ const EcommerceDashboard: React.FC = () => {
                   </div>
                   <div className="d-flex align-items-center gap-3">
                     <img
-                      src="assets/images/avatars/03.png"
+                      src="/assets/images/avatars/03.png"
                       width="55"
                       className="rounded-circle"
                       alt=""
@@ -1414,7 +1414,7 @@ const EcommerceDashboard: React.FC = () => {
                   </div>
                   <div className="d-flex align-items-center gap-3">
                     <img
-                      src="assets/images/avatars/04.png"
+                      src="/assets/images/avatars/04.png"
                       width="55"
                       className="rounded-circle"
                       alt=""
@@ -1437,7 +1437,7 @@ const EcommerceDashboard: React.FC = () => {
                   </div>
                   <div className="d-flex align-items-center gap-3">
                     <img
-                      src="assets/images/avatars/08.png"
+                      src="/assets/images/avatars/08.png"
                       width="55"
                       className="rounded-circle"
                       alt=""
@@ -1521,7 +1521,7 @@ const EcommerceDashboard: React.FC = () => {
                           <div className="d-flex align-items-center flex-row gap-3">
                             <div className="">
                               <img
-                                src="assets/images/apps/paypal.png"
+                                src="/assets/images/apps/paypal.png"
                                 width="35"
                                 alt=""
                               />
@@ -1552,7 +1552,7 @@ const EcommerceDashboard: React.FC = () => {
                           <div className="d-flex align-items-center flex-row gap-3">
                             <div className="">
                               <img
-                                src="assets/images/apps/13.png"
+                                src="/assets/images/apps/13.png"
                                 width="35"
                                 alt=""
                               />
@@ -1583,7 +1583,7 @@ const EcommerceDashboard: React.FC = () => {
                           <div className="d-flex align-items-center flex-row gap-3">
                             <div className="">
                               <img
-                                src="assets/images/apps/behance.png"
+                                src="/assets/images/apps/behance.png"
                                 width="35"
                                 alt=""
                               />
@@ -1614,7 +1614,7 @@ const EcommerceDashboard: React.FC = () => {
                           <div className="d-flex align-items-center flex-row gap-3">
                             <div className="">
                               <img
-                                src="assets/images/apps/07.png"
+                                src="/assets/images/apps/07.png"
                                 width="35"
                                 alt=""
                               />
@@ -1645,7 +1645,7 @@ const EcommerceDashboard: React.FC = () => {
                           <div className="d-flex align-items-center flex-row gap-3">
                             <div className="">
                               <img
-                                src="assets/images/apps/05.png"
+                                src="/assets/images/apps/05.png"
                                 width="35"
                                 alt=""
                               />
@@ -1676,7 +1676,7 @@ const EcommerceDashboard: React.FC = () => {
                           <div className="d-flex align-items-center flex-row gap-3">
                             <div className="">
                               <img
-                                src="assets/images/apps/apple.png"
+                                src="/assets/images/apps/apple.png"
                                 width="35"
                                 alt=""
                               />
