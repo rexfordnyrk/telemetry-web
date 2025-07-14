@@ -79,7 +79,7 @@ export const navigationData: NavigationItem[] = [
   {
     id: "ui-elements-label",
     title: "UI Elements",
-    icon: null,
+    icon: undefined,
     children: [],
   },
   {
