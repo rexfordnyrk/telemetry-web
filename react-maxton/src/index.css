@@ -1,24 +1,9 @@
-/* Import Bootstrap CSS */
-@import "bootstrap/dist/css/bootstrap.min.css";
-
-/* Import Google Fonts */
+/* Fonts */
 @import url("https://fonts.googleapis.com/css2?family=Noto+Sans:wght@300;400;500;600&display=swap");
 @import url("https://fonts.googleapis.com/css?family=Material+Icons+Outlined");
 
-/* Import Tabler Icons from CDN */
-@import url("https://cdn.jsdelivr.net/npm/@tabler/icons@latest/tabler-icons.min.css");
-
-/* Import Bootstrap Extended styles from assets */
-@import "./assets/css/bootstrap-extended.css";
-
-/* Import main Maxton CSS */
-@import "./assets/css/main.css";
-
-/* Import Blue Theme */
-@import "./assets/sass/blue-theme.css";
-
-/* Import custom fixes */
-@import "./assets/css/custom-fixes.css";
+/* Remove Tabler Icons - not in original */
+/* @import url("https://cdn.jsdelivr.net/npm/@tabler/icons@latest/tabler-icons.min.css"); */
 
 body {
   margin: 0;
@@ -43,36 +28,15 @@ code {
   min-height: 100vh;
 }
 
-/* Additional utility classes */
-.navbar-nav .nav-link {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #494949;
-  width: 45px;
-  height: 45px;
-  border-radius: 50%;
-  transition: all 0.3s;
+/* Fix sidebar scrolling */
+.sidebar-wrapper {
+  height: 100vh;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
-.navbar-nav .nav-link:hover,
-.navbar-nav .nav-link:focus {
-  background-color: #efefef;
-}
-
-/* Ensure dropdown menus work properly */
-.dropdown-menu {
-  border-radius: 1rem;
-  border: 0;
-  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
-}
-
-/* Fix card styling */
-.card {
-  border: 1px solid rgba(0, 0, 0, 0.125);
-  border-radius: 0.5rem;
-}
-
-.rounded-4 {
-  border-radius: 1rem !important;
+.sidebar-nav {
+  height: calc(100vh - 80px); /* Subtract header height */
+  overflow-y: auto;
+  overflow-x: hidden;
 }
