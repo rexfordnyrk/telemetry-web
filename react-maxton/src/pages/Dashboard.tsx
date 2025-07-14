@@ -697,10 +697,22 @@ const Dashboard: React.FC = () => {
 
   // Initialize Peity charts after component mounts
   useEffect(() => {
+    let mounted = true;
+
     const initCharts = () => {
+      if (!mounted) return;
+
       try {
         if (typeof $ !== "undefined" && $.fn.peity) {
-          $(".data-attributes span").peity("donut");
+          const chartElements = document.querySelectorAll(
+            ".data-attributes span",
+          );
+          chartElements.forEach((element) => {
+            if (mounted && !element.hasAttribute("data-peity-initialized")) {
+              $(element).peity("donut");
+              element.setAttribute("data-peity-initialized", "true");
+            }
+          });
         }
       } catch (error) {
         console.warn("Peity charts initialization failed:", error);
@@ -708,9 +720,12 @@ const Dashboard: React.FC = () => {
     };
 
     // Use a small delay to ensure DOM is ready
-    const timer = setTimeout(initCharts, 200);
+    const timer = setTimeout(initCharts, 300);
 
-    return () => clearTimeout(timer);
+    return () => {
+      mounted = false;
+      clearTimeout(timer);
+    };
   }, []);
 
   const campaignStats = [
