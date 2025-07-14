@@ -40,15 +40,17 @@ function App() {
   }, []);
 
   return (
-    <LayoutProvider>
-      <Router>
-        <Routes>
-          <Route path="/" element={<Dashboard />} />
-          <Route path="/dashboard/ecommerce" element={<Dashboard />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </Router>
-    </LayoutProvider>
+    <ErrorBoundary>
+      <LayoutProvider>
+        <Router>
+          <Routes>
+            <Route path="/" element={<Dashboard />} />
+            <Route path="/dashboard/ecommerce" element={<Dashboard />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </Router>
+      </LayoutProvider>
+    </ErrorBoundary>
   );
 }
 
