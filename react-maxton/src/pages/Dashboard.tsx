@@ -1,8 +1,6 @@
 import React, { useEffect } from "react";
 import { Card, Row, Col, Dropdown, Table } from "react-bootstrap";
-import Chart from "react-apexcharts";
-import SafeChart from "../components/SafeChart";
-import CustomChart from "../components/CustomChart";
+import SafeApexChart from "../components/SafeApexChart";
 import MainLayout from "../layouts/MainLayout";
 
 // Declare jQuery for Peity charts
