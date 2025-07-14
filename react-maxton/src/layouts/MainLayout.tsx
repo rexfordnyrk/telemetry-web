@@ -1,6 +1,7 @@
 import React from "react";
 import Header from "../components/Header";
 import Sidebar from "../components/Sidebar";
+import ThemeCustomizer from "../components/ThemeCustomizer";
 import { ComponentProps } from "../types";
 
 interface MainLayoutProps extends ComponentProps {
