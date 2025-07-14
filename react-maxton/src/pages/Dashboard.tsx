@@ -4,8 +4,8 @@ import Chart from "react-apexcharts";
 import MainLayout from "../layouts/MainLayout";
 
 const Dashboard: React.FC = () => {
-  // Chart 1 - Area Chart
-  const areaChartOptions = {
+  // Chart 1 - Radial Bar Chart (Active Users)
+  const chart1Options = {
     series: [
       {
         name: "Net Sales",
@@ -75,8 +75,8 @@ const Dashboard: React.FC = () => {
     },
   };
 
-  // Chart 2 - Radial Chart
-  const radialChartOptions = {
+  // Chart 2 - Area Chart (Total Users)
+  const chart2Options = {
     series: [78],
     chart: {
       height: 180,
@@ -136,24 +136,76 @@ const Dashboard: React.FC = () => {
     labels: ["Total Orders"],
   };
 
-  // Chart 3 - Pie Chart
-  const pieChartOptions = {
-    series: [35, 48, 27],
+  // Chart 3 - Bar Chart (Total Clicks)
+  const chart3Options = {
+    series: [
+      {
+        name: "Net Sales",
+        data: [4, 10, 12, 17, 25, 30, 40, 55, 68],
+      },
+    ],
     chart: {
-      height: 200,
-      type: "donut" as const,
+      height: 120,
+      type: "bar" as const,
+      sparkline: {
+        enabled: true,
+      },
+      zoom: {
+        enabled: false,
+      },
     },
-    labels: ["Desktop", "Tablet", "Mobile"],
-    colors: ["#0d6efd", "#fc185a", "#02c27a"],
-    legend: {
-      show: false,
+    dataLabels: {
+      enabled: false,
     },
-    plotOptions: {
-      pie: {
-        donut: {
-          size: "70%",
+    stroke: {
+      width: 1,
+      curve: "smooth" as const,
+      colors: ["transparent"],
+    },
+    fill: {
+      type: "gradient",
+      gradient: {
+        shade: "dark",
+        gradientToColors: ["#7928ca"],
+        shadeIntensity: 1,
+        type: "vertical",
+        opacityFrom: 1,
+        opacityTo: 1,
+        stops: [0, 100, 100, 100],
+      },
+    },
+    colors: ["#ff6a00"],
+    tooltip: {
+      theme: "dark",
+      fixed: {
+        enabled: false,
+      },
+      x: {
+        show: false,
+      },
+      y: {
+        title: {
+          formatter: function () {
+            return "";
+          },
         },
       },
+      marker: {
+        show: false,
+      },
+    },
+    xaxis: {
+      categories: [
+        "Jan",
+        "Feb",
+        "Mar",
+        "Apr",
+        "May",
+        "Jun",
+        "Jul",
+        "Aug",
+        "Sep",
+      ],
     },
   };
 
