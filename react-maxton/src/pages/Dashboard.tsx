@@ -697,9 +697,20 @@ const Dashboard: React.FC = () => {
 
   // Initialize Peity charts after component mounts
   useEffect(() => {
-    if (typeof $ !== "undefined" && $.fn.peity) {
-      $(".data-attributes span").peity("donut");
-    }
+    const initCharts = () => {
+      try {
+        if (typeof $ !== "undefined" && $.fn.peity) {
+          $(".data-attributes span").peity("donut");
+        }
+      } catch (error) {
+        console.warn("Peity charts initialization failed:", error);
+      }
+    };
+
+    // Use a small delay to ensure DOM is ready
+    const timer = setTimeout(initCharts, 200);
+
+    return () => clearTimeout(timer);
   }, []);
 
   const campaignStats = [
