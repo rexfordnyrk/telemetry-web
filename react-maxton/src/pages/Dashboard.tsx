@@ -1329,8 +1329,28 @@ const Dashboard: React.FC = () => {
                       <p className="mb-0 data-attributes">
                         <span
                           data-peity={`{ "fill": ["${lead.color}", "rgb(255 255 255 / 10%)"], "innerRadius": 14, "radius": 18 }`}
+                          style={{
+                            display: "inline-block",
+                            width: "36px",
+                            height: "36px",
+                            borderRadius: "50%",
+                            background: `conic-gradient(${lead.color} 0deg ${(parseFloat(lead.percentage) / 100) * 360}deg, rgba(255, 255, 255, 0.1) ${(parseFloat(lead.percentage) / 100) * 360}deg 360deg)`,
+                            position: "relative",
+                          }}
                         >
-                          {lead.data}
+                          <span
+                            style={{
+                              position: "absolute",
+                              top: "50%",
+                              left: "50%",
+                              transform: "translate(-50%, -50%)",
+                              fontSize: "10px",
+                              fontWeight: "bold",
+                              color: "#fff",
+                            }}
+                          >
+                            {Math.round(parseFloat(lead.percentage))}%
+                          </span>
                         </span>
                       </p>
                     </div>
