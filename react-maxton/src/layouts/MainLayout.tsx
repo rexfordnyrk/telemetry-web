@@ -2,6 +2,7 @@ import React from "react";
 import Header from "../components/Header";
 import Sidebar from "../components/Sidebar";
 import ThemeCustomizer from "../components/ThemeCustomizer";
+import ErrorBoundary from "../components/ErrorBoundary";
 import { ComponentProps } from "../types";
 
 interface MainLayoutProps extends ComponentProps {
@@ -11,8 +12,12 @@ interface MainLayoutProps extends ComponentProps {
 const MainLayout: React.FC<MainLayoutProps> = ({ children, title }) => {
   return (
     <div className="app-root">
-      <Header />
-      <Sidebar />
+      <ErrorBoundary>
+        <Header />
+      </ErrorBoundary>
+      <ErrorBoundary>
+        <Sidebar />
+      </ErrorBoundary>
 
       <main className="main-wrapper">
         <div className="main-content">
