@@ -276,7 +276,15 @@ const Users: React.FC = () => {
                         <th
                           role="button"
                           onClick={() => handleSort("name")}
-                          className="sortable"
+                          style={{ cursor: "pointer", userSelect: "none" }}
+                          onMouseEnter={(e) =>
+                            (e.currentTarget.style.backgroundColor =
+                              "rgba(0,0,0,0.05)")
+                          }
+                          onMouseLeave={(e) =>
+                            (e.currentTarget.style.backgroundColor =
+                              "transparent")
+                          }
                         >
                           Name
                           {sortField === "name" && (
