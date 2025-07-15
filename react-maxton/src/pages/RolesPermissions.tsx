@@ -316,11 +316,7 @@ const RolesPermissions: React.FC = () => {
                           </button>
                           <button
                             className="btn btn-sm p-1"
-                            title={
-                              role.status === "disabled"
-                                ? "Enable Role"
-                                : "Disable Role"
-                            }
+                            title="Toggle Role Status"
                             onClick={() => handleActionClick(role, "disable")}
                             style={{
                               border: "none",
@@ -328,9 +324,7 @@ const RolesPermissions: React.FC = () => {
                             }}
                           >
                             <i className="material-icons-outlined text-warning">
-                              {role.status === "disabled"
-                                ? "check_circle"
-                                : "block"}
+                              block
                             </i>
                           </button>
                           <button
