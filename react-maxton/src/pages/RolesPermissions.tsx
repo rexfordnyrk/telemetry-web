@@ -548,19 +548,20 @@ const RolesPermissions: React.FC = () => {
                         onChange={(e) => setSearchTerm(e.target.value)}
                       />
                     </div>
-                    <div style={{ maxHeight: "200px", overflowY: "auto" }}>
+                    <div
+                      className="d-flex flex-wrap gap-2"
+                      style={{ maxHeight: "200px", overflowY: "auto" }}
+                    >
                       {getAvailablePermissions().map((permission: any) => (
-                        <div
+                        <span
                           key={permission.id}
-                          className="border rounded p-2 mb-2 cursor-pointer hover-bg-light"
-                          style={{ cursor: "pointer" }}
+                          className="badge bg-light text-dark border cursor-pointer"
+                          style={{ cursor: "pointer", fontSize: "0.85em" }}
                           onClick={() => handleAssignPermission(permission)}
+                          title={permission.description}
                         >
-                          <div className="fw-bold">{permission.name}</div>
-                          <small className="text-muted">
-                            {permission.description}
-                          </small>
-                        </div>
+                          {permission.name}
+                        </span>
                       ))}
                     </div>
                   </div>
