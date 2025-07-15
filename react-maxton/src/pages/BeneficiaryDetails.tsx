@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import MainLayout from "../layouts/MainLayout";
 import { useAppDispatch } from "../store/hooks";
@@ -50,8 +50,11 @@ const BeneficiaryDetails: React.FC = () => {
     },
   ];
 
-  // Find beneficiary by ID
-  const beneficiary = beneficiaries.find((b) => b.id === id);
+  // Find beneficiary by ID - memoized to prevent infinite re-renders
+  const beneficiary = useMemo(
+    () => beneficiaries.find((b) => b.id === id),
+    [id],
+  );
 
   // Form state for editing
   const [isEditing, setIsEditing] = useState(false);
