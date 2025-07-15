@@ -67,25 +67,6 @@ const RolesPermissions: React.FC = () => {
   // Initialize DataTable using custom hook
   useDataTable("roles-datatable", memoizedRoles);
 
-  const getStatusElement = (status: string) => {
-    const statusConfig = {
-      active: { bg: "success", text: "Active" },
-      disabled: { bg: "danger", text: "Disabled" },
-      pending: { bg: "warning", text: "Pending" },
-    };
-
-    const config =
-      statusConfig[status as keyof typeof statusConfig] || statusConfig.pending;
-
-    return (
-      <span
-        className={`dash-lable mb-0 bg-${config.bg} bg-opacity-10 text-${config.bg} rounded-2`}
-      >
-        {config.text}
-      </span>
-    );
-  };
-
   const handleActionClick = (role: any, action: "disable" | "delete") => {
     setTargetRole(role);
     setModalAction(action);
