@@ -43,13 +43,12 @@ const FilterModal: React.FC<FilterModalProps> = ({
         <div className="modal-content">
           <div className="modal-header border-bottom-0 py-2 bg-grd-primary">
             <h5 className="modal-title">Filter {title}</h5>
-            <a
-              href="javascript:;"
-              className="primaery-menu-close"
+            <button
+              type="button"
+              className="btn-close"
               onClick={onClose}
-            >
-              <i className="material-icons-outlined">close</i>
-            </a>
+              aria-label="Close"
+            ></button>
           </div>
           <div className="modal-body">
             <div className="form-body">
