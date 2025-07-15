@@ -108,149 +108,169 @@ const NewUserModal: React.FC<NewUserModalProps> = ({ show, onClose }) => {
 
   if (!show) return null;
 
-    return (
+  return (
     <div className="modal fade show d-block" tabIndex={-1}>
       <div className="modal-dialog modal-dialog-centered">
         <div className="modal-content">
           <div className="modal-header border-bottom-0 py-2 bg-grd-info">
-            <h5 className="modal-title">New User Registration</h5>
-            <a href="javascript:;" className="primaery-menu-close" onClick={onClose}>
+            <h5 className="modal-title">User Registration Form</h5>
+            <a
+              href="javascript:;"
+              className="primaery-menu-close"
+              onClick={onClose}
+            >
               <i className="material-icons-outlined">close</i>
             </a>
           </div>
-                    <div className="modal-body">
+          <div className="modal-body">
             <div className="form-body">
               <form className="row g-3" onSubmit={handleSubmit}>
-              <div className="col-md-6">
-                <label className="form-label">First Name *</label>
-                                <input
-                  type="text"
-                  className="form-control"
-                  name="first_name"
-                  placeholder="First Name"
-                  value={formData.first_name}
-                  onChange={handleInputChange}
-                  required
-                />
-              </div>
-              <div className="col-md-6">
-                <label className="form-label">Last Name *</label>
-                                <input
-                  type="text"
-                  className="form-control"
-                  name="last_name"
-                  placeholder="Last Name"
-                  value={formData.last_name}
-                  onChange={handleInputChange}
-                  required
-                />
-              </div>
-              <div className="col-md-12">
-                <label className="form-label">Username</label>
-                <input
-                  type="text"
-                  className="form-control rounded-0"
-                  name="username"
-                  placeholder="Username (auto-generated if empty)"
-                  value={formData.username}
-                  onChange={handleInputChange}
-                />
-              </div>
-              <div className="col-md-12">
-                <label className="form-label">Email *</label>
-                <input
-                  type="email"
-                  className="form-control rounded-0"
-                  name="email"
-                  placeholder="Email"
-                  value={formData.email}
-                  onChange={handleInputChange}
-                  required
-                />
-              </div>
-              <div className="col-md-12">
-                <label className="form-label">Phone</label>
-                <input
-                  type="text"
-                  className="form-control rounded-0"
-                  name="phone"
-                  placeholder="Phone"
-                  value={formData.phone}
-                  onChange={handleInputChange}
-                />
-              </div>
-              <div className="col-md-12">
-                <label className="form-label">Designation</label>
-                <input
-                  type="text"
-                  className="form-control rounded-0"
-                  name="designation"
-                  placeholder="Designation"
-                  value={formData.designation}
-                  onChange={handleInputChange}
-                />
-              </div>
-              <div className="col-md-12">
-                <label className="form-label">Organization</label>
-                <input
-                  type="text"
-                  className="form-control rounded-0"
-                  name="organization"
-                  placeholder="Organization"
-                  value={formData.organization}
-                  onChange={handleInputChange}
-                />
-              </div>
-              <div className="col-md-12">
-                <label className="form-label">Password</label>
-                <input
-                  type="password"
-                  className="form-control rounded-0"
-                  name="password"
-                  placeholder="Password"
-                  value={formData.password}
-                  onChange={handleInputChange}
-                />
-              </div>
-              <div className="col-md-12">
-                <div className="form-check">
+                <div className="col-md-6">
+                  <label htmlFor="first_name" className="form-label">
+                    First Name
+                  </label>
                   <input
-                    className="form-check-input rounded-0"
-                    type="checkbox"
-                    name="agree"
-                    checked={formData.agree}
+                    type="text"
+                    className="form-control"
+                    id="first_name"
+                    name="first_name"
+                    placeholder="First Name"
+                    value={formData.first_name}
+                    onChange={handleInputChange}
+                    required
+                  />
+                </div>
+                <div className="col-md-6">
+                  <label htmlFor="last_name" className="form-label">
+                    Last Name
+                  </label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    id="last_name"
+                    name="last_name"
+                    placeholder="Last Name"
+                    value={formData.last_name}
+                    onChange={handleInputChange}
+                    required
+                  />
+                </div>
+                <div className="col-md-12">
+                  <label htmlFor="username" className="form-label">
+                    Username
+                  </label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    id="username"
+                    name="username"
+                    placeholder="Username"
+                    value={formData.username}
                     onChange={handleInputChange}
                   />
-                  <label className="form-check-label">
-                    I agree to the terms and conditions
+                </div>
+                <div className="col-md-12">
+                  <label htmlFor="phone" className="form-label">
+                    Phone
                   </label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    id="phone"
+                    name="phone"
+                    placeholder="Phone"
+                    value={formData.phone}
+                    onChange={handleInputChange}
+                  />
                 </div>
-              </div>
-              <div className="col-md-12">
-                <div className="d-md-flex d-grid align-items-center gap-3">
-                  <button
-                    type="submit"
-                    className="btn btn-grd-danger px-4 rounded-0"
-                  >
-                    Submit
-                  </button>
-                  <button
-                    type="button"
-                    className="btn btn-grd-info px-4 rounded-0"
-                    onClick={handleReset}
-                  >
-                    Reset
-                  </button>
-                  <button
-                    type="button"
-                    className="btn btn-grd-royal px-4 rounded-0"
-                    onClick={onClose}
-                  >
-                    Cancel
-                  </button>
+                <div className="col-md-12">
+                  <label htmlFor="email" className="form-label">
+                    Email
+                  </label>
+                  <input
+                    type="email"
+                    className="form-control"
+                    id="email"
+                    name="email"
+                    placeholder="Email"
+                    value={formData.email}
+                    onChange={handleInputChange}
+                    required
+                  />
                 </div>
-              </div>
-            </form>
+                <div className="col-md-12">
+                  <label htmlFor="password" className="form-label">
+                    Password
+                  </label>
+                  <input
+                    type="password"
+                    className="form-control"
+                    id="password"
+                    name="password"
+                    placeholder="Password"
+                    value={formData.password}
+                    onChange={handleInputChange}
+                  />
+                </div>
+                <div className="col-md-12">
+                  <label htmlFor="designation" className="form-label">
+                    Designation
+                  </label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    id="designation"
+                    name="designation"
+                    placeholder="Designation"
+                    value={formData.designation}
+                    onChange={handleInputChange}
+                  />
+                </div>
+                <div className="col-md-12">
+                  <label htmlFor="organization" className="form-label">
+                    Organization
+                  </label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    id="organization"
+                    name="organization"
+                    placeholder="Organization"
+                    value={formData.organization}
+                    onChange={handleInputChange}
+                  />
+                </div>
+                <div className="col-md-12">
+                  <div className="form-check">
+                    <input
+                      className="form-check-input"
+                      type="checkbox"
+                      id="agree"
+                      name="agree"
+                      checked={formData.agree}
+                      onChange={handleInputChange}
+                    />
+                    <label className="form-check-label" htmlFor="agree">
+                      Check me out
+                    </label>
+                  </div>
+                </div>
+                <div className="col-md-12">
+                  <div className="d-md-flex d-grid align-items-center gap-3">
+                    <button type="submit" className="btn btn-grd-danger px-4">
+                      Submit
+                    </button>
+                    <button
+                      type="button"
+                      className="btn btn-grd-info px-4"
+                      onClick={handleReset}
+                    >
+                      Reset
+                    </button>
+                  </div>
+                </div>
+              </form>
+            </div>
           </div>
         </div>
       </div>
