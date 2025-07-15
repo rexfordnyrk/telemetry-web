@@ -311,6 +311,11 @@ const Devices: React.FC = () => {
                           <button
                             className="btn btn-sm p-1"
                             title="Edit Device"
+                            onClick={() =>
+                              navigate(
+                                `/device-management/devices/${device.id}`,
+                              )
+                            }
                             style={{
                               border: "none",
                               background: "transparent",
