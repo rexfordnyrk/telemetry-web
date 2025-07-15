@@ -202,9 +202,7 @@ const Beneficiaries: React.FC = () => {
             <button
               type="button"
               className="btn btn-grd-primary px-4"
-              onClick={() => {
-                /* TODO: Implement new beneficiary modal */
-              }}
+              onClick={() => setShowNewBeneficiaryModal(true)}
             >
               + | New Beneficiary
             </button>
@@ -425,6 +423,12 @@ const Beneficiaries: React.FC = () => {
           </div>
         </div>
       )}
+
+      {/* New Beneficiary Modal */}
+      <NewBeneficiaryModal
+        show={showNewBeneficiaryModal}
+        onHide={() => setShowNewBeneficiaryModal(false)}
+      />
     </MainLayout>
   );
 };
