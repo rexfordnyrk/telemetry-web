@@ -97,14 +97,14 @@ const Devices: React.FC = () => {
 
   // Define filter options
   const filterOptions = useMemo(() => {
-    const types = [...new Set(devices.map((d) => d.type))];
-    const statuses = [...new Set(devices.map((d) => d.status))];
-    const locations = [...new Set(devices.map((d) => d.location))];
+    const typesSet = new Set(devices.map((d) => d.type));
+    const statusesSet = new Set(devices.map((d) => d.status));
+    const locationsSet = new Set(devices.map((d) => d.location));
 
     return {
-      type: types,
-      status: statuses,
-      location: locations,
+      type: Array.from(typesSet),
+      status: Array.from(statusesSet),
+      location: Array.from(locationsSet),
     };
   }, [devices]);
 
