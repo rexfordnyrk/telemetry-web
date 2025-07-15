@@ -80,6 +80,23 @@ const UserDetails: React.FC = () => {
     }));
   };
 
+  const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setFormData((prev) => ({
+        ...prev,
+        photo: file,
+      }));
+
+      // Create preview URL
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPhotoPreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setPasswordData((prev) => ({
@@ -91,9 +108,16 @@ const UserDetails: React.FC = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
+    // Create updated user object, omitting photo if not provided
+    const updatedUserData = { ...formData };
+    delete (updatedUserData as any).photo; // Remove photo from form data
+
     const updatedUser = {
       ...user,
-      ...formData,
+      ...updatedUserData,
+      ...(photoPreview && photoPreview !== user?.photo
+        ? { photo: photoPreview }
+        : {}),
       updated_at: new Date().toISOString(),
     };
 
