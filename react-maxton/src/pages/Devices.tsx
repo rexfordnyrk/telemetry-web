@@ -1,7 +1,8 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useMemo } from "react";
 import MainLayout from "../layouts/MainLayout";
 import { useAppDispatch } from "../store/hooks";
 import { addAlert } from "../store/slices/alertSlice";
+import { useDataTable } from "../hooks/useDataTable";
 
 const Devices: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -75,69 +76,8 @@ const Devices: React.FC = () => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const memoizedDevices = useMemo(() => devices, []);
 
-  // Initialize DataTable when component mounts
-  useEffect(() => {
-    const tableId = "#devices-datatable";
-
-    const initDataTable = () => {
-      if (!window.$ || !window.$.fn.DataTable) return;
-
-      // Destroy existing DataTable if it exists
-      try {
-        if (window.$.fn.DataTable.isDataTable(tableId)) {
-          window.$(tableId).DataTable().destroy();
-          window.$(tableId + " thead").empty();
-          window.$(tableId + " tbody").empty();
-          window.$(tableId + " tfoot").empty();
-        }
-      } catch (error) {
-        console.warn("Error destroying DataTable:", error);
-      }
-
-      // Initialize DataTable
-      setTimeout(() => {
-        const tableElement = document.querySelector(tableId);
-        if (
-          tableElement &&
-          window.$ &&
-          typeof window.$.fn.DataTable === "function"
-        ) {
-          try {
-            window.$(tableId).DataTable({
-              responsive: true,
-              pageLength: 10,
-              lengthChange: true,
-              searching: true,
-              ordering: true,
-              info: true,
-              autoWidth: false,
-              order: [[0, "asc"]],
-              columnDefs: [
-                { orderable: false, targets: -1 }, // Disable ordering on last column (actions)
-              ],
-            });
-          } catch (error) {
-            console.warn("Error initializing DataTable:", error);
-          }
-        }
-      }, 200);
-    };
-
-    initDataTable();
-
-    // Cleanup function
-    return () => {
-      if (window.$ && window.$.fn.DataTable) {
-        try {
-          if (window.$.fn.DataTable.isDataTable(tableId)) {
-            window.$(tableId).DataTable().destroy();
-          }
-        } catch (error) {
-          console.warn("Error in DataTable cleanup:", error);
-        }
-      }
-    };
-  }, [memoizedDevices]);
+  // Initialize DataTable using custom hook
+  useDataTable("devices-datatable", memoizedDevices);
 
   const getStatusElement = (status: string) => {
     const statusConfig = {
