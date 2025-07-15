@@ -293,62 +293,57 @@ const Users: React.FC = () => {
                           </div>
                         </div>
                       </td>
-                      <td>{user.designation}</td>
+                      <td>{user.email}</td>
                       <td>{user.organization}</td>
                       <td>{getUserRoles(user.roles)}</td>
-                      <td>{getStatusElement(user.status)}</td>
+                      <td>{new Date(user.created_at).toLocaleDateString()}</td>
                       <td>
-                        <div className="d-flex gap-2">
-                          <span>
-                            {new Date(user.created_at).toLocaleDateString()}
-                          </span>
-                          <div className="d-flex gap-1">
-                            <button
-                              className="btn btn-sm p-1"
-                              title="Edit User"
-                              onClick={() => handleUserClick(user.id)}
-                              style={{
-                                border: "none",
-                                background: "transparent",
-                              }}
-                            >
-                              <i className="material-icons-outlined text-primary">
-                                edit
-                              </i>
-                            </button>
-                            <button
-                              className="btn btn-sm p-1"
-                              title={
-                                user.status === "disabled"
-                                  ? "Enable User"
-                                  : "Disable User"
-                              }
-                              onClick={() => handleActionClick(user, "disable")}
-                              style={{
-                                border: "none",
-                                background: "transparent",
-                              }}
-                            >
-                              <i className="material-icons-outlined text-warning">
-                                {user.status === "disabled"
-                                  ? "check_circle"
-                                  : "block"}
-                              </i>
-                            </button>
-                            <button
-                              className="btn btn-sm p-1"
-                              title="Delete User"
-                              onClick={() => handleActionClick(user, "delete")}
-                              style={{
-                                border: "none",
-                                background: "transparent",
-                              }}
-                            >
-                              <i className="material-icons-outlined text-danger">
-                                delete
-                              </i>
-                            </button>
-                          </div>
+                        <div className="d-flex gap-1">
+                          <button
+                            className="btn btn-sm p-1"
+                            title="Edit User"
+                            onClick={() => handleUserClick(user.id)}
+                            style={{
+                              border: "none",
+                              background: "transparent",
+                            }}
+                          >
+                            <i className="material-icons-outlined text-primary">
+                              edit
+                            </i>
+                          </button>
+                          <button
+                            className="btn btn-sm p-1"
+                            title={
+                              user.status === "disabled"
+                                ? "Enable User"
+                                : "Disable User"
+                            }
+                            onClick={() => handleActionClick(user, "disable")}
+                            style={{
+                              border: "none",
+                              background: "transparent",
+                            }}
+                          >
+                            <i className="material-icons-outlined text-warning">
+                              {user.status === "disabled"
+                                ? "check_circle"
+                                : "block"}
+                            </i>
+                          </button>
+                          <button
+                            className="btn btn-sm p-1"
+                            title="Delete User"
+                            onClick={() => handleActionClick(user, "delete")}
+                            style={{
+                              border: "none",
+                              background: "transparent",
+                            }}
+                          >
+                            <i className="material-icons-outlined text-danger">
+                              delete
+                            </i>
+                          </button>
                         </div>
                       </td>
                     </tr>
