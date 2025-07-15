@@ -13,7 +13,9 @@ import Users from "./pages/Users";
 import UserDetails from "./pages/UserDetails";
 import RolesPermissions from "./pages/RolesPermissions";
 import Devices from "./pages/Devices";
+import DeviceDetails from "./pages/DeviceDetails";
 import Beneficiaries from "./pages/Beneficiaries";
+import BeneficiaryDetails from "./pages/BeneficiaryDetails";
 import NotFound from "./pages/NotFound";
 import ErrorBoundary from "./components/ErrorBoundary";
 import Alert from "./components/Alert";
@@ -89,8 +91,16 @@ function App() {
               />
               <Route path="/device-management/devices" element={<Devices />} />
               <Route
+                path="/device-management/devices/:id"
+                element={<DeviceDetails />}
+              />
+              <Route
                 path="/beneficiary-management/beneficiaries"
                 element={<Beneficiaries />}
+              />
+              <Route
+                path="/beneficiary-management/beneficiaries/:id"
+                element={<BeneficiaryDetails />}
               />
               <Route path="*" element={<NotFound />} />
             </Routes>
