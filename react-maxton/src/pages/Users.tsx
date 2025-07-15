@@ -307,9 +307,13 @@ const Users: React.FC = () => {
           style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
         >
           <div className="modal-dialog">
-            <div className="modal-content">
-              <div className="modal-header">
-                <h5 className="modal-title">
+            <div
+              className={`card border-top border-3 ${modalAction === "delete" ? "border-danger" : "border-warning"} rounded-0`}
+            >
+              <div className="card-header py-3 px-4">
+                <h5
+                  className={`mb-0 ${modalAction === "delete" ? "text-danger" : "text-warning"}`}
+                >
                   Confirm {modalAction === "delete" ? "Delete" : "Disable"} User
                 </h5>
                 <button
@@ -318,7 +322,7 @@ const Users: React.FC = () => {
                   onClick={() => setShowModal(false)}
                 ></button>
               </div>
-              <div className="modal-body">
+              <div className="card-body p-4">
                 <p>
                   Are you sure you want to {modalAction} user{" "}
                   <strong>
@@ -331,22 +335,22 @@ const Users: React.FC = () => {
                     </span>
                   )}
                 </p>
-              </div>
-              <div className="modal-footer">
-                <button
-                  type="button"
-                  className="btn btn-grd-royal px-4"
-                  onClick={() => setShowModal(false)}
-                >
-                  Cancel
-                </button>
-                <button
-                  type="button"
-                  className={`btn ${modalAction === "delete" ? "btn-grd-danger" : "btn-grd-warning"} px-4`}
-                  onClick={handleConfirmAction}
-                >
-                  {modalAction === "delete" ? "Delete" : "Disable"} User
-                </button>
+                <div className="d-md-flex d-grid align-items-center gap-3 mt-3">
+                  <button
+                    type="button"
+                    className="btn btn-grd-royal px-4 rounded-0"
+                    onClick={() => setShowModal(false)}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    className={`btn ${modalAction === "delete" ? "btn-grd-danger" : "btn-grd-warning"} px-4 rounded-0`}
+                    onClick={handleConfirmAction}
+                  >
+                    {modalAction === "delete" ? "Delete" : "Disable"} User
+                  </button>
+                </div>
               </div>
             </div>
           </div>
