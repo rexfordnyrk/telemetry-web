@@ -134,39 +134,6 @@ const BasicLogin: React.FC = () => {
                     </div>
                   </form>
                 </div>
-
-                <div className="separator section-padding">
-                  <div className="line"></div>
-                  <p className="mb-0 fw-bold">OR SIGN IN WITH</p>
-                  <div className="line"></div>
-                </div>
-
-                <div className="d-flex gap-3 justify-content-center mt-4">
-                  <a
-                    href="javascript:;"
-                    className="wh-42 d-flex align-items-center justify-content-center rounded-circle bg-grd-danger"
-                  >
-                    <i className="bi bi-google fs-5 text-white"></i>
-                  </a>
-                  <a
-                    href="javascript:;"
-                    className="wh-42 d-flex align-items-center justify-content-center rounded-circle bg-grd-deep-blue"
-                  >
-                    <i className="bi bi-facebook fs-5 text-white"></i>
-                  </a>
-                  <a
-                    href="javascript:;"
-                    className="wh-42 d-flex align-items-center justify-content-center rounded-circle bg-grd-info"
-                  >
-                    <i className="bi bi-linkedin fs-5 text-white"></i>
-                  </a>
-                  <a
-                    href="javascript:;"
-                    className="wh-42 d-flex align-items-center justify-content-center rounded-circle bg-grd-royal"
-                  >
-                    <i className="bi bi-github fs-5 text-white"></i>
-                  </a>
-                </div>
               </div>
             </div>
           </div>
