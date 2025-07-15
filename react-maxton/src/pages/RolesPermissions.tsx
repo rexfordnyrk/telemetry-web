@@ -323,111 +323,246 @@ const RolesPermissions: React.FC = () => {
           </button>
         </div>
         <hr />
-        <div className="card">
-          <div className="card-body">
-            <div className="table-responsive">
-              <table
-                id="roles-datatable"
-                className="table table-striped table-bordered"
-                style={{ width: "100%" }}
-              >
-                <thead>
-                  <tr>
-                    <th>Name</th>
-                    <th>Description</th>
-                    <th>Created At</th>
-                    <th>Updated At</th>
-                    <th>Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {memoizedRoles.map((role) => (
-                    <tr key={role.id}>
-                      <td>
-                        <div className="d-flex align-items-center gap-3">
-                          <div
-                            className="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center"
-                            style={{
-                              width: "40px",
-                              height: "40px",
-                              fontSize: "14px",
-                            }}
-                          >
-                            {role.name.charAt(0)}
-                          </div>
-                          <div>
-                            <a
-                              href="#"
-                              className="text-decoration-none fw-bold text-dark"
-                              onClick={(e) => {
-                                e.preventDefault();
-                                handleRoleClick(role);
-                              }}
-                            >
-                              {role.name}
-                            </a>
-                          </div>
-                        </div>
-                      </td>
-                      <td>{role.description}</td>
-                      <td>{new Date(role.created_at).toLocaleDateString()}</td>
-                      <td>{new Date(role.updated_at).toLocaleDateString()}</td>
-                      <td>
-                        <div className="d-flex gap-1">
-                          <button
-                            className="btn btn-sm p-1"
-                            title="Edit Role"
-                            style={{
-                              border: "none",
-                              background: "transparent",
-                            }}
-                          >
-                            <i className="material-icons-outlined text-primary">
-                              edit
-                            </i>
-                          </button>
-                          <button
-                            className="btn btn-sm p-1"
-                            title="Toggle Role Status"
-                            onClick={() => handleActionClick(role, "disable")}
-                            style={{
-                              border: "none",
-                              background: "transparent",
-                            }}
-                          >
-                            <i className="material-icons-outlined text-warning">
-                              block
-                            </i>
-                          </button>
-                          <button
-                            className="btn btn-sm p-1"
-                            title="Delete Role"
-                            onClick={() => handleActionClick(role, "delete")}
-                            style={{
-                              border: "none",
-                              background: "transparent",
-                            }}
-                          >
-                            <i className="material-icons-outlined text-danger">
-                              delete
-                            </i>
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-                <tfoot>
-                  <tr>
-                    <th>Name</th>
-                    <th>Description</th>
-                    <th>Created At</th>
-                    <th>Updated At</th>
-                    <th>Actions</th>
-                  </tr>
-                </tfoot>
-              </table>
+        <div className="row">
+          {/* Left Half - Roles Table */}
+          <div className="col-md-6">
+            <div className="card">
+              <div className="card-body">
+                <div className="table-responsive">
+                  <table
+                    id="roles-datatable"
+                    className="table table-striped table-bordered"
+                    style={{ width: "100%" }}
+                  >
+                    <thead>
+                      <tr>
+                        <th>Name</th>
+                        <th>Description</th>
+                        <th>Created At</th>
+                        <th>Updated At</th>
+                        <th>Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {memoizedRoles.map((role) => (
+                        <tr key={role.id}>
+                          <td>
+                            <div className="d-flex align-items-center gap-3">
+                              <div
+                                className="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center"
+                                style={{
+                                  width: "40px",
+                                  height: "40px",
+                                  fontSize: "14px",
+                                }}
+                              >
+                                {role.name.charAt(0)}
+                              </div>
+                              <div>
+                                <a
+                                  href="#"
+                                  className="text-decoration-none fw-bold text-dark"
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    handleRoleClick(role);
+                                  }}
+                                >
+                                  {role.name}
+                                </a>
+                              </div>
+                            </div>
+                          </td>
+                          <td>{role.description}</td>
+                          <td>
+                            {new Date(role.created_at).toLocaleDateString()}
+                          </td>
+                          <td>
+                            {new Date(role.updated_at).toLocaleDateString()}
+                          </td>
+                          <td>
+                            <div className="d-flex gap-1">
+                              <button
+                                className="btn btn-sm p-1"
+                                title="Edit Role"
+                                style={{
+                                  border: "none",
+                                  background: "transparent",
+                                }}
+                              >
+                                <i className="material-icons-outlined text-primary">
+                                  edit
+                                </i>
+                              </button>
+                              <button
+                                className="btn btn-sm p-1"
+                                title="Toggle Role Status"
+                                onClick={() =>
+                                  handleActionClick(role, "disable")
+                                }
+                                style={{
+                                  border: "none",
+                                  background: "transparent",
+                                }}
+                              >
+                                <i className="material-icons-outlined text-warning">
+                                  block
+                                </i>
+                              </button>
+                              <button
+                                className="btn btn-sm p-1"
+                                title="Delete Role"
+                                onClick={() =>
+                                  handleActionClick(role, "delete")
+                                }
+                                style={{
+                                  border: "none",
+                                  background: "transparent",
+                                }}
+                              >
+                                <i className="material-icons-outlined text-danger">
+                                  delete
+                                </i>
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                    <tfoot>
+                      <tr>
+                        <th>Name</th>
+                        <th>Description</th>
+                        <th>Created At</th>
+                        <th>Updated At</th>
+                        <th>Actions</th>
+                      </tr>
+                    </tfoot>
+                  </table>
+                </div>
+              </div>
             </div>
+          </div>
+
+          {/* Right Half - Permission Management */}
+          <div className="col-md-6">
+            {selectedRole ? (
+              <div className="card">
+                <div className="card-header">
+                  <h6 className="mb-0">
+                    Manage Permissions for: {selectedRole.name}
+                  </h6>
+                </div>
+                <div className="card-body">
+                  {/* Current Permissions */}
+                  <div className="mb-4">
+                    <h6 className="text-primary mb-3">Current Permissions</h6>
+                    <div className="d-flex flex-wrap gap-2">
+                      {getCurrentPermissions().map((permission: any) => (
+                        <span
+                          key={permission.id}
+                          className="badge bg-primary d-flex align-items-center gap-2"
+                        >
+                          {permission.name}
+                          <button
+                            type="button"
+                            className="btn-close btn-close-white"
+                            style={{ fontSize: "0.75em" }}
+                            onClick={() => handleRemovePermission(permission)}
+                            title="Remove permission"
+                          ></button>
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Removed Permissions (for undo) */}
+                  {removedPermissions.length > 0 && (
+                    <div className="mb-4">
+                      <h6 className="text-warning mb-3">
+                        Removed Permissions (Click to restore)
+                      </h6>
+                      <div className="d-flex flex-wrap gap-2">
+                        {removedPermissions.map((permission: any) => (
+                          <span
+                            key={permission.id}
+                            className="badge bg-warning text-dark cursor-pointer"
+                            onClick={() => handleRestorePermission(permission)}
+                            title="Click to restore"
+                          >
+                            {permission.name}
+                            <i
+                              className="ms-1 material-icons-outlined"
+                              style={{ fontSize: "0.75em" }}
+                            >
+                              undo
+                            </i>
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Available Permissions */}
+                  <div className="mb-4">
+                    <h6 className="text-success mb-3">Available Permissions</h6>
+                    <div className="mb-3">
+                      <input
+                        type="text"
+                        className="form-control"
+                        placeholder="Search permissions..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                      />
+                    </div>
+                    <div style={{ maxHeight: "200px", overflowY: "auto" }}>
+                      {getAvailablePermissions().map((permission: any) => (
+                        <div
+                          key={permission.id}
+                          className="border rounded p-2 mb-2 cursor-pointer hover-bg-light"
+                          onClick={() => {
+                            // TODO: Add permission assignment logic
+                            console.log("Assign permission:", permission);
+                          }}
+                        >
+                          <div className="fw-bold">{permission.name}</div>
+                          <small className="text-muted">
+                            {permission.description}
+                          </small>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Apply Changes Button */}
+                  {removedPermissions.length > 0 && (
+                    <div className="d-grid">
+                      <button
+                        type="button"
+                        className="btn btn-grd-warning"
+                        onClick={handleApplyChanges}
+                      >
+                        Apply Changes ({removedPermissions.length} removals)
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </div>
+            ) : (
+              <div className="card">
+                <div className="card-body text-center py-5">
+                  <i className="material-icons-outlined display-4 text-muted mb-3">
+                    security
+                  </i>
+                  <h5 className="text-muted">
+                    Select a role to manage permissions
+                  </h5>
+                  <p className="text-muted">
+                    Click on a role name from the table to view and manage its
+                    permissions.
+                  </p>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
