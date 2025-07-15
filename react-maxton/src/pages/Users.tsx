@@ -106,7 +106,17 @@ const Users: React.FC = () => {
               </ol>
             </nav>
           </div>
-          <div className="ms-auto">
+          <div className="ms-auto d-flex gap-2">
+            <button
+              type="button"
+              className="btn btn-outline-primary px-4"
+              onClick={() => {
+                /* TODO: Implement filters modal */
+              }}
+            >
+              <i className="material-icons-outlined me-1">filter_list</i>
+              Filters
+            </button>
             <button
               type="button"
               className="btn btn-grd-primary px-4"
