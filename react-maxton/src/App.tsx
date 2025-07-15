@@ -11,6 +11,9 @@ import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import Users from "./pages/Users";
 import UserDetails from "./pages/UserDetails";
+import RolesPermissions from "./pages/RolesPermissions";
+import Devices from "./pages/Devices";
+import Beneficiaries from "./pages/Beneficiaries";
 import NotFound from "./pages/NotFound";
 import ErrorBoundary from "./components/ErrorBoundary";
 import Alert from "./components/Alert";
@@ -78,6 +81,15 @@ function App() {
               <Route
                 path="/user-management/users/:id"
                 element={<UserDetails />}
+              />
+              <Route
+                path="/user-management/roles-permissions"
+                element={<RolesPermissions />}
+              />
+              <Route path="/device-management/devices" element={<Devices />} />
+              <Route
+                path="/beneficiary-management/beneficiaries"
+                element={<Beneficiaries />}
               />
               <Route path="*" element={<NotFound />} />
             </Routes>
