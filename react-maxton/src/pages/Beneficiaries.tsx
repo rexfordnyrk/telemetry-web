@@ -199,18 +199,9 @@ const Beneficiaries: React.FC = () => {
           </div>
         </div>
 
-        {/* Add New Beneficiary Button */}
+        {/* Page Title */}
         <div className="d-flex justify-content-between align-items-center mb-3">
           <h6 className="mb-0 text-uppercase">Beneficiaries Management</h6>
-          <button
-            type="button"
-            className="btn btn-grd-primary px-4"
-            onClick={() => {
-              /* TODO: Implement new beneficiary modal */
-            }}
-          >
-            + | New Beneficiary
-          </button>
         </div>
         <hr />
         <div className="card">
