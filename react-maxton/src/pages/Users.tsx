@@ -231,6 +231,7 @@ const Users: React.FC = () => {
                     <th>Email</th>
                     <th>Organization</th>
                     <th>Role</th>
+                    <th>Status</th>
                     <th>Created At</th>
                     <th>Actions</th>
                   </tr>
@@ -336,6 +337,7 @@ const Users: React.FC = () => {
                     <th>Email</th>
                     <th>Organization</th>
                     <th>Role</th>
+                    <th>Status</th>
                     <th>Created At</th>
                     <th>Actions</th>
                   </tr>
