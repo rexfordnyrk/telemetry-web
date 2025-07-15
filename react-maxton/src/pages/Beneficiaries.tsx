@@ -149,8 +149,9 @@ const Beneficiaries: React.FC = () => {
         }),
       );
     } else {
-      const newStatus =
-        targetBeneficiary?.status === "inactive" ? "active" : "inactive";
+      const newStatus = !targetBeneficiary?.is_active
+        ? "activated"
+        : "deactivated";
       dispatch(
         addAlert({
           type: "success",
