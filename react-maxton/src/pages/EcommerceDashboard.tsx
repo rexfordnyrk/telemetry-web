@@ -714,17 +714,17 @@ const EcommerceDashboard: React.FC = () => {
               <div className="dropdown-menu dropdown-menu-right dropdown-menu-lg-end">
                                 <button type="button" className="dropdown-item">
                   Action
-                </a>
+                                </button>
                                 <button type="button" className="dropdown-item">
                   Another action
-                </a>
+                                </button>
                                 <button type="button" className="dropdown-item">
                   Something else here
-                </a>
+                                </button>
                 <div className="dropdown-divider"></div>
                                 <button type="button" className="dropdown-item">
                   Separated link
-                </a>
+                                </button>
               </div>
             </div>
           </div>
@@ -881,22 +881,22 @@ const EcommerceDashboard: React.FC = () => {
                         <span className="material-icons-outlined fs-5">
                           more_vert
                         </span>
-                      </a>
+                                      </button>
                       <ul className="dropdown-menu">
                         <li>
                                           <button type="button" className="dropdown-item">
                             Action
-                          </a>
+                                          </button>
                         </li>
                         <li>
                                           <button type="button" className="dropdown-item">
                             Another action
-                          </a>
+                                          </button>
                         </li>
                         <li>
                                           <button type="button" className="dropdown-item">
                             Something else here
-                          </a>
+                                          </button>
                         </li>
                       </ul>
                     </div>
@@ -963,22 +963,22 @@ const EcommerceDashboard: React.FC = () => {
                       <span className="material-icons-outlined fs-5">
                         more_vert
                       </span>
-                    </a>
+                                    </button>
                     <ul className="dropdown-menu">
                       <li>
                                         <button type="button" className="dropdown-item">
                           Action
-                        </a>
+                                        </button>
                       </li>
                       <li>
                                         <button type="button" className="dropdown-item">
                           Another action
-                        </a>
+                                        </button>
                       </li>
                       <li>
                                         <button type="button" className="dropdown-item">
                           Something else here
-                        </a>
+                                        </button>
                       </li>
                     </ul>
                   </div>
@@ -1047,22 +1047,22 @@ const EcommerceDashboard: React.FC = () => {
                       <span className="material-icons-outlined fs-5">
                         more_vert
                       </span>
-                    </a>
+                                    </button>
                     <ul className="dropdown-menu">
                       <li>
                                         <button type="button" className="dropdown-item">
                           Action
-                        </a>
+                                        </button>
                       </li>
                       <li>
                                         <button type="button" className="dropdown-item">
                           Another action
-                        </a>
+                                        </button>
                       </li>
                       <li>
                                         <button type="button" className="dropdown-item">
                           Something else here
-                        </a>
+                                        </button>
                       </li>
                     </ul>
                   </div>
@@ -1187,22 +1187,22 @@ const EcommerceDashboard: React.FC = () => {
                       <span className="material-icons-outlined fs-5">
                         more_vert
                       </span>
-                    </a>
+                                    </button>
                     <ul className="dropdown-menu">
                       <li>
                                         <button type="button" className="dropdown-item">
                           Action
-                        </a>
+                                        </button>
                       </li>
                       <li>
                                         <button type="button" className="dropdown-item">
                           Another action
-                        </a>
+                                        </button>
                       </li>
                       <li>
                                         <button type="button" className="dropdown-item">
                           Something else here
-                        </a>
+                                        </button>
                       </li>
                     </ul>
                   </div>
@@ -1310,22 +1310,22 @@ const EcommerceDashboard: React.FC = () => {
                       <span className="material-icons-outlined fs-5">
                         more_vert
                       </span>
-                    </a>
+                                    </button>
                     <ul className="dropdown-menu">
                       <li>
                                         <button type="button" className="dropdown-item">
                           Action
-                        </a>
+                                        </button>
                       </li>
                       <li>
                                         <button type="button" className="dropdown-item">
                           Another action
-                        </a>
+                                        </button>
                       </li>
                       <li>
                                         <button type="button" className="dropdown-item">
                           Something else here
-                        </a>
+                                        </button>
                       </li>
                     </ul>
                   </div>
@@ -1479,22 +1479,22 @@ const EcommerceDashboard: React.FC = () => {
                       <span className="material-icons-outlined fs-5">
                         more_vert
                       </span>
-                    </a>
+                                    </button>
                     <ul className="dropdown-menu">
                       <li>
                                         <button type="button" className="dropdown-item">
                           Action
-                        </a>
+                                        </button>
                       </li>
                       <li>
                                         <button type="button" className="dropdown-item">
                           Another action
-                        </a>
+                                        </button>
                       </li>
                       <li>
                                         <button type="button" className="dropdown-item">
                           Something else here
-                        </a>
+                                        </button>
                       </li>
                     </ul>
                   </div>
@@ -1751,22 +1751,22 @@ const EcommerceDashboard: React.FC = () => {
                       <span className="material-icons-outlined fs-5">
                         more_vert
                       </span>
-                    </a>
+                                    </button>
                     <ul className="dropdown-menu">
                       <li>
                                         <button type="button" className="dropdown-item">
                           Action
-                        </a>
+                                        </button>
                       </li>
                       <li>
                                         <button type="button" className="dropdown-item">
                           Another action
-                        </a>
+                                        </button>
                       </li>
                       <li>
                                         <button type="button" className="dropdown-item">
                           Something else here
-                        </a>
+                                        </button>
                       </li>
                     </ul>
                   </div>
@@ -1799,22 +1799,22 @@ const EcommerceDashboard: React.FC = () => {
                       <span className="material-icons-outlined fs-5">
                         more_vert
                       </span>
-                    </a>
+                                    </button>
                     <ul className="dropdown-menu">
                       <li>
                                         <button type="button" className="dropdown-item">
                           Action
-                        </a>
+                                        </button>
                       </li>
                       <li>
                                         <button type="button" className="dropdown-item">
                           Another action
-                        </a>
+                                        </button>
                       </li>
                       <li>
                                         <button type="button" className="dropdown-item">
                           Something else here
-                        </a>
+                                        </button>
                       </li>
                     </ul>
                   </div>
