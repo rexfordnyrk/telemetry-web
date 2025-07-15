@@ -1,0 +1,40 @@
+/* Fix dark/unreadable text in table name fields */
+.table td a,
+.table td .fw-bold,
+.table tbody tr td a {
+  color: #333 !important;
+}
+
+.table tbody tr td a:hover {
+  color: #0066cc !important;
+}
+
+/* Ensure text is readable in dark theme */
+[data-bs-theme="dark"] .table td a,
+[data-bs-theme="dark"] .table td .fw-bold,
+[data-bs-theme="dark"] .table tbody tr td a {
+  color: #fff !important;
+}
+
+[data-bs-theme="dark"] .table tbody tr td a:hover {
+  color: #66ccff !important;
+}
+
+/* Fix for role names in roles table */
+.table td a.text-decoration-none {
+  color: #333 !important;
+  font-weight: 600;
+}
+
+[data-bs-theme="dark"] .table td a.text-decoration-none {
+  color: #fff !important;
+}
+
+/* Fix for device names */
+.table td .text-decoration-none.fw-bold {
+  color: #333 !important;
+}
+
+[data-bs-theme="dark"] .table td .text-decoration-none.fw-bold {
+  color: #fff !important;
+}
