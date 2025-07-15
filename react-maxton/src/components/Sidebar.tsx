@@ -166,10 +166,13 @@ const Sidebar: React.FC = () => {
   };
 
   useEffect(() => {
+    // Capture the current ref value
+    const currentRef = metismenuRef.current;
+
     // Initialize MetisMenu when component mounts
-    if (typeof $ !== "undefined" && $.fn.metisMenu && metismenuRef.current) {
+    if (typeof $ !== "undefined" && $.fn.metisMenu && currentRef) {
       try {
-        $(metismenuRef.current).metisMenu();
+        $(currentRef).metisMenu();
       } catch (error) {
         console.warn("MetisMenu initialization failed:", error);
       }
@@ -180,13 +183,10 @@ const Sidebar: React.FC = () => {
 
     // Cleanup function - minimal cleanup to avoid errors
     return () => {
-      // Only cleanup MetisMenu if needed
+      // Use the captured ref value for cleanup
       try {
-        if (typeof $ !== "undefined") {
-          const currentRef = metismenuRef.current;
-          if (currentRef) {
-            $(currentRef).off();
-          }
+        if (typeof $ !== "undefined" && currentRef) {
+          $(currentRef).off();
         }
       } catch (error) {
         // Silently ignore cleanup errors
