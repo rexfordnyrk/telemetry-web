@@ -193,7 +193,7 @@ const UserDetails: React.FC = () => {
           {/* Left Column - Edit Profile */}
           <div className="col-12 col-lg-8">
             <div className="card rounded-4">
-              <div className="card-header">
+              <div className="card-header py-2">
                 <div className="d-flex align-items-center justify-content-between">
                   <h5 className="card-title mb-0">Edit Profile</h5>
                   <div className="dropdown">
@@ -227,7 +227,7 @@ const UserDetails: React.FC = () => {
                   </div>
                 </div>
               </div>
-              <div className="card-body">
+              <div className="card-body py-3">
                 <form className="row g-2" onSubmit={handleSubmit}>
                   <div className="col-md-6">
                     <label htmlFor="firstName" className="form-label">
@@ -400,7 +400,7 @@ const UserDetails: React.FC = () => {
           <div className="col-12 col-lg-4">
             {/* About Card */}
             <div className="card rounded-4 mb-4">
-              <div className="card-header">
+              <div className="card-header py-2">
                 <div className="d-flex align-items-center justify-content-between">
                   <h5 className="card-title mb-0">About</h5>
                   <div className="dropdown">
@@ -426,7 +426,7 @@ const UserDetails: React.FC = () => {
                   </div>
                 </div>
               </div>
-              <div className="card-body">
+              <div className="card-body py-3">
                 <div className="d-flex flex-column gap-2">
                   <div className="d-flex align-items-center gap-2">
                     <div className="wh-36 d-flex align-items-center justify-content-center rounded-circle bg-primary bg-opacity-10 text-primary">
@@ -500,7 +500,7 @@ const UserDetails: React.FC = () => {
 
             {/* Organization Info Card */}
             <div className="card rounded-4">
-              <div className="card-header">
+              <div className="card-header py-2">
                 <div className="d-flex align-items-center justify-content-between">
                   <h5 className="card-title mb-0">Organization</h5>
                   <div className="dropdown">
@@ -526,7 +526,7 @@ const UserDetails: React.FC = () => {
                   </div>
                 </div>
               </div>
-              <div className="card-body">
+              <div className="card-body py-3">
                 <div className="d-flex align-items-center gap-3 mb-3">
                   <div className="wh-48 d-flex align-items-center justify-content-center rounded-circle bg-primary text-white">
                     <i className="material-icons-outlined">business</i>
