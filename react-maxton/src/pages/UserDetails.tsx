@@ -38,19 +38,19 @@ const UserDetails: React.FC = () => {
     email: "john.smith@example.com",
     phone: "+1 234 567 8900",
     organization: "Tech Corp",
-    role: "Administrator",
+    role: "Developer",
     status: "active",
     created_at: "2024-01-15",
     avatar: "/assets/images/avatars/01.png",
     jobTitle: "Senior Software Engineer",
     location: "New York, United States",
-    skills: ["React", "TypeScript", "Node.js", "AWS"],
+    skills: ["UX Research", "CX Strategy", "Management"],
     dateOfBirth: "1990-05-15",
     country: "United States",
     city: "New York",
     state: "NY",
     zipCode: "10001",
-    address: "123 Main Street, Apt 4B",
+    address: "123 Main Street, Apt 4B\nNew York, NY 10001",
     language: "English",
   });
 
@@ -68,8 +68,49 @@ const UserDetails: React.FC = () => {
     address: user.address,
   });
 
+  const [accounts] = useState([
+    {
+      name: "Google",
+      description: "Events and Research",
+      icon: "/assets/images/apps/05.png",
+      connected: true,
+    },
+    {
+      name: "Skype",
+      description: "Events and Research",
+      icon: "/assets/images/apps/02.png",
+      connected: true,
+    },
+    {
+      name: "Slack",
+      description: "Communication",
+      icon: "/assets/images/apps/03.png",
+      connected: false,
+    },
+    {
+      name: "Instagram",
+      description: "Social Media",
+      icon: "/assets/images/apps/09.png",
+      connected: true,
+    },
+    {
+      name: "Facebook",
+      description: "Social Media",
+      icon: "/assets/images/apps/06.png",
+      connected: false,
+    },
+    {
+      name: "PayPal",
+      description: "Payment Gateway",
+      icon: "/assets/images/apps/07.png",
+      connected: true,
+    },
+  ]);
+
   const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >,
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -100,225 +141,193 @@ const UserDetails: React.FC = () => {
     });
   };
 
-  const getStatusBadge = (status: string) => {
-    const statusClasses = {
-      active: "bg-success",
-      disabled: "bg-danger",
-      pending: "bg-warning text-dark",
-    };
-    return `badge ${statusClasses[status as keyof typeof statusClasses] || "bg-secondary"}`;
-  };
-
-  const getInitials = (name: string) => {
-    return name
-      .split(" ")
-      .map((n) => n[0])
-      .join("")
-      .toUpperCase();
-  };
-
   return (
     <MainLayout>
       <div className="page-content">
-        {/* Profile Header */}
-        <div className="row">
-          <div className="col-12">
-            <div className="card rounded-4">
-              <div className="card-body position-relative p-4">
-                <div
-                  className="position-absolute top-0 start-0 w-100 h-50 rounded-top-4"
-                  style={{
-                    background:
-                      "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-                    zIndex: 1,
-                  }}
-                ></div>
-                <div className="position-relative" style={{ zIndex: 2 }}>
-                  <div className="d-flex align-items-end gap-3 mt-5 pt-3">
-                    <div className="position-relative">
-                      {user.avatar ? (
-                        <img
-                          src={user.avatar}
-                          alt=""
-                          className="rounded-circle border border-4 border-white shadow"
-                          width="120"
-                          height="120"
-                          style={{ objectFit: "cover" }}
-                        />
-                      ) : (
-                        <div
-                          className="rounded-circle border border-4 border-white shadow bg-primary text-white d-flex align-items-center justify-content-center"
-                          style={{
-                            width: "120px",
-                            height: "120px",
-                            fontSize: "2rem",
-                            fontWeight: "bold",
-                          }}
-                        >
-                          {getInitials(user.name)}
-                        </div>
-                      )}
-                    </div>
-                    <div className="flex-grow-1 pb-2">
-                      <h3 className="mb-1 text-white">{user.name}</h3>
-                      <p className="mb-2 text-white-50">
-                        {user.jobTitle} at {user.organization}, {user.location}
-                      </p>
-                      <div className="d-flex flex-wrap gap-2">
-                        {user.skills.map((skill, index) => (
-                          <span
-                            key={index}
-                            className="badge bg-white text-dark"
-                          >
-                            {skill}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                    <div className="pb-2">
-                      <button className="btn btn-light btn-sm">
-                        <i className="material-icons-outlined me-2">send</i>
-                        Send Message
-                      </button>
-                    </div>
-                  </div>
-                </div>
+        {/* Profile Header Card */}
+        <div className="card rounded-4">
+          <div className="card-body p-4">
+            <div className="position-relative mb-5">
+              <img
+                src="/assets/images/gallery/profile-cover.png"
+                className="img-fluid rounded-4 shadow"
+                alt=""
+              />
+              <div className="profile-avatar position-absolute top-100 start-50 translate-middle">
+                <img
+                  src={user.avatar || "/assets/images/avatars/01.png"}
+                  className="img-fluid rounded-circle p-1 bg-grd-danger shadow"
+                  width="170"
+                  height="170"
+                  alt=""
+                />
               </div>
+            </div>
+            <div className="profile-info pt-5 d-flex align-items-center justify-content-between">
+              <div className="">
+                <h3>{user.name}</h3>
+                <p className="mb-0">
+                  {user.jobTitle} at {user.organization}
+                  <br />
+                  {user.location}
+                </p>
+              </div>
+              <div className="">
+                <a
+                  href="javascript:;"
+                  className="btn btn-grd-primary rounded-5 px-4"
+                >
+                  <i className="bi bi-chat me-2"></i>Send Message
+                </a>
+              </div>
+            </div>
+            <div className="kewords d-flex align-items-center gap-3 mt-4 overflow-x-auto">
+              {user.skills.map((skill, index) => (
+                <button
+                  key={index}
+                  type="button"
+                  className="btn btn-sm btn-light rounded-5 px-4"
+                >
+                  {skill}
+                </button>
+              ))}
             </div>
           </div>
         </div>
 
-        {/* Main Content */}
+        {/* Main Content Row */}
         <div className="row">
           {/* Left Column - Edit Profile */}
-          <div className="col-12 col-lg-8">
-            <div className="card rounded-4">
-              <div className="card-header py-2">
-                <div className="d-flex align-items-center justify-content-between">
-                  <h5 className="card-title mb-0">Edit Profile</h5>
+          <div className="col-12 col-xl-8">
+            <div className="card rounded-4 border-top border-4 border-primary border-gradient-1">
+              <div className="card-body p-4">
+                <div className="d-flex align-items-start justify-content-between mb-3">
+                  <div className="">
+                    <h5 className="mb-0 fw-bold">Edit Profile</h5>
+                  </div>
                   <div className="dropdown">
-                    <button
-                      className="btn btn-outline-secondary btn-sm dropdown-toggle"
-                      type="button"
+                    <a
+                      href="javascript:;"
+                      className="dropdown-toggle-nocaret options dropdown-toggle"
                       data-bs-toggle="dropdown"
                     >
-                      <i className="material-icons-outlined">more_vert</i>
-                    </button>
+                      <span className="material-icons-outlined fs-5">
+                        more_vert
+                      </span>
+                    </a>
                     <ul className="dropdown-menu">
                       <li>
-                        <a className="dropdown-item" href="#">
+                        <a className="dropdown-item" href="javascript:;">
                           Action
                         </a>
                       </li>
                       <li>
-                        <a className="dropdown-item" href="#">
+                        <a className="dropdown-item" href="javascript:;">
                           Another action
                         </a>
                       </li>
                       <li>
-                        <hr className="dropdown-divider" />
-                      </li>
-                      <li>
-                        <a className="dropdown-item" href="#">
+                        <a className="dropdown-item" href="javascript:;">
                           Something else here
                         </a>
                       </li>
                     </ul>
                   </div>
                 </div>
-              </div>
-              <div className="card-body py-3">
-                <form className="row g-2" onSubmit={handleSubmit}>
+                <form className="row g-4" onSubmit={handleSubmit}>
                   <div className="col-md-6">
-                    <label htmlFor="firstName" className="form-label">
+                    <label htmlFor="input1" className="form-label">
                       First Name
                     </label>
                     <input
                       type="text"
-                      className="form-control form-control-sm"
-                      id="firstName"
+                      className="form-control"
+                      id="input1"
                       name="firstName"
+                      placeholder="First Name"
                       value={formData.firstName}
                       onChange={handleInputChange}
                     />
                   </div>
                   <div className="col-md-6">
-                    <label htmlFor="lastName" className="form-label">
+                    <label htmlFor="input2" className="form-label">
                       Last Name
                     </label>
                     <input
                       type="text"
-                      className="form-control form-control-sm"
-                      id="lastName"
+                      className="form-control"
+                      id="input2"
                       name="lastName"
+                      placeholder="Last Name"
                       value={formData.lastName}
                       onChange={handleInputChange}
                     />
                   </div>
-                  <div className="col-md-6">
-                    <label htmlFor="phone" className="form-label">
+                  <div className="col-md-12">
+                    <label htmlFor="input3" className="form-label">
                       Phone
                     </label>
                     <input
-                      type="tel"
-                      className="form-control form-control-sm"
-                      id="phone"
+                      type="text"
+                      className="form-control"
+                      id="input3"
                       name="phone"
+                      placeholder="Phone"
                       value={formData.phone}
                       onChange={handleInputChange}
                     />
                   </div>
-                  <div className="col-md-6">
-                    <label htmlFor="email" className="form-label">
+                  <div className="col-md-12">
+                    <label htmlFor="input4" className="form-label">
                       Email
                     </label>
                     <input
                       type="email"
-                      className="form-control form-control-sm"
-                      id="email"
+                      className="form-control"
+                      id="input4"
                       name="email"
                       value={formData.email}
                       onChange={handleInputChange}
                     />
                   </div>
-                  <div className="col-md-6">
-                    <label htmlFor="password" className="form-label">
+                  <div className="col-md-12">
+                    <label htmlFor="input5" className="form-label">
                       Password
                     </label>
                     <input
                       type="password"
-                      className="form-control form-control-sm"
-                      id="password"
+                      className="form-control"
+                      id="input5"
                       name="password"
                       value={formData.password}
                       onChange={handleInputChange}
-                      placeholder="Leave blank to keep current password"
                     />
                   </div>
-                  <div className="col-md-6">
-                    <label htmlFor="dateOfBirth" className="form-label">
-                      Date of Birth
+                  <div className="col-md-12">
+                    <label htmlFor="input6" className="form-label">
+                      DOB
                     </label>
                     <input
                       type="date"
-                      className="form-control form-control-sm"
-                      id="dateOfBirth"
+                      className="form-control"
+                      id="input6"
                       name="dateOfBirth"
                       value={formData.dateOfBirth}
                       onChange={handleInputChange}
                     />
                   </div>
-                  <div className="col-md-6">
-                    <label htmlFor="country" className="form-label">
+                  <div className="col-md-12">
+                    <label htmlFor="input7" className="form-label">
                       Country
                     </label>
                     <select
-                      className="form-select form-select-sm"
-                      id="country"
+                      id="input7"
+                      className="form-select"
                       name="country"
                       value={formData.country}
                       onChange={handleInputChange}
                     >
+                      <option value="">Choose...</option>
                       <option value="United States">United States</option>
                       <option value="Canada">Canada</option>
                       <option value="United Kingdom">United Kingdom</option>
@@ -326,65 +335,76 @@ const UserDetails: React.FC = () => {
                     </select>
                   </div>
                   <div className="col-md-6">
-                    <label htmlFor="city" className="form-label">
+                    <label htmlFor="input8" className="form-label">
                       City
                     </label>
                     <input
                       type="text"
-                      className="form-control form-control-sm"
-                      id="city"
+                      className="form-control"
+                      id="input8"
                       name="city"
+                      placeholder="City"
                       value={formData.city}
                       onChange={handleInputChange}
                     />
                   </div>
-                  <div className="col-md-6">
-                    <label htmlFor="state" className="form-label">
+                  <div className="col-md-4">
+                    <label htmlFor="input9" className="form-label">
                       State
                     </label>
-                    <input
-                      type="text"
-                      className="form-control form-control-sm"
-                      id="state"
+                    <select
+                      id="input9"
+                      className="form-select"
                       name="state"
                       value={formData.state}
                       onChange={handleInputChange}
-                    />
+                    >
+                      <option value="">Choose...</option>
+                      <option value="NY">New York</option>
+                      <option value="CA">California</option>
+                      <option value="TX">Texas</option>
+                      <option value="FL">Florida</option>
+                    </select>
                   </div>
-                  <div className="col-md-6">
-                    <label htmlFor="zipCode" className="form-label">
-                      Zip Code
+                  <div className="col-md-2">
+                    <label htmlFor="input10" className="form-label">
+                      Zip
                     </label>
                     <input
                       type="text"
-                      className="form-control form-control-sm"
-                      id="zipCode"
+                      className="form-control"
+                      id="input10"
                       name="zipCode"
+                      placeholder="Zip"
                       value={formData.zipCode}
                       onChange={handleInputChange}
                     />
                   </div>
-                  <div className="col-12">
-                    <label htmlFor="address" className="form-label">
+                  <div className="col-md-12">
+                    <label htmlFor="input11" className="form-label">
                       Address
                     </label>
-                    <input
-                      type="text"
-                      className="form-control form-control-sm"
-                      id="address"
+                    <textarea
+                      className="form-control"
+                      id="input11"
                       name="address"
+                      placeholder="Address ..."
+                      rows={4}
                       value={formData.address}
                       onChange={handleInputChange}
                     />
                   </div>
-                  <div className="col-12">
-                    <div className="d-flex gap-3">
-                      <button type="submit" className="btn btn-primary btn-sm">
+                  <div className="col-md-12">
+                    <div className="d-md-flex d-grid align-items-center gap-3">
+                      <button
+                        type="submit"
+                        className="btn btn-grd-primary px-4"
+                      >
                         Update Profile
                       </button>
                       <button
                         type="button"
-                        className="btn btn-secondary btn-sm"
+                        className="btn btn-light px-4"
                         onClick={handleReset}
                       >
                         Reset
@@ -397,153 +417,137 @@ const UserDetails: React.FC = () => {
           </div>
 
           {/* Right Column */}
-          <div className="col-12 col-lg-4">
+          <div className="col-12 col-xl-4">
             {/* About Card */}
-            <div className="card rounded-4 mb-4">
-              <div className="card-header py-2">
-                <div className="d-flex align-items-center justify-content-between">
-                  <h5 className="card-title mb-0">About</h5>
+            <div className="card rounded-4">
+              <div className="card-body">
+                <div className="d-flex align-items-start justify-content-between mb-3">
+                  <div className="">
+                    <h5 className="mb-0 fw-bold">About</h5>
+                  </div>
                   <div className="dropdown">
-                    <button
-                      className="btn btn-outline-secondary btn-sm dropdown-toggle"
-                      type="button"
+                    <a
+                      href="javascript:;"
+                      className="dropdown-toggle-nocaret options dropdown-toggle"
                       data-bs-toggle="dropdown"
                     >
-                      <i className="material-icons-outlined">more_vert</i>
-                    </button>
+                      <span className="material-icons-outlined fs-5">
+                        more_vert
+                      </span>
+                    </a>
                     <ul className="dropdown-menu">
                       <li>
-                        <a className="dropdown-item" href="#">
+                        <a className="dropdown-item" href="javascript:;">
                           Action
                         </a>
                       </li>
                       <li>
-                        <a className="dropdown-item" href="#">
+                        <a className="dropdown-item" href="javascript:;">
                           Another action
+                        </a>
+                      </li>
+                      <li>
+                        <a className="dropdown-item" href="javascript:;">
+                          Something else here
                         </a>
                       </li>
                     </ul>
                   </div>
                 </div>
-              </div>
-              <div className="card-body py-3">
-                <div className="d-flex flex-column gap-2">
-                  <div className="d-flex align-items-center gap-2">
-                    <div className="wh-36 d-flex align-items-center justify-content-center rounded-circle bg-primary bg-opacity-10 text-primary">
-                      <i className="material-icons-outlined">person</i>
-                    </div>
-                    <div className="flex-grow-1">
-                      <p className="mb-0 fw-bold">Full Name</p>
-                      <p className="mb-0 text-secondary">{user.name}</p>
-                    </div>
-                  </div>
-                  <div className="d-flex align-items-center gap-2">
-                    <div className="wh-36 d-flex align-items-center justify-content-center rounded-circle bg-success bg-opacity-10 text-success">
-                      <i className="material-icons-outlined">check_circle</i>
-                    </div>
-                    <div className="flex-grow-1">
-                      <p className="mb-0 fw-bold">Status</p>
-                      <span className={getStatusBadge(user.status)}>
-                        {user.status.charAt(0).toUpperCase() +
-                          user.status.slice(1)}
+                <div className="full-info">
+                  <div className="info-list d-flex flex-column gap-3">
+                    <div className="info-list-item d-flex align-items-center gap-3">
+                      <span className="material-icons-outlined">
+                        account_circle
                       </span>
+                      <p className="mb-0">Full Name: {user.name}</p>
                     </div>
-                  </div>
-                  <div className="d-flex align-items-center gap-2">
-                    <div className="wh-36 d-flex align-items-center justify-content-center rounded-circle bg-info bg-opacity-10 text-info">
-                      <i className="material-icons-outlined">work</i>
+                    <div className="info-list-item d-flex align-items-center gap-3">
+                      <span className="material-icons-outlined">done</span>
+                      <p className="mb-0">Status: {user.status}</p>
                     </div>
-                    <div className="flex-grow-1">
-                      <p className="mb-0 fw-bold">Role</p>
-                      <p className="mb-0 text-secondary">{user.role}</p>
+                    <div className="info-list-item d-flex align-items-center gap-3">
+                      <span className="material-icons-outlined">code</span>
+                      <p className="mb-0">Role: {user.role}</p>
                     </div>
-                  </div>
-                  <div className="d-flex align-items-center gap-2">
-                    <div className="wh-36 d-flex align-items-center justify-content-center rounded-circle bg-warning bg-opacity-10 text-warning">
-                      <i className="material-icons-outlined">location_on</i>
+                    <div className="info-list-item d-flex align-items-center gap-3">
+                      <span className="material-icons-outlined">flag</span>
+                      <p className="mb-0">Country: {user.country}</p>
                     </div>
-                    <div className="flex-grow-1">
-                      <p className="mb-0 fw-bold">Country</p>
-                      <p className="mb-0 text-secondary">{user.country}</p>
+                    <div className="info-list-item d-flex align-items-center gap-3">
+                      <span className="material-icons-outlined">language</span>
+                      <p className="mb-0">Language: {user.language}</p>
                     </div>
-                  </div>
-                  <div className="d-flex align-items-center gap-2">
-                    <div className="wh-36 d-flex align-items-center justify-content-center rounded-circle bg-danger bg-opacity-10 text-danger">
-                      <i className="material-icons-outlined">language</i>
+                    <div className="info-list-item d-flex align-items-center gap-3">
+                      <span className="material-icons-outlined">send</span>
+                      <p className="mb-0">Email: {user.email}</p>
                     </div>
-                    <div className="flex-grow-1">
-                      <p className="mb-0 fw-bold">Language</p>
-                      <p className="mb-0 text-secondary">{user.language}</p>
-                    </div>
-                  </div>
-                  <div className="d-flex align-items-center gap-2">
-                    <div className="wh-36 d-flex align-items-center justify-content-center rounded-circle bg-purple bg-opacity-10 text-purple">
-                      <i className="material-icons-outlined">email</i>
-                    </div>
-                    <div className="flex-grow-1">
-                      <p className="mb-0 fw-bold">Email</p>
-                      <p className="mb-0 text-secondary">{user.email}</p>
-                    </div>
-                  </div>
-                  <div className="d-flex align-items-center gap-2">
-                    <div className="wh-36 d-flex align-items-center justify-content-center rounded-circle bg-dark bg-opacity-10 text-dark">
-                      <i className="material-icons-outlined">phone</i>
-                    </div>
-                    <div className="flex-grow-1">
-                      <p className="mb-0 fw-bold">Phone</p>
-                      <p className="mb-0 text-secondary">{user.phone}</p>
+                    <div className="info-list-item d-flex align-items-center gap-3">
+                      <span className="material-icons-outlined">call</span>
+                      <p className="mb-0">Phone: {user.phone}</p>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* Organization Info Card */}
+            {/* Accounts Card */}
             <div className="card rounded-4">
-              <div className="card-header py-2">
-                <div className="d-flex align-items-center justify-content-between">
-                  <h5 className="card-title mb-0">Organization</h5>
+              <div className="card-body">
+                <div className="d-flex align-items-start justify-content-between mb-3">
+                  <div className="">
+                    <h5 className="mb-0 fw-bold">Accounts</h5>
+                  </div>
                   <div className="dropdown">
-                    <button
-                      className="btn btn-outline-secondary btn-sm dropdown-toggle"
-                      type="button"
+                    <a
+                      href="javascript:;"
+                      className="dropdown-toggle-nocaret options dropdown-toggle"
                       data-bs-toggle="dropdown"
                     >
-                      <i className="material-icons-outlined">more_vert</i>
-                    </button>
+                      <span className="material-icons-outlined fs-5">
+                        more_vert
+                      </span>
+                    </a>
                     <ul className="dropdown-menu">
                       <li>
-                        <a className="dropdown-item" href="#">
-                          View Organization
+                        <a className="dropdown-item" href="javascript:;">
+                          Action
                         </a>
                       </li>
                       <li>
-                        <a className="dropdown-item" href="#">
-                          Change Organization
+                        <a className="dropdown-item" href="javascript:;">
+                          Another action
+                        </a>
+                      </li>
+                      <li>
+                        <a className="dropdown-item" href="javascript:;">
+                          Something else here
                         </a>
                       </li>
                     </ul>
                   </div>
                 </div>
-              </div>
-              <div className="card-body py-3">
-                <div className="d-flex align-items-center gap-3 mb-3">
-                  <div className="wh-48 d-flex align-items-center justify-content-center rounded-circle bg-primary text-white">
-                    <i className="material-icons-outlined">business</i>
-                  </div>
-                  <div className="flex-grow-1">
-                    <h6 className="mb-0">{user.organization}</h6>
-                    <p className="mb-0 text-secondary small">Organization</p>
-                  </div>
-                </div>
-                <div className="d-flex align-items-center gap-2">
-                  <div className="wh-48 d-flex align-items-center justify-content-center rounded-circle bg-info text-white">
-                    <i className="material-icons-outlined">badge</i>
-                  </div>
-                  <div className="flex-grow-1">
-                    <h6 className="mb-0">{user.jobTitle}</h6>
-                    <p className="mb-0 text-secondary small">Job Title</p>
-                  </div>
+
+                <div className="account-list d-flex flex-column gap-4">
+                  {accounts.map((account, index) => (
+                    <div
+                      key={index}
+                      className="account-list-item d-flex align-items-center gap-3"
+                    >
+                      <img src={account.icon} width="35" alt="" />
+                      <div className="flex-grow-1">
+                        <h6 className="mb-0">{account.name}</h6>
+                        <p className="mb-0">{account.description}</p>
+                      </div>
+                      <div className="form-check form-switch">
+                        <input
+                          className="form-check-input"
+                          type="checkbox"
+                          defaultChecked={account.connected}
+                        />
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>
