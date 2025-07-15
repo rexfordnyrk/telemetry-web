@@ -108,36 +108,24 @@ const NewUserModal: React.FC<NewUserModalProps> = ({ show, onClose }) => {
 
   if (!show) return null;
 
-  return (
-    <div
-      className="modal fade show d-block"
-      tabIndex={-1}
-      style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
-      onClick={onClose}
-    >
-      <div
-        className="modal-dialog modal-lg"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div
-          className="card border-top border-3 border-danger rounded-0"
-          onClick={(e) => e.stopPropagation()}
-        >
-          <div className="card-header py-3 px-4">
-            <h5 className="mb-0 text-danger">New User</h5>
-            <button
-              type="button"
-              className="btn-close"
-              onClick={onClose}
-            ></button>
+    return (
+    <div className="modal fade show d-block" tabIndex={-1}>
+      <div className="modal-dialog modal-dialog-centered">
+        <div className="modal-content">
+          <div className="modal-header border-bottom-0 py-2 bg-grd-info">
+            <h5 className="modal-title">New User Registration</h5>
+            <a href="javascript:;" className="primaery-menu-close" onClick={onClose}>
+              <i className="material-icons-outlined">close</i>
+            </a>
           </div>
-          <div className="card-body p-4">
-            <form className="row g-3" onSubmit={handleSubmit}>
+                    <div className="modal-body">
+            <div className="form-body">
+              <form className="row g-3" onSubmit={handleSubmit}>
               <div className="col-md-6">
                 <label className="form-label">First Name *</label>
-                <input
+                                <input
                   type="text"
-                  className="form-control rounded-0"
+                  className="form-control"
                   name="first_name"
                   placeholder="First Name"
                   value={formData.first_name}
@@ -147,9 +135,9 @@ const NewUserModal: React.FC<NewUserModalProps> = ({ show, onClose }) => {
               </div>
               <div className="col-md-6">
                 <label className="form-label">Last Name *</label>
-                <input
+                                <input
                   type="text"
-                  className="form-control rounded-0"
+                  className="form-control"
                   name="last_name"
                   placeholder="Last Name"
                   value={formData.last_name}
