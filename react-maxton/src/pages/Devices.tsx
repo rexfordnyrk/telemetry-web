@@ -72,6 +72,7 @@ const Devices: React.FC = () => {
   ];
 
   // Memoize devices to prevent unnecessary re-renders
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const memoizedDevices = useMemo(() => devices, []);
 
   // Initialize DataTable when component mounts
