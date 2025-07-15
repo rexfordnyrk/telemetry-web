@@ -119,9 +119,9 @@ const UserDetails: React.FC = () => {
         ? { photo: photoPreview }
         : {}),
       updated_at: new Date().toISOString(),
-    };
+    } as any;
 
-    dispatch(updateUser(updatedUser as any));
+    dispatch(updateUser(updatedUser));
     dispatch(
       addAlert({
         type: "success",
