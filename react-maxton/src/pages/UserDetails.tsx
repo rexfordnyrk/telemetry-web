@@ -739,36 +739,36 @@ const UserDetails: React.FC = () => {
           style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
         >
           <div className="modal-dialog">
-            <div className="modal-content">
-              <div className="modal-header">
-                <h5 className="modal-title">Confirm Role Removal</h5>
+            <div className="card border-top border-3 border-warning rounded-0">
+              <div className="card-header py-3 px-4">
+                <h5 className="mb-0 text-warning">Confirm Role Removal</h5>
                 <button
                   type="button"
                   className="btn-close"
                   onClick={() => setShowRoleModal(false)}
                 ></button>
               </div>
-              <div className="modal-body">
+              <div className="card-body p-4">
                 <p>
                   Are you sure you want to remove the role{" "}
                   <strong>{roleToRemove?.name}</strong> from this user?
                 </p>
-              </div>
-              <div className="modal-footer">
-                <button
-                  type="button"
-                  className="btn btn-grd-royal px-4"
-                  onClick={() => setShowRoleModal(false)}
-                >
-                  Cancel
-                </button>
-                <button
-                  type="button"
-                  className="btn btn-grd-danger px-4"
-                  onClick={confirmRemoveRole}
-                >
-                  Remove Role
-                </button>
+                <div className="d-md-flex d-grid align-items-center gap-3 mt-3">
+                  <button
+                    type="button"
+                    className="btn btn-grd-royal px-4 rounded-0"
+                    onClick={() => setShowRoleModal(false)}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-grd-danger px-4 rounded-0"
+                    onClick={confirmRemoveRole}
+                  >
+                    Remove Role
+                  </button>
+                </div>
               </div>
             </div>
           </div>
