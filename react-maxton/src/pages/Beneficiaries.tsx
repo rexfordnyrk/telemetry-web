@@ -171,7 +171,7 @@ const Beneficiaries: React.FC = () => {
       <div className="main-content">
         {/* Breadcrumb */}
         <div className="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
-          <div className="breadcrumb-title pe-3">Components</div>
+          <div className="breadcrumb-title pe-3">Beneficiary Management</div>
           <div className="ps-3">
             <nav aria-label="breadcrumb">
               <ol className="breadcrumb mb-0 p-0">
@@ -181,7 +181,7 @@ const Beneficiaries: React.FC = () => {
                   </a>
                 </li>
                 <li className="breadcrumb-item active" aria-current="page">
-                  Data Table
+                  Beneficiaries
                 </li>
               </ol>
             </nav>
@@ -304,8 +304,19 @@ const Beneficiaries: React.FC = () => {
           </div>
         </div>
 
-        {/* DataTable Example */}
-        <h6 className="mb-0 text-uppercase">DataTable Example</h6>
+        {/* Add New Beneficiary Button */}
+        <div className="d-flex justify-content-between align-items-center mb-3">
+          <h6 className="mb-0 text-uppercase">Beneficiaries Management</h6>
+          <button
+            type="button"
+            className="btn btn-grd-primary px-4"
+            onClick={() => {
+              /* TODO: Implement new beneficiary modal */
+            }}
+          >
+            + | New Beneficiary
+          </button>
+        </div>
         <hr />
         <div className="card">
           <div className="card-body">
