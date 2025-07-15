@@ -1528,4 +1528,4 @@ const DeviceDetails: React.FC = () => {
   );
 };
 
-export default Dashboard;
+export default DeviceDetails;
