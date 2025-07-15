@@ -9,53 +9,56 @@ const DeviceDetails: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
-  // Sample devices data (would come from store in real app)
-  const devices = [
-    {
-      id: "8c07e7e2-944f-4fb6-8817-2cf53a5bd952",
-      device_name: "Pixel 7",
-      android_version: "Android 13",
-      app_version: "1.2.3",
-      organization: "Research Institute",
-      programme: "Digital Literacy Study",
-      is_active: true,
-      last_synced: "2025-01-15T14:30:00.000Z",
-      date_enrolled: "2025-01-10T09:00:00.000Z",
-      current_beneficiary: {
-        id: "f854c2a8-12ff-4075-95f6-abf2ad6d61de",
-        name: "John Doe",
-        email: "john.doe@example.com",
+  // Sample devices data (would come from store in real app) - memoized to prevent re-renders
+  const devices = useMemo(
+    () => [
+      {
+        id: "8c07e7e2-944f-4fb6-8817-2cf53a5bd952",
+        device_name: "Pixel 7",
+        android_version: "Android 13",
+        app_version: "1.2.3",
+        organization: "Research Institute",
+        programme: "Digital Literacy Study",
+        is_active: true,
+        last_synced: "2025-01-15T14:30:00.000Z",
+        date_enrolled: "2025-01-10T09:00:00.000Z",
+        current_beneficiary: {
+          id: "f854c2a8-12ff-4075-95f6-abf2ad6d61de",
+          name: "John Doe",
+          email: "john.doe@example.com",
+        },
+        device_specs: {
+          storage: "128GB",
+          ram: "8GB",
+          battery: "4355mAh",
+          screen_size: "6.3 inches",
+        },
+        sync_history: [
+          {
+            date: "2025-01-15T14:30:00.000Z",
+            status: "Success",
+            data_synced: "2.5MB",
+          },
+          {
+            date: "2025-01-14T10:15:00.000Z",
+            status: "Success",
+            data_synced: "1.8MB",
+          },
+          {
+            date: "2025-01-13T16:45:00.000Z",
+            status: "Failed",
+            data_synced: "0MB",
+          },
+          {
+            date: "2025-01-12T11:20:00.000Z",
+            status: "Success",
+            data_synced: "3.2MB",
+          },
+        ],
       },
-      device_specs: {
-        storage: "128GB",
-        ram: "8GB",
-        battery: "4355mAh",
-        screen_size: "6.3 inches",
-      },
-      sync_history: [
-        {
-          date: "2025-01-15T14:30:00.000Z",
-          status: "Success",
-          data_synced: "2.5MB",
-        },
-        {
-          date: "2025-01-14T10:15:00.000Z",
-          status: "Success",
-          data_synced: "1.8MB",
-        },
-        {
-          date: "2025-01-13T16:45:00.000Z",
-          status: "Failed",
-          data_synced: "0MB",
-        },
-        {
-          date: "2025-01-12T11:20:00.000Z",
-          status: "Success",
-          data_synced: "3.2MB",
-        },
-      ],
-    },
-  ];
+    ],
+    [],
+  );
 
   // Find device by ID - memoized to prevent infinite re-renders
   const device = useMemo(() => devices.find((d) => d.id === id), [id]);
