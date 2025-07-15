@@ -33,7 +33,12 @@ const UserDetails: React.FC = () => {
     designation: user?.designation || "",
     organization: user?.organization || "",
     address: "123 Main Street, Apt 4B\nNew York, NY 10001",
+    photo: null as File | null,
   });
+
+  const [photoPreview, setPhotoPreview] = useState<string | null>(
+    user?.photo || null,
+  );
 
   // Update form data when user changes
   React.useEffect(() => {
@@ -47,7 +52,9 @@ const UserDetails: React.FC = () => {
         designation: user.designation,
         organization: user.organization,
         address: "123 Main Street, Apt 4B\nNew York, NY 10001",
+        photo: null,
       });
+      setPhotoPreview(user.photo || null);
     }
   }, [user]);
 
