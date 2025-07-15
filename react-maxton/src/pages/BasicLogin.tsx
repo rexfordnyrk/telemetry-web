@@ -124,14 +124,6 @@ const BasicLogin: React.FC = () => {
                         </button>
                       </div>
                     </div>
-                    <div className="col-12">
-                      <div className="text-start">
-                        <p className="mb-0">
-                          Don't have an account yet?{" "}
-                          <a href="/auth/basic/register">Sign up here</a>
-                        </p>
-                      </div>
-                    </div>
                   </form>
                 </div>
               </div>
