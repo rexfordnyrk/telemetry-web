@@ -1,15 +1,26 @@
 import React, { useState } from "react";
 import { useParams } from "react-router-dom";
 import MainLayout from "../layouts/MainLayout";
-import { useAppDispatch, useAppSelector } from "../store/hooks";
-import { updateUser, assignRole, removeRole } from "../store/slices/userSlice";
+import { useAppDispatch } from "../store/hooks";
 import { addAlert } from "../store/slices/alertSlice";
 
 const BeneficiaryDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const dispatch = useAppDispatch();
-  const users = useAppSelector((state) => state.users.users);
-  const availableRoles = useAppSelector((state) => state.users.availableRoles);
+  // Sample beneficiaries data (would come from store in real app)
+  const beneficiaries = [
+    {
+      id: "f854c2a8-12ff-4075-95f6-abf2ad6d61de",
+      name: "John Doe",
+      email: "john.doe@example.com",
+      phone: "+1234567890",
+      organization: "Research Institute",
+      district: "Central District",
+      programme: "Digital Literacy Study",
+      date_enrolled: "2025-05-15T03:06:24.730291Z",
+      is_active: true,
+    },
+  ];
 
   // All hooks must be called at the top level
   const [selectedRole, setSelectedRole] = useState("");
@@ -20,8 +31,8 @@ const BeneficiaryDetails: React.FC = () => {
     confirmPassword: "",
   });
 
-  // Find user by ID
-  const user = users.find((u) => u.id === id);
+  // Find beneficiary by ID
+  const beneficiary = beneficiaries.find((b) => b.id === id);
 
   // Initialize form data with user data or empty values
   const [formData, setFormData] = useState({
