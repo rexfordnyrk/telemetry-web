@@ -15,14 +15,22 @@ const NewUserModal: React.FC<NewUserModalProps> = ({ show, onClose }) => {
   const [formData, setFormData] = useState({
     first_name: "",
     last_name: "",
-    email: "",
     phone: "",
-    organization: "",
+    email: "",
+    password: "",
     designation: "",
+    organization: "",
+    country: "",
+    city: "",
+    state: "",
+    zipCode: "",
+    address: "",
   });
 
   const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >,
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -80,14 +88,7 @@ const NewUserModal: React.FC<NewUserModalProps> = ({ show, onClose }) => {
     );
 
     // Reset form and close modal
-    setFormData({
-      first_name: "",
-      last_name: "",
-      email: "",
-      phone: "",
-      organization: "",
-      designation: "",
-    });
+    handleReset();
     onClose();
   };
 
@@ -95,10 +96,16 @@ const NewUserModal: React.FC<NewUserModalProps> = ({ show, onClose }) => {
     setFormData({
       first_name: "",
       last_name: "",
-      email: "",
       phone: "",
-      organization: "",
+      email: "",
+      password: "",
       designation: "",
+      organization: "",
+      country: "",
+      city: "",
+      state: "",
+      zipCode: "",
+      address: "",
     });
   };
 
@@ -121,87 +128,182 @@ const NewUserModal: React.FC<NewUserModalProps> = ({ show, onClose }) => {
             ></button>
           </div>
           <div className="modal-body">
+            {/* Exact copy of Vertical Form widget structure */}
             <div className="card">
               <div className="card-body p-4">
+                <h5 className="mb-4">New User</h5>
                 <form className="row g-3" onSubmit={handleSubmit}>
                   <div className="col-md-6">
-                    <label htmlFor="first_name" className="form-label">
-                      First Name *
+                    <label htmlFor="input1" className="form-label">
+                      First Name
                     </label>
                     <input
                       type="text"
                       className="form-control"
-                      id="first_name"
+                      id="input1"
                       name="first_name"
+                      placeholder="First Name"
                       value={formData.first_name}
                       onChange={handleInputChange}
-                      required
                     />
                   </div>
                   <div className="col-md-6">
-                    <label htmlFor="last_name" className="form-label">
-                      Last Name *
+                    <label htmlFor="input2" className="form-label">
+                      Last Name
                     </label>
                     <input
                       type="text"
                       className="form-control"
-                      id="last_name"
+                      id="input2"
                       name="last_name"
+                      placeholder="Last Name"
                       value={formData.last_name}
                       onChange={handleInputChange}
-                      required
                     />
                   </div>
                   <div className="col-md-12">
-                    <label htmlFor="email" className="form-label">
-                      Email *
-                    </label>
-                    <input
-                      type="email"
-                      className="form-control"
-                      id="email"
-                      name="email"
-                      value={formData.email}
-                      onChange={handleInputChange}
-                      required
-                    />
-                  </div>
-                  <div className="col-md-6">
-                    <label htmlFor="phone" className="form-label">
+                    <label htmlFor="input3" className="form-label">
                       Phone
                     </label>
                     <input
-                      type="tel"
+                      type="text"
                       className="form-control"
-                      id="phone"
+                      id="input3"
                       name="phone"
+                      placeholder="Phone"
                       value={formData.phone}
                       onChange={handleInputChange}
                     />
                   </div>
-                  <div className="col-md-6">
-                    <label htmlFor="organization" className="form-label">
-                      Organization
+                  <div className="col-md-12">
+                    <label htmlFor="input4" className="form-label">
+                      Email
                     </label>
                     <input
-                      type="text"
+                      type="email"
                       className="form-control"
-                      id="organization"
-                      name="organization"
-                      value={formData.organization}
+                      id="input4"
+                      name="email"
+                      value={formData.email}
                       onChange={handleInputChange}
                     />
                   </div>
                   <div className="col-md-12">
-                    <label htmlFor="designation" className="form-label">
+                    <label htmlFor="input5" className="form-label">
+                      Password
+                    </label>
+                    <input
+                      type="password"
+                      className="form-control"
+                      id="input5"
+                      name="password"
+                      value={formData.password}
+                      onChange={handleInputChange}
+                    />
+                  </div>
+                  <div className="col-md-12">
+                    <label htmlFor="input6" className="form-label">
                       Designation
                     </label>
                     <input
                       type="text"
                       className="form-control"
-                      id="designation"
+                      id="input6"
                       name="designation"
+                      placeholder="Designation"
                       value={formData.designation}
+                      onChange={handleInputChange}
+                    />
+                  </div>
+                  <div className="col-md-12">
+                    <label htmlFor="input7" className="form-label">
+                      Organization
+                    </label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      id="input7"
+                      name="organization"
+                      placeholder="Organization"
+                      value={formData.organization}
+                      onChange={handleInputChange}
+                    />
+                  </div>
+                  <div className="col-md-12">
+                    <label htmlFor="input8" className="form-label">
+                      Country
+                    </label>
+                    <select
+                      id="input8"
+                      className="form-select"
+                      name="country"
+                      value={formData.country}
+                      onChange={handleInputChange}
+                    >
+                      <option value="">Choose...</option>
+                      <option value="United States">United States</option>
+                      <option value="Canada">Canada</option>
+                      <option value="United Kingdom">United Kingdom</option>
+                      <option value="Australia">Australia</option>
+                    </select>
+                  </div>
+                  <div className="col-md-6">
+                    <label htmlFor="input9" className="form-label">
+                      City
+                    </label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      id="input9"
+                      name="city"
+                      placeholder="City"
+                      value={formData.city}
+                      onChange={handleInputChange}
+                    />
+                  </div>
+                  <div className="col-md-4">
+                    <label htmlFor="input10" className="form-label">
+                      State
+                    </label>
+                    <select
+                      id="input10"
+                      className="form-select"
+                      name="state"
+                      value={formData.state}
+                      onChange={handleInputChange}
+                    >
+                      <option value="">Choose...</option>
+                      <option value="NY">New York</option>
+                      <option value="CA">California</option>
+                      <option value="TX">Texas</option>
+                      <option value="FL">Florida</option>
+                    </select>
+                  </div>
+                  <div className="col-md-2">
+                    <label htmlFor="input11" className="form-label">
+                      Zip
+                    </label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      id="input11"
+                      name="zipCode"
+                      placeholder="Zip"
+                      value={formData.zipCode}
+                      onChange={handleInputChange}
+                    />
+                  </div>
+                  <div className="col-md-12">
+                    <label htmlFor="input12" className="form-label">
+                      Address
+                    </label>
+                    <textarea
+                      className="form-control"
+                      id="input12"
+                      name="address"
+                      placeholder="Address ..."
+                      rows={4}
+                      value={formData.address}
                       onChange={handleInputChange}
                     />
                   </div>
