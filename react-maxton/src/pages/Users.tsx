@@ -1,14 +1,15 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import MainLayout from "../layouts/MainLayout";
 import NewUserModal from "../components/NewUserModal";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
-import { deleteUser, updateUser } from "../store/slices/userSlice";
+import { deleteUser } from "../store/slices/userSlice";
 import { addAlert } from "../store/slices/alertSlice";
+import { useNavigate } from "react-router-dom";
 
 const Users: React.FC = () => {
   const dispatch = useAppDispatch();
-  const users = useAppSelector((state) => state.users.users);
-
+  const navigate = useNavigate();
+  const { users } = useAppSelector((state) => state.user);
   const [showModal, setShowModal] = useState(false);
   const [modalAction, setModalAction] = useState<"disable" | "delete">(
     "disable",
@@ -16,34 +17,79 @@ const Users: React.FC = () => {
   const [targetUser, setTargetUser] = useState<any>(null);
   const [showNewUserModal, setShowNewUserModal] = useState(false);
 
-  // For now, show all users (search functionality can be added later)
-  const filteredUsers = users;
+  // Initialize DataTable when component mounts and users data changes
+  useEffect(() => {
+    const initDataTable = () => {
+      // Destroy existing DataTable if it exists
+      if (window.$ && window.$.fn.DataTable) {
+        if (window.$.fn.DataTable.isDataTable("#example")) {
+          window.$("#example").DataTable().destroy();
+        }
+
+        // Initialize DataTable
+        setTimeout(() => {
+          if (document.getElementById("example")) {
+            window.$("#example").DataTable({
+              responsive: true,
+              pageLength: 10,
+              lengthChange: true,
+              searching: true,
+              ordering: true,
+              info: true,
+              autoWidth: false,
+              order: [[0, "asc"]],
+              columnDefs: [
+                { orderable: false, targets: -1 }, // Disable ordering on last column (actions)
+              ],
+            });
+          }
+        }, 100);
+      }
+    };
+
+    initDataTable();
+
+    // Cleanup function
+    return () => {
+      if (
+        window.$ &&
+        window.$.fn.DataTable &&
+        window.$.fn.DataTable.isDataTable("#example")
+      ) {
+        window.$("#example").DataTable().destroy();
+      }
+    };
+  }, [users]);
+
+  const getInitials = (firstName: string, lastName: string) => {
+    return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase();
+  };
+
+  const getUserRoles = (roles: any[]) => {
+    return roles.map((role) => role.name).join(", ");
+  };
 
   const getStatusElement = (status: string) => {
     const statusConfig = {
-      active: {
-        text: "Completed",
-        class:
-          "dash-lable mb-0 bg-success bg-opacity-10 text-success rounded-2",
-      },
-      pending: {
-        text: "Pending",
-        class:
-          "dash-lable mb-0 bg-warning bg-opacity-10 text-warning rounded-2",
-      },
-      disabled: {
-        text: "Canceled",
-        class: "dash-lable mb-0 bg-danger bg-opacity-10 text-danger rounded-2",
-      },
+      active: { bg: "success", text: "Active" },
+      disabled: { bg: "danger", text: "Disabled" },
+      pending: { bg: "warning", text: "Pending" },
     };
 
     const config =
       statusConfig[status as keyof typeof statusConfig] || statusConfig.pending;
-    return <span className={config.class}>{config.text}</span>;
+
+    return (
+      <span
+        className={`dash-lable mb-0 bg-${config.bg} bg-opacity-10 text-${config.bg} rounded-2`}
+      >
+        {config.text}
+      </span>
+    );
   };
 
-  const getInitials = (firstName: string, lastName: string) => {
-    return `${firstName[0]}${lastName[0]}`.toUpperCase();
+  const handleUserClick = (userId: string) => {
+    navigate(`/user-management/users/${userId}`);
   };
 
   const handleActionClick = (user: any, action: "disable" | "delete") => {
@@ -53,28 +99,22 @@ const Users: React.FC = () => {
   };
 
   const handleConfirmAction = () => {
-    if (!targetUser) return;
-
     if (modalAction === "delete") {
       dispatch(deleteUser(targetUser.id));
       dispatch(
         addAlert({
           type: "success",
-          title: "User Deleted",
-          message: `User ${targetUser.first_name} ${targetUser.last_name} has been deleted successfully.`,
+          title: "Success",
+          message: `User "${targetUser?.first_name} ${targetUser?.last_name}" has been deleted.`,
         }),
       );
     } else {
-      const updatedUser = {
-        ...targetUser,
-        status: targetUser.status === "disabled" ? "active" : "disabled",
-      };
-      dispatch(updateUser(updatedUser));
+      // Handle disable/enable logic here
       dispatch(
         addAlert({
           type: "success",
-          title: "User Updated",
-          message: `User ${targetUser.first_name} ${targetUser.last_name} has been ${updatedUser.status === "disabled" ? "disabled" : "enabled"}.`,
+          title: "Success",
+          message: `User "${targetUser?.first_name} ${targetUser?.last_name}" has been ${targetUser?.status === "disabled" ? "enabled" : "disabled"}.`,
         }),
       );
     }
@@ -83,20 +123,12 @@ const Users: React.FC = () => {
     setTargetUser(null);
   };
 
-  const handleUserClick = (userId: string) => {
-    window.location.href = `/user-management/users/${userId}`;
-  };
-
-  const getUserRoles = (roles: any[]) => {
-    return roles.map((role) => role.name).join(", ");
-  };
-
   return (
     <MainLayout>
-      <div className="page-content">
+      <div className="main-content">
         {/* Breadcrumb */}
         <div className="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
-          <div className="breadcrumb-title pe-3">User Management</div>
+          <div className="breadcrumb-title pe-3">Components</div>
           <div className="ps-3">
             <nav aria-label="breadcrumb">
               <ol className="breadcrumb mb-0 p-0">
@@ -106,200 +138,274 @@ const Users: React.FC = () => {
                   </a>
                 </li>
                 <li className="breadcrumb-item active" aria-current="page">
-                  Users
+                  Data Table
                 </li>
               </ol>
             </nav>
           </div>
           <div className="ms-auto">
-            <div className="btn-group">
+            <div className="btn-group position-static">
+              <div className="btn-group position-static">
+                <button
+                  type="button"
+                  className="btn btn-primary"
+                  data-bs-toggle="dropdown"
+                  data-bs-auto-close="outside"
+                >
+                  Settings
+                </button>
+                <ul className="dropdown-menu">
+                  <li>
+                    <label className="dropdown-item">
+                      <input
+                        type="checkbox"
+                        className="me-2"
+                        id="BorderHorizontal"
+                        defaultChecked
+                      />
+                      Horizontal Border
+                    </label>
+                  </li>
+                  <li>
+                    <label className="dropdown-item">
+                      <input
+                        type="checkbox"
+                        className="me-2"
+                        id="BorderVertical"
+                      />
+                      Vertical Border
+                    </label>
+                  </li>
+                  <li>
+                    <hr className="dropdown-divider" />
+                  </li>
+                  <li>
+                    <label className="dropdown-item">
+                      <input
+                        type="checkbox"
+                        className="me-2"
+                        id="stripedRows"
+                      />
+                      Striped Rows
+                    </label>
+                  </li>
+                  <li>
+                    <label className="dropdown-item">
+                      <input
+                        type="checkbox"
+                        className="me-2"
+                        id="stripedColumns"
+                      />
+                      Striped Columns
+                    </label>
+                  </li>
+                  <li>
+                    <hr className="dropdown-divider" />
+                  </li>
+                  <li>
+                    <label className="dropdown-item">
+                      <input
+                        type="checkbox"
+                        className="me-2"
+                        id="hoverableRows"
+                      />
+                      Hoverable Rows
+                    </label>
+                  </li>
+                  <li>
+                    <label className="dropdown-item">
+                      <input
+                        type="checkbox"
+                        className="me-2"
+                        id="responsiveTable"
+                      />
+                      Responsive Table
+                    </label>
+                  </li>
+                </ul>
+              </div>
               <button
                 type="button"
-                className="btn btn-grd-primary px-4"
-                onClick={() => setShowNewUserModal(true)}
+                className="btn btn-primary dropdown-toggle dropdown-toggle-split"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
               >
-                + | New User
+                <span className="visually-hidden">Toggle Dropdown</span>
               </button>
+              <ul className="dropdown-menu dropdown-menu-end">
+                <li>
+                  <a className="dropdown-item" href="javascript:;">
+                    Action
+                  </a>
+                </li>
+                <li>
+                  <a className="dropdown-item" href="javascript:;">
+                    Another action
+                  </a>
+                </li>
+                <li>
+                  <a className="dropdown-item" href="javascript:;">
+                    Something else here
+                  </a>
+                </li>
+                <li>
+                  <hr className="dropdown-divider" />
+                </li>
+                <li>
+                  <a className="dropdown-item" href="javascript:;">
+                    Separated link
+                  </a>
+                </li>
+              </ul>
             </div>
           </div>
         </div>
 
-        <div className="row">
-          <div className="col-12">
-            <div className="card">
-              <div className="card-header">
-                <div className="row align-items-center">
-                  <div className="col">
-                    <h6 className="mb-0">DataTable Example</h6>
-                  </div>
-                  <div className="col-auto">
-                    <div className="dropdown">
-                      <a
-                        href="javascript:;"
-                        className="dropdown-toggle-nocaret options dropdown-toggle"
-                        data-bs-toggle="dropdown"
-                      >
-                        <span className="material-icons-outlined">
-                          more_vert
-                        </span>
-                      </a>
-                      <ul className="dropdown-menu">
-                        <li>
-                          <a className="dropdown-item" href="javascript:;">
-                            Action
-                          </a>
-                        </li>
-                        <li>
-                          <a className="dropdown-item" href="javascript:;">
-                            Another action
-                          </a>
-                        </li>
-                        <li>
-                          <a className="dropdown-item" href="javascript:;">
-                            Something else here
-                          </a>
-                        </li>
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="card-body">
-                <div className="table-responsive">
-                  <table
-                    className="table table-striped table-bordered"
-                    id="example"
-                    style={{ width: "100%" }}
-                  >
-                    <thead>
-                      <tr>
-                        <th>Name</th>
-                        <th>Position</th>
-                        <th>Office</th>
-                        <th>Age</th>
-                        <th>Start date</th>
-                        <th>Salary</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {filteredUsers.map((user) => (
-                        <tr key={user.id}>
-                          <td>
-                            <div className="d-flex align-items-center gap-3">
-                              {user.photo ? (
-                                <img
-                                  src={user.photo}
-                                  alt=""
-                                  className="rounded-circle"
-                                  width="40"
-                                  height="40"
-                                />
-                              ) : (
-                                <div
-                                  className="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center"
-                                  style={{
-                                    width: "40px",
-                                    height: "40px",
-                                    fontSize: "14px",
-                                  }}
-                                >
-                                  {getInitials(user.first_name, user.last_name)}
-                                </div>
-                              )}
-                              <div>
-                                <a
-                                  href="#"
-                                  className="text-decoration-none fw-bold text-dark"
-                                  onClick={(e) => {
-                                    e.preventDefault();
-                                    handleUserClick(user.id);
-                                  }}
-                                >
-                                  {user.first_name} {user.last_name}
-                                </a>
-                              </div>
+        {/* DataTable Example */}
+        <h6 className="mb-0 text-uppercase">DataTable Example</h6>
+        <hr />
+        <div className="card">
+          <div className="card-body">
+            <div className="table-responsive">
+              <table
+                id="example"
+                className="table table-striped table-bordered"
+                style={{ width: "100%" }}
+              >
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Position</th>
+                    <th>Office</th>
+                    <th>Age</th>
+                    <th>Start date</th>
+                    <th>Salary</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {users.map((user) => (
+                    <tr key={user.id}>
+                      <td>
+                        <div className="d-flex align-items-center gap-3">
+                          {user.photo ? (
+                            <img
+                              src={user.photo}
+                              alt=""
+                              className="rounded-circle"
+                              width="40"
+                              height="40"
+                            />
+                          ) : (
+                            <div
+                              className="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center"
+                              style={{
+                                width: "40px",
+                                height: "40px",
+                                fontSize: "14px",
+                              }}
+                            >
+                              {getInitials(user.first_name, user.last_name)}
                             </div>
-                          </td>
-                          <td>{user.designation}</td>
-                          <td>{user.organization}</td>
-                          <td>{getUserRoles(user.roles)}</td>
-                          <td>{getStatusElement(user.status)}</td>
-                          <td>
-                            <div className="d-flex gap-2">
-                              <span>
-                                {new Date(user.created_at).toLocaleDateString()}
-                              </span>
-                              <div className="d-flex gap-1">
-                                <button
-                                  className="btn btn-sm p-1"
-                                  title="Edit User"
-                                  onClick={() => handleUserClick(user.id)}
-                                  style={{
-                                    border: "none",
-                                    background: "transparent",
-                                  }}
-                                >
-                                  <i className="material-icons-outlined text-primary">
-                                    edit
-                                  </i>
-                                </button>
-                                <button
-                                  className="btn btn-sm p-1"
-                                  title={
-                                    user.status === "disabled"
-                                      ? "Enable User"
-                                      : "Disable User"
-                                  }
-                                  onClick={() =>
-                                    handleActionClick(user, "disable")
-                                  }
-                                  style={{
-                                    border: "none",
-                                    background: "transparent",
-                                  }}
-                                >
-                                  <i className="material-icons-outlined text-warning">
-                                    {user.status === "disabled"
-                                      ? "check_circle"
-                                      : "block"}
-                                  </i>
-                                </button>
-                                <button
-                                  className="btn btn-sm p-1"
-                                  title="Delete User"
-                                  onClick={() =>
-                                    handleActionClick(user, "delete")
-                                  }
-                                  style={{
-                                    border: "none",
-                                    background: "transparent",
-                                  }}
-                                >
-                                  <i className="material-icons-outlined text-danger">
-                                    delete
-                                  </i>
-                                </button>
-                              </div>
-                            </div>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                    <tfoot>
-                      <tr>
-                        <th>Name</th>
-                        <th>Position</th>
-                        <th>Office</th>
-                        <th>Age</th>
-                        <th>Start date</th>
-                        <th>Salary</th>
-                      </tr>
-                    </tfoot>
-                  </table>
-                </div>
-              </div>
+                          )}
+                          <div>
+                            <a
+                              href="#"
+                              className="text-decoration-none fw-bold text-dark"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                handleUserClick(user.id);
+                              }}
+                            >
+                              {user.first_name} {user.last_name}
+                            </a>
+                          </div>
+                        </div>
+                      </td>
+                      <td>{user.designation}</td>
+                      <td>{user.organization}</td>
+                      <td>{getUserRoles(user.roles)}</td>
+                      <td>{getStatusElement(user.status)}</td>
+                      <td>
+                        <div className="d-flex gap-2">
+                          <span>
+                            {new Date(user.created_at).toLocaleDateString()}
+                          </span>
+                          <div className="d-flex gap-1">
+                            <button
+                              className="btn btn-sm p-1"
+                              title="Edit User"
+                              onClick={() => handleUserClick(user.id)}
+                              style={{
+                                border: "none",
+                                background: "transparent",
+                              }}
+                            >
+                              <i className="material-icons-outlined text-primary">
+                                edit
+                              </i>
+                            </button>
+                            <button
+                              className="btn btn-sm p-1"
+                              title={
+                                user.status === "disabled"
+                                  ? "Enable User"
+                                  : "Disable User"
+                              }
+                              onClick={() => handleActionClick(user, "disable")}
+                              style={{
+                                border: "none",
+                                background: "transparent",
+                              }}
+                            >
+                              <i className="material-icons-outlined text-warning">
+                                {user.status === "disabled"
+                                  ? "check_circle"
+                                  : "block"}
+                              </i>
+                            </button>
+                            <button
+                              className="btn btn-sm p-1"
+                              title="Delete User"
+                              onClick={() => handleActionClick(user, "delete")}
+                              style={{
+                                border: "none",
+                                background: "transparent",
+                              }}
+                            >
+                              <i className="material-icons-outlined text-danger">
+                                delete
+                              </i>
+                            </button>
+                          </div>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+                <tfoot>
+                  <tr>
+                    <th>Name</th>
+                    <th>Position</th>
+                    <th>Office</th>
+                    <th>Age</th>
+                    <th>Start date</th>
+                    <th>Salary</th>
+                  </tr>
+                </tfoot>
+              </table>
             </div>
           </div>
+        </div>
+
+        {/* Add New User Button */}
+        <div className="d-flex justify-content-end mt-3">
+          <button
+            type="button"
+            className="btn btn-grd-primary px-4"
+            onClick={() => setShowNewUserModal(true)}
+          >
+            + | New User
+          </button>
         </div>
       </div>
 
