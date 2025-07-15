@@ -10,7 +10,6 @@ const Users: React.FC = () => {
   const users = useAppSelector((state) => state.users.users);
 
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
-  const [searchTerm, setSearchTerm] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [modalAction, setModalAction] = useState<"disable" | "delete">(
     "disable",
@@ -18,14 +17,8 @@ const Users: React.FC = () => {
   const [targetUser, setTargetUser] = useState<any>(null);
   const [showNewUserModal, setShowNewUserModal] = useState(false);
 
-  // Filter users based on search term
-  const filteredUsers = users.filter(
-    (user) =>
-      `${user.first_name} ${user.last_name}`
-        .toLowerCase()
-        .includes(searchTerm.toLowerCase()) ||
-      user.email.toLowerCase().includes(searchTerm.toLowerCase()),
-  );
+  // For now, show all users (search functionality can be added later)
+  const filteredUsers = users;
 
   const handleSelectUser = (userId: string) => {
     setSelectedUsers((prev) =>
