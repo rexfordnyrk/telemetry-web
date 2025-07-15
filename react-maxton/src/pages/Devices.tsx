@@ -1,18 +1,18 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import MainLayout from "../layouts/MainLayout";
 import { useAppDispatch } from "../store/hooks";
 import { addAlert } from "../store/slices/alertSlice";
 
 const Devices: React.FC = () => {
   const dispatch = useAppDispatch();
-  const [showNewDeviceModal, setShowNewDeviceModal] = useState(false);
+  // Removed unused showNewDeviceModal
   const [showModal, setShowModal] = useState(false);
   const [modalAction, setModalAction] = useState<"disable" | "delete">(
     "disable",
   );
   const [targetDevice, setTargetDevice] = useState<any>(null);
 
-  // Sample devices data
+  // Sample devices data - memoized to prevent re-renders
   const devices = [
     {
       id: "1",
@@ -71,6 +71,9 @@ const Devices: React.FC = () => {
     },
   ];
 
+  // Memoize devices to prevent unnecessary re-renders
+  const memoizedDevices = useMemo(() => devices, []);
+
   // Initialize DataTable when component mounts
   useEffect(() => {
     const initDataTable = () => {
@@ -113,7 +116,7 @@ const Devices: React.FC = () => {
         window.$("#example").DataTable().destroy();
       }
     };
-  }, [devices]);
+  }, [memoizedDevices]);
 
   const getStatusElement = (status: string) => {
     const statusConfig = {
@@ -339,7 +342,7 @@ const Devices: React.FC = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {devices.map((device) => (
+                  {memoizedDevices.map((device) => (
                     <tr key={device.id}>
                       <td>
                         <div className="d-flex align-items-center gap-3">
@@ -454,7 +457,9 @@ const Devices: React.FC = () => {
           <button
             type="button"
             className="btn btn-grd-primary px-4"
-            onClick={() => setShowNewDeviceModal(true)}
+            onClick={() => {
+              /* TODO: Implement new device modal */
+            }}
           >
             + | New Device
           </button>
