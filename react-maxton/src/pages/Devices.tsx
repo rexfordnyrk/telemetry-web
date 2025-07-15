@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import MainLayout from "../layouts/MainLayout";
 import { useAppDispatch } from "../store/hooks";
 import { addAlert } from "../store/slices/alertSlice";
@@ -12,7 +12,7 @@ const Devices: React.FC = () => {
   );
   const [targetDevice, setTargetDevice] = useState<any>(null);
 
-  // Sample devices data matching DataTable structure
+  // Sample devices data
   const devices = [
     {
       id: "1",
@@ -70,6 +70,50 @@ const Devices: React.FC = () => {
       last_seen: "2024-01-12",
     },
   ];
+
+  // Initialize DataTable when component mounts
+  useEffect(() => {
+    const initDataTable = () => {
+      // Destroy existing DataTable if it exists
+      if (window.$ && window.$.fn.DataTable) {
+        if (window.$.fn.DataTable.isDataTable("#example")) {
+          window.$("#example").DataTable().destroy();
+        }
+
+        // Initialize DataTable
+        setTimeout(() => {
+          if (document.getElementById("example")) {
+            window.$("#example").DataTable({
+              responsive: true,
+              pageLength: 10,
+              lengthChange: true,
+              searching: true,
+              ordering: true,
+              info: true,
+              autoWidth: false,
+              order: [[0, "asc"]],
+              columnDefs: [
+                { orderable: false, targets: -1 }, // Disable ordering on last column (actions)
+              ],
+            });
+          }
+        }, 100);
+      }
+    };
+
+    initDataTable();
+
+    // Cleanup function
+    return () => {
+      if (
+        window.$ &&
+        window.$.fn.DataTable &&
+        window.$.fn.DataTable.isDataTable("#example")
+      ) {
+        window.$("#example").DataTable().destroy();
+      }
+    };
+  }, [devices]);
 
   const getStatusElement = (status: string) => {
     const statusConfig = {
@@ -138,8 +182,9 @@ const Devices: React.FC = () => {
   return (
     <MainLayout>
       <div className="main-content">
+        {/* Breadcrumb */}
         <div className="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
-          <div className="breadcrumb-title pe-3">Device Management</div>
+          <div className="breadcrumb-title pe-3">Components</div>
           <div className="ps-3">
             <nav aria-label="breadcrumb">
               <ol className="breadcrumb mb-0 p-0">
@@ -149,196 +194,270 @@ const Devices: React.FC = () => {
                   </a>
                 </li>
                 <li className="breadcrumb-item active" aria-current="page">
-                  Devices
+                  Data Table
                 </li>
               </ol>
             </nav>
           </div>
           <div className="ms-auto">
-            <div className="btn-group">
+            <div className="btn-group position-static">
+              <div className="btn-group position-static">
+                <button
+                  type="button"
+                  className="btn btn-primary"
+                  data-bs-toggle="dropdown"
+                  data-bs-auto-close="outside"
+                >
+                  Settings
+                </button>
+                <ul className="dropdown-menu">
+                  <li>
+                    <label className="dropdown-item">
+                      <input
+                        type="checkbox"
+                        className="me-2"
+                        id="BorderHorizontal"
+                        defaultChecked
+                      />
+                      Horizontal Border
+                    </label>
+                  </li>
+                  <li>
+                    <label className="dropdown-item">
+                      <input
+                        type="checkbox"
+                        className="me-2"
+                        id="BorderVertical"
+                      />
+                      Vertical Border
+                    </label>
+                  </li>
+                  <li>
+                    <hr className="dropdown-divider" />
+                  </li>
+                  <li>
+                    <label className="dropdown-item">
+                      <input
+                        type="checkbox"
+                        className="me-2"
+                        id="stripedRows"
+                      />
+                      Striped Rows
+                    </label>
+                  </li>
+                  <li>
+                    <label className="dropdown-item">
+                      <input
+                        type="checkbox"
+                        className="me-2"
+                        id="stripedColumns"
+                      />
+                      Striped Columns
+                    </label>
+                  </li>
+                  <li>
+                    <hr className="dropdown-divider" />
+                  </li>
+                  <li>
+                    <label className="dropdown-item">
+                      <input
+                        type="checkbox"
+                        className="me-2"
+                        id="hoverableRows"
+                      />
+                      Hoverable Rows
+                    </label>
+                  </li>
+                  <li>
+                    <label className="dropdown-item">
+                      <input
+                        type="checkbox"
+                        className="me-2"
+                        id="responsiveTable"
+                      />
+                      Responsive Table
+                    </label>
+                  </li>
+                </ul>
+              </div>
               <button
                 type="button"
-                className="btn btn-grd-primary px-4"
-                onClick={() => setShowNewDeviceModal(true)}
+                className="btn btn-primary dropdown-toggle dropdown-toggle-split"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
               >
-                + | New Device
+                <span className="visually-hidden">Toggle Dropdown</span>
               </button>
+              <ul className="dropdown-menu dropdown-menu-end">
+                <li>
+                  <a className="dropdown-item" href="javascript:;">
+                    Action
+                  </a>
+                </li>
+                <li>
+                  <a className="dropdown-item" href="javascript:;">
+                    Another action
+                  </a>
+                </li>
+                <li>
+                  <a className="dropdown-item" href="javascript:;">
+                    Something else here
+                  </a>
+                </li>
+                <li>
+                  <hr className="dropdown-divider" />
+                </li>
+                <li>
+                  <a className="dropdown-item" href="javascript:;">
+                    Separated link
+                  </a>
+                </li>
+              </ul>
             </div>
           </div>
         </div>
 
-        <div className="row">
-          <div className="col-12">
-            <div className="card">
-              <div className="card-header">
-                <div className="row align-items-center">
-                  <div className="col">
-                    <h6 className="mb-0">DataTable Example</h6>
-                  </div>
-                  <div className="col-auto">
-                    <div className="dropdown">
-                      <a
-                        href="javascript:;"
-                        className="dropdown-toggle-nocaret options dropdown-toggle"
-                        data-bs-toggle="dropdown"
-                      >
-                        <span className="material-icons-outlined">
-                          more_vert
-                        </span>
-                      </a>
-                      <ul className="dropdown-menu">
-                        <li>
-                          <a className="dropdown-item" href="javascript:;">
-                            Action
-                          </a>
-                        </li>
-                        <li>
-                          <a className="dropdown-item" href="javascript:;">
-                            Another action
-                          </a>
-                        </li>
-                        <li>
-                          <a className="dropdown-item" href="javascript:;">
-                            Something else here
-                          </a>
-                        </li>
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="card-body">
-                <div className="table-responsive">
-                  <table
-                    className="table table-striped table-bordered"
-                    id="example"
-                    style={{ width: "100%" }}
-                  >
-                    <thead>
-                      <tr>
-                        <th>Name</th>
-                        <th>Position</th>
-                        <th>Office</th>
-                        <th>Age</th>
-                        <th>Start date</th>
-                        <th>Salary</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {devices.map((device) => (
-                        <tr key={device.id}>
-                          <td>
-                            <div className="d-flex align-items-center gap-3">
-                              <div
-                                className="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center"
-                                style={{
-                                  width: "40px",
-                                  height: "40px",
-                                  fontSize: "16px",
-                                }}
-                              >
-                                <i className="material-icons-outlined">
-                                  {getDeviceIcon(device.type)}
-                                </i>
-                              </div>
-                              <div>
-                                <a
-                                  href="#"
-                                  className="text-decoration-none fw-bold text-dark"
-                                  onClick={(e) => {
-                                    e.preventDefault();
-                                  }}
-                                >
-                                  {device.name}
-                                </a>
-                                <div className="text-muted small">
-                                  {device.serial}
-                                </div>
-                              </div>
-                            </div>
-                          </td>
-                          <td>
-                            {device.type}
+        {/* DataTable Example */}
+        <h6 className="mb-0 text-uppercase">DataTable Example</h6>
+        <hr />
+        <div className="card">
+          <div className="card-body">
+            <div className="table-responsive">
+              <table
+                id="example"
+                className="table table-striped table-bordered"
+                style={{ width: "100%" }}
+              >
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Position</th>
+                    <th>Office</th>
+                    <th>Age</th>
+                    <th>Start date</th>
+                    <th>Salary</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {devices.map((device) => (
+                    <tr key={device.id}>
+                      <td>
+                        <div className="d-flex align-items-center gap-3">
+                          <div
+                            className="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center"
+                            style={{
+                              width: "40px",
+                              height: "40px",
+                              fontSize: "16px",
+                            }}
+                          >
+                            <i className="material-icons-outlined">
+                              {getDeviceIcon(device.type)}
+                            </i>
+                          </div>
+                          <div>
+                            <a
+                              href="#"
+                              className="text-decoration-none fw-bold text-dark"
+                              onClick={(e) => {
+                                e.preventDefault();
+                              }}
+                            >
+                              {device.name}
+                            </a>
                             <div className="text-muted small">
-                              {device.model}
+                              {device.serial}
                             </div>
-                          </td>
-                          <td>{device.location}</td>
-                          <td>{device.assigned_to}</td>
-                          <td>{getStatusElement(device.status)}</td>
-                          <td>
-                            <div className="d-flex gap-2">
-                              <span>
-                                {new Date(
-                                  device.last_seen,
-                                ).toLocaleDateString()}
-                              </span>
-                              <div className="d-flex gap-1">
-                                <button
-                                  className="btn btn-sm p-1"
-                                  title="Edit Device"
-                                  style={{
-                                    border: "none",
-                                    background: "transparent",
-                                  }}
-                                >
-                                  <i className="material-icons-outlined text-primary">
-                                    edit
-                                  </i>
-                                </button>
-                                <button
-                                  className="btn btn-sm p-1"
-                                  title="Retire/Activate Device"
-                                  onClick={() =>
-                                    handleActionClick(device, "disable")
-                                  }
-                                  style={{
-                                    border: "none",
-                                    background: "transparent",
-                                  }}
-                                >
-                                  <i className="material-icons-outlined text-warning">
-                                    {device.status === "retired"
-                                      ? "check_circle"
-                                      : "block"}
-                                  </i>
-                                </button>
-                                <button
-                                  className="btn btn-sm p-1"
-                                  title="Delete Device"
-                                  onClick={() =>
-                                    handleActionClick(device, "delete")
-                                  }
-                                  style={{
-                                    border: "none",
-                                    background: "transparent",
-                                  }}
-                                >
-                                  <i className="material-icons-outlined text-danger">
-                                    delete
-                                  </i>
-                                </button>
-                              </div>
-                            </div>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                    <tfoot>
-                      <tr>
-                        <th>Name</th>
-                        <th>Position</th>
-                        <th>Office</th>
-                        <th>Age</th>
-                        <th>Start date</th>
-                        <th>Salary</th>
-                      </tr>
-                    </tfoot>
-                  </table>
-                </div>
-              </div>
+                          </div>
+                        </div>
+                      </td>
+                      <td>
+                        {device.type}
+                        <div className="text-muted small">{device.model}</div>
+                      </td>
+                      <td>{device.location}</td>
+                      <td>{device.assigned_to}</td>
+                      <td>{getStatusElement(device.status)}</td>
+                      <td>
+                        <div className="d-flex gap-2">
+                          <span>
+                            {new Date(device.last_seen).toLocaleDateString()}
+                          </span>
+                          <div className="d-flex gap-1">
+                            <button
+                              className="btn btn-sm p-1"
+                              title="Edit Device"
+                              style={{
+                                border: "none",
+                                background: "transparent",
+                              }}
+                            >
+                              <i className="material-icons-outlined text-primary">
+                                edit
+                              </i>
+                            </button>
+                            <button
+                              className="btn btn-sm p-1"
+                              title="Retire/Activate Device"
+                              onClick={() =>
+                                handleActionClick(device, "disable")
+                              }
+                              style={{
+                                border: "none",
+                                background: "transparent",
+                              }}
+                            >
+                              <i className="material-icons-outlined text-warning">
+                                {device.status === "retired"
+                                  ? "check_circle"
+                                  : "block"}
+                              </i>
+                            </button>
+                            <button
+                              className="btn btn-sm p-1"
+                              title="Delete Device"
+                              onClick={() =>
+                                handleActionClick(device, "delete")
+                              }
+                              style={{
+                                border: "none",
+                                background: "transparent",
+                              }}
+                            >
+                              <i className="material-icons-outlined text-danger">
+                                delete
+                              </i>
+                            </button>
+                          </div>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+                <tfoot>
+                  <tr>
+                    <th>Name</th>
+                    <th>Position</th>
+                    <th>Office</th>
+                    <th>Age</th>
+                    <th>Start date</th>
+                    <th>Salary</th>
+                  </tr>
+                </tfoot>
+              </table>
             </div>
           </div>
+        </div>
+
+        {/* Add New Device Button */}
+        <div className="d-flex justify-content-end mt-3">
+          <button
+            type="button"
+            className="btn btn-grd-primary px-4"
+            onClick={() => setShowNewDeviceModal(true)}
+          >
+            + | New Device
+          </button>
         </div>
       </div>
 
