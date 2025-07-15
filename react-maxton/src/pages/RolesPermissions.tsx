@@ -15,6 +15,7 @@ const RolesPermissions: React.FC = () => {
   const [selectedRole, setSelectedRole] = useState<any>(null);
   const [removedPermissions, setRemovedPermissions] = useState<any[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [newPermissions, setNewPermissions] = useState<any[]>([]);
 
   // Sample roles data - memoized to prevent re-renders
   const roles = [
@@ -111,8 +112,11 @@ const RolesPermissions: React.FC = () => {
   const getAvailablePermissions = () => {
     if (!selectedRole) return [];
     const rolePermissionIds = selectedRole.permissions.map((p: any) => p.id);
+    const newPermissionIds = newPermissions.map((p: any) => p.id);
     return getFilteredPermissions().filter(
-      (permission) => !rolePermissionIds.includes(permission.id),
+      (permission) =>
+        !rolePermissionIds.includes(permission.id) &&
+        !newPermissionIds.includes(permission.id),
     );
   };
 
@@ -124,17 +128,37 @@ const RolesPermissions: React.FC = () => {
     );
   };
 
+  const handleAssignPermission = (permission: any) => {
+    setNewPermissions((prev) => [...prev, permission]);
+  };
+
+  const handleRemoveNewPermission = (permission: any) => {
+    setNewPermissions((prev) => prev.filter((p) => p.id !== permission.id));
+  };
+
   const handleApplyChanges = () => {
+    let message = "";
+
     if (removedPermissions.length > 0) {
-      // Apply permission removals
+      message += `${removedPermissions.length} permission(s) removed`;
+    }
+
+    if (newPermissions.length > 0) {
+      if (message) message += " and ";
+      message += `${newPermissions.length} permission(s) added`;
+    }
+
+    if (message) {
+      // Apply permission changes
       dispatch(
         addAlert({
           type: "success",
           title: "Success",
-          message: `${removedPermissions.length} permission(s) removed from ${selectedRole?.name}.`,
+          message: `${message} for ${selectedRole?.name}.`,
         }),
       );
       setRemovedPermissions([]);
+      setNewPermissions([]);
     }
   };
 
