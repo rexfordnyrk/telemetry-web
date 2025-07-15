@@ -309,61 +309,55 @@ const RolesPermissions: React.FC = () => {
                           </div>
                         </div>
                       </td>
-                      <td>{role.permissions}</td>
                       <td>{role.description}</td>
-                      <td>{role.users_count} users</td>
-                      <td>{getStatusElement(role.status)}</td>
+                      <td>{new Date(role.created_at).toLocaleDateString()}</td>
+                      <td>{new Date(role.updated_at).toLocaleDateString()}</td>
                       <td>
-                        <div className="d-flex gap-2">
-                          <span>
-                            {new Date(role.created_at).toLocaleDateString()}
-                          </span>
-                          <div className="d-flex gap-1">
-                            <button
-                              className="btn btn-sm p-1"
-                              title="Edit Role"
-                              style={{
-                                border: "none",
-                                background: "transparent",
-                              }}
-                            >
-                              <i className="material-icons-outlined text-primary">
-                                edit
-                              </i>
-                            </button>
-                            <button
-                              className="btn btn-sm p-1"
-                              title={
-                                role.status === "disabled"
-                                  ? "Enable Role"
-                                  : "Disable Role"
-                              }
-                              onClick={() => handleActionClick(role, "disable")}
-                              style={{
-                                border: "none",
-                                background: "transparent",
-                              }}
-                            >
-                              <i className="material-icons-outlined text-warning">
-                                {role.status === "disabled"
-                                  ? "check_circle"
-                                  : "block"}
-                              </i>
-                            </button>
-                            <button
-                              className="btn btn-sm p-1"
-                              title="Delete Role"
-                              onClick={() => handleActionClick(role, "delete")}
-                              style={{
-                                border: "none",
-                                background: "transparent",
-                              }}
-                            >
-                              <i className="material-icons-outlined text-danger">
-                                delete
-                              </i>
-                            </button>
-                          </div>
+                        <div className="d-flex gap-1">
+                          <button
+                            className="btn btn-sm p-1"
+                            title="Edit Role"
+                            style={{
+                              border: "none",
+                              background: "transparent",
+                            }}
+                          >
+                            <i className="material-icons-outlined text-primary">
+                              edit
+                            </i>
+                          </button>
+                          <button
+                            className="btn btn-sm p-1"
+                            title={
+                              role.status === "disabled"
+                                ? "Enable Role"
+                                : "Disable Role"
+                            }
+                            onClick={() => handleActionClick(role, "disable")}
+                            style={{
+                              border: "none",
+                              background: "transparent",
+                            }}
+                          >
+                            <i className="material-icons-outlined text-warning">
+                              {role.status === "disabled"
+                                ? "check_circle"
+                                : "block"}
+                            </i>
+                          </button>
+                          <button
+                            className="btn btn-sm p-1"
+                            title="Delete Role"
+                            onClick={() => handleActionClick(role, "delete")}
+                            style={{
+                              border: "none",
+                              background: "transparent",
+                            }}
+                          >
+                            <i className="material-icons-outlined text-danger">
+                              delete
+                            </i>
+                          </button>
                         </div>
                       </td>
                     </tr>
