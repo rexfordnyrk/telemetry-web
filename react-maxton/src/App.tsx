@@ -6,6 +6,7 @@ import EcommerceDashboard from "./pages/EcommerceDashboard";
 import WidgetsData from "./pages/WidgetsData";
 import BasicLogin from "./pages/BasicLogin";
 import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
 import NotFound from "./pages/NotFound";
 import ErrorBoundary from "./components/ErrorBoundary";
 import "react-toastify/dist/ReactToastify.css";
