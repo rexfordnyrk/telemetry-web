@@ -4,6 +4,7 @@ import { LayoutProvider } from "./context/LayoutContext";
 import Dashboard from "./pages/Dashboard";
 import EcommerceDashboard from "./pages/EcommerceDashboard";
 import WidgetsData from "./pages/WidgetsData";
+import BasicLogin from "./pages/BasicLogin";
 import NotFound from "./pages/NotFound";
 import ErrorBoundary from "./components/ErrorBoundary";
 import "react-toastify/dist/ReactToastify.css";
