@@ -427,9 +427,9 @@ const UserDetails: React.FC = () => {
                 </div>
               </div>
               <div className="card-body">
-                <div className="d-flex flex-column gap-3">
-                  <div className="d-flex align-items-center gap-3">
-                    <div className="wh-42 d-flex align-items-center justify-content-center rounded-circle bg-primary bg-opacity-10 text-primary">
+                <div className="d-flex flex-column gap-2">
+                  <div className="d-flex align-items-center gap-2">
+                    <div className="wh-36 d-flex align-items-center justify-content-center rounded-circle bg-primary bg-opacity-10 text-primary">
                       <i className="material-icons-outlined">person</i>
                     </div>
                     <div className="flex-grow-1">
@@ -437,8 +437,8 @@ const UserDetails: React.FC = () => {
                       <p className="mb-0 text-secondary">{user.name}</p>
                     </div>
                   </div>
-                  <div className="d-flex align-items-center gap-3">
-                    <div className="wh-42 d-flex align-items-center justify-content-center rounded-circle bg-success bg-opacity-10 text-success">
+                  <div className="d-flex align-items-center gap-2">
+                    <div className="wh-36 d-flex align-items-center justify-content-center rounded-circle bg-success bg-opacity-10 text-success">
                       <i className="material-icons-outlined">check_circle</i>
                     </div>
                     <div className="flex-grow-1">
@@ -449,8 +449,8 @@ const UserDetails: React.FC = () => {
                       </span>
                     </div>
                   </div>
-                  <div className="d-flex align-items-center gap-3">
-                    <div className="wh-42 d-flex align-items-center justify-content-center rounded-circle bg-info bg-opacity-10 text-info">
+                  <div className="d-flex align-items-center gap-2">
+                    <div className="wh-36 d-flex align-items-center justify-content-center rounded-circle bg-info bg-opacity-10 text-info">
                       <i className="material-icons-outlined">work</i>
                     </div>
                     <div className="flex-grow-1">
@@ -458,8 +458,8 @@ const UserDetails: React.FC = () => {
                       <p className="mb-0 text-secondary">{user.role}</p>
                     </div>
                   </div>
-                  <div className="d-flex align-items-center gap-3">
-                    <div className="wh-42 d-flex align-items-center justify-content-center rounded-circle bg-warning bg-opacity-10 text-warning">
+                  <div className="d-flex align-items-center gap-2">
+                    <div className="wh-36 d-flex align-items-center justify-content-center rounded-circle bg-warning bg-opacity-10 text-warning">
                       <i className="material-icons-outlined">location_on</i>
                     </div>
                     <div className="flex-grow-1">
@@ -467,8 +467,8 @@ const UserDetails: React.FC = () => {
                       <p className="mb-0 text-secondary">{user.country}</p>
                     </div>
                   </div>
-                  <div className="d-flex align-items-center gap-3">
-                    <div className="wh-42 d-flex align-items-center justify-content-center rounded-circle bg-danger bg-opacity-10 text-danger">
+                  <div className="d-flex align-items-center gap-2">
+                    <div className="wh-36 d-flex align-items-center justify-content-center rounded-circle bg-danger bg-opacity-10 text-danger">
                       <i className="material-icons-outlined">language</i>
                     </div>
                     <div className="flex-grow-1">
@@ -476,8 +476,8 @@ const UserDetails: React.FC = () => {
                       <p className="mb-0 text-secondary">{user.language}</p>
                     </div>
                   </div>
-                  <div className="d-flex align-items-center gap-3">
-                    <div className="wh-42 d-flex align-items-center justify-content-center rounded-circle bg-purple bg-opacity-10 text-purple">
+                  <div className="d-flex align-items-center gap-2">
+                    <div className="wh-36 d-flex align-items-center justify-content-center rounded-circle bg-purple bg-opacity-10 text-purple">
                       <i className="material-icons-outlined">email</i>
                     </div>
                     <div className="flex-grow-1">
@@ -485,8 +485,8 @@ const UserDetails: React.FC = () => {
                       <p className="mb-0 text-secondary">{user.email}</p>
                     </div>
                   </div>
-                  <div className="d-flex align-items-center gap-3">
-                    <div className="wh-42 d-flex align-items-center justify-content-center rounded-circle bg-dark bg-opacity-10 text-dark">
+                  <div className="d-flex align-items-center gap-2">
+                    <div className="wh-36 d-flex align-items-center justify-content-center rounded-circle bg-dark bg-opacity-10 text-dark">
                       <i className="material-icons-outlined">phone</i>
                     </div>
                     <div className="flex-grow-1">
@@ -536,7 +536,7 @@ const UserDetails: React.FC = () => {
                     <p className="mb-0 text-secondary small">Organization</p>
                   </div>
                 </div>
-                <div className="d-flex align-items-center gap-3">
+                <div className="d-flex align-items-center gap-2">
                   <div className="wh-48 d-flex align-items-center justify-content-center rounded-circle bg-info text-white">
                     <i className="material-icons-outlined">badge</i>
                   </div>
