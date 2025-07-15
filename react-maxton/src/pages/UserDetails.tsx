@@ -121,7 +121,7 @@ const UserDetails: React.FC = () => {
       updated_at: new Date().toISOString(),
     };
 
-    dispatch(updateUser(updatedUser));
+    dispatch(updateUser(updatedUser as any));
     dispatch(
       addAlert({
         type: "success",
