@@ -364,6 +364,24 @@ export const navigationData: NavigationItem[] = [
     ],
   },
   {
+    id: "user-management-label",
+    title: "User Management",
+    icon: undefined,
+    children: [],
+  },
+  {
+    id: "device-management-label",
+    title: "Device Management",
+    icon: undefined,
+    children: [],
+  },
+  {
+    id: "beneficiaries-label",
+    title: "Beneficiaries",
+    icon: undefined,
+    children: [],
+  },
+  {
     id: "pages-label",
     title: "Pages",
     icon: undefined,
