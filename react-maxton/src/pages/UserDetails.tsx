@@ -142,7 +142,9 @@ const UserDetails: React.FC = () => {
       designation: user.designation,
       organization: user.organization,
       address: "123 Main Street, Apt 4B\nNew York, NY 10001",
+      photo: null,
     });
+    setPhotoPreview(user.photo || null);
   };
 
   const handleAssignRole = () => {
