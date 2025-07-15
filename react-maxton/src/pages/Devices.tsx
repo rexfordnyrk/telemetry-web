@@ -354,56 +354,47 @@ const Devices: React.FC = () => {
                       <td>{device.assigned_to}</td>
                       <td>{getStatusElement(device.status)}</td>
                       <td>
-                        <div className="d-flex gap-2">
-                          <span>
-                            {new Date(device.last_seen).toLocaleDateString()}
-                          </span>
-                          <div className="d-flex gap-1">
-                            <button
-                              className="btn btn-sm p-1"
-                              title="Edit Device"
-                              style={{
-                                border: "none",
-                                background: "transparent",
-                              }}
-                            >
-                              <i className="material-icons-outlined text-primary">
-                                edit
-                              </i>
-                            </button>
-                            <button
-                              className="btn btn-sm p-1"
-                              title="Retire/Activate Device"
-                              onClick={() =>
-                                handleActionClick(device, "disable")
-                              }
-                              style={{
-                                border: "none",
-                                background: "transparent",
-                              }}
-                            >
-                              <i className="material-icons-outlined text-warning">
-                                {device.status === "retired"
-                                  ? "check_circle"
-                                  : "block"}
-                              </i>
-                            </button>
-                            <button
-                              className="btn btn-sm p-1"
-                              title="Delete Device"
-                              onClick={() =>
-                                handleActionClick(device, "delete")
-                              }
-                              style={{
-                                border: "none",
-                                background: "transparent",
-                              }}
-                            >
-                              <i className="material-icons-outlined text-danger">
-                                delete
-                              </i>
-                            </button>
-                          </div>
+                        <div className="d-flex gap-1">
+                          <button
+                            className="btn btn-sm p-1"
+                            title="Edit Device"
+                            style={{
+                              border: "none",
+                              background: "transparent",
+                            }}
+                          >
+                            <i className="material-icons-outlined text-primary">
+                              edit
+                            </i>
+                          </button>
+                          <button
+                            className="btn btn-sm p-1"
+                            title="Retire/Activate Device"
+                            onClick={() => handleActionClick(device, "disable")}
+                            style={{
+                              border: "none",
+                              background: "transparent",
+                            }}
+                          >
+                            <i className="material-icons-outlined text-warning">
+                              {device.status === "retired"
+                                ? "check_circle"
+                                : "block"}
+                            </i>
+                          </button>
+                          <button
+                            className="btn btn-sm p-1"
+                            title="Delete Device"
+                            onClick={() => handleActionClick(device, "delete")}
+                            style={{
+                              border: "none",
+                              background: "transparent",
+                            }}
+                          >
+                            <i className="material-icons-outlined text-danger">
+                              delete
+                            </i>
+                          </button>
                         </div>
                       </td>
                     </tr>
