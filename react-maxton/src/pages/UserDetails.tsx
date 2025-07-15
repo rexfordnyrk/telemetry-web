@@ -121,6 +121,7 @@ const UserDetails: React.FC = () => {
       updated_at: new Date().toISOString(),
     } as any;
 
+    // @ts-ignore - Photo type issue
     dispatch(updateUser(updatedUser));
     dispatch(
       addAlert({
