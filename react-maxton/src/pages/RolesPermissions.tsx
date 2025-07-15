@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import MainLayout from "../layouts/MainLayout";
-import { useAppDispatch, useAppSelector } from "../store/hooks";
+import { useAppDispatch } from "../store/hooks";
 import { addAlert } from "../store/slices/alertSlice";
 
 const RolesPermissions: React.FC = () => {
@@ -12,7 +12,7 @@ const RolesPermissions: React.FC = () => {
   );
   const [targetRole, setTargetRole] = useState<any>(null);
 
-  // Sample roles data matching DataTable structure
+  // Sample roles data
   const roles = [
     {
       id: "1",
@@ -51,6 +51,50 @@ const RolesPermissions: React.FC = () => {
       status: "disabled",
     },
   ];
+
+  // Initialize DataTable when component mounts
+  useEffect(() => {
+    const initDataTable = () => {
+      // Destroy existing DataTable if it exists
+      if (window.$ && window.$.fn.DataTable) {
+        if (window.$.fn.DataTable.isDataTable("#example")) {
+          window.$("#example").DataTable().destroy();
+        }
+
+        // Initialize DataTable
+        setTimeout(() => {
+          if (document.getElementById("example")) {
+            window.$("#example").DataTable({
+              responsive: true,
+              pageLength: 10,
+              lengthChange: true,
+              searching: true,
+              ordering: true,
+              info: true,
+              autoWidth: false,
+              order: [[0, "asc"]],
+              columnDefs: [
+                { orderable: false, targets: -1 }, // Disable ordering on last column (actions)
+              ],
+            });
+          }
+        }, 100);
+      }
+    };
+
+    initDataTable();
+
+    // Cleanup function
+    return () => {
+      if (
+        window.$ &&
+        window.$.fn.DataTable &&
+        window.$.fn.DataTable.isDataTable("#example")
+      ) {
+        window.$("#example").DataTable().destroy();
+      }
+    };
+  }, [roles]);
 
   const getStatusElement = (status: string) => {
     const statusConfig = {
@@ -105,8 +149,9 @@ const RolesPermissions: React.FC = () => {
   return (
     <MainLayout>
       <div className="main-content">
+        {/* Breadcrumb */}
         <div className="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
-          <div className="breadcrumb-title pe-3">User Management</div>
+          <div className="breadcrumb-title pe-3">Components</div>
           <div className="ps-3">
             <nav aria-label="breadcrumb">
               <ol className="breadcrumb mb-0 p-0">
@@ -116,188 +161,262 @@ const RolesPermissions: React.FC = () => {
                   </a>
                 </li>
                 <li className="breadcrumb-item active" aria-current="page">
-                  Roles & Permissions
+                  Data Table
                 </li>
               </ol>
             </nav>
           </div>
           <div className="ms-auto">
-            <div className="btn-group">
+            <div className="btn-group position-static">
+              <div className="btn-group position-static">
+                <button
+                  type="button"
+                  className="btn btn-primary"
+                  data-bs-toggle="dropdown"
+                  data-bs-auto-close="outside"
+                >
+                  Settings
+                </button>
+                <ul className="dropdown-menu">
+                  <li>
+                    <label className="dropdown-item">
+                      <input
+                        type="checkbox"
+                        className="me-2"
+                        id="BorderHorizontal"
+                        defaultChecked
+                      />
+                      Horizontal Border
+                    </label>
+                  </li>
+                  <li>
+                    <label className="dropdown-item">
+                      <input
+                        type="checkbox"
+                        className="me-2"
+                        id="BorderVertical"
+                      />
+                      Vertical Border
+                    </label>
+                  </li>
+                  <li>
+                    <hr className="dropdown-divider" />
+                  </li>
+                  <li>
+                    <label className="dropdown-item">
+                      <input
+                        type="checkbox"
+                        className="me-2"
+                        id="stripedRows"
+                      />
+                      Striped Rows
+                    </label>
+                  </li>
+                  <li>
+                    <label className="dropdown-item">
+                      <input
+                        type="checkbox"
+                        className="me-2"
+                        id="stripedColumns"
+                      />
+                      Striped Columns
+                    </label>
+                  </li>
+                  <li>
+                    <hr className="dropdown-divider" />
+                  </li>
+                  <li>
+                    <label className="dropdown-item">
+                      <input
+                        type="checkbox"
+                        className="me-2"
+                        id="hoverableRows"
+                      />
+                      Hoverable Rows
+                    </label>
+                  </li>
+                  <li>
+                    <label className="dropdown-item">
+                      <input
+                        type="checkbox"
+                        className="me-2"
+                        id="responsiveTable"
+                      />
+                      Responsive Table
+                    </label>
+                  </li>
+                </ul>
+              </div>
               <button
                 type="button"
-                className="btn btn-grd-primary px-4"
-                onClick={() => setShowNewRoleModal(true)}
+                className="btn btn-primary dropdown-toggle dropdown-toggle-split"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
               >
-                + | New Role
+                <span className="visually-hidden">Toggle Dropdown</span>
               </button>
+              <ul className="dropdown-menu dropdown-menu-end">
+                <li>
+                  <a className="dropdown-item" href="javascript:;">
+                    Action
+                  </a>
+                </li>
+                <li>
+                  <a className="dropdown-item" href="javascript:;">
+                    Another action
+                  </a>
+                </li>
+                <li>
+                  <a className="dropdown-item" href="javascript:;">
+                    Something else here
+                  </a>
+                </li>
+                <li>
+                  <hr className="dropdown-divider" />
+                </li>
+                <li>
+                  <a className="dropdown-item" href="javascript:;">
+                    Separated link
+                  </a>
+                </li>
+              </ul>
             </div>
           </div>
         </div>
 
-        <div className="row">
-          <div className="col-12">
-            <div className="card">
-              <div className="card-header">
-                <div className="row align-items-center">
-                  <div className="col">
-                    <h6 className="mb-0">DataTable Example</h6>
-                  </div>
-                  <div className="col-auto">
-                    <div className="dropdown">
-                      <a
-                        href="javascript:;"
-                        className="dropdown-toggle-nocaret options dropdown-toggle"
-                        data-bs-toggle="dropdown"
-                      >
-                        <span className="material-icons-outlined">
-                          more_vert
-                        </span>
-                      </a>
-                      <ul className="dropdown-menu">
-                        <li>
-                          <a className="dropdown-item" href="javascript:;">
-                            Action
-                          </a>
-                        </li>
-                        <li>
-                          <a className="dropdown-item" href="javascript:;">
-                            Another action
-                          </a>
-                        </li>
-                        <li>
-                          <a className="dropdown-item" href="javascript:;">
-                            Something else here
-                          </a>
-                        </li>
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="card-body">
-                <div className="table-responsive">
-                  <table
-                    className="table table-striped table-bordered"
-                    id="example"
-                    style={{ width: "100%" }}
-                  >
-                    <thead>
-                      <tr>
-                        <th>Name</th>
-                        <th>Position</th>
-                        <th>Office</th>
-                        <th>Age</th>
-                        <th>Start date</th>
-                        <th>Salary</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {roles.map((role) => (
-                        <tr key={role.id}>
-                          <td>
-                            <div className="d-flex align-items-center gap-3">
-                              <div
-                                className="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center"
-                                style={{
-                                  width: "40px",
-                                  height: "40px",
-                                  fontSize: "14px",
-                                }}
-                              >
-                                {role.name.charAt(0)}
-                              </div>
-                              <div>
-                                <a
-                                  href="#"
-                                  className="text-decoration-none fw-bold text-dark"
-                                  onClick={(e) => {
-                                    e.preventDefault();
-                                  }}
-                                >
-                                  {role.name}
-                                </a>
-                              </div>
-                            </div>
-                          </td>
-                          <td>{role.permissions}</td>
-                          <td>{role.description}</td>
-                          <td>{role.users_count} users</td>
-                          <td>{getStatusElement(role.status)}</td>
-                          <td>
-                            <div className="d-flex gap-2">
-                              <span>
-                                {new Date(role.created_at).toLocaleDateString()}
-                              </span>
-                              <div className="d-flex gap-1">
-                                <button
-                                  className="btn btn-sm p-1"
-                                  title="Edit Role"
-                                  style={{
-                                    border: "none",
-                                    background: "transparent",
-                                  }}
-                                >
-                                  <i className="material-icons-outlined text-primary">
-                                    edit
-                                  </i>
-                                </button>
-                                <button
-                                  className="btn btn-sm p-1"
-                                  title={
-                                    role.status === "disabled"
-                                      ? "Enable Role"
-                                      : "Disable Role"
-                                  }
-                                  onClick={() =>
-                                    handleActionClick(role, "disable")
-                                  }
-                                  style={{
-                                    border: "none",
-                                    background: "transparent",
-                                  }}
-                                >
-                                  <i className="material-icons-outlined text-warning">
-                                    {role.status === "disabled"
-                                      ? "check_circle"
-                                      : "block"}
-                                  </i>
-                                </button>
-                                <button
-                                  className="btn btn-sm p-1"
-                                  title="Delete Role"
-                                  onClick={() =>
-                                    handleActionClick(role, "delete")
-                                  }
-                                  style={{
-                                    border: "none",
-                                    background: "transparent",
-                                  }}
-                                >
-                                  <i className="material-icons-outlined text-danger">
-                                    delete
-                                  </i>
-                                </button>
-                              </div>
-                            </div>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                    <tfoot>
-                      <tr>
-                        <th>Name</th>
-                        <th>Position</th>
-                        <th>Office</th>
-                        <th>Age</th>
-                        <th>Start date</th>
-                        <th>Salary</th>
-                      </tr>
-                    </tfoot>
-                  </table>
-                </div>
-              </div>
+        {/* DataTable Example */}
+        <h6 className="mb-0 text-uppercase">DataTable Example</h6>
+        <hr />
+        <div className="card">
+          <div className="card-body">
+            <div className="table-responsive">
+              <table
+                id="example"
+                className="table table-striped table-bordered"
+                style={{ width: "100%" }}
+              >
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Position</th>
+                    <th>Office</th>
+                    <th>Age</th>
+                    <th>Start date</th>
+                    <th>Salary</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {roles.map((role) => (
+                    <tr key={role.id}>
+                      <td>
+                        <div className="d-flex align-items-center gap-3">
+                          <div
+                            className="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center"
+                            style={{
+                              width: "40px",
+                              height: "40px",
+                              fontSize: "14px",
+                            }}
+                          >
+                            {role.name.charAt(0)}
+                          </div>
+                          <div>
+                            <a
+                              href="#"
+                              className="text-decoration-none fw-bold text-dark"
+                              onClick={(e) => {
+                                e.preventDefault();
+                              }}
+                            >
+                              {role.name}
+                            </a>
+                          </div>
+                        </div>
+                      </td>
+                      <td>{role.permissions}</td>
+                      <td>{role.description}</td>
+                      <td>{role.users_count} users</td>
+                      <td>{getStatusElement(role.status)}</td>
+                      <td>
+                        <div className="d-flex gap-2">
+                          <span>
+                            {new Date(role.created_at).toLocaleDateString()}
+                          </span>
+                          <div className="d-flex gap-1">
+                            <button
+                              className="btn btn-sm p-1"
+                              title="Edit Role"
+                              style={{
+                                border: "none",
+                                background: "transparent",
+                              }}
+                            >
+                              <i className="material-icons-outlined text-primary">
+                                edit
+                              </i>
+                            </button>
+                            <button
+                              className="btn btn-sm p-1"
+                              title={
+                                role.status === "disabled"
+                                  ? "Enable Role"
+                                  : "Disable Role"
+                              }
+                              onClick={() => handleActionClick(role, "disable")}
+                              style={{
+                                border: "none",
+                                background: "transparent",
+                              }}
+                            >
+                              <i className="material-icons-outlined text-warning">
+                                {role.status === "disabled"
+                                  ? "check_circle"
+                                  : "block"}
+                              </i>
+                            </button>
+                            <button
+                              className="btn btn-sm p-1"
+                              title="Delete Role"
+                              onClick={() => handleActionClick(role, "delete")}
+                              style={{
+                                border: "none",
+                                background: "transparent",
+                              }}
+                            >
+                              <i className="material-icons-outlined text-danger">
+                                delete
+                              </i>
+                            </button>
+                          </div>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+                <tfoot>
+                  <tr>
+                    <th>Name</th>
+                    <th>Position</th>
+                    <th>Office</th>
+                    <th>Age</th>
+                    <th>Start date</th>
+                    <th>Salary</th>
+                  </tr>
+                </tfoot>
+              </table>
             </div>
           </div>
+        </div>
+
+        {/* Add New Role Button */}
+        <div className="d-flex justify-content-end mt-3">
+          <button
+            type="button"
+            className="btn btn-grd-primary px-4"
+            onClick={() => setShowNewRoleModal(true)}
+          >
+            + | New Role
+          </button>
         </div>
       </div>
 
