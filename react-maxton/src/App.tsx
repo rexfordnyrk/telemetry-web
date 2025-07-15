@@ -1,5 +1,7 @@
 import React, { useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { Provider } from "react-redux";
+import { store } from "./store";
 import { LayoutProvider } from "./context/LayoutContext";
 import Dashboard from "./pages/Dashboard";
 import EcommerceDashboard from "./pages/EcommerceDashboard";
@@ -11,6 +13,7 @@ import Users from "./pages/Users";
 import UserDetails from "./pages/UserDetails";
 import NotFound from "./pages/NotFound";
 import ErrorBoundary from "./components/ErrorBoundary";
+import Alert from "./components/Alert";
 import "react-toastify/dist/ReactToastify.css";
 import "./index.css";
 
