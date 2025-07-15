@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import MainLayout from "../layouts/MainLayout";
 import { useAppDispatch } from "../store/hooks";
 import { addAlert } from "../store/slices/alertSlice";
@@ -7,6 +8,7 @@ import NewBeneficiaryModal from "../components/NewBeneficiaryModal";
 
 const Beneficiaries: React.FC = () => {
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const [showNewBeneficiaryModal, setShowNewBeneficiaryModal] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [modalAction, setModalAction] = useState<"disable" | "delete">(
@@ -255,6 +257,9 @@ const Beneficiaries: React.FC = () => {
                               className="text-decoration-none fw-bold text-dark"
                               onClick={(e) => {
                                 e.preventDefault();
+                                navigate(
+                                  `/beneficiary-management/beneficiaries/${beneficiary.id}`,
+                                );
                               }}
                             >
                               {beneficiary.name}
@@ -281,7 +286,9 @@ const Beneficiaries: React.FC = () => {
                             className="text-decoration-none fw-bold text-primary"
                             onClick={(e) => {
                               e.preventDefault();
-                              // TODO: Navigate to device details page
+                              navigate(
+                                `/device-management/devices/${beneficiary.current_device.id}`,
+                              );
                             }}
                             title={`Device ID: ${beneficiary.current_device.id}`}
                           >
