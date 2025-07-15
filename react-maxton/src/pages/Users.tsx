@@ -170,7 +170,7 @@ const Users: React.FC = () => {
         <div className="row">
           <div className="col-12">
             <div className="card rounded-4">
-              <div className="card-header">
+              <div className="card-header py-2">
                 <div className="row align-items-center">
                   <div className="col">
                     <h5 className="card-title mb-0">Users Management</h5>
@@ -183,7 +183,7 @@ const Users: React.FC = () => {
                   </div>
                 </div>
               </div>
-              <div className="card-body">
+              <div className="card-body py-3">
                 <div className="row mb-2">
                   <div className="col-md-6">
                     <div className="input-group">
