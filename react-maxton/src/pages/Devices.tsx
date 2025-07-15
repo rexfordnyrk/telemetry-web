@@ -89,11 +89,20 @@ const Devices: React.FC = () => {
     if (Object.keys(activeFilters).length === 0) return devices;
 
     return devices.filter((device) => {
-      if (activeFilters.type && activeFilters.type !== device.type)
+      if (
+        activeFilters.organization &&
+        activeFilters.organization !== device.organization
+      )
         return false;
-      if (activeFilters.status && activeFilters.status !== device.status)
+      if (
+        activeFilters.programme &&
+        activeFilters.programme !== device.programme
+      )
         return false;
-      if (activeFilters.location && activeFilters.location !== device.location)
+      if (
+        activeFilters.is_active !== undefined &&
+        activeFilters.is_active !== device.is_active
+      )
         return false;
       return true;
     });
@@ -104,14 +113,14 @@ const Devices: React.FC = () => {
 
   // Define filter options
   const filterOptions = useMemo(() => {
-    const typesSet = new Set(devices.map((d) => d.type));
-    const statusesSet = new Set(devices.map((d) => d.status));
-    const locationsSet = new Set(devices.map((d) => d.location));
+    const organizationsSet = new Set(devices.map((d) => d.organization));
+    const programmesSet = new Set(devices.map((d) => d.programme));
+    const activeStates = [true, false];
 
     return {
-      type: Array.from(typesSet),
-      status: Array.from(statusesSet),
-      location: Array.from(locationsSet),
+      organization: Array.from(organizationsSet),
+      programme: Array.from(programmesSet),
+      is_active: activeStates,
     };
   }, [devices]);
 
@@ -316,9 +325,7 @@ const Devices: React.FC = () => {
                             }}
                           >
                             <i className="material-icons-outlined text-warning">
-                              {device.status === "retired"
-                                ? "check_circle"
-                                : "block"}
+                              {!device.is_active ? "check_circle" : "block"}
                             </i>
                           </button>
                           <button
