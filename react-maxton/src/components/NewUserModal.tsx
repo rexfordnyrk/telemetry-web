@@ -283,6 +283,13 @@ const NewUserModal: React.FC<NewUserModalProps> = ({ show, onClose }) => {
                   >
                     Reset
                   </button>
+                  <button
+                    type="button"
+                    className="btn btn-grd-royal px-4 rounded-0"
+                    onClick={onClose}
+                  >
+                    Cancel
+                  </button>
                 </div>
               </div>
             </form>
