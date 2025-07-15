@@ -18,13 +18,13 @@ const NewUserModal: React.FC<NewUserModalProps> = ({ show, onClose }) => {
     phone: "",
     email: "",
     password: "",
-    designation: "",
-    organization: "",
+    dob: "",
     country: "",
     city: "",
     state: "",
-    zipCode: "",
+    zip: "",
     address: "",
+    agree: false,
   });
 
   const handleInputChange = (
@@ -32,10 +32,11 @@ const NewUserModal: React.FC<NewUserModalProps> = ({ show, onClose }) => {
       HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
     >,
   ) => {
-    const { name, value } = e.target;
+    const { name, value, type } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: value,
+      [name]:
+        type === "checkbox" ? (e.target as HTMLInputElement).checked : value,
     }));
   };
 
@@ -62,8 +63,8 @@ const NewUserModal: React.FC<NewUserModalProps> = ({ show, onClose }) => {
       username: `${formData.first_name.toLowerCase()}_${formData.last_name.toLowerCase()}`,
       email: formData.email,
       phone: formData.phone,
-      designation: formData.designation,
-      organization: formData.organization,
+      designation: "New Employee",
+      organization: "Organization",
       status: "active",
       roles: [
         {
@@ -99,13 +100,13 @@ const NewUserModal: React.FC<NewUserModalProps> = ({ show, onClose }) => {
       phone: "",
       email: "",
       password: "",
-      designation: "",
-      organization: "",
+      dob: "",
       country: "",
       city: "",
       state: "",
-      zipCode: "",
+      zip: "",
       address: "",
+      agree: false,
     });
   };
 
@@ -128,7 +129,7 @@ const NewUserModal: React.FC<NewUserModalProps> = ({ show, onClose }) => {
             ></button>
           </div>
           <div className="modal-body">
-            {/* Exact copy of Vertical Form widget structure */}
+            {/* Exact copy of Vertical Form widget */}
             <div className="card">
               <div className="card-body p-4">
                 <h5 className="mb-4">New User</h5>
@@ -203,38 +204,23 @@ const NewUserModal: React.FC<NewUserModalProps> = ({ show, onClose }) => {
                   </div>
                   <div className="col-md-12">
                     <label htmlFor="input6" className="form-label">
-                      Designation
+                      DOB
                     </label>
                     <input
-                      type="text"
+                      type="date"
                       className="form-control"
                       id="input6"
-                      name="designation"
-                      placeholder="Designation"
-                      value={formData.designation}
+                      name="dob"
+                      value={formData.dob}
                       onChange={handleInputChange}
                     />
                   </div>
                   <div className="col-md-12">
                     <label htmlFor="input7" className="form-label">
-                      Organization
-                    </label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      id="input7"
-                      name="organization"
-                      placeholder="Organization"
-                      value={formData.organization}
-                      onChange={handleInputChange}
-                    />
-                  </div>
-                  <div className="col-md-12">
-                    <label htmlFor="input8" className="form-label">
                       Country
                     </label>
                     <select
-                      id="input8"
+                      id="input7"
                       className="form-select"
                       name="country"
                       value={formData.country}
@@ -244,17 +230,16 @@ const NewUserModal: React.FC<NewUserModalProps> = ({ show, onClose }) => {
                       <option value="United States">United States</option>
                       <option value="Canada">Canada</option>
                       <option value="United Kingdom">United Kingdom</option>
-                      <option value="Australia">Australia</option>
                     </select>
                   </div>
                   <div className="col-md-6">
-                    <label htmlFor="input9" className="form-label">
+                    <label htmlFor="input8" className="form-label">
                       City
                     </label>
                     <input
                       type="text"
                       className="form-control"
-                      id="input9"
+                      id="input8"
                       name="city"
                       placeholder="City"
                       value={formData.city}
@@ -262,11 +247,11 @@ const NewUserModal: React.FC<NewUserModalProps> = ({ show, onClose }) => {
                     />
                   </div>
                   <div className="col-md-4">
-                    <label htmlFor="input10" className="form-label">
+                    <label htmlFor="input9" className="form-label">
                       State
                     </label>
                     <select
-                      id="input10"
+                      id="input9"
                       className="form-select"
                       name="state"
                       value={formData.state}
@@ -276,36 +261,50 @@ const NewUserModal: React.FC<NewUserModalProps> = ({ show, onClose }) => {
                       <option value="NY">New York</option>
                       <option value="CA">California</option>
                       <option value="TX">Texas</option>
-                      <option value="FL">Florida</option>
                     </select>
                   </div>
                   <div className="col-md-2">
-                    <label htmlFor="input11" className="form-label">
+                    <label htmlFor="input10" className="form-label">
                       Zip
                     </label>
                     <input
                       type="text"
                       className="form-control"
-                      id="input11"
-                      name="zipCode"
+                      id="input10"
+                      name="zip"
                       placeholder="Zip"
-                      value={formData.zipCode}
+                      value={formData.zip}
                       onChange={handleInputChange}
                     />
                   </div>
                   <div className="col-md-12">
-                    <label htmlFor="input12" className="form-label">
+                    <label htmlFor="input11" className="form-label">
                       Address
                     </label>
                     <textarea
                       className="form-control"
-                      id="input12"
+                      id="input11"
                       name="address"
                       placeholder="Address ..."
-                      rows={4}
+                      rows={3}
                       value={formData.address}
                       onChange={handleInputChange}
                     />
+                  </div>
+                  <div className="col-md-12">
+                    <div className="form-check">
+                      <input
+                        className="form-check-input"
+                        type="checkbox"
+                        id="input12"
+                        name="agree"
+                        checked={formData.agree}
+                        onChange={handleInputChange}
+                      />
+                      <label className="form-check-label" htmlFor="input12">
+                        Check me out
+                      </label>
+                    </div>
                   </div>
                   <div className="col-md-12">
                     <div className="d-md-flex d-grid align-items-center gap-3">
