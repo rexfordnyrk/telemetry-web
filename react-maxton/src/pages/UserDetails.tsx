@@ -228,14 +228,14 @@ const UserDetails: React.FC = () => {
                 </div>
               </div>
               <div className="card-body">
-                <form className="row g-3" onSubmit={handleSubmit}>
+                <form className="row g-2" onSubmit={handleSubmit}>
                   <div className="col-md-6">
                     <label htmlFor="firstName" className="form-label">
                       First Name
                     </label>
                     <input
                       type="text"
-                      className="form-control"
+                      className="form-control form-control-sm"
                       id="firstName"
                       name="firstName"
                       value={formData.firstName}
@@ -248,7 +248,7 @@ const UserDetails: React.FC = () => {
                     </label>
                     <input
                       type="text"
-                      className="form-control"
+                      className="form-control form-control-sm"
                       id="lastName"
                       name="lastName"
                       value={formData.lastName}
@@ -261,7 +261,7 @@ const UserDetails: React.FC = () => {
                     </label>
                     <input
                       type="tel"
-                      className="form-control"
+                      className="form-control form-control-sm"
                       id="phone"
                       name="phone"
                       value={formData.phone}
@@ -274,7 +274,7 @@ const UserDetails: React.FC = () => {
                     </label>
                     <input
                       type="email"
-                      className="form-control"
+                      className="form-control form-control-sm"
                       id="email"
                       name="email"
                       value={formData.email}
@@ -287,7 +287,7 @@ const UserDetails: React.FC = () => {
                     </label>
                     <input
                       type="password"
-                      className="form-control"
+                      className="form-control form-control-sm"
                       id="password"
                       name="password"
                       value={formData.password}
@@ -301,7 +301,7 @@ const UserDetails: React.FC = () => {
                     </label>
                     <input
                       type="date"
-                      className="form-control"
+                      className="form-control form-control-sm"
                       id="dateOfBirth"
                       name="dateOfBirth"
                       value={formData.dateOfBirth}
@@ -313,7 +313,7 @@ const UserDetails: React.FC = () => {
                       Country
                     </label>
                     <select
-                      className="form-select"
+                      className="form-select form-select-sm"
                       id="country"
                       name="country"
                       value={formData.country}
@@ -331,7 +331,7 @@ const UserDetails: React.FC = () => {
                     </label>
                     <input
                       type="text"
-                      className="form-control"
+                      className="form-control form-control-sm"
                       id="city"
                       name="city"
                       value={formData.city}
@@ -344,7 +344,7 @@ const UserDetails: React.FC = () => {
                     </label>
                     <input
                       type="text"
-                      className="form-control"
+                      className="form-control form-control-sm"
                       id="state"
                       name="state"
                       value={formData.state}
@@ -357,7 +357,7 @@ const UserDetails: React.FC = () => {
                     </label>
                     <input
                       type="text"
-                      className="form-control"
+                      className="form-control form-control-sm"
                       id="zipCode"
                       name="zipCode"
                       value={formData.zipCode}
@@ -370,7 +370,7 @@ const UserDetails: React.FC = () => {
                     </label>
                     <input
                       type="text"
-                      className="form-control"
+                      className="form-control form-control-sm"
                       id="address"
                       name="address"
                       value={formData.address}
