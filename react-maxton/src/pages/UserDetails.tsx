@@ -432,70 +432,7 @@ const UserDetails: React.FC = () => {
                       onChange={handleInputChange}
                     />
                   </div>
-                  <div className="col-md-12">
-                    <label htmlFor="country" className="form-label">
-                      Country
-                    </label>
-                    <select
-                      id="country"
-                      className="form-select"
-                      name="country"
-                      value={formData.country}
-                      onChange={handleInputChange}
-                    >
-                      <option value="">Choose...</option>
-                      <option value="United States">United States</option>
-                      <option value="Canada">Canada</option>
-                      <option value="United Kingdom">United Kingdom</option>
-                      <option value="Australia">Australia</option>
-                    </select>
-                  </div>
-                  <div className="col-md-6">
-                    <label htmlFor="city" className="form-label">
-                      City
-                    </label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      id="city"
-                      name="city"
-                      placeholder="City"
-                      value={formData.city}
-                      onChange={handleInputChange}
-                    />
-                  </div>
-                  <div className="col-md-4">
-                    <label htmlFor="state" className="form-label">
-                      State
-                    </label>
-                    <select
-                      id="state"
-                      className="form-select"
-                      name="state"
-                      value={formData.state}
-                      onChange={handleInputChange}
-                    >
-                      <option value="">Choose...</option>
-                      <option value="NY">New York</option>
-                      <option value="CA">California</option>
-                      <option value="TX">Texas</option>
-                      <option value="FL">Florida</option>
-                    </select>
-                  </div>
-                  <div className="col-md-2">
-                    <label htmlFor="zipCode" className="form-label">
-                      Zip
-                    </label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      id="zipCode"
-                      name="zipCode"
-                      placeholder="Zip"
-                      value={formData.zipCode}
-                      onChange={handleInputChange}
-                    />
-                  </div>
+
                   <div className="col-md-12">
                     <label htmlFor="address" className="form-label">
                       Address
