@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import MainLayout from "../layouts/MainLayout";
 import { useAppDispatch } from "../store/hooks";
@@ -57,8 +57,8 @@ const DeviceDetails: React.FC = () => {
     },
   ];
 
-  // Find device by ID
-  const device = devices.find((d) => d.id === id);
+  // Find device by ID - memoized to prevent infinite re-renders
+  const device = useMemo(() => devices.find((d) => d.id === id), [id]);
 
   // Form state for editing
   const [isEditing, setIsEditing] = useState(false);
