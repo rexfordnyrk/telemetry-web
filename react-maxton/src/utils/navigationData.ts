@@ -96,6 +96,25 @@ export const navigationData: NavigationItem[] = [
       },
     ],
   },
+  {
+    id: "beneficiary-management-label",
+    title: "Beneficiary Management",
+    icon: undefined,
+    children: [],
+  },
+  {
+    id: "beneficiary-management",
+    title: "Beneficiary Management",
+    icon: "people_outline",
+    children: [
+      {
+        id: "beneficiaries",
+        title: "Beneficiaries",
+        path: "/beneficiary-management/beneficiaries",
+        icon: "arrow_right",
+      },
+    ],
+  },
 
   {
     id: "authentication",
