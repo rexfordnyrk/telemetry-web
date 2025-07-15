@@ -109,10 +109,6 @@ const UserDetails: React.FC = () => {
       email: user.email,
       designation: user.designation,
       organization: user.organization,
-      country: "United States",
-      city: "New York",
-      state: "NY",
-      zipCode: "10001",
       address: "123 Main Street, Apt 4B\nNew York, NY 10001",
     });
   };
