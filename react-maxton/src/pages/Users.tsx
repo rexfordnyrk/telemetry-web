@@ -148,6 +148,10 @@ const Users: React.FC = () => {
     setTargetUser(null);
   };
 
+  const handleApplyFilters = (filters: { [key: string]: any }) => {
+    setActiveFilters(filters);
+  };
+
   return (
     <MainLayout>
       <div className="main-content">
@@ -328,6 +332,15 @@ const Users: React.FC = () => {
       <NewUserModal
         show={showNewUserModal}
         onClose={() => setShowNewUserModal(false)}
+      />
+
+      {/* Filter Modal */}
+      <FilterModal
+        show={showFilterModal}
+        onClose={() => setShowFilterModal(false)}
+        filterOptions={filterOptions}
+        onApplyFilters={handleApplyFilters}
+        title="Users"
       />
 
       {/* Confirmation Modal */}
