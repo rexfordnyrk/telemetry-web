@@ -361,6 +361,7 @@ const RolesPermissions: React.FC = () => {
                               className="text-decoration-none fw-bold text-dark"
                               onClick={(e) => {
                                 e.preventDefault();
+                                handleRoleClick(role);
                               }}
                             >
                               {role.name}
