@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef } from "react";
 
 interface DataTableOptions {
   responsive?: boolean;
@@ -15,7 +15,7 @@ interface DataTableOptions {
 export const useDataTable = (
   tableId: string,
   data: any[],
-  options: DataTableOptions = {}
+  options: DataTableOptions = {},
 ) => {
   const isInitializedRef = useRef(false);
   const tableInstanceRef = useRef<any>(null);
@@ -27,13 +27,15 @@ export const useDataTable = (
     }
 
     const selector = `#${tableId}`;
-    
+
     const initializeDataTable = () => {
       try {
         // Double-check the table element exists
         const tableElement = document.getElementById(tableId);
         if (!tableElement) {
-          console.warn(`DataTable: Table element with ID '${tableId}' not found`);
+          console.warn(
+            `DataTable: Table element with ID '${tableId}' not found`,
+          );
           return;
         }
 
@@ -60,22 +62,26 @@ export const useDataTable = (
             ordering: true,
             info: true,
             autoWidth: false,
-            order: [[0, 'asc']],
+            order: [[0, "asc"]],
             columnDefs: [
-              { orderable: false, targets: -1 } // Disable ordering on last column (actions)
+              { orderable: false, targets: -1 }, // Disable ordering on last column (actions)
             ],
-            ...options
+            ...options,
           };
 
           try {
-            tableInstanceRef.current = window.$(selector).DataTable(defaultOptions);
+            tableInstanceRef.current = window
+              .$(selector)
+              .DataTable(defaultOptions);
             isInitializedRef.current = true;
             console.log(`DataTable initialized for ${tableId}`);
           } catch (error) {
-            console.error(`Error initializing DataTable for ${tableId}:`, error);
+            console.error(
+              `Error initializing DataTable for ${tableId}:`,
+              error,
+            );
           }
         }, 150);
-
       } catch (error) {
         console.error(`Error in DataTable setup for ${tableId}:`, error);
       }
@@ -87,7 +93,7 @@ export const useDataTable = (
     // Cleanup function
     return () => {
       clearTimeout(timeoutId);
-      
+
       if (isInitializedRef.current && window.$ && window.$.fn.DataTable) {
         try {
           const selector = `#${tableId}`;
@@ -99,15 +105,20 @@ export const useDataTable = (
           console.warn(`Error destroying DataTable for ${tableId}:`, error);
         }
       }
-      
+
       isInitializedRef.current = false;
       tableInstanceRef.current = null;
     };
-        // eslint-disable-next-line react-hooks/exhaustive-deps\n  }, []); // Empty dependency array - only run once to avoid re-initialization
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Empty dependency array - only run once to avoid re-initialization
 
   // Effect to handle data changes (reinitialize if needed)
   useEffect(() => {
-    if (isInitializedRef.current && tableInstanceRef.current && data.length > 0) {
+    if (
+      isInitializedRef.current &&
+      tableInstanceRef.current &&
+      data.length > 0
+    ) {
       try {
         // Clear and redraw the table with new data
         tableInstanceRef.current.clear().draw();
@@ -119,6 +130,6 @@ export const useDataTable = (
 
   return {
     isInitialized: isInitializedRef.current,
-    tableInstance: tableInstanceRef.current
+    tableInstance: tableInstanceRef.current,
   };
 };
