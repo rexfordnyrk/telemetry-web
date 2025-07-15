@@ -372,30 +372,16 @@ const RolesPermissions: React.FC = () => {
                       {memoizedRoles.map((role) => (
                         <tr key={role.id}>
                           <td>
-                            <div className="d-flex align-items-center gap-3">
-                              <div
-                                className="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center"
-                                style={{
-                                  width: "40px",
-                                  height: "40px",
-                                  fontSize: "14px",
-                                }}
-                              >
-                                {role.name.charAt(0)}
-                              </div>
-                              <div>
-                                <a
-                                  href="#"
-                                  className="text-decoration-none fw-bold text-dark"
-                                  onClick={(e) => {
-                                    e.preventDefault();
-                                    handleRoleClick(role);
-                                  }}
-                                >
-                                  {role.name}
-                                </a>
-                              </div>
-                            </div>
+                            <a
+                              href="#"
+                              className="text-decoration-none fw-bold"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                handleRoleClick(role);
+                              }}
+                            >
+                              {role.name}
+                            </a>
                           </td>
                           <td>{role.description}</td>
                           <td>
