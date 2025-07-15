@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import MainLayout from "../layouts/MainLayout";
 import { useAppDispatch } from "../store/hooks";
 import { addAlert } from "../store/slices/alertSlice";
@@ -12,7 +12,7 @@ const Beneficiaries: React.FC = () => {
   );
   const [targetBeneficiary, setTargetBeneficiary] = useState<any>(null);
 
-  // Sample beneficiaries data matching DataTable structure
+  // Sample beneficiaries data
   const beneficiaries = [
     {
       id: "1",
@@ -75,6 +75,50 @@ const Beneficiaries: React.FC = () => {
       created_at: "2024-02-15",
     },
   ];
+
+  // Initialize DataTable when component mounts
+  useEffect(() => {
+    const initDataTable = () => {
+      // Destroy existing DataTable if it exists
+      if (window.$ && window.$.fn.DataTable) {
+        if (window.$.fn.DataTable.isDataTable("#example")) {
+          window.$("#example").DataTable().destroy();
+        }
+
+        // Initialize DataTable
+        setTimeout(() => {
+          if (document.getElementById("example")) {
+            window.$("#example").DataTable({
+              responsive: true,
+              pageLength: 10,
+              lengthChange: true,
+              searching: true,
+              ordering: true,
+              info: true,
+              autoWidth: false,
+              order: [[0, "asc"]],
+              columnDefs: [
+                { orderable: false, targets: -1 }, // Disable ordering on last column (actions)
+              ],
+            });
+          }
+        }, 100);
+      }
+    };
+
+    initDataTable();
+
+    // Cleanup function
+    return () => {
+      if (
+        window.$ &&
+        window.$.fn.DataTable &&
+        window.$.fn.DataTable.isDataTable("#example")
+      ) {
+        window.$("#example").DataTable().destroy();
+      }
+    };
+  }, [beneficiaries]);
 
   const getStatusElement = (status: string) => {
     const statusConfig = {
@@ -161,8 +205,9 @@ const Beneficiaries: React.FC = () => {
   return (
     <MainLayout>
       <div className="main-content">
+        {/* Breadcrumb */}
         <div className="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
-          <div className="breadcrumb-title pe-3">Beneficiary Management</div>
+          <div className="breadcrumb-title pe-3">Components</div>
           <div className="ps-3">
             <nav aria-label="breadcrumb">
               <ol className="breadcrumb mb-0 p-0">
@@ -172,207 +217,285 @@ const Beneficiaries: React.FC = () => {
                   </a>
                 </li>
                 <li className="breadcrumb-item active" aria-current="page">
-                  Beneficiaries
+                  Data Table
                 </li>
               </ol>
             </nav>
           </div>
           <div className="ms-auto">
-            <div className="btn-group">
+            <div className="btn-group position-static">
+              <div className="btn-group position-static">
+                <button
+                  type="button"
+                  className="btn btn-primary"
+                  data-bs-toggle="dropdown"
+                  data-bs-auto-close="outside"
+                >
+                  Settings
+                </button>
+                <ul className="dropdown-menu">
+                  <li>
+                    <label className="dropdown-item">
+                      <input
+                        type="checkbox"
+                        className="me-2"
+                        id="BorderHorizontal"
+                        defaultChecked
+                      />
+                      Horizontal Border
+                    </label>
+                  </li>
+                  <li>
+                    <label className="dropdown-item">
+                      <input
+                        type="checkbox"
+                        className="me-2"
+                        id="BorderVertical"
+                      />
+                      Vertical Border
+                    </label>
+                  </li>
+                  <li>
+                    <hr className="dropdown-divider" />
+                  </li>
+                  <li>
+                    <label className="dropdown-item">
+                      <input
+                        type="checkbox"
+                        className="me-2"
+                        id="stripedRows"
+                      />
+                      Striped Rows
+                    </label>
+                  </li>
+                  <li>
+                    <label className="dropdown-item">
+                      <input
+                        type="checkbox"
+                        className="me-2"
+                        id="stripedColumns"
+                      />
+                      Striped Columns
+                    </label>
+                  </li>
+                  <li>
+                    <hr className="dropdown-divider" />
+                  </li>
+                  <li>
+                    <label className="dropdown-item">
+                      <input
+                        type="checkbox"
+                        className="me-2"
+                        id="hoverableRows"
+                      />
+                      Hoverable Rows
+                    </label>
+                  </li>
+                  <li>
+                    <label className="dropdown-item">
+                      <input
+                        type="checkbox"
+                        className="me-2"
+                        id="responsiveTable"
+                      />
+                      Responsive Table
+                    </label>
+                  </li>
+                </ul>
+              </div>
               <button
                 type="button"
-                className="btn btn-grd-primary px-4"
-                onClick={() => setShowNewBeneficiaryModal(true)}
+                className="btn btn-primary dropdown-toggle dropdown-toggle-split"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
               >
-                + | New Beneficiary
+                <span className="visually-hidden">Toggle Dropdown</span>
               </button>
+              <ul className="dropdown-menu dropdown-menu-end">
+                <li>
+                  <a className="dropdown-item" href="javascript:;">
+                    Action
+                  </a>
+                </li>
+                <li>
+                  <a className="dropdown-item" href="javascript:;">
+                    Another action
+                  </a>
+                </li>
+                <li>
+                  <a className="dropdown-item" href="javascript:;">
+                    Something else here
+                  </a>
+                </li>
+                <li>
+                  <hr className="dropdown-divider" />
+                </li>
+                <li>
+                  <a className="dropdown-item" href="javascript:;">
+                    Separated link
+                  </a>
+                </li>
+              </ul>
             </div>
           </div>
         </div>
 
-        <div className="row">
-          <div className="col-12">
-            <div className="card">
-              <div className="card-header">
-                <div className="row align-items-center">
-                  <div className="col">
-                    <h6 className="mb-0">DataTable Example</h6>
-                  </div>
-                  <div className="col-auto">
-                    <div className="dropdown">
-                      <a
-                        href="javascript:;"
-                        className="dropdown-toggle-nocaret options dropdown-toggle"
-                        data-bs-toggle="dropdown"
-                      >
-                        <span className="material-icons-outlined">
-                          more_vert
-                        </span>
-                      </a>
-                      <ul className="dropdown-menu">
-                        <li>
-                          <a className="dropdown-item" href="javascript:;">
-                            Action
-                          </a>
-                        </li>
-                        <li>
-                          <a className="dropdown-item" href="javascript:;">
-                            Another action
-                          </a>
-                        </li>
-                        <li>
-                          <a className="dropdown-item" href="javascript:;">
-                            Something else here
-                          </a>
-                        </li>
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="card-body">
-                <div className="table-responsive">
-                  <table
-                    className="table table-striped table-bordered"
-                    id="example"
-                    style={{ width: "100%" }}
-                  >
-                    <thead>
-                      <tr>
-                        <th>Name</th>
-                        <th>Position</th>
-                        <th>Office</th>
-                        <th>Age</th>
-                        <th>Start date</th>
-                        <th>Salary</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {beneficiaries.map((beneficiary) => (
-                        <tr key={beneficiary.id}>
-                          <td>
-                            <div className="d-flex align-items-center gap-3">
-                              <div
-                                className="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center"
-                                style={{
-                                  width: "40px",
-                                  height: "40px",
-                                  fontSize: "14px",
-                                }}
-                              >
-                                {getInitials(beneficiary.name)}
-                              </div>
-                              <div>
-                                <a
-                                  href="#"
-                                  className="text-decoration-none fw-bold text-dark"
-                                  onClick={(e) => {
-                                    e.preventDefault();
-                                  }}
-                                >
-                                  {beneficiary.name}
-                                </a>
-                                <div className="text-muted small">
-                                  {beneficiary.email}
-                                </div>
-                              </div>
-                            </div>
-                          </td>
-                          <td>
-                            {beneficiary.relationship}
+        {/* DataTable Example */}
+        <h6 className="mb-0 text-uppercase">DataTable Example</h6>
+        <hr />
+        <div className="card">
+          <div className="card-body">
+            <div className="table-responsive">
+              <table
+                id="example"
+                className="table table-striped table-bordered"
+                style={{ width: "100%" }}
+              >
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Position</th>
+                    <th>Office</th>
+                    <th>Age</th>
+                    <th>Start date</th>
+                    <th>Salary</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {beneficiaries.map((beneficiary) => (
+                    <tr key={beneficiary.id}>
+                      <td>
+                        <div className="d-flex align-items-center gap-3">
+                          <div
+                            className="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center"
+                            style={{
+                              width: "40px",
+                              height: "40px",
+                              fontSize: "14px",
+                            }}
+                          >
+                            {getInitials(beneficiary.name)}
+                          </div>
+                          <div>
+                            <a
+                              href="#"
+                              className="text-decoration-none fw-bold text-dark"
+                              onClick={(e) => {
+                                e.preventDefault();
+                              }}
+                            >
+                              {beneficiary.name}
+                            </a>
                             <div className="text-muted small">
-                              {beneficiary.phone}
+                              {beneficiary.email}
                             </div>
-                          </td>
-                          <td>
-                            {getCategoryBadge(beneficiary.category)}
-                            <div className="text-muted small mt-1">
-                              {beneficiary.address}
-                            </div>
-                          </td>
-                          <td>
-                            <span className="fw-bold">
-                              {beneficiary.percentage}
-                            </span>
-                          </td>
-                          <td>{getStatusElement(beneficiary.status)}</td>
-                          <td>
-                            <div className="d-flex gap-2">
-                              <span>
-                                {new Date(
-                                  beneficiary.created_at,
-                                ).toLocaleDateString()}
-                              </span>
-                              <div className="d-flex gap-1">
-                                <button
-                                  className="btn btn-sm p-1"
-                                  title="Edit Beneficiary"
-                                  style={{
-                                    border: "none",
-                                    background: "transparent",
-                                  }}
-                                >
-                                  <i className="material-icons-outlined text-primary">
-                                    edit
-                                  </i>
-                                </button>
-                                <button
-                                  className="btn btn-sm p-1"
-                                  title={
-                                    beneficiary.status === "inactive"
-                                      ? "Activate Beneficiary"
-                                      : "Deactivate Beneficiary"
-                                  }
-                                  onClick={() =>
-                                    handleActionClick(beneficiary, "disable")
-                                  }
-                                  style={{
-                                    border: "none",
-                                    background: "transparent",
-                                  }}
-                                >
-                                  <i className="material-icons-outlined text-warning">
-                                    {beneficiary.status === "inactive"
-                                      ? "check_circle"
-                                      : "block"}
-                                  </i>
-                                </button>
-                                <button
-                                  className="btn btn-sm p-1"
-                                  title="Delete Beneficiary"
-                                  onClick={() =>
-                                    handleActionClick(beneficiary, "delete")
-                                  }
-                                  style={{
-                                    border: "none",
-                                    background: "transparent",
-                                  }}
-                                >
-                                  <i className="material-icons-outlined text-danger">
-                                    delete
-                                  </i>
-                                </button>
-                              </div>
-                            </div>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                    <tfoot>
-                      <tr>
-                        <th>Name</th>
-                        <th>Position</th>
-                        <th>Office</th>
-                        <th>Age</th>
-                        <th>Start date</th>
-                        <th>Salary</th>
-                      </tr>
-                    </tfoot>
-                  </table>
-                </div>
-              </div>
+                          </div>
+                        </div>
+                      </td>
+                      <td>
+                        {beneficiary.relationship}
+                        <div className="text-muted small">
+                          {beneficiary.phone}
+                        </div>
+                      </td>
+                      <td>
+                        {getCategoryBadge(beneficiary.category)}
+                        <div className="text-muted small mt-1">
+                          {beneficiary.address}
+                        </div>
+                      </td>
+                      <td>
+                        <span className="fw-bold">
+                          {beneficiary.percentage}
+                        </span>
+                      </td>
+                      <td>{getStatusElement(beneficiary.status)}</td>
+                      <td>
+                        <div className="d-flex gap-2">
+                          <span>
+                            {new Date(
+                              beneficiary.created_at,
+                            ).toLocaleDateString()}
+                          </span>
+                          <div className="d-flex gap-1">
+                            <button
+                              className="btn btn-sm p-1"
+                              title="Edit Beneficiary"
+                              style={{
+                                border: "none",
+                                background: "transparent",
+                              }}
+                            >
+                              <i className="material-icons-outlined text-primary">
+                                edit
+                              </i>
+                            </button>
+                            <button
+                              className="btn btn-sm p-1"
+                              title={
+                                beneficiary.status === "inactive"
+                                  ? "Activate Beneficiary"
+                                  : "Deactivate Beneficiary"
+                              }
+                              onClick={() =>
+                                handleActionClick(beneficiary, "disable")
+                              }
+                              style={{
+                                border: "none",
+                                background: "transparent",
+                              }}
+                            >
+                              <i className="material-icons-outlined text-warning">
+                                {beneficiary.status === "inactive"
+                                  ? "check_circle"
+                                  : "block"}
+                              </i>
+                            </button>
+                            <button
+                              className="btn btn-sm p-1"
+                              title="Delete Beneficiary"
+                              onClick={() =>
+                                handleActionClick(beneficiary, "delete")
+                              }
+                              style={{
+                                border: "none",
+                                background: "transparent",
+                              }}
+                            >
+                              <i className="material-icons-outlined text-danger">
+                                delete
+                              </i>
+                            </button>
+                          </div>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+                <tfoot>
+                  <tr>
+                    <th>Name</th>
+                    <th>Position</th>
+                    <th>Office</th>
+                    <th>Age</th>
+                    <th>Start date</th>
+                    <th>Salary</th>
+                  </tr>
+                </tfoot>
+              </table>
             </div>
           </div>
+        </div>
+
+        {/* Add New Beneficiary Button */}
+        <div className="d-flex justify-content-end mt-3">
+          <button
+            type="button"
+            className="btn btn-grd-primary px-4"
+            onClick={() => setShowNewBeneficiaryModal(true)}
+          >
+            + | New Beneficiary
+          </button>
         </div>
       </div>
 
