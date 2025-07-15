@@ -19,63 +19,66 @@ const Devices: React.FC = () => {
   );
 
   // Sample devices data - memoized to prevent re-renders
-  const devices = [
-    {
-      id: "1",
-      name: "iPhone 14 Pro",
-      type: "Mobile",
-      model: "A2894",
-      serial: "FMWA2X9N14",
-      assigned_to: "John Doe",
-      location: "New York Office",
-      status: "active",
-      last_seen: "2024-01-15",
-    },
-    {
-      id: "2",
-      name: "MacBook Pro",
-      type: "Laptop",
-      model: "MacBook Pro 16",
-      serial: "C02ZX1Y2JG5H",
-      assigned_to: "Jane Smith",
-      location: "San Francisco Office",
-      status: "active",
-      last_seen: "2024-01-14",
-    },
-    {
-      id: "3",
-      name: "Dell Monitor",
-      type: "Monitor",
-      model: "U2720Q",
-      serial: "DL2720Q001",
-      assigned_to: "Mike Johnson",
-      location: "Chicago Office",
-      status: "maintenance",
-      last_seen: "2024-01-10",
-    },
-    {
-      id: "4",
-      name: "Surface Pro",
-      type: "Tablet",
-      model: "Surface Pro 9",
-      serial: "SP9001ABC",
-      assigned_to: "Sarah Wilson",
-      location: "Remote",
-      status: "lost",
-      last_seen: "2023-12-20",
-    },
-    {
-      id: "5",
-      name: "iPad Air",
-      type: "Tablet",
-      model: "iPad Air 5",
-      serial: "DMQK2LL/A",
-      assigned_to: "Unassigned",
-      location: "Storage Room",
-      status: "available",
-      last_seen: "2024-01-12",
-    },
-  ];
+  const devices = useMemo(
+    () => [
+      {
+        id: "1",
+        name: "iPhone 14 Pro",
+        type: "Mobile",
+        model: "A2894",
+        serial: "FMWA2X9N14",
+        assigned_to: "John Doe",
+        location: "New York Office",
+        status: "active",
+        last_seen: "2024-01-15",
+      },
+      {
+        id: "2",
+        name: "MacBook Pro",
+        type: "Laptop",
+        model: "MacBook Pro 16",
+        serial: "C02ZX1Y2JG5H",
+        assigned_to: "Jane Smith",
+        location: "San Francisco Office",
+        status: "active",
+        last_seen: "2024-01-14",
+      },
+      {
+        id: "3",
+        name: "Dell Monitor",
+        type: "Monitor",
+        model: "U2720Q",
+        serial: "DL2720Q001",
+        assigned_to: "Mike Johnson",
+        location: "Chicago Office",
+        status: "maintenance",
+        last_seen: "2024-01-10",
+      },
+      {
+        id: "4",
+        name: "Surface Pro",
+        type: "Tablet",
+        model: "Surface Pro 9",
+        serial: "SP9001ABC",
+        assigned_to: "Sarah Wilson",
+        location: "Remote",
+        status: "lost",
+        last_seen: "2023-12-20",
+      },
+      {
+        id: "5",
+        name: "iPad Air",
+        type: "Tablet",
+        model: "iPad Air 5",
+        serial: "DMQK2LL/A",
+        assigned_to: "Unassigned",
+        location: "Storage Room",
+        status: "available",
+        last_seen: "2024-01-12",
+      },
+    ],
+    [],
+  );
 
   // Filter devices based on active filters
   const filteredDevices = useMemo(() => {
@@ -131,17 +134,6 @@ const Devices: React.FC = () => {
         {config.text}
       </span>
     );
-  };
-
-  const getDeviceIcon = (type: string) => {
-    const iconMap = {
-      Mobile: "smartphone",
-      Laptop: "laptop_mac",
-      Monitor: "monitor",
-      Tablet: "tablet_mac",
-      Desktop: "desktop_windows",
-    };
-    return iconMap[type as keyof typeof iconMap] || "devices";
   };
 
   const handleActionClick = (device: any, action: "disable" | "delete") => {
