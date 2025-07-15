@@ -1,18 +1,18 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import MainLayout from "../layouts/MainLayout";
 import { useAppDispatch } from "../store/hooks";
 import { addAlert } from "../store/slices/alertSlice";
 
 const RolesPermissions: React.FC = () => {
   const dispatch = useAppDispatch();
-  const [showNewRoleModal, setShowNewRoleModal] = useState(false);
+  // Removed unused showNewRoleModal
   const [showModal, setShowModal] = useState(false);
   const [modalAction, setModalAction] = useState<"disable" | "delete">(
     "disable",
   );
   const [targetRole, setTargetRole] = useState<any>(null);
 
-  // Sample roles data
+  // Sample roles data - memoized to prevent re-renders
   const roles = [
     {
       id: "1",
@@ -51,6 +51,9 @@ const RolesPermissions: React.FC = () => {
       status: "disabled",
     },
   ];
+
+  // Memoize roles to prevent unnecessary re-renders
+  const memoizedRoles = useMemo(() => roles, []);
 
   // Initialize DataTable when component mounts
   useEffect(() => {
@@ -94,7 +97,7 @@ const RolesPermissions: React.FC = () => {
         window.$("#example").DataTable().destroy();
       }
     };
-  }, [roles]);
+  }, [memoizedRoles]);
 
   const getStatusElement = (status: string) => {
     const statusConfig = {
@@ -306,7 +309,7 @@ const RolesPermissions: React.FC = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {roles.map((role) => (
+                  {memoizedRoles.map((role) => (
                     <tr key={role.id}>
                       <td>
                         <div className="d-flex align-items-center gap-3">
@@ -413,7 +416,9 @@ const RolesPermissions: React.FC = () => {
           <button
             type="button"
             className="btn btn-grd-primary px-4"
-            onClick={() => setShowNewRoleModal(true)}
+            onClick={() => {
+              /* TODO: Implement new role modal */
+            }}
           >
             + | New Role
           </button>
