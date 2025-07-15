@@ -63,6 +63,22 @@ const RolesPermissions: React.FC = () => {
     },
   ];
 
+  // All available permissions that can be assigned to roles
+  const allPermissions = [
+    { id: "1", name: "users.create", description: "Create users" },
+    { id: "2", name: "users.update", description: "Update users" },
+    { id: "3", name: "users.delete", description: "Delete users" },
+    { id: "4", name: "profile.update", description: "Update own profile" },
+    { id: "5", name: "read.only", description: "Read-only access" },
+    { id: "6", name: "roles.create", description: "Create roles" },
+    { id: "7", name: "roles.update", description: "Update roles" },
+    { id: "8", name: "roles.delete", description: "Delete roles" },
+    { id: "9", name: "permissions.manage", description: "Manage permissions" },
+    { id: "10", name: "system.admin", description: "System administration" },
+    { id: "11", name: "reports.view", description: "View reports" },
+    { id: "12", name: "reports.export", description: "Export reports" },
+  ];
+
   // Memoize roles to prevent unnecessary re-renders
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const memoizedRoles = useMemo(() => roles, []);
