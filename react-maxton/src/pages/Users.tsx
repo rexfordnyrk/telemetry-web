@@ -307,9 +307,10 @@ const Users: React.FC = () => {
           style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
           onClick={() => setShowModal(false)}
         >
-          <div className="modal-dialog" onClick={(e) => e.stopPropagation()}>
+          <div className="modal-dialog">
             <div
               className={`card border-top border-3 ${modalAction === "delete" ? "border-danger" : "border-warning"} rounded-0`}
+              onClick={(e) => e.stopPropagation()}
             >
               <div className="card-header py-3 px-4">
                 <h5
