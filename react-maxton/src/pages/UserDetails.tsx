@@ -574,20 +574,18 @@ const UserDetails: React.FC = () => {
                 {/* Current Roles */}
                 <div className="mb-4">
                   <h6 className="mb-3">Current Roles</h6>
-                  <div className="role-list d-flex flex-column gap-2">
+                  <div className="role-list d-flex flex-wrap gap-2">
                     {user.roles.map((role) => (
                       <div
                         key={role.id}
-                        className="d-flex align-items-center justify-content-between p-2 border rounded"
+                        className="badge bg-primary text-white d-flex align-items-center gap-2 p-2"
+                        style={{ borderRadius: 0, fontSize: "0.875rem" }}
                       >
-                        <div>
-                          <h6 className="mb-0">{role.name}</h6>
-                          <small className="text-dark">
-                            {role.description}
-                          </small>
-                        </div>
+                        <span>{role.name}</span>
                         <button
-                          className="btn btn-sm btn-outline-danger"
+                          type="button"
+                          className="btn-close btn-close-white"
+                          style={{ fontSize: "0.75em" }}
                           onClick={() => handleRemoveRole(role)}
                           disabled={user.roles.length <= 1}
                           title={
@@ -595,9 +593,7 @@ const UserDetails: React.FC = () => {
                               ? "Cannot remove the last role"
                               : "Remove role"
                           }
-                        >
-                          <i className="material-icons-outlined">remove</i>
-                        </button>
+                        ></button>
                       </div>
                     ))}
                   </div>
