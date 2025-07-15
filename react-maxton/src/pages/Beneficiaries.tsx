@@ -82,6 +82,7 @@ const Beneficiaries: React.FC = () => {
   // Initialize DataTable using custom hook
   useDataTable("beneficiaries-datatable", memoizedBeneficiaries);
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const getStatusElement = (status: string) => {
     const statusConfig = {
       active: { bg: "success", text: "Active" },
@@ -102,6 +103,7 @@ const Beneficiaries: React.FC = () => {
     );
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const getCategoryBadge = (category: string) => {
     const categoryConfig = {
       Primary: { bg: "primary", text: "Primary" },
