@@ -65,6 +65,7 @@ function App() {
             />
             <Route path="/widgets/data" element={<WidgetsData />} />
             <Route path="/auth/basic/login" element={<BasicLogin />} />
+            <Route path="/auth/forgot-password" element={<ForgotPassword />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Router>
