@@ -223,10 +223,12 @@ const Beneficiaries: React.FC = () => {
                 <thead>
                   <tr>
                     <th>Name</th>
-                    <th>Relationship</th>
-                    <th>Category</th>
-                    <th>Percentage</th>
-                    <th>Status</th>
+                    <th>Email</th>
+                    <th>District</th>
+                    <th>Partner</th>
+                    <th>Intervention</th>
+                    <th>Date Enrolled</th>
+                    <th>Assigned Device</th>
                     <th>Actions</th>
                   </tr>
                 </thead>
@@ -337,10 +339,12 @@ const Beneficiaries: React.FC = () => {
                 <tfoot>
                   <tr>
                     <th>Name</th>
-                    <th>Relationship</th>
-                    <th>Category</th>
-                    <th>Percentage</th>
-                    <th>Status</th>
+                    <th>Email</th>
+                    <th>District</th>
+                    <th>Partner</th>
+                    <th>Intervention</th>
+                    <th>Date Enrolled</th>
+                    <th>Assigned Device</th>
                     <th>Actions</th>
                   </tr>
                 </tfoot>
