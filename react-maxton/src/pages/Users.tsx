@@ -9,7 +9,6 @@ const Users: React.FC = () => {
   const dispatch = useAppDispatch();
   const users = useAppSelector((state) => state.users.users);
 
-  const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
   const [showModal, setShowModal] = useState(false);
   const [modalAction, setModalAction] = useState<"disable" | "delete">(
     "disable",
@@ -19,22 +18,6 @@ const Users: React.FC = () => {
 
   // For now, show all users (search functionality can be added later)
   const filteredUsers = users;
-
-  const handleSelectUser = (userId: string) => {
-    setSelectedUsers((prev) =>
-      prev.includes(userId)
-        ? prev.filter((id) => id !== userId)
-        : [...prev, userId],
-    );
-  };
-
-  const handleSelectAll = () => {
-    if (selectedUsers.length === filteredUsers.length) {
-      setSelectedUsers([]);
-    } else {
-      setSelectedUsers(filteredUsers.map((user) => user.id));
-    }
-  };
 
   const getStatusElement = (status: string) => {
     const statusConfig = {
