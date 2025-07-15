@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import MainLayout from "../layouts/MainLayout";
 import NewUserModal from "../components/NewUserModal";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
@@ -16,6 +16,9 @@ const Users: React.FC = () => {
   );
   const [targetUser, setTargetUser] = useState<any>(null);
   const [showNewUserModal, setShowNewUserModal] = useState(false);
+
+  // Memoize users to prevent unnecessary re-renders
+  const memoizedUsers = useMemo(() => users, [users]);
 
   // Initialize DataTable when component mounts and users data changes
   useEffect(() => {
@@ -59,7 +62,7 @@ const Users: React.FC = () => {
         window.$("#example").DataTable().destroy();
       }
     };
-  }, [users]);
+  }, [memoizedUsers]);
 
   const getInitials = (firstName: string, lastName: string) => {
     return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase();
@@ -283,7 +286,7 @@ const Users: React.FC = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {users.map((user) => (
+                  {memoizedUsers.map((user: any) => (
                     <tr key={user.id}>
                       <td>
                         <div className="d-flex align-items-center gap-3">
