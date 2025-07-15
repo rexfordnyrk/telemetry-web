@@ -363,7 +363,6 @@ const RolesPermissions: React.FC = () => {
                       <tr>
                         <th>Name</th>
                         <th>Description</th>
-                        <th>Created At</th>
                         <th>Updated At</th>
                         <th>Actions</th>
                       </tr>
@@ -384,9 +383,6 @@ const RolesPermissions: React.FC = () => {
                             </a>
                           </td>
                           <td>{role.description}</td>
-                          <td>
-                            {new Date(role.created_at).toLocaleDateString()}
-                          </td>
                           <td>
                             {new Date(role.updated_at).toLocaleDateString()}
                           </td>
@@ -443,7 +439,6 @@ const RolesPermissions: React.FC = () => {
                       <tr>
                         <th>Name</th>
                         <th>Description</th>
-                        <th>Created At</th>
                         <th>Updated At</th>
                         <th>Actions</th>
                       </tr>
