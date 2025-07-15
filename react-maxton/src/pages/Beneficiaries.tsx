@@ -386,62 +386,55 @@ const Beneficiaries: React.FC = () => {
                       </td>
                       <td>{getStatusElement(beneficiary.status)}</td>
                       <td>
-                        <div className="d-flex gap-2">
-                          <span>
-                            {new Date(
-                              beneficiary.created_at,
-                            ).toLocaleDateString()}
-                          </span>
-                          <div className="d-flex gap-1">
-                            <button
-                              className="btn btn-sm p-1"
-                              title="Edit Beneficiary"
-                              style={{
-                                border: "none",
-                                background: "transparent",
-                              }}
-                            >
-                              <i className="material-icons-outlined text-primary">
-                                edit
-                              </i>
-                            </button>
-                            <button
-                              className="btn btn-sm p-1"
-                              title={
-                                beneficiary.status === "inactive"
-                                  ? "Activate Beneficiary"
-                                  : "Deactivate Beneficiary"
-                              }
-                              onClick={() =>
-                                handleActionClick(beneficiary, "disable")
-                              }
-                              style={{
-                                border: "none",
-                                background: "transparent",
-                              }}
-                            >
-                              <i className="material-icons-outlined text-warning">
-                                {beneficiary.status === "inactive"
-                                  ? "check_circle"
-                                  : "block"}
-                              </i>
-                            </button>
-                            <button
-                              className="btn btn-sm p-1"
-                              title="Delete Beneficiary"
-                              onClick={() =>
-                                handleActionClick(beneficiary, "delete")
-                              }
-                              style={{
-                                border: "none",
-                                background: "transparent",
-                              }}
-                            >
-                              <i className="material-icons-outlined text-danger">
-                                delete
-                              </i>
-                            </button>
-                          </div>
+                        <div className="d-flex gap-1">
+                          <button
+                            className="btn btn-sm p-1"
+                            title="Edit Beneficiary"
+                            style={{
+                              border: "none",
+                              background: "transparent",
+                            }}
+                          >
+                            <i className="material-icons-outlined text-primary">
+                              edit
+                            </i>
+                          </button>
+                          <button
+                            className="btn btn-sm p-1"
+                            title={
+                              beneficiary.status === "inactive"
+                                ? "Activate Beneficiary"
+                                : "Deactivate Beneficiary"
+                            }
+                            onClick={() =>
+                              handleActionClick(beneficiary, "disable")
+                            }
+                            style={{
+                              border: "none",
+                              background: "transparent",
+                            }}
+                          >
+                            <i className="material-icons-outlined text-warning">
+                              {beneficiary.status === "inactive"
+                                ? "check_circle"
+                                : "block"}
+                            </i>
+                          </button>
+                          <button
+                            className="btn btn-sm p-1"
+                            title="Delete Beneficiary"
+                            onClick={() =>
+                              handleActionClick(beneficiary, "delete")
+                            }
+                            style={{
+                              border: "none",
+                              background: "transparent",
+                            }}
+                          >
+                            <i className="material-icons-outlined text-danger">
+                              delete
+                            </i>
+                          </button>
                         </div>
                       </td>
                     </tr>
