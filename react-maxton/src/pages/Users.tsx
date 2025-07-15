@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from "react";
 import MainLayout from "../layouts/MainLayout";
 import NewUserModal from "../components/NewUserModal";
+import FilterModal from "../components/FilterModal";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { deleteUser } from "../store/slices/userSlice";
 import { addAlert } from "../store/slices/alertSlice";
@@ -17,6 +18,10 @@ const Users: React.FC = () => {
   );
   const [targetUser, setTargetUser] = useState<any>(null);
   const [showNewUserModal, setShowNewUserModal] = useState(false);
+  const [showFilterModal, setShowFilterModal] = useState(false);
+  const [activeFilters, setActiveFilters] = useState<{ [key: string]: any }>(
+    {},
+  );
 
   // Memoize users to prevent unnecessary re-renders
   const memoizedUsers = useMemo(() => users, [users]);
