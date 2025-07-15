@@ -9,7 +9,7 @@ import { useNavigate } from "react-router-dom";
 const Users: React.FC = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const { users } = useAppSelector((state) => state.user);
+  const { users } = useAppSelector((state) => state.users);
   const [showModal, setShowModal] = useState(false);
   const [modalAction, setModalAction] = useState<"disable" | "delete">(
     "disable",
