@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useParams } from "react-router-dom";
 import MainLayout from "../layouts/MainLayout";
 
-interface UserDetails {
+interface UserDetailsData {
   id: number;
   name: string;
   email: string;
@@ -30,7 +30,7 @@ const UserDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
 
   // Sample user data - in real app, fetch based on ID
-  const [user] = useState<UserDetails>({
+  const [user] = useState<UserDetailsData>({
     id: Number(id) || 1,
     name: "John Smith",
     firstName: "John",
