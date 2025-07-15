@@ -306,19 +306,19 @@ const UserDetails: React.FC = () => {
                     </button>
                     <ul className="dropdown-menu">
                       <li>
-                        <a className="dropdown-item" href="javascript:;">
+                        <button type="button" className="dropdown-item">
                           Action
-                        </a>
+                        </button>
                       </li>
                       <li>
-                        <a className="dropdown-item" href="javascript:;">
+                        <button type="button" className="dropdown-item">
                           Another action
-                        </a>
+                        </button>
                       </li>
                       <li>
-                        <a className="dropdown-item" href="javascript:;">
+                        <button type="button" className="dropdown-item">
                           Something else here
-                        </a>
+                        </button>
                       </li>
                     </ul>
                   </div>
@@ -480,19 +480,19 @@ const UserDetails: React.FC = () => {
                     </button>
                     <ul className="dropdown-menu">
                       <li>
-                        <a className="dropdown-item" href="javascript:;">
+                        <button type="button" className="dropdown-item">
                           Action
-                        </a>
+                        </button>
                       </li>
                       <li>
-                        <a className="dropdown-item" href="javascript:;">
+                        <button type="button" className="dropdown-item">
                           Another action
-                        </a>
+                        </button>
                       </li>
                       <li>
-                        <a className="dropdown-item" href="javascript:;">
+                        <button type="button" className="dropdown-item">
                           Something else here
-                        </a>
+                        </button>
                       </li>
                     </ul>
                   </div>
@@ -578,19 +578,19 @@ const UserDetails: React.FC = () => {
                     </button>
                     <ul className="dropdown-menu">
                       <li>
-                        <a className="dropdown-item" href="javascript:;">
+                        <button type="button" className="dropdown-item">
                           Action
-                        </a>
+                        </button>
                       </li>
                       <li>
-                        <a className="dropdown-item" href="javascript:;">
+                        <button type="button" className="dropdown-item">
                           Another action
-                        </a>
+                        </button>
                       </li>
                       <li>
-                        <a className="dropdown-item" href="javascript:;">
+                        <button type="button" className="dropdown-item">
                           Something else here
-                        </a>
+                        </button>
                       </li>
                     </ul>
                   </div>
