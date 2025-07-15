@@ -636,7 +636,7 @@ const UserDetails: React.FC = () => {
               <div className="card-body">
                 <div className="d-flex align-items-start justify-content-between mb-3">
                   <div className="">
-                    <h5 className="mb-0 fw-bold">Password Management</h5>
+                    <h5 className="mb-0 fw-bold">Password Reset</h5>
                   </div>
                   <div className="dropdown">
                     <a
@@ -670,7 +670,6 @@ const UserDetails: React.FC = () => {
 
                 {/* Password Reset Form */}
                 <div className="mb-4">
-                  <h6 className="mb-3">Reset Password</h6>
                   <div className="row g-3">
                     <div className="col-12">
                       <label htmlFor="newPassword" className="form-label">
