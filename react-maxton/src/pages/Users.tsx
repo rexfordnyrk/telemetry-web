@@ -305,8 +305,9 @@ const Users: React.FC = () => {
           className="modal fade show d-block"
           tabIndex={-1}
           style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
+          onClick={() => setShowModal(false)}
         >
-          <div className="modal-dialog">
+          <div className="modal-dialog" onClick={(e) => e.stopPropagation()}>
             <div
               className={`card border-top border-3 ${modalAction === "delete" ? "border-danger" : "border-warning"} rounded-0`}
             >
