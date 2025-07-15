@@ -317,32 +317,18 @@ const Devices: React.FC = () => {
                   {memoizedDevices.map((device) => (
                     <tr key={device.id}>
                       <td>
-                        <div className="d-flex align-items-center gap-3">
-                          <div
-                            className="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center"
-                            style={{
-                              width: "40px",
-                              height: "40px",
-                              fontSize: "16px",
+                        <div>
+                          <a
+                            href="#"
+                            className="text-decoration-none fw-bold"
+                            onClick={(e) => {
+                              e.preventDefault();
                             }}
                           >
-                            <i className="material-icons-outlined">
-                              {getDeviceIcon(device.type)}
-                            </i>
-                          </div>
-                          <div>
-                            <a
-                              href="#"
-                              className="text-decoration-none fw-bold text-dark"
-                              onClick={(e) => {
-                                e.preventDefault();
-                              }}
-                            >
-                              {device.name}
-                            </a>
-                            <div className="text-muted small">
-                              {device.serial}
-                            </div>
+                            {device.name}
+                          </a>
+                          <div className="text-muted small">
+                            {device.serial}
                           </div>
                         </div>
                       </td>
