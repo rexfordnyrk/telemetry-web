@@ -129,201 +129,171 @@ const NewUserModal: React.FC<NewUserModalProps> = ({ show, onClose }) => {
             ></button>
           </div>
           <div className="modal-body">
-            {/* Exact copy of Vertical Form widget */}
-            <div className="card">
-              <div className="card-body p-4">
-                <h5 className="mb-4">New User</h5>
-                <form className="row g-3" onSubmit={handleSubmit}>
-                  <div className="col-md-6">
-                    <label htmlFor="input1" className="form-label">
-                      First Name
-                    </label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      id="input1"
-                      name="first_name"
-                      placeholder="First Name"
-                      value={formData.first_name}
-                      onChange={handleInputChange}
-                    />
-                  </div>
-                  <div className="col-md-6">
-                    <label htmlFor="input2" className="form-label">
-                      Last Name
-                    </label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      id="input2"
-                      name="last_name"
-                      placeholder="Last Name"
-                      value={formData.last_name}
-                      onChange={handleInputChange}
-                    />
-                  </div>
-                  <div className="col-md-12">
-                    <label htmlFor="input3" className="form-label">
-                      Phone
-                    </label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      id="input3"
-                      name="phone"
-                      placeholder="Phone"
-                      value={formData.phone}
-                      onChange={handleInputChange}
-                    />
-                  </div>
-                  <div className="col-md-12">
-                    <label htmlFor="input4" className="form-label">
-                      Email
-                    </label>
-                    <input
-                      type="email"
-                      className="form-control"
-                      id="input4"
-                      name="email"
-                      value={formData.email}
-                      onChange={handleInputChange}
-                    />
-                  </div>
-                  <div className="col-md-12">
-                    <label htmlFor="input5" className="form-label">
-                      Password
-                    </label>
-                    <input
-                      type="password"
-                      className="form-control"
-                      id="input5"
-                      name="password"
-                      value={formData.password}
-                      onChange={handleInputChange}
-                    />
-                  </div>
-                  <div className="col-md-12">
-                    <label htmlFor="input6" className="form-label">
-                      DOB
-                    </label>
-                    <input
-                      type="date"
-                      className="form-control"
-                      id="input6"
-                      name="dob"
-                      value={formData.dob}
-                      onChange={handleInputChange}
-                    />
-                  </div>
-                  <div className="col-md-12">
-                    <label htmlFor="input7" className="form-label">
-                      Country
-                    </label>
-                    <select
-                      id="input7"
-                      className="form-select"
-                      name="country"
-                      value={formData.country}
-                      onChange={handleInputChange}
-                    >
-                      <option value="">Choose...</option>
-                      <option value="United States">United States</option>
-                      <option value="Canada">Canada</option>
-                      <option value="United Kingdom">United Kingdom</option>
-                    </select>
-                  </div>
-                  <div className="col-md-6">
-                    <label htmlFor="input8" className="form-label">
-                      City
-                    </label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      id="input8"
-                      name="city"
-                      placeholder="City"
-                      value={formData.city}
-                      onChange={handleInputChange}
-                    />
-                  </div>
-                  <div className="col-md-4">
-                    <label htmlFor="input9" className="form-label">
-                      State
-                    </label>
-                    <select
-                      id="input9"
-                      className="form-select"
-                      name="state"
-                      value={formData.state}
-                      onChange={handleInputChange}
-                    >
-                      <option value="">Choose...</option>
-                      <option value="NY">New York</option>
-                      <option value="CA">California</option>
-                      <option value="TX">Texas</option>
-                    </select>
-                  </div>
-                  <div className="col-md-2">
-                    <label htmlFor="input10" className="form-label">
-                      Zip
-                    </label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      id="input10"
-                      name="zip"
-                      placeholder="Zip"
-                      value={formData.zip}
-                      onChange={handleInputChange}
-                    />
-                  </div>
-                  <div className="col-md-12">
-                    <label htmlFor="input11" className="form-label">
-                      Address
-                    </label>
-                    <textarea
-                      className="form-control"
-                      id="input11"
-                      name="address"
-                      placeholder="Address ..."
-                      rows={3}
-                      value={formData.address}
-                      onChange={handleInputChange}
-                    />
-                  </div>
-                  <div className="col-md-12">
-                    <div className="form-check">
+            {/* Exact copy of complete Vertical Form widget structure */}
+            <div className="col-12 col-xl-12">
+              <div className="card border-top border-3 border-danger rounded-0">
+                <div className="card-header py-3 px-4">
+                  <h5 className="mb-0 text-danger">New User</h5>
+                </div>
+                <div className="card-body p-4">
+                  <form className="row g-3" onSubmit={handleSubmit}>
+                    <div className="col-md-6">
+                      <label className="form-label">First Name</label>
                       <input
-                        className="form-check-input"
-                        type="checkbox"
-                        id="input12"
-                        name="agree"
-                        checked={formData.agree}
+                        type="text"
+                        className="form-control rounded-0"
+                        name="first_name"
+                        placeholder="First Name"
+                        value={formData.first_name}
                         onChange={handleInputChange}
                       />
-                      <label className="form-check-label" htmlFor="input12">
-                        Check me out
-                      </label>
                     </div>
-                  </div>
-                  <div className="col-md-12">
-                    <div className="d-md-flex d-grid align-items-center gap-3">
-                      <button
-                        type="submit"
-                        className="btn btn-grd-primary px-4"
-                      >
-                        Submit
-                      </button>
-                      <button
-                        type="button"
-                        className="btn btn-grd-royal px-4"
-                        onClick={handleReset}
-                      >
-                        Reset
-                      </button>
+                    <div className="col-md-6">
+                      <label className="form-label">Last Name</label>
+                      <input
+                        type="text"
+                        className="form-control rounded-0"
+                        name="last_name"
+                        placeholder="Last Name"
+                        value={formData.last_name}
+                        onChange={handleInputChange}
+                      />
                     </div>
-                  </div>
-                </form>
+                    <div className="col-md-12">
+                      <label className="form-label">Phone</label>
+                      <input
+                        type="text"
+                        className="form-control rounded-0"
+                        name="phone"
+                        placeholder="Phone"
+                        value={formData.phone}
+                        onChange={handleInputChange}
+                      />
+                    </div>
+                    <div className="col-md-12">
+                      <label className="form-label">Email</label>
+                      <input
+                        type="email"
+                        className="form-control rounded-0"
+                        name="email"
+                        placeholder="Email"
+                        value={formData.email}
+                        onChange={handleInputChange}
+                      />
+                    </div>
+                    <div className="col-md-12">
+                      <label className="form-label">Password</label>
+                      <input
+                        type="password"
+                        className="form-control rounded-0"
+                        name="password"
+                        placeholder="Password"
+                        value={formData.password}
+                        onChange={handleInputChange}
+                      />
+                    </div>
+                    <div className="col-md-12">
+                      <label className="form-label">DOB</label>
+                      <input
+                        type="date"
+                        className="form-control rounded-0"
+                        name="dob"
+                        value={formData.dob}
+                        onChange={handleInputChange}
+                      />
+                    </div>
+                    <div className="col-md-12">
+                      <label className="form-label">Country</label>
+                      <select
+                        className="form-select rounded-0"
+                        name="country"
+                        value={formData.country}
+                        onChange={handleInputChange}
+                      >
+                        <option value="">Choose...</option>
+                        <option value="United States">United States</option>
+                        <option value="Canada">Canada</option>
+                        <option value="United Kingdom">United Kingdom</option>
+                      </select>
+                    </div>
+                    <div className="col-md-6">
+                      <label className="form-label">City</label>
+                      <input
+                        type="text"
+                        className="form-control rounded-0"
+                        name="city"
+                        placeholder="City"
+                        value={formData.city}
+                        onChange={handleInputChange}
+                      />
+                    </div>
+                    <div className="col-md-4">
+                      <label className="form-label">State</label>
+                      <select
+                        className="form-select rounded-0"
+                        name="state"
+                        value={formData.state}
+                        onChange={handleInputChange}
+                      >
+                        <option value="">Choose...</option>
+                        <option value="NY">New York</option>
+                        <option value="CA">California</option>
+                        <option value="TX">Texas</option>
+                      </select>
+                    </div>
+                    <div className="col-md-2">
+                      <label className="form-label">Zip</label>
+                      <input
+                        type="text"
+                        className="form-control rounded-0"
+                        name="zip"
+                        placeholder="Zip"
+                        value={formData.zip}
+                        onChange={handleInputChange}
+                      />
+                    </div>
+                    <div className="col-md-12">
+                      <label className="form-label">Address</label>
+                      <textarea
+                        className="form-control rounded-0"
+                        name="address"
+                        placeholder="Address ..."
+                        rows={3}
+                        value={formData.address}
+                        onChange={handleInputChange}
+                      />
+                    </div>
+                    <div className="col-md-12">
+                      <div className="form-check">
+                        <input
+                          className="form-check-input rounded-0"
+                          type="checkbox"
+                          name="agree"
+                          checked={formData.agree}
+                          onChange={handleInputChange}
+                        />
+                        <label className="form-check-label">Check me out</label>
+                      </div>
+                    </div>
+                    <div className="col-md-12">
+                      <div className="d-md-flex d-grid align-items-center gap-3">
+                        <button
+                          type="submit"
+                          className="btn btn-grd-danger px-4 rounded-0"
+                        >
+                          Submit
+                        </button>
+                        <button
+                          type="button"
+                          className="btn btn-grd-info px-4 rounded-0"
+                          onClick={handleReset}
+                        >
+                          Reset
+                        </button>
+                      </div>
+                    </div>
+                  </form>
+                </div>
               </div>
             </div>
           </div>
