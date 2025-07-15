@@ -5,7 +5,7 @@ import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { updateUser, assignRole, removeRole } from "../store/slices/userSlice";
 import { addAlert } from "../store/slices/alertSlice";
 
-const UserDetails: React.FC = () => {
+const BeneficiaryDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const dispatch = useAppDispatch();
   const users = useAppSelector((state) => state.users.users);
@@ -777,4 +777,4 @@ const UserDetails: React.FC = () => {
   );
 };
 
-export default UserDetails;
+export default BeneficiaryDetails;
