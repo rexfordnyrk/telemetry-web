@@ -23,8 +23,65 @@ const Users: React.FC = () => {
     {},
   );
 
-  // Memoize users to prevent unnecessary re-renders
-  const memoizedUsers = useMemo(() => users, [users]);
+  // Filter users based on active filters
+  const filteredUsers = useMemo(() => {
+    if (Object.keys(activeFilters).length === 0) return users;
+
+    return users.filter((user) => {
+      // Role filter
+      if (activeFilters.role && activeFilters.role !== "") {
+        const userRoles = user.roles.map((r) => r.name);
+        if (!userRoles.includes(activeFilters.role)) return false;
+      }
+
+      // Status filter
+      if (activeFilters.status && activeFilters.status !== user.status) {
+        return false;
+      }
+
+      // Organization filter
+      if (
+        activeFilters.organization &&
+        activeFilters.organization !== user.organization
+      ) {
+        return false;
+      }
+
+      // Date range filters
+      if (activeFilters.created_at_from) {
+        const userDate = new Date(user.created_at);
+        const fromDate = new Date(activeFilters.created_at_from);
+        if (userDate < fromDate) return false;
+      }
+
+      if (activeFilters.created_at_to) {
+        const userDate = new Date(user.created_at);
+        const toDate = new Date(activeFilters.created_at_to);
+        if (userDate > toDate) return false;
+      }
+
+      return true;
+    });
+  }, [users, activeFilters]);
+
+  // Memoize filtered users to prevent unnecessary re-renders
+  const memoizedUsers = useMemo(() => filteredUsers, [filteredUsers]);
+
+  // Define filter options
+  const filterOptions = useMemo(() => {
+    const roles = [
+      ...new Set(users.flatMap((u) => u.roles.map((r) => r.name))),
+    ];
+    const statuses = [...new Set(users.map((u) => u.status))];
+    const organizations = [...new Set(users.map((u) => u.organization))];
+
+    return {
+      role: roles,
+      status: statuses,
+      organization: organizations,
+      created_at: [], // Date range filter
+    };
+  }, [users]);
 
   // Initialize DataTable using custom hook
   useDataTable("users-datatable", memoizedUsers);
@@ -115,9 +172,7 @@ const Users: React.FC = () => {
             <button
               type="button"
               className="btn btn-outline-primary px-4"
-              onClick={() => {
-                /* TODO: Implement filters modal */
-              }}
+              onClick={() => setShowFilterModal(true)}
             >
               <i className="material-icons-outlined me-1">filter_list</i>
               Filters
