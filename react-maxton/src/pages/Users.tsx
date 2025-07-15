@@ -426,16 +426,16 @@ const Users: React.FC = () => {
                                   src={user.avatar}
                                   alt=""
                                   className="rounded-circle"
-                                  width="32"
-                                  height="32"
+                                  width="28"
+                                  height="28"
                                 />
                               ) : (
                                 <div
                                   className="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center"
                                   style={{
-                                    width: "32px",
-                                    height: "32px",
-                                    fontSize: "12px",
+                                    width: "28px",
+                                    height: "28px",
+                                    fontSize: "11px",
                                   }}
                                 >
                                   {getInitials(user.name)}
