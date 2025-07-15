@@ -15,15 +15,12 @@ const NewUserModal: React.FC<NewUserModalProps> = ({ show, onClose }) => {
   const [formData, setFormData] = useState({
     first_name: "",
     last_name: "",
-    phone: "",
+    username: "",
     email: "",
+    phone: "",
+    designation: "",
+    organization: "",
     password: "",
-    dob: "",
-    country: "",
-    city: "",
-    state: "",
-    zip: "",
-    address: "",
     agree: false,
   });
 
@@ -60,11 +57,13 @@ const NewUserModal: React.FC<NewUserModalProps> = ({ show, onClose }) => {
       id: `550e8400-e29b-41d4-a716-${Date.now()}`,
       first_name: formData.first_name,
       last_name: formData.last_name,
-      username: `${formData.first_name.toLowerCase()}_${formData.last_name.toLowerCase()}`,
+      username:
+        formData.username ||
+        `${formData.first_name.toLowerCase()}_${formData.last_name.toLowerCase()}`,
       email: formData.email,
       phone: formData.phone,
-      designation: "New Employee",
-      organization: "Organization",
+      designation: formData.designation || "New Employee",
+      organization: formData.organization || "Organization",
       status: "active",
       roles: [
         {
@@ -97,15 +96,12 @@ const NewUserModal: React.FC<NewUserModalProps> = ({ show, onClose }) => {
     setFormData({
       first_name: "",
       last_name: "",
-      phone: "",
+      username: "",
       email: "",
+      phone: "",
+      designation: "",
+      organization: "",
       password: "",
-      dob: "",
-      country: "",
-      city: "",
-      state: "",
-      zip: "",
-      address: "",
       agree: false,
     });
   };
