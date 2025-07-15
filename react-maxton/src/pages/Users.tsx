@@ -87,6 +87,7 @@ const Users: React.FC = () => {
     filtered.sort((a, b) => {
       const aVal = a[sortField];
       const bVal = b[sortField];
+      if (aVal == null || bVal == null) return 0;
       if (aVal < bVal) return sortDirection === "asc" ? -1 : 1;
       if (aVal > bVal) return sortDirection === "asc" ? 1 : -1;
       return 0;
@@ -615,16 +616,6 @@ const Users: React.FC = () => {
           </div>
         </div>
       )}
-
-      <style jsx>{`
-        .sortable {
-          cursor: pointer;
-          user-select: none;
-        }
-        .sortable:hover {
-          background-color: rgba(0, 0, 0, 0.05);
-        }
-      `}</style>
     </MainLayout>
   );
 };
