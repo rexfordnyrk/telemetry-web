@@ -64,7 +64,7 @@ const BeneficiaryDetails: React.FC = () => {
   // Find beneficiary by ID - memoized to prevent infinite re-renders
   const beneficiary = useMemo(
     () => beneficiaries.find((b) => b.id === id),
-    [id],
+    [beneficiaries, id],
   );
 
   // Form state for editing
