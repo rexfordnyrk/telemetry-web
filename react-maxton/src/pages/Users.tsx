@@ -420,7 +420,7 @@ const Users: React.FC = () => {
                             />
                           </td>
                           <td>
-                            <div className="d-flex align-items-center gap-2">
+                            <div className="d-flex align-items-center gap-1">
                               {user.avatar ? (
                                 <img
                                   src={user.avatar}
