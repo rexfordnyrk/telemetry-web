@@ -61,10 +61,7 @@ const ResetPassword: React.FC = () => {
                           <button type="submit" className="btn btn-grd-info">
                             Change Password
                           </button>
-                          <a
-                            href="/auth/basic/login"
-                            className="btn btn-grd-royal"
-                          >
+                          <a href="/login" className="btn btn-grd-royal">
                             Back to Login
                           </a>
                         </div>
