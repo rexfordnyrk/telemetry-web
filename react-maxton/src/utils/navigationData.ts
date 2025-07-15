@@ -370,6 +370,25 @@ export const navigationData: NavigationItem[] = [
     children: [],
   },
   {
+    id: "user-management",
+    title: "User Management",
+    icon: "people",
+    children: [
+      {
+        id: "users",
+        title: "Users",
+        path: "/user-management/users",
+        icon: "arrow_right",
+      },
+      {
+        id: "roles-permissions",
+        title: "Roles & Permissions",
+        path: "/user-management/roles-permissions",
+        icon: "arrow_right",
+      },
+    ],
+  },
+  {
     id: "device-management-label",
     title: "Device Management",
     icon: undefined,
