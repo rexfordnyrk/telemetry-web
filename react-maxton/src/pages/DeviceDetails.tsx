@@ -5,7 +5,7 @@ import MainLayout from "../layouts/MainLayout";
 
 // jQuery and Peity charts are handled by external JS
 
-const Dashboard: React.FC = () => {
+const DeviceDetails: React.FC = () => {
   // Chart 1 - Radial Bar Chart (Active Users)
   const chart1Options = {
     series: [78],
