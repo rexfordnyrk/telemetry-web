@@ -176,7 +176,7 @@ const UserDetails: React.FC = () => {
                       </div>
                     </div>
                     <div className="pb-2">
-                      <button className="btn btn-light">
+                      <button className="btn btn-light btn-sm">
                         <i className="material-icons-outlined me-2">send</i>
                         Send Message
                       </button>
@@ -379,12 +379,12 @@ const UserDetails: React.FC = () => {
                   </div>
                   <div className="col-12">
                     <div className="d-flex gap-3">
-                      <button type="submit" className="btn btn-primary">
+                      <button type="submit" className="btn btn-primary btn-sm">
                         Update Profile
                       </button>
                       <button
                         type="button"
-                        className="btn btn-secondary"
+                        className="btn btn-secondary btn-sm"
                         onClick={handleReset}
                       >
                         Reset
