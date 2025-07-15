@@ -103,7 +103,7 @@ export const useDataTable = (
       isInitializedRef.current = false;
       tableInstanceRef.current = null;
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps\n  }, []); // Empty dependency array - only run once to avoid re-initialization
+        // eslint-disable-next-line react-hooks/exhaustive-deps\n  }, []); // Empty dependency array - only run once to avoid re-initialization
 
   // Effect to handle data changes (reinitialize if needed)
   useEffect(() => {
