@@ -11,8 +11,39 @@ const UserDetails: React.FC = () => {
   const users = useAppSelector((state) => state.users.users);
   const availableRoles = useAppSelector((state) => state.users.availableRoles);
 
+  // All hooks must be called at the top level
+  const [selectedRole, setSelectedRole] = useState("");
+  const [showRoleModal, setShowRoleModal] = useState(false);
+  const [roleToRemove, setRoleToRemove] = useState<any>(null);
+  const [passwordData, setPasswordData] = useState({
+    newPassword: "",
+    confirmPassword: "",
+  });
+
   // Find user by ID
   const user = users.find((u) => u.id === id);
+
+  // Initialize form data with user data or empty values
+  const [formData, setFormData] = useState({
+    first_name: user?.first_name || "",
+    last_name: user?.last_name || "",
+    phone: user?.phone || "",
+    email: user?.email || "",
+    organization: user?.organization || "",
+  });
+
+  // Update form data when user changes
+  React.useEffect(() => {
+    if (user) {
+      setFormData({
+        first_name: user.first_name,
+        last_name: user.last_name,
+        phone: user.phone,
+        email: user.email,
+        organization: user.organization,
+      });
+    }
+  }, [user]);
 
   if (!user) {
     return (
@@ -23,23 +54,6 @@ const UserDetails: React.FC = () => {
       </MainLayout>
     );
   }
-
-  const [selectedRole, setSelectedRole] = useState("");
-  const [showRoleModal, setShowRoleModal] = useState(false);
-  const [roleToRemove, setRoleToRemove] = useState<any>(null);
-
-  const [formData, setFormData] = useState({
-    first_name: user.first_name,
-    last_name: user.last_name,
-    phone: user.phone,
-    email: user.email,
-    organization: user.organization,
-  });
-
-  const [passwordData, setPasswordData] = useState({
-    newPassword: "",
-    confirmPassword: "",
-  });
 
   const handleInputChange = (
     e: React.ChangeEvent<
