@@ -1,18 +1,18 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import MainLayout from "../layouts/MainLayout";
 import { useAppDispatch } from "../store/hooks";
 import { addAlert } from "../store/slices/alertSlice";
 
 const Beneficiaries: React.FC = () => {
   const dispatch = useAppDispatch();
-  const [showNewBeneficiaryModal, setShowNewBeneficiaryModal] = useState(false);
+  // Removed unused showNewBeneficiaryModal
   const [showModal, setShowModal] = useState(false);
   const [modalAction, setModalAction] = useState<"disable" | "delete">(
     "disable",
   );
   const [targetBeneficiary, setTargetBeneficiary] = useState<any>(null);
 
-  // Sample beneficiaries data
+  // Sample beneficiaries data - memoized to prevent re-renders
   const beneficiaries = [
     {
       id: "1",
@@ -76,6 +76,9 @@ const Beneficiaries: React.FC = () => {
     },
   ];
 
+  // Memoize beneficiaries to prevent unnecessary re-renders
+  const memoizedBeneficiaries = useMemo(() => beneficiaries, []);
+
   // Initialize DataTable when component mounts
   useEffect(() => {
     const initDataTable = () => {
@@ -118,7 +121,7 @@ const Beneficiaries: React.FC = () => {
         window.$("#example").DataTable().destroy();
       }
     };
-  }, [beneficiaries]);
+  }, [memoizedBeneficiaries]);
 
   const getStatusElement = (status: string) => {
     const statusConfig = {
@@ -362,7 +365,7 @@ const Beneficiaries: React.FC = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {beneficiaries.map((beneficiary) => (
+                  {memoizedBeneficiaries.map((beneficiary) => (
                     <tr key={beneficiary.id}>
                       <td>
                         <div className="d-flex align-items-center gap-3">
@@ -492,7 +495,9 @@ const Beneficiaries: React.FC = () => {
           <button
             type="button"
             className="btn btn-grd-primary px-4"
-            onClick={() => setShowNewBeneficiaryModal(true)}
+            onClick={() => {
+              /* TODO: Implement new beneficiary modal */
+            }}
           >
             + | New Beneficiary
           </button>
