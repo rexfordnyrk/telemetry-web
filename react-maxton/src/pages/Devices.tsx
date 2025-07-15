@@ -127,6 +127,7 @@ const Devices: React.FC = () => {
   // Initialize DataTable using custom hook
   useDataTable("devices-datatable", memoizedDevices);
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const getStatusElement = (status: string) => {
     const statusConfig = {
       active: { bg: "success", text: "Active" },
