@@ -526,9 +526,37 @@ const RolesPermissions: React.FC = () => {
                     </div>
                   )}
 
+                  {/* New Permissions (to be added) */}
+                  {newPermissions.length > 0 && (
+                    <div className="mb-4">
+                      <h6 className="text-success mb-3">
+                        New Permissions (To be added)
+                      </h6>
+                      <div className="d-flex flex-wrap gap-2">
+                        {newPermissions.map((permission: any) => (
+                          <span
+                            key={permission.id}
+                            className="badge bg-success d-flex align-items-center gap-2"
+                          >
+                            {permission.name}
+                            <button
+                              type="button"
+                              className="btn-close btn-close-white"
+                              style={{ fontSize: "0.75em" }}
+                              onClick={() =>
+                                handleRemoveNewPermission(permission)
+                              }
+                              title="Remove from assignment"
+                            ></button>
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
                   {/* Available Permissions */}
                   <div className="mb-4">
-                    <h6 className="text-success mb-3">Available Permissions</h6>
+                    <h6 className="text-info mb-3">Available Permissions</h6>
                     <div className="mb-3">
                       <input
                         type="text"
@@ -543,10 +571,8 @@ const RolesPermissions: React.FC = () => {
                         <div
                           key={permission.id}
                           className="border rounded p-2 mb-2 cursor-pointer hover-bg-light"
-                          onClick={() => {
-                            // TODO: Add permission assignment logic
-                            console.log("Assign permission:", permission);
-                          }}
+                          style={{ cursor: "pointer" }}
+                          onClick={() => handleAssignPermission(permission)}
                         >
                           <div className="fw-bold">{permission.name}</div>
                           <small className="text-muted">
@@ -558,14 +584,23 @@ const RolesPermissions: React.FC = () => {
                   </div>
 
                   {/* Apply Changes Button */}
-                  {removedPermissions.length > 0 && (
+                  {(removedPermissions.length > 0 ||
+                    newPermissions.length > 0) && (
                     <div className="d-grid">
                       <button
                         type="button"
-                        className="btn btn-grd-warning"
+                        className="btn btn-grd-primary"
                         onClick={handleApplyChanges}
                       >
-                        Apply Changes ({removedPermissions.length} removals)
+                        Apply Changes (
+                        {removedPermissions.length > 0 &&
+                          `${removedPermissions.length} removals`}
+                        {removedPermissions.length > 0 &&
+                          newPermissions.length > 0 &&
+                          ", "}
+                        {newPermissions.length > 0 &&
+                          `${newPermissions.length} additions`}
+                        )
                       </button>
                     </div>
                   )}
