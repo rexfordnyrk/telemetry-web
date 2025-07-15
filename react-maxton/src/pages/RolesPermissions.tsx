@@ -86,6 +86,58 @@ const RolesPermissions: React.FC = () => {
   // Initialize DataTable using custom hook
   useDataTable("roles-datatable", memoizedRoles);
 
+  const handleRoleClick = (role: any) => {
+    setSelectedRole(role);
+    setRemovedPermissions([]); // Reset removed permissions when selecting new role
+  };
+
+  const handleRemovePermission = (permission: any) => {
+    setRemovedPermissions((prev) => [...prev, permission]);
+  };
+
+  const handleRestorePermission = (permission: any) => {
+    setRemovedPermissions((prev) => prev.filter((p) => p.id !== permission.id));
+  };
+
+  const getFilteredPermissions = () => {
+    if (!searchTerm) return allPermissions;
+    return allPermissions.filter(
+      (permission) =>
+        permission.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        permission.description.toLowerCase().includes(searchTerm.toLowerCase()),
+    );
+  };
+
+  const getAvailablePermissions = () => {
+    if (!selectedRole) return [];
+    const rolePermissionIds = selectedRole.permissions.map((p: any) => p.id);
+    return getFilteredPermissions().filter(
+      (permission) => !rolePermissionIds.includes(permission.id),
+    );
+  };
+
+  const getCurrentPermissions = () => {
+    if (!selectedRole) return [];
+    return selectedRole.permissions.filter(
+      (permission: any) =>
+        !removedPermissions.find((rp) => rp.id === permission.id),
+    );
+  };
+
+  const handleApplyChanges = () => {
+    if (removedPermissions.length > 0) {
+      // Apply permission removals
+      dispatch(
+        addAlert({
+          type: "success",
+          title: "Success",
+          message: `${removedPermissions.length} permission(s) removed from ${selectedRole?.name}.`,
+        }),
+      );
+      setRemovedPermissions([]);
+    }
+  };
+
   const handleActionClick = (role: any, action: "disable" | "delete") => {
     setTargetRole(role);
     setModalAction(action);
