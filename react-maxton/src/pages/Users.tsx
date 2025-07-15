@@ -363,17 +363,6 @@ const Users: React.FC = () => {
             </div>
           </div>
         </div>
-
-        {/* Add New User Button */}
-        <div className="d-flex justify-content-end mt-3">
-          <button
-            type="button"
-            className="btn btn-grd-primary px-4"
-            onClick={() => setShowNewUserModal(true)}
-          >
-            + | New User
-          </button>
-        </div>
       </div>
 
       {/* New User Modal */}
