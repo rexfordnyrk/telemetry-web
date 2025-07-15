@@ -395,10 +395,35 @@ export const navigationData: NavigationItem[] = [
     children: [],
   },
   {
-    id: "beneficiaries-label",
-    title: "Beneficiaries",
-    icon: undefined,
-    children: [],
+    id: "device-management",
+    title: "Device Management",
+    icon: "devices",
+    children: [
+      {
+        id: "devices",
+        title: "Devices",
+        path: "/device-management/devices",
+        icon: "arrow_right",
+      },
+      {
+        id: "device-details",
+        title: "Device Details",
+        path: "/device-management/device-details",
+        icon: "arrow_right",
+      },
+      {
+        id: "device-assignments",
+        title: "Device Assignments",
+        path: "/device-management/device-assignments",
+        icon: "arrow_right",
+      },
+      {
+        id: "device-tracking",
+        title: "Device Tracking",
+        path: "/device-management/device-tracking",
+        icon: "arrow_right",
+      },
+    ],
   },
   {
     id: "pages-label",
