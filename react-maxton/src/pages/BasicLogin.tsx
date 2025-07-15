@@ -115,9 +115,7 @@ const BasicLogin: React.FC = () => {
                       </div>
                     </div>
                     <div className="col-md-6 text-end">
-                      <a href="/auth/basic/forgot-password">
-                        Forgot Password ?
-                      </a>
+                      <a href="/auth/forgot-password">Forgot Password ?</a>
                     </div>
                     <div className="col-12">
                       <div className="d-grid">
