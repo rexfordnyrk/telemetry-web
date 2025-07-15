@@ -97,7 +97,11 @@ const Devices: React.FC = () => {
       // Initialize DataTable
       setTimeout(() => {
         const tableElement = document.querySelector(tableId);
-        if (tableElement && window.$ && window.$.fn.DataTable) {
+        if (
+          tableElement &&
+          window.$ &&
+          typeof window.$.fn.DataTable === "function"
+        ) {
           try {
             window.$(tableId).DataTable({
               responsive: true,
