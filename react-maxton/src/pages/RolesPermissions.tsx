@@ -12,6 +12,9 @@ const RolesPermissions: React.FC = () => {
     "disable",
   );
   const [targetRole, setTargetRole] = useState<any>(null);
+  const [selectedRole, setSelectedRole] = useState<any>(null);
+  const [removedPermissions, setRemovedPermissions] = useState<any[]>([]);
+  const [searchTerm, setSearchTerm] = useState("");
 
   // Sample roles data - memoized to prevent re-renders
   const roles = [
