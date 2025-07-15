@@ -34,40 +34,29 @@ const BeneficiaryDetails: React.FC = () => {
   // Find beneficiary by ID
   const beneficiary = beneficiaries.find((b) => b.id === id);
 
-  // Initialize form data with user data or empty values
+  // Initialize form data with beneficiary data or empty values
   const [formData, setFormData] = useState({
-    first_name: user?.first_name || "",
-    last_name: user?.last_name || "",
-    username: user?.username || "",
-    phone: user?.phone || "",
-    email: user?.email || "",
-    designation: user?.designation || "",
-    organization: user?.organization || "",
-    address: "123 Main Street, Apt 4B\nNew York, NY 10001",
-    photo: null as File | null,
+    name: beneficiary?.name || "",
+    email: beneficiary?.email || "",
+    phone: beneficiary?.phone || "",
+    organization: beneficiary?.organization || "",
+    district: beneficiary?.district || "",
+    programme: beneficiary?.programme || "",
   });
 
-  const [photoPreview, setPhotoPreview] = useState<string | null>(
-    user?.photo || null,
-  );
-
-  // Update form data when user changes
+  // Update form data when beneficiary changes
   React.useEffect(() => {
-    if (user) {
+    if (beneficiary) {
       setFormData({
-        first_name: user.first_name,
-        last_name: user.last_name,
-        username: user.username,
-        phone: user.phone,
-        email: user.email,
-        designation: user.designation,
-        organization: user.organization,
-        address: "123 Main Street, Apt 4B\nNew York, NY 10001",
-        photo: null,
+        name: beneficiary.name,
+        email: beneficiary.email,
+        phone: beneficiary.phone,
+        organization: beneficiary.organization,
+        district: beneficiary.district,
+        programme: beneficiary.programme,
       });
-      setPhotoPreview(user.photo || null);
     }
-  }, [user]);
+  }, [beneficiary]);
 
   if (!user) {
     return (
