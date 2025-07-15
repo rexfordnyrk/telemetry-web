@@ -454,19 +454,6 @@ const Beneficiaries: React.FC = () => {
             </div>
           </div>
         </div>
-
-        {/* Add New Beneficiary Button */}
-        <div className="d-flex justify-content-end mt-3">
-          <button
-            type="button"
-            className="btn btn-grd-primary px-4"
-            onClick={() => {
-              /* TODO: Implement new beneficiary modal */
-            }}
-          >
-            + | New Beneficiary
-          </button>
-        </div>
       </div>
 
       {/* Confirmation Modal */}
