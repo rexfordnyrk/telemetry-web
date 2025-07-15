@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from "react";
 import MainLayout from "../layouts/MainLayout";
+import FilterModal from "../components/FilterModal";
 import { useAppDispatch } from "../store/hooks";
 import { addAlert } from "../store/slices/alertSlice";
 import { useDataTable } from "../hooks/useDataTable";
@@ -12,6 +13,10 @@ const Devices: React.FC = () => {
     "disable",
   );
   const [targetDevice, setTargetDevice] = useState<any>(null);
+  const [showFilterModal, setShowFilterModal] = useState(false);
+  const [activeFilters, setActiveFilters] = useState<{ [key: string]: any }>(
+    {},
+  );
 
   // Sample devices data - memoized to prevent re-renders
   const devices = [
@@ -72,9 +77,36 @@ const Devices: React.FC = () => {
     },
   ];
 
-  // Memoize devices to prevent unnecessary re-renders
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const memoizedDevices = useMemo(() => devices, []);
+  // Filter devices based on active filters
+  const filteredDevices = useMemo(() => {
+    if (Object.keys(activeFilters).length === 0) return devices;
+
+    return devices.filter((device) => {
+      if (activeFilters.type && activeFilters.type !== device.type)
+        return false;
+      if (activeFilters.status && activeFilters.status !== device.status)
+        return false;
+      if (activeFilters.location && activeFilters.location !== device.location)
+        return false;
+      return true;
+    });
+  }, [devices, activeFilters]);
+
+  // Memoize filtered devices to prevent unnecessary re-renders
+  const memoizedDevices = useMemo(() => filteredDevices, [filteredDevices]);
+
+  // Define filter options
+  const filterOptions = useMemo(() => {
+    const types = [...new Set(devices.map((d) => d.type))];
+    const statuses = [...new Set(devices.map((d) => d.status))];
+    const locations = [...new Set(devices.map((d) => d.location))];
+
+    return {
+      type: types,
+      status: statuses,
+      location: locations,
+    };
+  }, [devices]);
 
   // Initialize DataTable using custom hook
   useDataTable("devices-datatable", memoizedDevices);
@@ -143,6 +175,10 @@ const Devices: React.FC = () => {
     setTargetDevice(null);
   };
 
+  const handleApplyFilters = (filters: { [key: string]: any }) => {
+    setActiveFilters(filters);
+  };
+
   return (
     <MainLayout>
       <div className="main-content">
@@ -167,9 +203,7 @@ const Devices: React.FC = () => {
             <button
               type="button"
               className="btn btn-outline-primary px-4"
-              onClick={() => {
-                /* TODO: Implement filters modal */
-              }}
+              onClick={() => setShowFilterModal(true)}
             >
               <i className="material-icons-outlined me-1">filter_list</i>
               Filters
