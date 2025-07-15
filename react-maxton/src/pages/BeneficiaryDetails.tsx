@@ -76,6 +76,7 @@ const BeneficiaryDetails: React.FC = () => {
     e.preventDefault();
 
     // Update beneficiary data
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const updatedBeneficiary = {
       ...beneficiary,
       ...formData,
