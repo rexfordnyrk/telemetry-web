@@ -1,10 +1,11 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useMemo } from "react";
 import MainLayout from "../layouts/MainLayout";
 import NewUserModal from "../components/NewUserModal";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { deleteUser } from "../store/slices/userSlice";
 import { addAlert } from "../store/slices/alertSlice";
 import { useNavigate } from "react-router-dom";
+import { useDataTable } from "../hooks/useDataTable";
 
 const Users: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -20,69 +21,8 @@ const Users: React.FC = () => {
   // Memoize users to prevent unnecessary re-renders
   const memoizedUsers = useMemo(() => users, [users]);
 
-  // Initialize DataTable when component mounts and users data changes
-  useEffect(() => {
-    const tableId = "#users-datatable";
-
-    const initDataTable = () => {
-      if (!window.$ || !window.$.fn.DataTable) return;
-
-      // Destroy existing DataTable if it exists
-      try {
-        if (window.$.fn.DataTable.isDataTable(tableId)) {
-          window.$(tableId).DataTable().destroy();
-          window.$(tableId + " thead").empty();
-          window.$(tableId + " tbody").empty();
-          window.$(tableId + " tfoot").empty();
-        }
-      } catch (error) {
-        console.warn("Error destroying DataTable:", error);
-      }
-
-      // Initialize DataTable
-      setTimeout(() => {
-        const tableElement = document.querySelector(tableId);
-        if (
-          tableElement &&
-          window.$ &&
-          typeof window.$.fn.DataTable === "function"
-        ) {
-          try {
-            window.$(tableId).DataTable({
-              responsive: true,
-              pageLength: 10,
-              lengthChange: true,
-              searching: true,
-              ordering: true,
-              info: true,
-              autoWidth: false,
-              order: [[0, "asc"]],
-              columnDefs: [
-                { orderable: false, targets: -1 }, // Disable ordering on last column (actions)
-              ],
-            });
-          } catch (error) {
-            console.warn("Error initializing DataTable:", error);
-          }
-        }
-      }, 200);
-    };
-
-    initDataTable();
-
-    // Cleanup function
-    return () => {
-      if (window.$ && window.$.fn.DataTable) {
-        try {
-          if (window.$.fn.DataTable.isDataTable(tableId)) {
-            window.$(tableId).DataTable().destroy();
-          }
-        } catch (error) {
-          console.warn("Error in DataTable cleanup:", error);
-        }
-      }
-    };
-  }, [memoizedUsers]);
+  // Initialize DataTable using custom hook
+  useDataTable("users-datatable", memoizedUsers);
 
   const getInitials = (firstName: string, lastName: string) => {
     return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase();
