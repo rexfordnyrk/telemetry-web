@@ -109,10 +109,17 @@ const NewUserModal: React.FC<NewUserModalProps> = ({ show, onClose }) => {
   if (!show) return null;
 
   return (
-    <div className="modal fade show d-block" tabIndex={-1}>
+    <div
+      className="modal fade show d-block"
+      tabIndex={-1}
+      style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
+    >
       <div className="modal-dialog modal-dialog-centered">
-        <div className="modal-content">
-          <div className="modal-header border-bottom-0 py-2 bg-grd-info">
+        <div
+          className="modal-content border-top border-3 border-info"
+          style={{ borderRadius: 0 }}
+        >
+          <div className="modal-header border-bottom-0 py-2">
             <h5 className="modal-title">User Registration Form</h5>
             <button
               type="button"
