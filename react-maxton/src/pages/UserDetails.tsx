@@ -294,31 +294,30 @@ const UserDetails: React.FC = () => {
                     <h5 className="mb-0 fw-bold">Edit Profile</h5>
                   </div>
                   <div className="dropdown">
-                    <button
-                      type="button"
-                      className="btn dropdown-toggle dropdown-toggle-nocaret options"
+                    <a
+                      href="javascript:;"
+                      className="dropdown-toggle-nocaret options dropdown-toggle"
                       data-bs-toggle="dropdown"
-                      aria-expanded="false"
                     >
                       <span className="material-icons-outlined fs-5">
                         more_vert
                       </span>
-                    </button>
+                    </a>
                     <ul className="dropdown-menu">
                       <li>
-                        <button type="button" className="dropdown-item">
+                        <a className="dropdown-item" href="javascript:;">
                           Action
-                        </button>
+                        </a>
                       </li>
                       <li>
-                        <button type="button" className="dropdown-item">
+                        <a className="dropdown-item" href="javascript:;">
                           Another action
-                        </button>
+                        </a>
                       </li>
                       <li>
-                        <button type="button" className="dropdown-item">
+                        <a className="dropdown-item" href="javascript:;">
                           Something else here
-                        </button>
+                        </a>
                       </li>
                     </ul>
                   </div>
@@ -468,31 +467,30 @@ const UserDetails: React.FC = () => {
                     <h5 className="mb-0 fw-bold">Manage Roles</h5>
                   </div>
                   <div className="dropdown">
-                    <button
-                      type="button"
-                      className="btn dropdown-toggle dropdown-toggle-nocaret options"
+                    <a
+                      href="javascript:;"
+                      className="dropdown-toggle-nocaret options dropdown-toggle"
                       data-bs-toggle="dropdown"
-                      aria-expanded="false"
                     >
                       <span className="material-icons-outlined fs-5">
                         more_vert
                       </span>
-                    </button>
+                    </a>
                     <ul className="dropdown-menu">
                       <li>
-                        <button type="button" className="dropdown-item">
+                        <a className="dropdown-item" href="javascript:;">
                           Action
-                        </button>
+                        </a>
                       </li>
                       <li>
-                        <button type="button" className="dropdown-item">
+                        <a className="dropdown-item" href="javascript:;">
                           Another action
-                        </button>
+                        </a>
                       </li>
                       <li>
-                        <button type="button" className="dropdown-item">
+                        <a className="dropdown-item" href="javascript:;">
                           Something else here
-                        </button>
+                        </a>
                       </li>
                     </ul>
                   </div>
@@ -566,31 +564,30 @@ const UserDetails: React.FC = () => {
                     <h5 className="mb-0 fw-bold">Password Management</h5>
                   </div>
                   <div className="dropdown">
-                    <button
-                      type="button"
-                      className="btn dropdown-toggle dropdown-toggle-nocaret options"
+                    <a
+                      href="javascript:;"
+                      className="dropdown-toggle-nocaret options dropdown-toggle"
                       data-bs-toggle="dropdown"
-                      aria-expanded="false"
                     >
                       <span className="material-icons-outlined fs-5">
                         more_vert
                       </span>
-                    </button>
+                    </a>
                     <ul className="dropdown-menu">
                       <li>
-                        <button type="button" className="dropdown-item">
+                        <a className="dropdown-item" href="javascript:;">
                           Action
-                        </button>
+                        </a>
                       </li>
                       <li>
-                        <button type="button" className="dropdown-item">
+                        <a className="dropdown-item" href="javascript:;">
                           Another action
-                        </button>
+                        </a>
                       </li>
                       <li>
-                        <button type="button" className="dropdown-item">
+                        <a className="dropdown-item" href="javascript:;">
                           Something else here
-                        </button>
+                        </a>
                       </li>
                     </ul>
                   </div>

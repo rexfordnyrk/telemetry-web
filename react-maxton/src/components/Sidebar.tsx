@@ -48,6 +48,7 @@ const SidebarItem: React.FC<SidebarItemProps> = ({ item, level = 0 }) => {
       return (
         <li className={isActive ? "mm-active" : ""}>
           <a
+            href="javascript:;"
             className={`has-arrow ${isActive ? "mm-active" : ""}`}
             onClick={(e) => {
               e.preventDefault();
@@ -74,6 +75,7 @@ const SidebarItem: React.FC<SidebarItemProps> = ({ item, level = 0 }) => {
       return (
         <li className={isActive ? "mm-active" : ""}>
           <a
+            href="javascript:;"
             className={`has-arrow ${isActive ? "mm-active" : ""}`}
             onClick={(e) => {
               e.preventDefault();
@@ -134,30 +136,22 @@ const SidebarItem: React.FC<SidebarItemProps> = ({ item, level = 0 }) => {
     // Top level item
     return (
       <li>
-        <button
-          type="button"
-          className="nav-link"
-          onClick={(e) => e.preventDefault()}
-        >
+        <a href="javascript:;" onClick={(e) => e.preventDefault()}>
           <div className="parent-icon">
             <i className="material-icons-outlined">{item.icon}</i>
           </div>
           <div className="menu-title">{item.title}</div>
-        </button>
+        </a>
       </li>
     );
   } else {
     // Submenu item
     return (
       <li>
-        <button
-          type="button"
-          className="nav-link"
-          onClick={(e) => e.preventDefault()}
-        >
+        <a href="javascript:;" onClick={(e) => e.preventDefault()}>
           <i className="material-icons-outlined">{item.icon}</i>
           {item.title}
-        </button>
+        </a>
       </li>
     );
   }

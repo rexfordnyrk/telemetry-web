@@ -688,10 +688,10 @@ const EcommerceDashboard: React.FC = () => {
           <div className="ps-3">
             <nav aria-label="breadcrumb">
               <ol className="breadcrumb mb-0 p-0">
-                                <li className="breadcrumb-item">
-                  <button type="button" className="breadcrumb-link">
+                <li className="breadcrumb-item">
+                  <a href="javascript:;">
                     <i className="bx bx-home-alt"></i>
-                  </button>
+                  </a>
                 </li>
                 <li className="breadcrumb-item active" aria-current="page">
                   eCommerce
@@ -712,19 +712,19 @@ const EcommerceDashboard: React.FC = () => {
                 <span className="visually-hidden">Toggle Dropdown</span>
               </button>
               <div className="dropdown-menu dropdown-menu-right dropdown-menu-lg-end">
-                                <button type="button" className="dropdown-item">
+                <a className="dropdown-item" href="javascript:;">
                   Action
-                                </button>
-                                <button type="button" className="dropdown-item">
+                </a>
+                <a className="dropdown-item" href="javascript:;">
                   Another action
-                                </button>
-                                <button type="button" className="dropdown-item">
+                </a>
+                <a className="dropdown-item" href="javascript:;">
                   Something else here
-                                </button>
+                </a>
                 <div className="dropdown-divider"></div>
-                                <button type="button" className="dropdown-item">
+                <a className="dropdown-item" href="javascript:;">
                   Separated link
-                                </button>
+                </a>
               </div>
             </div>
           </div>
@@ -881,22 +881,22 @@ const EcommerceDashboard: React.FC = () => {
                         <span className="material-icons-outlined fs-5">
                           more_vert
                         </span>
-                                      </button>
+                      </a>
                       <ul className="dropdown-menu">
                         <li>
-                                          <button type="button" className="dropdown-item">
+                          <a className="dropdown-item" href="javascript:;">
                             Action
-                                          </button>
+                          </a>
                         </li>
                         <li>
-                                          <button type="button" className="dropdown-item">
+                          <a className="dropdown-item" href="javascript:;">
                             Another action
-                                          </button>
+                          </a>
                         </li>
                         <li>
-                                          <button type="button" className="dropdown-item">
+                          <a className="dropdown-item" href="javascript:;">
                             Something else here
-                                          </button>
+                          </a>
                         </li>
                       </ul>
                     </div>
@@ -963,22 +963,22 @@ const EcommerceDashboard: React.FC = () => {
                       <span className="material-icons-outlined fs-5">
                         more_vert
                       </span>
-                                    </button>
+                    </a>
                     <ul className="dropdown-menu">
                       <li>
-                                        <button type="button" className="dropdown-item">
+                        <a className="dropdown-item" href="javascript:;">
                           Action
-                                        </button>
+                        </a>
                       </li>
                       <li>
-                                        <button type="button" className="dropdown-item">
+                        <a className="dropdown-item" href="javascript:;">
                           Another action
-                                        </button>
+                        </a>
                       </li>
                       <li>
-                                        <button type="button" className="dropdown-item">
+                        <a className="dropdown-item" href="javascript:;">
                           Something else here
-                                        </button>
+                        </a>
                       </li>
                     </ul>
                   </div>
@@ -1047,22 +1047,22 @@ const EcommerceDashboard: React.FC = () => {
                       <span className="material-icons-outlined fs-5">
                         more_vert
                       </span>
-                                    </button>
+                    </a>
                     <ul className="dropdown-menu">
                       <li>
-                                        <button type="button" className="dropdown-item">
+                        <a className="dropdown-item" href="javascript:;">
                           Action
-                                        </button>
+                        </a>
                       </li>
                       <li>
-                                        <button type="button" className="dropdown-item">
+                        <a className="dropdown-item" href="javascript:;">
                           Another action
-                                        </button>
+                        </a>
                       </li>
                       <li>
-                                        <button type="button" className="dropdown-item">
+                        <a className="dropdown-item" href="javascript:;">
                           Something else here
-                                        </button>
+                        </a>
                       </li>
                     </ul>
                   </div>
@@ -1187,22 +1187,22 @@ const EcommerceDashboard: React.FC = () => {
                       <span className="material-icons-outlined fs-5">
                         more_vert
                       </span>
-                                    </button>
+                    </a>
                     <ul className="dropdown-menu">
                       <li>
-                                        <button type="button" className="dropdown-item">
+                        <a className="dropdown-item" href="javascript:;">
                           Action
-                                        </button>
+                        </a>
                       </li>
                       <li>
-                                        <button type="button" className="dropdown-item">
+                        <a className="dropdown-item" href="javascript:;">
                           Another action
-                                        </button>
+                        </a>
                       </li>
                       <li>
-                                        <button type="button" className="dropdown-item">
+                        <a className="dropdown-item" href="javascript:;">
                           Something else here
-                                        </button>
+                        </a>
                       </li>
                     </ul>
                   </div>
@@ -1310,22 +1310,22 @@ const EcommerceDashboard: React.FC = () => {
                       <span className="material-icons-outlined fs-5">
                         more_vert
                       </span>
-                                    </button>
+                    </a>
                     <ul className="dropdown-menu">
                       <li>
-                                        <button type="button" className="dropdown-item">
+                        <a className="dropdown-item" href="javascript:;">
                           Action
-                                        </button>
+                        </a>
                       </li>
                       <li>
-                                        <button type="button" className="dropdown-item">
+                        <a className="dropdown-item" href="javascript:;">
                           Another action
-                                        </button>
+                        </a>
                       </li>
                       <li>
-                                        <button type="button" className="dropdown-item">
+                        <a className="dropdown-item" href="javascript:;">
                           Something else here
-                                        </button>
+                        </a>
                       </li>
                     </ul>
                   </div>
@@ -1479,22 +1479,22 @@ const EcommerceDashboard: React.FC = () => {
                       <span className="material-icons-outlined fs-5">
                         more_vert
                       </span>
-                                    </button>
+                    </a>
                     <ul className="dropdown-menu">
                       <li>
-                                        <button type="button" className="dropdown-item">
+                        <a className="dropdown-item" href="javascript:;">
                           Action
-                                        </button>
+                        </a>
                       </li>
                       <li>
-                                        <button type="button" className="dropdown-item">
+                        <a className="dropdown-item" href="javascript:;">
                           Another action
-                                        </button>
+                        </a>
                       </li>
                       <li>
-                                        <button type="button" className="dropdown-item">
+                        <a className="dropdown-item" href="javascript:;">
                           Something else here
-                                        </button>
+                        </a>
                       </li>
                     </ul>
                   </div>
@@ -1751,22 +1751,22 @@ const EcommerceDashboard: React.FC = () => {
                       <span className="material-icons-outlined fs-5">
                         more_vert
                       </span>
-                                    </button>
+                    </a>
                     <ul className="dropdown-menu">
                       <li>
-                                        <button type="button" className="dropdown-item">
+                        <a className="dropdown-item" href="javascript:;">
                           Action
-                                        </button>
+                        </a>
                       </li>
                       <li>
-                                        <button type="button" className="dropdown-item">
+                        <a className="dropdown-item" href="javascript:;">
                           Another action
-                                        </button>
+                        </a>
                       </li>
                       <li>
-                                        <button type="button" className="dropdown-item">
+                        <a className="dropdown-item" href="javascript:;">
                           Something else here
-                                        </button>
+                        </a>
                       </li>
                     </ul>
                   </div>
@@ -1799,22 +1799,22 @@ const EcommerceDashboard: React.FC = () => {
                       <span className="material-icons-outlined fs-5">
                         more_vert
                       </span>
-                                    </button>
+                    </a>
                     <ul className="dropdown-menu">
                       <li>
-                                        <button type="button" className="dropdown-item">
+                        <a className="dropdown-item" href="javascript:;">
                           Action
-                                        </button>
+                        </a>
                       </li>
                       <li>
-                                        <button type="button" className="dropdown-item">
+                        <a className="dropdown-item" href="javascript:;">
                           Another action
-                                        </button>
+                        </a>
                       </li>
                       <li>
-                                        <button type="button" className="dropdown-item">
+                        <a className="dropdown-item" href="javascript:;">
                           Something else here
-                                        </button>
+                        </a>
                       </li>
                     </ul>
                   </div>

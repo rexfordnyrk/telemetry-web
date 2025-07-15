@@ -114,12 +114,13 @@ const NewUserModal: React.FC<NewUserModalProps> = ({ show, onClose }) => {
         <div className="modal-content">
           <div className="modal-header border-bottom-0 py-2 bg-grd-info">
             <h5 className="modal-title">User Registration Form</h5>
-            <button
-              type="button"
-              className="btn-close"
+            <a
+              href="javascript:;"
+              className="primaery-menu-close"
               onClick={onClose}
-              aria-label="Close"
-            ></button>
+            >
+              <i className="material-icons-outlined">close</i>
+            </a>
           </div>
           <div className="modal-body">
             <div className="form-body">
