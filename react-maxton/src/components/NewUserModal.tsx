@@ -115,7 +115,10 @@ const NewUserModal: React.FC<NewUserModalProps> = ({ show, onClose }) => {
       style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
       onClick={onClose}
     >
-      <div className="modal-dialog modal-lg">
+      <div
+        className="modal-dialog modal-lg"
+        onClick={(e) => e.stopPropagation()}
+      >
         <div
           className="card border-top border-3 border-danger rounded-0"
           onClick={(e) => e.stopPropagation()}
@@ -131,7 +134,7 @@ const NewUserModal: React.FC<NewUserModalProps> = ({ show, onClose }) => {
           <div className="card-body p-4">
             <form className="row g-3" onSubmit={handleSubmit}>
               <div className="col-md-6">
-                <label className="form-label">First Name</label>
+                <label className="form-label">First Name *</label>
                 <input
                   type="text"
                   className="form-control rounded-0"
@@ -139,10 +142,11 @@ const NewUserModal: React.FC<NewUserModalProps> = ({ show, onClose }) => {
                   placeholder="First Name"
                   value={formData.first_name}
                   onChange={handleInputChange}
+                  required
                 />
               </div>
               <div className="col-md-6">
-                <label className="form-label">Last Name</label>
+                <label className="form-label">Last Name *</label>
                 <input
                   type="text"
                   className="form-control rounded-0"
@@ -150,6 +154,30 @@ const NewUserModal: React.FC<NewUserModalProps> = ({ show, onClose }) => {
                   placeholder="Last Name"
                   value={formData.last_name}
                   onChange={handleInputChange}
+                  required
+                />
+              </div>
+              <div className="col-md-12">
+                <label className="form-label">Username</label>
+                <input
+                  type="text"
+                  className="form-control rounded-0"
+                  name="username"
+                  placeholder="Username (auto-generated if empty)"
+                  value={formData.username}
+                  onChange={handleInputChange}
+                />
+              </div>
+              <div className="col-md-12">
+                <label className="form-label">Email *</label>
+                <input
+                  type="email"
+                  className="form-control rounded-0"
+                  name="email"
+                  placeholder="Email"
+                  value={formData.email}
+                  onChange={handleInputChange}
+                  required
                 />
               </div>
               <div className="col-md-12">
@@ -164,13 +192,24 @@ const NewUserModal: React.FC<NewUserModalProps> = ({ show, onClose }) => {
                 />
               </div>
               <div className="col-md-12">
-                <label className="form-label">Email</label>
+                <label className="form-label">Designation</label>
                 <input
-                  type="email"
+                  type="text"
                   className="form-control rounded-0"
-                  name="email"
-                  placeholder="Email"
-                  value={formData.email}
+                  name="designation"
+                  placeholder="Designation"
+                  value={formData.designation}
+                  onChange={handleInputChange}
+                />
+              </div>
+              <div className="col-md-12">
+                <label className="form-label">Organization</label>
+                <input
+                  type="text"
+                  className="form-control rounded-0"
+                  name="organization"
+                  placeholder="Organization"
+                  value={formData.organization}
                   onChange={handleInputChange}
                 />
               </div>
@@ -186,77 +225,6 @@ const NewUserModal: React.FC<NewUserModalProps> = ({ show, onClose }) => {
                 />
               </div>
               <div className="col-md-12">
-                <label className="form-label">DOB</label>
-                <input
-                  type="date"
-                  className="form-control rounded-0"
-                  name="dob"
-                  value={formData.dob}
-                  onChange={handleInputChange}
-                />
-              </div>
-              <div className="col-md-12">
-                <label className="form-label">Country</label>
-                <select
-                  className="form-select rounded-0"
-                  name="country"
-                  value={formData.country}
-                  onChange={handleInputChange}
-                >
-                  <option value="">Choose...</option>
-                  <option value="United States">United States</option>
-                  <option value="Canada">Canada</option>
-                  <option value="United Kingdom">United Kingdom</option>
-                </select>
-              </div>
-              <div className="col-md-6">
-                <label className="form-label">City</label>
-                <input
-                  type="text"
-                  className="form-control rounded-0"
-                  name="city"
-                  placeholder="City"
-                  value={formData.city}
-                  onChange={handleInputChange}
-                />
-              </div>
-              <div className="col-md-4">
-                <label className="form-label">State</label>
-                <select
-                  className="form-select rounded-0"
-                  name="state"
-                  value={formData.state}
-                  onChange={handleInputChange}
-                >
-                  <option value="">Choose...</option>
-                  <option value="NY">New York</option>
-                  <option value="CA">California</option>
-                  <option value="TX">Texas</option>
-                </select>
-              </div>
-              <div className="col-md-2">
-                <label className="form-label">Zip</label>
-                <input
-                  type="text"
-                  className="form-control rounded-0"
-                  name="zip"
-                  placeholder="Zip"
-                  value={formData.zip}
-                  onChange={handleInputChange}
-                />
-              </div>
-              <div className="col-md-12">
-                <label className="form-label">Address</label>
-                <textarea
-                  className="form-control rounded-0"
-                  name="address"
-                  placeholder="Address ..."
-                  rows={3}
-                  value={formData.address}
-                  onChange={handleInputChange}
-                />
-              </div>
-              <div className="col-md-12">
                 <div className="form-check">
                   <input
                     className="form-check-input rounded-0"
@@ -265,7 +233,9 @@ const NewUserModal: React.FC<NewUserModalProps> = ({ show, onClose }) => {
                     checked={formData.agree}
                     onChange={handleInputChange}
                   />
-                  <label className="form-check-label">Check me out</label>
+                  <label className="form-check-label">
+                    I agree to the terms and conditions
+                  </label>
                 </div>
               </div>
               <div className="col-md-12">
