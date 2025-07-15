@@ -184,7 +184,7 @@ const Users: React.FC = () => {
                 </div>
               </div>
               <div className="card-body">
-                <div className="row mb-3">
+                <div className="row mb-2">
                   <div className="col-md-6">
                     <div className="input-group">
                       <span className="input-group-text">
@@ -192,7 +192,7 @@ const Users: React.FC = () => {
                       </span>
                       <input
                         type="text"
-                        className="form-control"
+                        className="form-control form-control-sm"
                         placeholder="Search users by name or email..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
@@ -240,7 +240,7 @@ const Users: React.FC = () => {
                       </div>
                     )}
                     <select
-                      className="form-select d-inline-block w-auto"
+                      className="form-select form-select-sm d-inline-block w-auto"
                       value={recordsPerPage}
                       onChange={(e) =>
                         setRecordsPerPage(Number(e.target.value))
@@ -256,10 +256,10 @@ const Users: React.FC = () => {
 
                 <div className="table-responsive">
                   <table
-                    className="table table-striped table-hover"
+                    className="table table-striped table-hover table-sm"
                     id="usersTable"
                   >
-                    <thead>
+                    <thead className="table-light">
                       <tr>
                         <th>
                           <input
