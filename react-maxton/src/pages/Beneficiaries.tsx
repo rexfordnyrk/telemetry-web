@@ -82,17 +82,29 @@ const Beneficiaries: React.FC = () => {
 
   // Initialize DataTable when component mounts
   useEffect(() => {
-    const initDataTable = () => {
-      // Destroy existing DataTable if it exists
-      if (window.$ && window.$.fn.DataTable) {
-        if (window.$.fn.DataTable.isDataTable("#example")) {
-          window.$("#example").DataTable().destroy();
-        }
+    const tableId = "#beneficiaries-datatable";
 
-        // Initialize DataTable
-        setTimeout(() => {
-          if (document.getElementById("example")) {
-            window.$("#example").DataTable({
+    const initDataTable = () => {
+      if (!window.$ || !window.$.fn.DataTable) return;
+
+      // Destroy existing DataTable if it exists
+      try {
+        if (window.$.fn.DataTable.isDataTable(tableId)) {
+          window.$(tableId).DataTable().destroy();
+          window.$(tableId + " thead").empty();
+          window.$(tableId + " tbody").empty();
+          window.$(tableId + " tfoot").empty();
+        }
+      } catch (error) {
+        console.warn("Error destroying DataTable:", error);
+      }
+
+      // Initialize DataTable
+      setTimeout(() => {
+        const tableElement = document.querySelector(tableId);
+        if (tableElement && window.$ && window.$.fn.DataTable) {
+          try {
+            window.$(tableId).DataTable({
               responsive: true,
               pageLength: 10,
               lengthChange: true,
@@ -105,21 +117,25 @@ const Beneficiaries: React.FC = () => {
                 { orderable: false, targets: -1 }, // Disable ordering on last column (actions)
               ],
             });
+          } catch (error) {
+            console.warn("Error initializing DataTable:", error);
           }
-        }, 100);
-      }
+        }
+      }, 200);
     };
 
     initDataTable();
 
     // Cleanup function
     return () => {
-      if (
-        window.$ &&
-        window.$.fn.DataTable &&
-        window.$.fn.DataTable.isDataTable("#example")
-      ) {
-        window.$("#example").DataTable().destroy();
+      if (window.$ && window.$.fn.DataTable) {
+        try {
+          if (window.$.fn.DataTable.isDataTable(tableId)) {
+            window.$(tableId).DataTable().destroy();
+          }
+        } catch (error) {
+          console.warn("Error in DataTable cleanup:", error);
+        }
       }
     };
   }, [memoizedBeneficiaries]);
@@ -351,7 +367,7 @@ const Beneficiaries: React.FC = () => {
           <div className="card-body">
             <div className="table-responsive">
               <table
-                id="example"
+                id="beneficiaries-datatable"
                 className="table table-striped table-bordered"
                 style={{ width: "100%" }}
               >
