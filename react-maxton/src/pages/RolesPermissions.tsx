@@ -18,38 +18,45 @@ const RolesPermissions: React.FC = () => {
     {
       id: "1",
       name: "Administrator",
-      permissions: "All permissions",
-      users_count: 5,
       description: "Full system access",
       created_at: "2023-01-15",
-      status: "active",
+      updated_at: "2023-01-20",
+      permissions: [
+        { id: "1", name: "users.create", description: "Create users" },
+        { id: "2", name: "users.update", description: "Update users" },
+        { id: "3", name: "users.delete", description: "Delete users" },
+      ],
     },
     {
       id: "2",
       name: "Manager",
-      permissions: "Limited permissions",
-      users_count: 12,
       description: "Management access",
       created_at: "2023-02-20",
-      status: "active",
+      updated_at: "2023-02-25",
+      permissions: [
+        { id: "1", name: "users.create", description: "Create users" },
+        { id: "2", name: "users.update", description: "Update users" },
+      ],
     },
     {
       id: "3",
       name: "User",
-      permissions: "Basic permissions",
-      users_count: 45,
       description: "Standard user access",
       created_at: "2023-03-10",
-      status: "active",
+      updated_at: "2023-03-15",
+      permissions: [
+        { id: "4", name: "profile.update", description: "Update own profile" },
+      ],
     },
     {
       id: "4",
       name: "Guest",
-      permissions: "Read-only",
-      users_count: 8,
       description: "Limited read access",
       created_at: "2023-04-05",
-      status: "disabled",
+      updated_at: "2023-04-10",
+      permissions: [
+        { id: "5", name: "read.only", description: "Read-only access" },
+      ],
     },
   ];
 
