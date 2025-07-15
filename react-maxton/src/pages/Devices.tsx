@@ -231,11 +231,15 @@ const Devices: React.FC = () => {
               >
                 <thead>
                   <tr>
-                    <th>Name</th>
-                    <th>Type</th>
-                    <th>Location</th>
+                    <th>Device Name</th>
+                    <th>Android Version</th>
+                    <th>App Version</th>
+                    <th>Partner</th>
+                    <th>Intervention</th>
+                    <th>Active</th>
+                    <th>Last Synced</th>
+                    <th>Date Enrolled</th>
                     <th>Assigned To</th>
-                    <th>Status</th>
                     <th>Actions</th>
                   </tr>
                 </thead>
@@ -314,11 +318,15 @@ const Devices: React.FC = () => {
                 </tbody>
                 <tfoot>
                   <tr>
-                    <th>Name</th>
-                    <th>Type</th>
-                    <th>Location</th>
+                    <th>Device Name</th>
+                    <th>Android Version</th>
+                    <th>App Version</th>
+                    <th>Partner</th>
+                    <th>Intervention</th>
+                    <th>Active</th>
+                    <th>Last Synced</th>
+                    <th>Date Enrolled</th>
                     <th>Assigned To</th>
-                    <th>Status</th>
                     <th>Actions</th>
                   </tr>
                 </tfoot>
