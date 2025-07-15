@@ -739,8 +739,11 @@ const UserDetails: React.FC = () => {
           style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
           onClick={() => setShowRoleModal(false)}
         >
-          <div className="modal-dialog" onClick={(e) => e.stopPropagation()}>
-            <div className="card border-top border-3 border-warning rounded-0">
+          <div className="modal-dialog">
+            <div
+              className="card border-top border-3 border-warning rounded-0"
+              onClick={(e) => e.stopPropagation()}
+            >
               <div className="card-header py-3 px-4">
                 <h5 className="mb-0 text-warning">Confirm Role Removal</h5>
                 <button
