@@ -117,8 +117,12 @@ const NewUserModal: React.FC<NewUserModalProps> = ({ show, onClose }) => {
       className="modal fade show d-block"
       tabIndex={-1}
       style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
+      onClick={onClose}
     >
-      <div className="modal-dialog modal-lg">
+      <div
+        className="modal-dialog modal-lg"
+        onClick={(e) => e.stopPropagation()}
+      >
         <div className="card border-top border-3 border-danger rounded-0">
           <div className="card-header py-3 px-4">
             <h5 className="mb-0 text-danger">New User</h5>
