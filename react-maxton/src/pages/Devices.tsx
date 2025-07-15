@@ -247,28 +247,51 @@ const Devices: React.FC = () => {
                   {memoizedDevices.map((device) => (
                     <tr key={device.id}>
                       <td>
-                        <div>
-                          <a
-                            href="#"
-                            className="text-decoration-none fw-bold"
-                            onClick={(e) => {
-                              e.preventDefault();
-                            }}
-                          >
-                            {device.name}
-                          </a>
-                          <div className="text-muted small">
-                            {device.serial}
-                          </div>
-                        </div>
+                        <a
+                          href="#"
+                          className="text-decoration-none fw-bold"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            // TODO: Navigate to device details page
+                          }}
+                        >
+                          {device.device_name}
+                        </a>
+                      </td>
+                      <td>{device.android_version}</td>
+                      <td>{device.app_version}</td>
+                      <td>{device.organization}</td>
+                      <td>{device.programme}</td>
+                      <td>
+                        <span
+                          className={`badge ${device.is_active ? "bg-success" : "bg-danger"}`}
+                        >
+                          {device.is_active ? "Active" : "Inactive"}
+                        </span>
                       </td>
                       <td>
-                        {device.type}
-                        <div className="text-muted small">{device.model}</div>
+                        {new Date(device.last_synced).toLocaleDateString()}
                       </td>
-                      <td>{device.location}</td>
-                      <td>{device.assigned_to}</td>
-                      <td>{getStatusElement(device.status)}</td>
+                      <td>
+                        {new Date(device.date_enrolled).toLocaleDateString()}
+                      </td>
+                      <td>
+                        {device.current_beneficiary ? (
+                          <a
+                            href="#"
+                            className="text-decoration-none fw-bold text-primary"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              // TODO: Navigate to beneficiary details page
+                            }}
+                            title={`Beneficiary ID: ${device.current_beneficiary.id}`}
+                          >
+                            {device.current_beneficiary.name}
+                          </a>
+                        ) : (
+                          <span className="text-muted">Unassigned</span>
+                        )}
+                      </td>
                       <td>
                         <div className="d-flex gap-1">
                           <button
