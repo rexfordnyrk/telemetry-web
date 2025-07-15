@@ -298,7 +298,15 @@ const Users: React.FC = () => {
                         <th
                           role="button"
                           onClick={() => handleSort("email")}
-                          className="sortable"
+                          style={{ cursor: "pointer", userSelect: "none" }}
+                          onMouseEnter={(e) =>
+                            (e.currentTarget.style.backgroundColor =
+                              "rgba(0,0,0,0.05)")
+                          }
+                          onMouseLeave={(e) =>
+                            (e.currentTarget.style.backgroundColor =
+                              "transparent")
+                          }
                         >
                           Email
                           {sortField === "email" && (
@@ -312,7 +320,15 @@ const Users: React.FC = () => {
                         <th
                           role="button"
                           onClick={() => handleSort("organization")}
-                          className="sortable"
+                          style={{ cursor: "pointer", userSelect: "none" }}
+                          onMouseEnter={(e) =>
+                            (e.currentTarget.style.backgroundColor =
+                              "rgba(0,0,0,0.05)")
+                          }
+                          onMouseLeave={(e) =>
+                            (e.currentTarget.style.backgroundColor =
+                              "transparent")
+                          }
                         >
                           Organization
                           {sortField === "organization" && (
@@ -326,7 +342,15 @@ const Users: React.FC = () => {
                         <th
                           role="button"
                           onClick={() => handleSort("role")}
-                          className="sortable"
+                          style={{ cursor: "pointer", userSelect: "none" }}
+                          onMouseEnter={(e) =>
+                            (e.currentTarget.style.backgroundColor =
+                              "rgba(0,0,0,0.05)")
+                          }
+                          onMouseLeave={(e) =>
+                            (e.currentTarget.style.backgroundColor =
+                              "transparent")
+                          }
                         >
                           Role
                           {sortField === "role" && (
@@ -340,7 +364,15 @@ const Users: React.FC = () => {
                         <th
                           role="button"
                           onClick={() => handleSort("status")}
-                          className="sortable"
+                          style={{ cursor: "pointer", userSelect: "none" }}
+                          onMouseEnter={(e) =>
+                            (e.currentTarget.style.backgroundColor =
+                              "rgba(0,0,0,0.05)")
+                          }
+                          onMouseLeave={(e) =>
+                            (e.currentTarget.style.backgroundColor =
+                              "transparent")
+                          }
                         >
                           Status
                           {sortField === "status" && (
@@ -354,7 +386,15 @@ const Users: React.FC = () => {
                         <th
                           role="button"
                           onClick={() => handleSort("created_at")}
-                          className="sortable"
+                          style={{ cursor: "pointer", userSelect: "none" }}
+                          onMouseEnter={(e) =>
+                            (e.currentTarget.style.backgroundColor =
+                              "rgba(0,0,0,0.05)")
+                          }
+                          onMouseLeave={(e) =>
+                            (e.currentTarget.style.backgroundColor =
+                              "transparent")
+                          }
                         >
                           Created At
                           {sortField === "created_at" && (
