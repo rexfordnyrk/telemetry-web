@@ -148,7 +148,7 @@ const Devices: React.FC = () => {
       <div className="main-content">
         {/* Breadcrumb */}
         <div className="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
-          <div className="breadcrumb-title pe-3">Components</div>
+          <div className="breadcrumb-title pe-3">Device Management</div>
           <div className="ps-3">
             <nav aria-label="breadcrumb">
               <ol className="breadcrumb mb-0 p-0">
@@ -158,7 +158,7 @@ const Devices: React.FC = () => {
                   </a>
                 </li>
                 <li className="breadcrumb-item active" aria-current="page">
-                  Data Table
+                  Devices
                 </li>
               </ol>
             </nav>
@@ -281,8 +281,19 @@ const Devices: React.FC = () => {
           </div>
         </div>
 
-        {/* DataTable Example */}
-        <h6 className="mb-0 text-uppercase">DataTable Example</h6>
+        {/* Add New Device Button */}
+        <div className="d-flex justify-content-between align-items-center mb-3">
+          <h6 className="mb-0 text-uppercase">Devices Management</h6>
+          <button
+            type="button"
+            className="btn btn-grd-primary px-4"
+            onClick={() => {
+              /* TODO: Implement new device modal */
+            }}
+          >
+            + | New Device
+          </button>
+        </div>
         <hr />
         <div className="card">
           <div className="card-body">
