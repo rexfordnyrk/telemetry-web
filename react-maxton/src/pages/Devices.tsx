@@ -390,6 +390,15 @@ const Devices: React.FC = () => {
           </div>
         </div>
       )}
+
+      {/* Filter Modal */}
+      <FilterModal
+        show={showFilterModal}
+        onClose={() => setShowFilterModal(false)}
+        filterOptions={filterOptions}
+        onApplyFilters={handleApplyFilters}
+        title="Devices"
+      />
     </MainLayout>
   );
 };
