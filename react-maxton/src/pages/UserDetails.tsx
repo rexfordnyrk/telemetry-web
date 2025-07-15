@@ -294,15 +294,16 @@ const UserDetails: React.FC = () => {
                     <h5 className="mb-0 fw-bold">Edit Profile</h5>
                   </div>
                   <div className="dropdown">
-                    <a
-                      href="javascript:;"
-                      className="dropdown-toggle-nocaret options dropdown-toggle"
+                    <button
+                      type="button"
+                      className="btn dropdown-toggle dropdown-toggle-nocaret options"
                       data-bs-toggle="dropdown"
+                      aria-expanded="false"
                     >
                       <span className="material-icons-outlined fs-5">
                         more_vert
                       </span>
-                    </a>
+                    </button>
                     <ul className="dropdown-menu">
                       <li>
                         <a className="dropdown-item" href="javascript:;">
@@ -467,15 +468,16 @@ const UserDetails: React.FC = () => {
                     <h5 className="mb-0 fw-bold">Manage Roles</h5>
                   </div>
                   <div className="dropdown">
-                    <a
-                      href="javascript:;"
-                      className="dropdown-toggle-nocaret options dropdown-toggle"
+                    <button
+                      type="button"
+                      className="btn dropdown-toggle dropdown-toggle-nocaret options"
                       data-bs-toggle="dropdown"
+                      aria-expanded="false"
                     >
                       <span className="material-icons-outlined fs-5">
                         more_vert
                       </span>
-                    </a>
+                    </button>
                     <ul className="dropdown-menu">
                       <li>
                         <a className="dropdown-item" href="javascript:;">
@@ -564,15 +566,16 @@ const UserDetails: React.FC = () => {
                     <h5 className="mb-0 fw-bold">Password Management</h5>
                   </div>
                   <div className="dropdown">
-                    <a
-                      href="javascript:;"
-                      className="dropdown-toggle-nocaret options dropdown-toggle"
+                    <button
+                      type="button"
+                      className="btn dropdown-toggle dropdown-toggle-nocaret options"
                       data-bs-toggle="dropdown"
+                      aria-expanded="false"
                     >
                       <span className="material-icons-outlined fs-5">
                         more_vert
                       </span>
-                    </a>
+                    </button>
                     <ul className="dropdown-menu">
                       <li>
                         <a className="dropdown-item" href="javascript:;">
