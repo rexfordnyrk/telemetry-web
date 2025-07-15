@@ -110,7 +110,7 @@ const NewUserModal: React.FC<NewUserModalProps> = ({ show, onClose }) => {
     });
   };
 
-  if (!show) return null;
+    if (!show) return null;
 
   return (
     <div
@@ -119,23 +119,16 @@ const NewUserModal: React.FC<NewUserModalProps> = ({ show, onClose }) => {
       style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
     >
       <div className="modal-dialog modal-lg">
-        <div className="modal-content">
-          <div className="modal-header">
-            <h5 className="modal-title">New User</h5>
+        <div className="card border-top border-3 border-danger rounded-0">
+          <div className="card-header py-3 px-4">
+            <h5 className="mb-0 text-danger">New User</h5>
             <button
               type="button"
               className="btn-close"
               onClick={onClose}
             ></button>
           </div>
-          <div className="modal-body">
-            {/* Exact copy of complete Vertical Form widget structure */}
-            <div className="col-12 col-xl-12">
-              <div className="card border-top border-3 border-danger rounded-0">
-                <div className="card-header py-3 px-4">
-                  <h5 className="mb-0 text-danger">New User</h5>
-                </div>
-                <div className="card-body p-4">
+          <div className="card-body p-4">
                   <form className="row g-3" onSubmit={handleSubmit}>
                     <div className="col-md-6">
                       <label className="form-label">First Name</label>
