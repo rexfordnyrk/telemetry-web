@@ -263,24 +263,32 @@ const Beneficiaries: React.FC = () => {
                           </div>
                         </div>
                       </td>
+                      <td>{beneficiary.email}</td>
+                      <td>{beneficiary.district}</td>
+                      <td>{beneficiary.organization}</td>
+                      <td>{beneficiary.programme}</td>
                       <td>
-                        {beneficiary.relationship}
-                        <div className="text-muted small">
-                          {beneficiary.phone}
-                        </div>
+                        {new Date(
+                          beneficiary.date_enrolled,
+                        ).toLocaleDateString()}
                       </td>
                       <td>
-                        {getCategoryBadge(beneficiary.category)}
-                        <div className="text-muted small mt-1">
-                          {beneficiary.address}
-                        </div>
+                        {beneficiary.current_device ? (
+                          <a
+                            href="#"
+                            className="text-decoration-none fw-bold text-primary"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              // TODO: Navigate to device details page
+                            }}
+                            title={`Device ID: ${beneficiary.current_device.id}`}
+                          >
+                            {beneficiary.current_device.device_name}
+                          </a>
+                        ) : (
+                          <span className="text-muted">Unassigned</span>
+                        )}
                       </td>
-                      <td>
-                        <span className="fw-bold">
-                          {beneficiary.percentage}
-                        </span>
-                      </td>
-                      <td>{getStatusElement(beneficiary.status)}</td>
                       <td>
                         <div className="d-flex gap-1">
                           <button
