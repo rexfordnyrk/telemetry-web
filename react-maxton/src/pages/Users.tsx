@@ -69,16 +69,14 @@ const Users: React.FC = () => {
 
   // Define filter options
   const filterOptions = useMemo(() => {
-    const roles = [
-      ...new Set(users.flatMap((u) => u.roles.map((r) => r.name))),
-    ];
-    const statuses = [...new Set(users.map((u) => u.status))];
-    const organizations = [...new Set(users.map((u) => u.organization))];
+    const rolesSet = new Set(users.flatMap((u) => u.roles.map((r) => r.name)));
+    const statusesSet = new Set(users.map((u) => u.status));
+    const organizationsSet = new Set(users.map((u) => u.organization));
 
     return {
-      role: roles,
-      status: statuses,
-      organization: organizations,
+      role: Array.from(rolesSet),
+      status: Array.from(statusesSet),
+      organization: Array.from(organizationsSet),
       created_at: [], // Date range filter
     };
   }, [users]);
