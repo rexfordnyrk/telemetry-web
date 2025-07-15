@@ -63,6 +63,7 @@ function App() {
               element={<EcommerceDashboard />}
             />
             <Route path="/widgets/data" element={<WidgetsData />} />
+            <Route path="/auth/basic/login" element={<BasicLogin />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Router>
