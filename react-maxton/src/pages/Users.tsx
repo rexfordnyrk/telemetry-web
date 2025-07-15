@@ -32,6 +32,25 @@ const Users: React.FC = () => {
     return roles.map((role) => role.name).join(", ");
   };
 
+  const getStatusElement = (status: string) => {
+    const statusConfig = {
+      active: { bg: "success", text: "Active" },
+      disabled: { bg: "danger", text: "Disabled" },
+      pending: { bg: "warning", text: "Pending" },
+    };
+
+    const config =
+      statusConfig[status as keyof typeof statusConfig] || statusConfig.pending;
+
+    return (
+      <span
+        className={`dash-lable mb-0 bg-${config.bg} bg-opacity-10 text-${config.bg} rounded-2`}
+      >
+        {config.text}
+      </span>
+    );
+  };
+
   const handleUserClick = (userId: string) => {
     navigate(`/user-management/users/${userId}`);
   };
@@ -278,6 +297,7 @@ const Users: React.FC = () => {
                       <td>{user.email}</td>
                       <td>{user.organization}</td>
                       <td>{getUserRoles(user.roles)}</td>
+                      <td>{getStatusElement(user.status)}</td>
                       <td>{new Date(user.created_at).toLocaleDateString()}</td>
                       <td>
                         <div className="d-flex gap-1">
