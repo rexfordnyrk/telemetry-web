@@ -134,22 +134,30 @@ const SidebarItem: React.FC<SidebarItemProps> = ({ item, level = 0 }) => {
     // Top level item
     return (
       <li>
-        <a onClick={(e) => e.preventDefault()}>
+        <button
+          type="button"
+          className="nav-link"
+          onClick={(e) => e.preventDefault()}
+        >
           <div className="parent-icon">
             <i className="material-icons-outlined">{item.icon}</i>
           </div>
           <div className="menu-title">{item.title}</div>
-        </a>
+        </button>
       </li>
     );
   } else {
     // Submenu item
     return (
       <li>
-        <a onClick={(e) => e.preventDefault()}>
+        <button
+          type="button"
+          className="nav-link"
+          onClick={(e) => e.preventDefault()}
+        >
           <i className="material-icons-outlined">{item.icon}</i>
           {item.title}
-        </a>
+        </button>
       </li>
     );
   }
