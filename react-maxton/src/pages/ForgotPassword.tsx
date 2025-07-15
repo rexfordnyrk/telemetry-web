@@ -44,7 +44,7 @@ const ForgotPassword: React.FC = () => {
                           <button type="submit" className="btn btn-grd-primary">
                             Send
                           </button>
-                          <a href="/auth/basic/login" className="btn btn-light">
+                          <a href="/login" className="btn btn-light">
                             Back to Login
                           </a>
                         </div>
