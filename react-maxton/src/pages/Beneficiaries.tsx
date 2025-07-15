@@ -77,6 +77,7 @@ const Beneficiaries: React.FC = () => {
   ];
 
   // Memoize beneficiaries to prevent unnecessary re-renders
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const memoizedBeneficiaries = useMemo(() => beneficiaries, []);
 
   // Initialize DataTable when component mounts
