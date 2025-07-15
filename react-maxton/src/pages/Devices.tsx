@@ -164,135 +164,21 @@ const Devices: React.FC = () => {
             </nav>
           </div>
           <div className="ms-auto">
-            <div className="btn-group position-static">
-              <div className="btn-group position-static">
-                <button
-                  type="button"
-                  className="btn btn-primary"
-                  data-bs-toggle="dropdown"
-                  data-bs-auto-close="outside"
-                >
-                  Settings
-                </button>
-                <ul className="dropdown-menu">
-                  <li>
-                    <label className="dropdown-item">
-                      <input
-                        type="checkbox"
-                        className="me-2"
-                        id="BorderHorizontal"
-                        defaultChecked
-                      />
-                      Horizontal Border
-                    </label>
-                  </li>
-                  <li>
-                    <label className="dropdown-item">
-                      <input
-                        type="checkbox"
-                        className="me-2"
-                        id="BorderVertical"
-                      />
-                      Vertical Border
-                    </label>
-                  </li>
-                  <li>
-                    <hr className="dropdown-divider" />
-                  </li>
-                  <li>
-                    <label className="dropdown-item">
-                      <input
-                        type="checkbox"
-                        className="me-2"
-                        id="stripedRows"
-                      />
-                      Striped Rows
-                    </label>
-                  </li>
-                  <li>
-                    <label className="dropdown-item">
-                      <input
-                        type="checkbox"
-                        className="me-2"
-                        id="stripedColumns"
-                      />
-                      Striped Columns
-                    </label>
-                  </li>
-                  <li>
-                    <hr className="dropdown-divider" />
-                  </li>
-                  <li>
-                    <label className="dropdown-item">
-                      <input
-                        type="checkbox"
-                        className="me-2"
-                        id="hoverableRows"
-                      />
-                      Hoverable Rows
-                    </label>
-                  </li>
-                  <li>
-                    <label className="dropdown-item">
-                      <input
-                        type="checkbox"
-                        className="me-2"
-                        id="responsiveTable"
-                      />
-                      Responsive Table
-                    </label>
-                  </li>
-                </ul>
-              </div>
-              <button
-                type="button"
-                className="btn btn-primary dropdown-toggle dropdown-toggle-split"
-                data-bs-toggle="dropdown"
-                aria-expanded="false"
-              >
-                <span className="visually-hidden">Toggle Dropdown</span>
-              </button>
-              <ul className="dropdown-menu dropdown-menu-end">
-                <li>
-                  <a className="dropdown-item" href="javascript:;">
-                    Action
-                  </a>
-                </li>
-                <li>
-                  <a className="dropdown-item" href="javascript:;">
-                    Another action
-                  </a>
-                </li>
-                <li>
-                  <a className="dropdown-item" href="javascript:;">
-                    Something else here
-                  </a>
-                </li>
-                <li>
-                  <hr className="dropdown-divider" />
-                </li>
-                <li>
-                  <a className="dropdown-item" href="javascript:;">
-                    Separated link
-                  </a>
-                </li>
-              </ul>
-            </div>
+            <button
+              type="button"
+              className="btn btn-grd-primary px-4"
+              onClick={() => {
+                /* TODO: Implement new device modal */
+              }}
+            >
+              + | New Device
+            </button>
           </div>
         </div>
 
-        {/* Add New Device Button */}
+        {/* Page Title */}
         <div className="d-flex justify-content-between align-items-center mb-3">
           <h6 className="mb-0 text-uppercase">Devices Management</h6>
-          <button
-            type="button"
-            className="btn btn-grd-primary px-4"
-            onClick={() => {
-              /* TODO: Implement new device modal */
-            }}
-          >
-            + | New Device
-          </button>
         </div>
         <hr />
         <div className="card">
