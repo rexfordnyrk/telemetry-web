@@ -90,6 +90,7 @@ const RolesPermissions: React.FC = () => {
   const handleRoleClick = (role: any) => {
     setSelectedRole(role);
     setRemovedPermissions([]); // Reset removed permissions when selecting new role
+    setNewPermissions([]); // Reset new permissions when selecting new role
   };
 
   const handleRemovePermission = (permission: any) => {
