@@ -60,29 +60,32 @@ function App() {
   }, []);
 
   return (
-    <ErrorBoundary>
-      <LayoutProvider>
-        <Router>
-          <Routes>
-            <Route path="/" element={<Dashboard />} />
-            <Route
-              path="/dashboard/ecommerce"
-              element={<EcommerceDashboard />}
-            />
-            <Route path="/widgets/data" element={<WidgetsData />} />
-            <Route path="/login" element={<BasicLogin />} />
-            <Route path="/forgot-password" element={<ForgotPassword />} />
-            <Route path="/reset-password" element={<ResetPassword />} />
-            <Route path="/user-management/users" element={<Users />} />
-            <Route
-              path="/user-management/users/:id"
-              element={<UserDetails />}
-            />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </Router>
-      </LayoutProvider>
-    </ErrorBoundary>
+    <Provider store={store}>
+      <ErrorBoundary>
+        <LayoutProvider>
+          <Router>
+            <Routes>
+              <Route path="/" element={<Dashboard />} />
+              <Route
+                path="/dashboard/ecommerce"
+                element={<EcommerceDashboard />}
+              />
+              <Route path="/widgets/data" element={<WidgetsData />} />
+              <Route path="/login" element={<BasicLogin />} />
+              <Route path="/forgot-password" element={<ForgotPassword />} />
+              <Route path="/reset-password" element={<ResetPassword />} />
+              <Route path="/user-management/users" element={<Users />} />
+              <Route
+                path="/user-management/users/:id"
+                element={<UserDetails />}
+              />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+            <Alert />
+          </Router>
+        </LayoutProvider>
+      </ErrorBoundary>
+    </Provider>
   );
 }
 
