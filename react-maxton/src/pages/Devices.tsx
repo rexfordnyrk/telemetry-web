@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import MainLayout from "../layouts/MainLayout";
 import FilterModal from "../components/FilterModal";
 import { useAppDispatch } from "../store/hooks";
@@ -7,6 +8,7 @@ import { useDataTable } from "../hooks/useDataTable";
 
 const Devices: React.FC = () => {
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   // Removed unused showNewDeviceModal
   const [showModal, setShowModal] = useState(false);
   const [modalAction, setModalAction] = useState<"disable" | "delete">(
@@ -292,7 +294,9 @@ const Devices: React.FC = () => {
                             className="text-decoration-none fw-bold text-primary"
                             onClick={(e) => {
                               e.preventDefault();
-                              // TODO: Navigate to beneficiary details page
+                              navigate(
+                                `/beneficiary-management/beneficiaries/${device.current_beneficiary.id}`,
+                              );
                             }}
                             title={`Beneficiary ID: ${device.current_beneficiary.id}`}
                           >
