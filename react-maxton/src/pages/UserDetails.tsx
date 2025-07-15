@@ -112,9 +112,16 @@ const UserDetails: React.FC = () => {
     setFormData({
       first_name: user.first_name,
       last_name: user.last_name,
+      username: user.username,
       phone: user.phone,
       email: user.email,
+      designation: user.designation,
       organization: user.organization,
+      country: "United States",
+      city: "New York",
+      state: "NY",
+      zipCode: "10001",
+      address: "123 Main Street, Apt 4B\nNew York, NY 10001",
     });
   };
 
