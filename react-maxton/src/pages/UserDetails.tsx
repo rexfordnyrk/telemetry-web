@@ -354,6 +354,50 @@ const UserDetails: React.FC = () => {
                   </div>
                 </div>
                 <form className="row g-4" onSubmit={handleSubmit}>
+                  <div className="col-md-12">
+                    <label htmlFor="photo" className="form-label">
+                      Profile Photo
+                    </label>
+                    <div className="d-flex align-items-center gap-3 mb-3">
+                      {photoPreview ? (
+                        <img
+                          src={photoPreview}
+                          alt="Profile preview"
+                          className="rounded-circle"
+                          style={{
+                            width: "80px",
+                            height: "80px",
+                            objectFit: "cover",
+                          }}
+                        />
+                      ) : (
+                        <div
+                          className="rounded-circle bg-secondary d-flex align-items-center justify-content-center text-white"
+                          style={{
+                            width: "80px",
+                            height: "80px",
+                            fontSize: "24px",
+                          }}
+                        >
+                          {user?.first_name?.charAt(0)}
+                          {user?.last_name?.charAt(0)}
+                        </div>
+                      )}
+                      <div>
+                        <input
+                          type="file"
+                          className="form-control"
+                          id="photo"
+                          name="photo"
+                          accept="image/*"
+                          onChange={handlePhotoChange}
+                        />
+                        <small className="text-muted">
+                          Upload a profile photo (optional)
+                        </small>
+                      </div>
+                    </div>
+                  </div>
                   <div className="col-md-6">
                     <label htmlFor="first_name" className="form-label">
                       First Name
