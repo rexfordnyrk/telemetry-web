@@ -306,11 +306,11 @@ const Devices: React.FC = () => {
                 <thead>
                   <tr>
                     <th>Name</th>
-                    <th>Position</th>
-                    <th>Office</th>
-                    <th>Age</th>
-                    <th>Start date</th>
-                    <th>Salary</th>
+                    <th>Type</th>
+                    <th>Location</th>
+                    <th>Assigned To</th>
+                    <th>Status</th>
+                    <th>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -412,11 +412,11 @@ const Devices: React.FC = () => {
                 <tfoot>
                   <tr>
                     <th>Name</th>
-                    <th>Position</th>
-                    <th>Office</th>
-                    <th>Age</th>
-                    <th>Start date</th>
-                    <th>Salary</th>
+                    <th>Type</th>
+                    <th>Location</th>
+                    <th>Assigned To</th>
+                    <th>Status</th>
+                    <th>Actions</th>
                   </tr>
                 </tfoot>
               </table>
