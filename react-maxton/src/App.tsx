@@ -70,6 +70,11 @@ function App() {
             <Route path="/login" element={<BasicLogin />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/reset-password" element={<ResetPassword />} />
+            <Route path="/user-management/users" element={<Users />} />
+            <Route
+              path="/user-management/users/:id"
+              element={<UserDetails />}
+            />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Router>
