@@ -306,7 +306,7 @@ const Beneficiaries: React.FC = () => {
                           <button
                             className="btn btn-sm p-1"
                             title={
-                              beneficiary.status === "inactive"
+                              !beneficiary.is_active
                                 ? "Activate Beneficiary"
                                 : "Deactivate Beneficiary"
                             }
@@ -319,7 +319,7 @@ const Beneficiaries: React.FC = () => {
                             }}
                           >
                             <i className="material-icons-outlined text-warning">
-                              {beneficiary.status === "inactive"
+                              {!beneficiary.is_active
                                 ? "check_circle"
                                 : "block"}
                             </i>
