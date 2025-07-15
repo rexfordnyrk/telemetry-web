@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from "react";
 
-declare const $: any;
-
 const BasicLogin: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
