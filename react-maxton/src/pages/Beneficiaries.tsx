@@ -3,10 +3,11 @@ import MainLayout from "../layouts/MainLayout";
 import { useAppDispatch } from "../store/hooks";
 import { addAlert } from "../store/slices/alertSlice";
 import { useDataTable } from "../hooks/useDataTable";
+import NewBeneficiaryModal from "../components/NewBeneficiaryModal";
 
 const Beneficiaries: React.FC = () => {
   const dispatch = useAppDispatch();
-  // Removed unused showNewBeneficiaryModal
+  const [showNewBeneficiaryModal, setShowNewBeneficiaryModal] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [modalAction, setModalAction] = useState<"disable" | "delete">(
     "disable",
