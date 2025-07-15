@@ -1,113 +1,38 @@
 import React, { useState } from "react";
 import { useParams } from "react-router-dom";
 import MainLayout from "../layouts/MainLayout";
-
-interface Role {
-  id: string;
-  name: string;
-  description: string;
-  created_at: string;
-  updated_at: string;
-  deleted_at?: string;
-}
-
-interface UserDetailsData {
-  id: string;
-  first_name: string;
-  last_name: string;
-  username: string;
-  email: string;
-  phone: string;
-  designation: string;
-  organization: string;
-  photo?: string;
-  status: "active" | "disabled" | "pending";
-  roles: Role[];
-  created_at: string;
-  updated_at: string;
-  deleted_at?: string;
-}
+import { useAppDispatch, useAppSelector } from "../store/hooks";
+import { updateUser, assignRole, removeRole } from "../store/slices/userSlice";
+import { addAlert } from "../store/slices/alertSlice";
 
 const UserDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
+  const dispatch = useAppDispatch();
+  const users = useAppSelector((state) => state.users.users);
+  const availableRoles = useAppSelector((state) => state.users.availableRoles);
 
-  // Sample user data with new structure
-  const [user] = useState<UserDetailsData>({
-    id: id || "550e8400-e29b-41d4-a716-446655440001",
-    first_name: "John",
-    last_name: "Smith",
-    username: "john_smith",
-    email: "john.smith@example.com",
-    phone: "+1234567890",
-    designation: "Software Engineer",
-    organization: "Tech Corp",
-    photo: "/assets/images/avatars/01.png",
-    status: "active",
-    roles: [
-      {
-        id: "550e8400-e29b-41d4-a716-446655440010",
-        name: "admin",
-        description: "Administrator role with full permissions",
-        created_at: "2023-01-01T00:00:00Z",
-        updated_at: "2023-01-01T00:00:00Z",
-      },
-      {
-        id: "550e8400-e29b-41d4-a716-446655440011",
-        name: "manager",
-        description: "Manager role with team permissions",
-        created_at: "2023-01-01T00:00:00Z",
-        updated_at: "2023-01-01T00:00:00Z",
-      },
-    ],
-    created_at: "2024-01-15T00:00:00Z",
-    updated_at: "2024-01-15T00:00:00Z",
-  });
+  // Find user by ID
+  const user = users.find((u) => u.id === id);
 
-  // Available roles for assignment
-  const [availableRoles] = useState<Role[]>([
-    {
-      id: "550e8400-e29b-41d4-a716-446655440010",
-      name: "admin",
-      description: "Administrator role with full permissions",
-      created_at: "2023-01-01T00:00:00Z",
-      updated_at: "2023-01-01T00:00:00Z",
-    },
-    {
-      id: "550e8400-e29b-41d4-a716-446655440011",
-      name: "manager",
-      description: "Manager role with team permissions",
-      created_at: "2023-01-01T00:00:00Z",
-      updated_at: "2023-01-01T00:00:00Z",
-    },
-    {
-      id: "550e8400-e29b-41d4-a716-446655440012",
-      name: "user",
-      description: "Basic user role",
-      created_at: "2023-01-01T00:00:00Z",
-      updated_at: "2023-01-01T00:00:00Z",
-    },
-    {
-      id: "550e8400-e29b-41d4-a716-446655440013",
-      name: "developer",
-      description: "Developer role with coding permissions",
-      created_at: "2023-01-01T00:00:00Z",
-      updated_at: "2023-01-01T00:00:00Z",
-    },
-  ]);
+  if (!user) {
+    return (
+      <MainLayout>
+        <div className="page-content">
+          <div className="alert alert-danger">User not found</div>
+        </div>
+      </MainLayout>
+    );
+  }
 
-  const [userRoles, setUserRoles] = useState<Role[]>(user.roles);
   const [selectedRole, setSelectedRole] = useState("");
   const [showRoleModal, setShowRoleModal] = useState(false);
-  const [roleToRemove, setRoleToRemove] = useState<Role | null>(null);
-  const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [roleToRemove, setRoleToRemove] = useState<any>(null);
 
   const [formData, setFormData] = useState({
     first_name: user.first_name,
     last_name: user.last_name,
-    username: user.username,
     phone: user.phone,
     email: user.email,
-    designation: user.designation,
     organization: user.organization,
   });
 
@@ -138,18 +63,29 @@ const UserDetails: React.FC = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle form submission
-    console.log("Updated user data:", formData);
+
+    const updatedUser = {
+      ...user,
+      ...formData,
+      updated_at: new Date().toISOString(),
+    };
+
+    dispatch(updateUser(updatedUser));
+    dispatch(
+      addAlert({
+        type: "success",
+        title: "Profile Updated",
+        message: "User profile has been updated successfully.",
+      }),
+    );
   };
 
   const handleReset = () => {
     setFormData({
       first_name: user.first_name,
       last_name: user.last_name,
-      username: user.username,
       phone: user.phone,
       email: user.email,
-      designation: user.designation,
       organization: user.organization,
     });
   };
@@ -162,17 +98,30 @@ const UserDetails: React.FC = () => {
     );
     if (
       roleToAssign &&
-      !userRoles.find((role) => role.id === roleToAssign.id)
+      !user.roles.find((role) => role.id === roleToAssign.id)
     ) {
-      setUserRoles((prev) => [...prev, roleToAssign]);
+      dispatch(assignRole({ userId: user.id, role: roleToAssign }));
+      dispatch(
+        addAlert({
+          type: "success",
+          title: "Role Assigned",
+          message: `Role "${roleToAssign.name}" has been assigned successfully.`,
+        }),
+      );
       setSelectedRole("");
-      console.log("Assigned role:", roleToAssign);
     }
   };
 
-  const handleRemoveRole = (role: Role) => {
-    if (userRoles.length <= 1) {
-      alert("Cannot remove the last role. User must have at least one role.");
+  const handleRemoveRole = (role: any) => {
+    if (user.roles.length <= 1) {
+      dispatch(
+        addAlert({
+          type: "danger",
+          title: "Cannot Remove Role",
+          message:
+            "Cannot remove the last role. User must have at least one role.",
+        }),
+      );
       return;
     }
     setRoleToRemove(role);
@@ -181,10 +130,14 @@ const UserDetails: React.FC = () => {
 
   const confirmRemoveRole = () => {
     if (roleToRemove) {
-      setUserRoles((prev) =>
-        prev.filter((role) => role.id !== roleToRemove.id),
+      dispatch(removeRole({ userId: user.id, roleId: roleToRemove.id }));
+      dispatch(
+        addAlert({
+          type: "success",
+          title: "Role Removed",
+          message: `Role "${roleToRemove.name}" has been removed successfully.`,
+        }),
       );
-      console.log("Removed role:", roleToRemove);
     }
     setShowRoleModal(false);
     setRoleToRemove(null);
@@ -192,23 +145,50 @@ const UserDetails: React.FC = () => {
 
   const handlePasswordReset = () => {
     if (passwordData.newPassword !== passwordData.confirmPassword) {
-      alert("Passwords do not match");
+      dispatch(
+        addAlert({
+          type: "danger",
+          title: "Password Mismatch",
+          message: "Passwords do not match. Please try again.",
+        }),
+      );
       return;
     }
     if (passwordData.newPassword.length < 6) {
-      alert("Password must be at least 6 characters long");
+      dispatch(
+        addAlert({
+          type: "danger",
+          title: "Invalid Password",
+          message: "Password must be at least 6 characters long.",
+        }),
+      );
       return;
     }
 
-    console.log("Password reset for user:", user.id);
+    dispatch(
+      addAlert({
+        type: "success",
+        title: "Password Reset",
+        message: "Password has been reset successfully.",
+      }),
+    );
+
     setPasswordData({ newPassword: "", confirmPassword: "" });
-    setShowPasswordModal(false);
-    alert("Password updated successfully");
+  };
+
+  const handleSendResetLink = () => {
+    dispatch(
+      addAlert({
+        type: "success",
+        title: "Reset Link Sent",
+        message: `Password reset link has been sent to ${user.email}.`,
+      }),
+    );
   };
 
   const getAvailableRolesForAssignment = () => {
     return availableRoles.filter(
-      (role) => !userRoles.find((userRole) => userRole.id === role.id),
+      (role) => !user.roles.find((userRole) => userRole.id === role.id),
     );
   };
 
@@ -256,20 +236,18 @@ const UserDetails: React.FC = () => {
                 />
               </div>
             </div>
-            <div className="profile-info pt-5 d-flex align-items-center justify-content-between">
-              <div className="">
+            <div className="profile-info pt-5 d-flex align-items-center justify-content-center">
+              <div className="text-center">
                 <h3>
                   {user.first_name} {user.last_name}
                 </h3>
                 <p className="mb-0">
                   {user.designation} at {user.organization}
-                  <br />
-                  Username: {user.username}
                 </p>
               </div>
             </div>
-            <div className="kewords d-flex align-items-center gap-3 mt-4 overflow-x-auto">
-              {userRoles.map((role, index) => (
+            <div className="kewords d-flex align-items-center justify-content-center gap-3 mt-4 overflow-x-auto">
+              {user.roles.map((role, index) => (
                 <button
                   key={index}
                   type="button"
@@ -351,20 +329,6 @@ const UserDetails: React.FC = () => {
                     />
                   </div>
                   <div className="col-md-12">
-                    <label htmlFor="username" className="form-label">
-                      Username
-                    </label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      id="username"
-                      name="username"
-                      placeholder="Username"
-                      value={formData.username}
-                      onChange={handleInputChange}
-                    />
-                  </div>
-                  <div className="col-md-12">
                     <label htmlFor="phone" className="form-label">
                       Phone
                     </label>
@@ -392,20 +356,6 @@ const UserDetails: React.FC = () => {
                     />
                   </div>
                   <div className="col-md-12">
-                    <label htmlFor="designation" className="form-label">
-                      Designation
-                    </label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      id="designation"
-                      name="designation"
-                      placeholder="Designation"
-                      value={formData.designation}
-                      onChange={handleInputChange}
-                    />
-                  </div>
-                  <div className="col-md-12">
                     <label htmlFor="organization" className="form-label">
                       Organization
                     </label>
@@ -429,7 +379,7 @@ const UserDetails: React.FC = () => {
                       </button>
                       <button
                         type="button"
-                        className="btn btn-light px-4"
+                        className="btn btn-grd-royal px-4"
                         onClick={handleReset}
                       >
                         Reset
@@ -443,79 +393,8 @@ const UserDetails: React.FC = () => {
 
           {/* Right Column */}
           <div className="col-12 col-xl-4">
-            {/* About Card */}
-            <div className="card rounded-4">
-              <div className="card-body">
-                <div className="d-flex align-items-start justify-content-between mb-3">
-                  <div className="">
-                    <h5 className="mb-0 fw-bold">About</h5>
-                  </div>
-                  <div className="dropdown">
-                    <a
-                      href="javascript:;"
-                      className="dropdown-toggle-nocaret options dropdown-toggle"
-                      data-bs-toggle="dropdown"
-                    >
-                      <span className="material-icons-outlined fs-5">
-                        more_vert
-                      </span>
-                    </a>
-                    <ul className="dropdown-menu">
-                      <li>
-                        <a className="dropdown-item" href="javascript:;">
-                          Action
-                        </a>
-                      </li>
-                      <li>
-                        <a className="dropdown-item" href="javascript:;">
-                          Another action
-                        </a>
-                      </li>
-                      <li>
-                        <a className="dropdown-item" href="javascript:;">
-                          Something else here
-                        </a>
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-                <div className="full-info">
-                  <div className="info-list d-flex flex-column gap-3">
-                    <div className="info-list-item d-flex align-items-center gap-3">
-                      <span className="material-icons-outlined">
-                        account_circle
-                      </span>
-                      <p className="mb-0">
-                        Full Name: {user.first_name} {user.last_name}
-                      </p>
-                    </div>
-                    <div className="info-list-item d-flex align-items-center gap-3">
-                      <span className="material-icons-outlined">done</span>
-                      <p className="mb-0">Status: {user.status}</p>
-                    </div>
-                    <div className="info-list-item d-flex align-items-center gap-3">
-                      <span className="material-icons-outlined">badge</span>
-                      <p className="mb-0">Designation: {user.designation}</p>
-                    </div>
-                    <div className="info-list-item d-flex align-items-center gap-3">
-                      <span className="material-icons-outlined">business</span>
-                      <p className="mb-0">Organization: {user.organization}</p>
-                    </div>
-                    <div className="info-list-item d-flex align-items-center gap-3">
-                      <span className="material-icons-outlined">send</span>
-                      <p className="mb-0">Email: {user.email}</p>
-                    </div>
-                    <div className="info-list-item d-flex align-items-center gap-3">
-                      <span className="material-icons-outlined">call</span>
-                      <p className="mb-0">Phone: {user.phone}</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
             {/* Manage Roles Card */}
-            <div className="card rounded-4">
+            <div className="card rounded-4 mb-3">
               <div className="card-body">
                 <div className="d-flex align-items-start justify-content-between mb-3">
                   <div className="">
@@ -555,23 +434,23 @@ const UserDetails: React.FC = () => {
                 <div className="mb-4">
                   <h6 className="mb-3">Current Roles</h6>
                   <div className="role-list d-flex flex-column gap-2">
-                    {userRoles.map((role) => (
+                    {user.roles.map((role) => (
                       <div
                         key={role.id}
                         className="d-flex align-items-center justify-content-between p-2 border rounded"
                       >
                         <div>
                           <h6 className="mb-0">{role.name}</h6>
-                          <small className="text-muted">
+                          <small className="text-dark">
                             {role.description}
                           </small>
                         </div>
                         <button
                           className="btn btn-sm btn-outline-danger"
                           onClick={() => handleRemoveRole(role)}
-                          disabled={userRoles.length <= 1}
+                          disabled={user.roles.length <= 1}
                           title={
-                            userRoles.length <= 1
+                            user.roles.length <= 1
                               ? "Cannot remove the last role"
                               : "Remove role"
                           }
@@ -600,7 +479,7 @@ const UserDetails: React.FC = () => {
                       ))}
                     </select>
                     <button
-                      className="btn btn-primary"
+                      className="btn btn-grd-primary px-4"
                       onClick={handleAssignRole}
                       disabled={!selectedRole}
                     >
@@ -648,17 +527,61 @@ const UserDetails: React.FC = () => {
                   </div>
                 </div>
 
+                {/* Password Reset Form */}
+                <div className="mb-4">
+                  <h6 className="mb-3">Reset Password</h6>
+                  <div className="row g-3">
+                    <div className="col-12">
+                      <label htmlFor="newPassword" className="form-label">
+                        New Password
+                      </label>
+                      <input
+                        type="password"
+                        className="form-control"
+                        id="newPassword"
+                        name="newPassword"
+                        value={passwordData.newPassword}
+                        onChange={handlePasswordChange}
+                        placeholder="Enter new password"
+                        minLength={6}
+                      />
+                    </div>
+                    <div className="col-12">
+                      <label htmlFor="confirmPassword" className="form-label">
+                        Confirm Password
+                      </label>
+                      <input
+                        type="password"
+                        className="form-control"
+                        id="confirmPassword"
+                        name="confirmPassword"
+                        value={passwordData.confirmPassword}
+                        onChange={handlePasswordChange}
+                        placeholder="Confirm new password"
+                        minLength={6}
+                      />
+                    </div>
+                  </div>
+                </div>
+
                 <div className="d-grid gap-2">
                   <button
-                    className="btn btn-warning"
-                    onClick={() => setShowPasswordModal(true)}
+                    className="btn btn-grd-warning px-4 d-flex align-items-center justify-content-center gap-2"
+                    onClick={handlePasswordReset}
                   >
-                    <i className="material-icons-outlined me-2">lock_reset</i>
+                    <i className="material-icons-outlined">lock_reset</i>
                     Reset Password
                   </button>
+                  <button
+                    className="btn btn-grd-info px-4 d-flex align-items-center justify-content-center gap-2"
+                    onClick={handleSendResetLink}
+                  >
+                    <i className="material-icons-outlined">send</i>
+                    Send Reset Link
+                  </button>
                   <small className="text-muted">
-                    Click to reset the user's password. The user will need to
-                    change it on next login.
+                    Click to reset the user's password or send them a reset link
+                    via email.
                   </small>
                 </div>
               </div>
@@ -693,91 +616,17 @@ const UserDetails: React.FC = () => {
               <div className="modal-footer">
                 <button
                   type="button"
-                  className="btn btn-secondary"
+                  className="btn btn-grd-royal px-4"
                   onClick={() => setShowRoleModal(false)}
                 >
                   Cancel
                 </button>
                 <button
                   type="button"
-                  className="btn btn-danger"
+                  className="btn btn-grd-danger px-4"
                   onClick={confirmRemoveRole}
                 >
                   Remove Role
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Password Reset Modal */}
-      {showPasswordModal && (
-        <div
-          className="modal fade show d-block"
-          tabIndex={-1}
-          style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
-        >
-          <div className="modal-dialog">
-            <div className="modal-content">
-              <div className="modal-header">
-                <h5 className="modal-title">Reset User Password</h5>
-                <button
-                  type="button"
-                  className="btn-close"
-                  onClick={() => setShowPasswordModal(false)}
-                ></button>
-              </div>
-              <div className="modal-body">
-                <form>
-                  <div className="mb-3">
-                    <label htmlFor="newPassword" className="form-label">
-                      New Password
-                    </label>
-                    <input
-                      type="password"
-                      className="form-control"
-                      id="newPassword"
-                      name="newPassword"
-                      value={passwordData.newPassword}
-                      onChange={handlePasswordChange}
-                      placeholder="Enter new password"
-                      minLength={6}
-                      required
-                    />
-                  </div>
-                  <div className="mb-3">
-                    <label htmlFor="confirmPassword" className="form-label">
-                      Confirm Password
-                    </label>
-                    <input
-                      type="password"
-                      className="form-control"
-                      id="confirmPassword"
-                      name="confirmPassword"
-                      value={passwordData.confirmPassword}
-                      onChange={handlePasswordChange}
-                      placeholder="Confirm new password"
-                      minLength={6}
-                      required
-                    />
-                  </div>
-                </form>
-              </div>
-              <div className="modal-footer">
-                <button
-                  type="button"
-                  className="btn btn-secondary"
-                  onClick={() => setShowPasswordModal(false)}
-                >
-                  Cancel
-                </button>
-                <button
-                  type="button"
-                  className="btn btn-warning"
-                  onClick={handlePasswordReset}
-                >
-                  Reset Password
                 </button>
               </div>
             </div>
