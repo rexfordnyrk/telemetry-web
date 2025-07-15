@@ -1,119 +1,184 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import MainLayout from "../layouts/MainLayout";
 
-interface User {
-  id: number;
+interface Role {
+  id: string;
   name: string;
-  email: string;
-  organization: string;
-  role: string;
-  status: "active" | "disabled" | "pending";
+  description: string;
   created_at: string;
-  avatar?: string;
+  updated_at: string;
+  deleted_at?: string;
+}
+
+interface User {
+  id: string;
+  first_name: string;
+  last_name: string;
+  username: string;
+  email: string;
+  phone: string;
+  designation: string;
+  organization: string;
+  photo?: string;
+  status: "active" | "disabled" | "pending";
+  roles: Role[];
+  created_at: string;
+  updated_at: string;
+  deleted_at?: string;
 }
 
 const Users: React.FC = () => {
-  // Sample data - in real app, this would come from API
+  // Sample data with new structure
   const [users] = useState<User[]>([
     {
-      id: 1,
-      name: "John Smith",
+      id: "550e8400-e29b-41d4-a716-446655440001",
+      first_name: "John",
+      last_name: "Smith",
+      username: "john_smith",
       email: "john.smith@example.com",
+      phone: "+1234567890",
+      designation: "Software Engineer",
       organization: "Tech Corp",
-      role: "Admin",
+      photo: "/assets/images/avatars/01.png",
       status: "active",
-      created_at: "2024-01-15",
-      avatar: "/assets/images/avatars/01.png",
+      roles: [
+        {
+          id: "550e8400-e29b-41d4-a716-446655440010",
+          name: "admin",
+          description: "Administrator role with full permissions",
+          created_at: "2023-01-01T00:00:00Z",
+          updated_at: "2023-01-01T00:00:00Z",
+        },
+      ],
+      created_at: "2024-01-15T00:00:00Z",
+      updated_at: "2024-01-15T00:00:00Z",
     },
     {
-      id: 2,
-      name: "Sarah Johnson",
+      id: "550e8400-e29b-41d4-a716-446655440002",
+      first_name: "Sarah",
+      last_name: "Johnson",
+      username: "sarah_johnson",
       email: "sarah.johnson@example.com",
+      phone: "+1234567891",
+      designation: "UI/UX Designer",
       organization: "Design Studio",
-      role: "Manager",
+      photo: "/assets/images/avatars/02.png",
       status: "active",
-      created_at: "2024-01-20",
-      avatar: "/assets/images/avatars/02.png",
+      roles: [
+        {
+          id: "550e8400-e29b-41d4-a716-446655440011",
+          name: "manager",
+          description: "Manager role with team permissions",
+          created_at: "2023-01-01T00:00:00Z",
+          updated_at: "2023-01-01T00:00:00Z",
+        },
+      ],
+      created_at: "2024-01-20T00:00:00Z",
+      updated_at: "2024-01-20T00:00:00Z",
     },
     {
-      id: 3,
-      name: "Mike Wilson",
+      id: "550e8400-e29b-41d4-a716-446655440003",
+      first_name: "Mike",
+      last_name: "Wilson",
+      username: "mike_wilson",
       email: "mike.wilson@example.com",
+      phone: "+1234567892",
+      designation: "Marketing Specialist",
       organization: "Marketing Inc",
-      role: "User",
       status: "pending",
-      created_at: "2024-01-25",
+      roles: [
+        {
+          id: "550e8400-e29b-41d4-a716-446655440012",
+          name: "user",
+          description: "Basic user role",
+          created_at: "2023-01-01T00:00:00Z",
+          updated_at: "2023-01-01T00:00:00Z",
+        },
+      ],
+      created_at: "2024-01-25T00:00:00Z",
+      updated_at: "2024-01-25T00:00:00Z",
     },
     {
-      id: 4,
-      name: "Emily Davis",
+      id: "550e8400-e29b-41d4-a716-446655440004",
+      first_name: "Emily",
+      last_name: "Davis",
+      username: "emily_davis",
       email: "emily.davis@example.com",
+      phone: "+1234567893",
+      designation: "Financial Analyst",
       organization: "Finance Ltd",
-      role: "User",
       status: "disabled",
-      created_at: "2024-01-10",
+      roles: [
+        {
+          id: "550e8400-e29b-41d4-a716-446655440012",
+          name: "user",
+          description: "Basic user role",
+          created_at: "2023-01-01T00:00:00Z",
+          updated_at: "2023-01-01T00:00:00Z",
+        },
+      ],
+      created_at: "2024-01-10T00:00:00Z",
+      updated_at: "2024-01-10T00:00:00Z",
     },
     {
-      id: 5,
-      name: "Robert Brown",
+      id: "550e8400-e29b-41d4-a716-446655440005",
+      first_name: "Robert",
+      last_name: "Brown",
+      username: "robert_brown",
       email: "robert.brown@example.com",
+      phone: "+1234567894",
+      designation: "Senior Developer",
       organization: "Engineering Co",
-      role: "Manager",
       status: "active",
-      created_at: "2024-01-05",
+      roles: [
+        {
+          id: "550e8400-e29b-41d4-a716-446655440011",
+          name: "manager",
+          description: "Manager role with team permissions",
+          created_at: "2023-01-01T00:00:00Z",
+          updated_at: "2023-01-01T00:00:00Z",
+        },
+        {
+          id: "550e8400-e29b-41d4-a716-446655440012",
+          name: "user",
+          description: "Basic user role",
+          created_at: "2023-01-01T00:00:00Z",
+          updated_at: "2023-01-01T00:00:00Z",
+        },
+      ],
+      created_at: "2024-01-05T00:00:00Z",
+      updated_at: "2024-01-05T00:00:00Z",
     },
   ]);
 
-  const [selectedUsers, setSelectedUsers] = useState<number[]>([]);
+  const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [sortField, setSortField] = useState<keyof User>("name");
-  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
   const [recordsPerPage, setRecordsPerPage] = useState(50);
-  const [currentPage, setCurrentPage] = useState(1);
   const [showModal, setShowModal] = useState(false);
   const [modalAction, setModalAction] = useState<"disable" | "delete">(
     "disable",
   );
   const [targetUser, setTargetUser] = useState<User | null>(null);
 
-  // Filter and sort users
-  const filteredAndSortedUsers = useMemo(() => {
-    let filtered = users.filter(
+  // Initialize DataTables after component mounts
+  useEffect(() => {
+    // DataTables initialization would go here in a real implementation
+    // For now, we'll handle sorting manually
+  }, []);
+
+  // Filter users based on search term
+  const filteredUsers = useMemo(() => {
+    return users.filter(
       (user) =>
-        user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        user.email.toLowerCase().includes(searchTerm.toLowerCase()),
+        `${user.first_name} ${user.last_name}`
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase()) ||
+        user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        user.username.toLowerCase().includes(searchTerm.toLowerCase()),
     );
+  }, [users, searchTerm]);
 
-    filtered.sort((a, b) => {
-      const aVal = a[sortField];
-      const bVal = b[sortField];
-      if (aVal == null || bVal == null) return 0;
-      if (aVal < bVal) return sortDirection === "asc" ? -1 : 1;
-      if (aVal > bVal) return sortDirection === "asc" ? 1 : -1;
-      return 0;
-    });
-
-    return filtered;
-  }, [users, searchTerm, sortField, sortDirection]);
-
-  // Pagination
-  const totalPages = Math.ceil(filteredAndSortedUsers.length / recordsPerPage);
-  const startIndex = (currentPage - 1) * recordsPerPage;
-  const paginatedUsers = filteredAndSortedUsers.slice(
-    startIndex,
-    startIndex + recordsPerPage,
-  );
-
-  const handleSort = (field: keyof User) => {
-    if (sortField === field) {
-      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
-    } else {
-      setSortField(field);
-      setSortDirection("asc");
-    }
-  };
-
-  const handleSelectUser = (userId: number) => {
+  const handleSelectUser = (userId: string) => {
     setSelectedUsers((prev) =>
       prev.includes(userId)
         ? prev.filter((id) => id !== userId)
@@ -122,10 +187,10 @@ const Users: React.FC = () => {
   };
 
   const handleSelectAll = () => {
-    if (selectedUsers.length === paginatedUsers.length) {
+    if (selectedUsers.length === filteredUsers.length) {
       setSelectedUsers([]);
     } else {
-      setSelectedUsers(paginatedUsers.map((user) => user.id));
+      setSelectedUsers(filteredUsers.map((user) => user.id));
     }
   };
 
@@ -138,12 +203,8 @@ const Users: React.FC = () => {
     return `badge ${statusClasses[status as keyof typeof statusClasses] || "bg-secondary"}`;
   };
 
-  const getInitials = (name: string) => {
-    return name
-      .split(" ")
-      .map((n) => n[0])
-      .join("")
-      .toUpperCase();
+  const getInitials = (firstName: string, lastName: string) => {
+    return `${firstName[0]}${lastName[0]}`.toUpperCase();
   };
 
   const handleActionClick = (user: User, action: "disable" | "delete") => {
@@ -159,257 +220,81 @@ const Users: React.FC = () => {
     setTargetUser(null);
   };
 
-  const handleUserClick = (userId: number) => {
+  const handleUserClick = (userId: string) => {
     // Navigate to user details page
     window.location.href = `/user-management/users/${userId}`;
+  };
+
+  const getUserRoles = (roles: Role[]) => {
+    return roles.map((role) => role.name).join(", ");
   };
 
   return (
     <MainLayout>
       <div className="page-content">
+        {/* Breadcrumb */}
+        <div className="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
+          <div className="breadcrumb-title pe-3">User Management</div>
+          <div className="ps-3">
+            <nav aria-label="breadcrumb">
+              <ol className="breadcrumb mb-0 p-0">
+                <li className="breadcrumb-item">
+                  <a href="/">
+                    <i className="bx bx-home-alt"></i>
+                  </a>
+                </li>
+                <li className="breadcrumb-item active" aria-current="page">
+                  Users
+                </li>
+              </ol>
+            </nav>
+          </div>
+          <div className="ms-auto">
+            <div className="btn-group">
+              <button type="button" className="btn btn-primary">
+                <i className="material-icons-outlined me-2">add</i>Add New User
+              </button>
+            </div>
+          </div>
+        </div>
+
         <div className="row">
           <div className="col-12">
-            <div className="card rounded-4">
-              <div className="card-header py-2">
-                <div className="row align-items-center">
-                  <div className="col">
-                    <h5 className="card-title mb-0">Users Management</h5>
-                  </div>
-                  <div className="col-auto">
-                    <button type="button" className="btn btn-primary">
-                      <i className="material-icons-outlined me-2">add</i>Add New
-                      User
-                    </button>
-                  </div>
-                </div>
-              </div>
-              <div className="card-body py-3">
-                <div className="row mb-2">
-                  <div className="col-md-6">
-                    <div className="input-group">
-                      <span className="input-group-text">
-                        <i className="material-icons-outlined">search</i>
-                      </span>
-                      <input
-                        type="text"
-                        className="form-control form-control-sm"
-                        placeholder="Search users by name or email..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                      />
-                    </div>
-                  </div>
-                  <div className="col-md-6 text-end">
-                    {selectedUsers.length > 0 && (
-                      <div className="btn-group me-2">
-                        <button
-                          type="button"
-                          className="btn btn-outline-primary btn-sm"
-                        >
-                          Bulk Actions ({selectedUsers.length})
-                        </button>
-                        <button
-                          type="button"
-                          className="btn btn-outline-primary btn-sm dropdown-toggle dropdown-toggle-split"
-                          data-bs-toggle="dropdown"
-                        >
-                          <span className="visually-hidden">
-                            Toggle Dropdown
-                          </span>
-                        </button>
-                        <ul className="dropdown-menu">
-                          <li>
-                            <a className="dropdown-item" href="#">
-                              Change Role
-                            </a>
-                          </li>
-                          <li>
-                            <a className="dropdown-item" href="#">
-                              Disable Accounts
-                            </a>
-                          </li>
-                          <li>
-                            <hr className="dropdown-divider" />
-                          </li>
-                          <li>
-                            <a className="dropdown-item text-danger" href="#">
-                              Delete Users
-                            </a>
-                          </li>
-                        </ul>
-                      </div>
-                    )}
-                    <select
-                      className="form-select form-select-sm d-inline-block w-auto"
-                      value={recordsPerPage}
-                      onChange={(e) =>
-                        setRecordsPerPage(Number(e.target.value))
-                      }
-                    >
-                      <option value={10}>10 per page</option>
-                      <option value={25}>25 per page</option>
-                      <option value={50}>50 per page</option>
-                      <option value={100}>100 per page</option>
-                    </select>
-                  </div>
-                </div>
-
+            <div className="card">
+              <div className="card-body">
                 <div className="table-responsive">
                   <table
-                    className="table table-striped table-hover table-sm"
+                    className="table table-striped table-bordered"
                     id="usersTable"
                   >
-                    <thead className="table-light">
+                    <thead>
                       <tr>
                         <th>
                           <input
                             type="checkbox"
                             className="form-check-input"
                             checked={
-                              selectedUsers.length === paginatedUsers.length &&
-                              paginatedUsers.length > 0
+                              selectedUsers.length === filteredUsers.length &&
+                              filteredUsers.length > 0
                             }
                             onChange={handleSelectAll}
                           />
                         </th>
-                        <th>User</th>
-                        <th
-                          role="button"
-                          onClick={() => handleSort("name")}
-                          style={{ cursor: "pointer", userSelect: "none" }}
-                          onMouseEnter={(e) =>
-                            (e.currentTarget.style.backgroundColor =
-                              "rgba(0,0,0,0.05)")
-                          }
-                          onMouseLeave={(e) =>
-                            (e.currentTarget.style.backgroundColor =
-                              "transparent")
-                          }
-                        >
-                          Name
-                          {sortField === "name" && (
-                            <i className="material-icons-outlined ms-1">
-                              {sortDirection === "asc"
-                                ? "keyboard_arrow_up"
-                                : "keyboard_arrow_down"}
-                            </i>
-                          )}
-                        </th>
-                        <th
-                          role="button"
-                          onClick={() => handleSort("email")}
-                          style={{ cursor: "pointer", userSelect: "none" }}
-                          onMouseEnter={(e) =>
-                            (e.currentTarget.style.backgroundColor =
-                              "rgba(0,0,0,0.05)")
-                          }
-                          onMouseLeave={(e) =>
-                            (e.currentTarget.style.backgroundColor =
-                              "transparent")
-                          }
-                        >
-                          Email
-                          {sortField === "email" && (
-                            <i className="material-icons-outlined ms-1">
-                              {sortDirection === "asc"
-                                ? "keyboard_arrow_up"
-                                : "keyboard_arrow_down"}
-                            </i>
-                          )}
-                        </th>
-                        <th
-                          role="button"
-                          onClick={() => handleSort("organization")}
-                          style={{ cursor: "pointer", userSelect: "none" }}
-                          onMouseEnter={(e) =>
-                            (e.currentTarget.style.backgroundColor =
-                              "rgba(0,0,0,0.05)")
-                          }
-                          onMouseLeave={(e) =>
-                            (e.currentTarget.style.backgroundColor =
-                              "transparent")
-                          }
-                        >
-                          Organization
-                          {sortField === "organization" && (
-                            <i className="material-icons-outlined ms-1">
-                              {sortDirection === "asc"
-                                ? "keyboard_arrow_up"
-                                : "keyboard_arrow_down"}
-                            </i>
-                          )}
-                        </th>
-                        <th
-                          role="button"
-                          onClick={() => handleSort("role")}
-                          style={{ cursor: "pointer", userSelect: "none" }}
-                          onMouseEnter={(e) =>
-                            (e.currentTarget.style.backgroundColor =
-                              "rgba(0,0,0,0.05)")
-                          }
-                          onMouseLeave={(e) =>
-                            (e.currentTarget.style.backgroundColor =
-                              "transparent")
-                          }
-                        >
-                          Role
-                          {sortField === "role" && (
-                            <i className="material-icons-outlined ms-1">
-                              {sortDirection === "asc"
-                                ? "keyboard_arrow_up"
-                                : "keyboard_arrow_down"}
-                            </i>
-                          )}
-                        </th>
-                        <th
-                          role="button"
-                          onClick={() => handleSort("status")}
-                          style={{ cursor: "pointer", userSelect: "none" }}
-                          onMouseEnter={(e) =>
-                            (e.currentTarget.style.backgroundColor =
-                              "rgba(0,0,0,0.05)")
-                          }
-                          onMouseLeave={(e) =>
-                            (e.currentTarget.style.backgroundColor =
-                              "transparent")
-                          }
-                        >
-                          Status
-                          {sortField === "status" && (
-                            <i className="material-icons-outlined ms-1">
-                              {sortDirection === "asc"
-                                ? "keyboard_arrow_up"
-                                : "keyboard_arrow_down"}
-                            </i>
-                          )}
-                        </th>
-                        <th
-                          role="button"
-                          onClick={() => handleSort("created_at")}
-                          style={{ cursor: "pointer", userSelect: "none" }}
-                          onMouseEnter={(e) =>
-                            (e.currentTarget.style.backgroundColor =
-                              "rgba(0,0,0,0.05)")
-                          }
-                          onMouseLeave={(e) =>
-                            (e.currentTarget.style.backgroundColor =
-                              "transparent")
-                          }
-                        >
-                          Created At
-                          {sortField === "created_at" && (
-                            <i className="material-icons-outlined ms-1">
-                              {sortDirection === "asc"
-                                ? "keyboard_arrow_up"
-                                : "keyboard_arrow_down"}
-                            </i>
-                          )}
-                        </th>
+                        <th>Photo</th>
+                        <th>Name</th>
+                        <th>Username</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                        <th>Designation</th>
+                        <th>Organization</th>
+                        <th>Roles</th>
+                        <th>Status</th>
+                        <th>Created Date</th>
                         <th>Actions</th>
                       </tr>
                     </thead>
                     <tbody>
-                      {paginatedUsers.map((user) => (
+                      {filteredUsers.map((user) => (
                         <tr key={user.id}>
                           <td>
                             <input
@@ -420,25 +305,25 @@ const Users: React.FC = () => {
                             />
                           </td>
                           <td>
-                            <div className="d-flex align-items-center gap-1">
-                              {user.avatar ? (
+                            <div className="d-flex align-items-center">
+                              {user.photo ? (
                                 <img
-                                  src={user.avatar}
+                                  src={user.photo}
                                   alt=""
                                   className="rounded-circle"
-                                  width="28"
-                                  height="28"
+                                  width="40"
+                                  height="40"
                                 />
                               ) : (
                                 <div
                                   className="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center"
                                   style={{
-                                    width: "28px",
-                                    height: "28px",
-                                    fontSize: "11px",
+                                    width: "40px",
+                                    height: "40px",
+                                    fontSize: "14px",
                                   }}
                                 >
-                                  {getInitials(user.name)}
+                                  {getInitials(user.first_name, user.last_name)}
                                 </div>
                               )}
                             </div>
@@ -452,12 +337,19 @@ const Users: React.FC = () => {
                                 handleUserClick(user.id);
                               }}
                             >
-                              {user.name}
+                              {user.first_name} {user.last_name}
                             </a>
                           </td>
+                          <td>{user.username}</td>
                           <td>{user.email}</td>
+                          <td>{user.phone}</td>
+                          <td>{user.designation}</td>
                           <td>{user.organization}</td>
-                          <td>{user.role}</td>
+                          <td>
+                            <span className="badge bg-info text-white">
+                              {getUserRoles(user.roles)}
+                            </span>
+                          </td>
                           <td>
                             <span className={getStatusBadge(user.status)}>
                               {user.status.charAt(0).toUpperCase() +
@@ -468,145 +360,48 @@ const Users: React.FC = () => {
                             {new Date(user.created_at).toLocaleDateString()}
                           </td>
                           <td>
-                            <div className="dropdown">
+                            <div className="d-flex gap-1">
                               <button
-                                className="btn btn-outline-secondary btn-sm dropdown-toggle"
-                                type="button"
-                                data-bs-toggle="dropdown"
+                                className="btn btn-sm btn-outline-primary"
+                                title="Edit User"
+                                onClick={() => handleUserClick(user.id)}
                               >
-                                Actions
+                                <i className="material-icons-outlined">edit</i>
                               </button>
-                              <ul className="dropdown-menu">
-                                <li>
-                                  <a
-                                    className="dropdown-item"
-                                    href="#"
-                                    onClick={(e) => {
-                                      e.preventDefault();
-                                      handleUserClick(user.id);
-                                    }}
-                                  >
-                                    <i className="material-icons-outlined me-2">
-                                      visibility
-                                    </i>
-                                    View Details
-                                  </a>
-                                </li>
-                                <li>
-                                  <a className="dropdown-item" href="#">
-                                    <i className="material-icons-outlined me-2">
-                                      edit
-                                    </i>
-                                    Edit User
-                                  </a>
-                                </li>
-                                <li>
-                                  <hr className="dropdown-divider" />
-                                </li>
-                                <li>
-                                  <a
-                                    className="dropdown-item"
-                                    href="#"
-                                    onClick={(e) => {
-                                      e.preventDefault();
-                                      handleActionClick(user, "disable");
-                                    }}
-                                  >
-                                    <i className="material-icons-outlined me-2">
-                                      block
-                                    </i>
-                                    {user.status === "disabled"
-                                      ? "Enable"
-                                      : "Disable"}{" "}
-                                    User
-                                  </a>
-                                </li>
-                                <li>
-                                  <a
-                                    className="dropdown-item text-danger"
-                                    href="#"
-                                    onClick={(e) => {
-                                      e.preventDefault();
-                                      handleActionClick(user, "delete");
-                                    }}
-                                  >
-                                    <i className="material-icons-outlined me-2">
-                                      delete
-                                    </i>
-                                    Delete User
-                                  </a>
-                                </li>
-                              </ul>
+                              <button
+                                className="btn btn-sm btn-outline-warning"
+                                title={
+                                  user.status === "disabled"
+                                    ? "Enable User"
+                                    : "Disable User"
+                                }
+                                onClick={() =>
+                                  handleActionClick(user, "disable")
+                                }
+                              >
+                                <i className="material-icons-outlined">
+                                  {user.status === "disabled"
+                                    ? "check_circle"
+                                    : "block"}
+                                </i>
+                              </button>
+                              <button
+                                className="btn btn-sm btn-outline-danger"
+                                title="Delete User"
+                                onClick={() =>
+                                  handleActionClick(user, "delete")
+                                }
+                              >
+                                <i className="material-icons-outlined">
+                                  delete
+                                </i>
+                              </button>
                             </div>
                           </td>
                         </tr>
                       ))}
                     </tbody>
                   </table>
-                </div>
-
-                {/* Pagination */}
-                <div className="row align-items-center mt-3">
-                  <div className="col-md-6">
-                    <p className="mb-0 text-muted">
-                      Showing {startIndex + 1} to{" "}
-                      {Math.min(
-                        startIndex + recordsPerPage,
-                        filteredAndSortedUsers.length,
-                      )}{" "}
-                      of {filteredAndSortedUsers.length} entries
-                    </p>
-                  </div>
-                  <div className="col-md-6">
-                    <nav>
-                      <ul className="pagination justify-content-end mb-0">
-                        <li
-                          className={`page-item ${currentPage === 1 ? "disabled" : ""}`}
-                        >
-                          <button
-                            className="page-link"
-                            onClick={() =>
-                              setCurrentPage(Math.max(1, currentPage - 1))
-                            }
-                            disabled={currentPage === 1}
-                          >
-                            Previous
-                          </button>
-                        </li>
-                        {Array.from(
-                          { length: totalPages },
-                          (_, i) => i + 1,
-                        ).map((page) => (
-                          <li
-                            key={page}
-                            className={`page-item ${currentPage === page ? "active" : ""}`}
-                          >
-                            <button
-                              className="page-link"
-                              onClick={() => setCurrentPage(page)}
-                            >
-                              {page}
-                            </button>
-                          </li>
-                        ))}
-                        <li
-                          className={`page-item ${currentPage === totalPages ? "disabled" : ""}`}
-                        >
-                          <button
-                            className="page-link"
-                            onClick={() =>
-                              setCurrentPage(
-                                Math.min(totalPages, currentPage + 1),
-                              )
-                            }
-                            disabled={currentPage === totalPages}
-                          >
-                            Next
-                          </button>
-                        </li>
-                      </ul>
-                    </nav>
-                  </div>
                 </div>
               </div>
             </div>
@@ -636,7 +431,10 @@ const Users: React.FC = () => {
               <div className="modal-body">
                 <p>
                   Are you sure you want to {modalAction} user{" "}
-                  <strong>{targetUser?.name}</strong>?
+                  <strong>
+                    {targetUser?.first_name} {targetUser?.last_name}
+                  </strong>
+                  ?
                   {modalAction === "delete" && (
                     <span className="text-danger d-block mt-2">
                       This action cannot be undone.
