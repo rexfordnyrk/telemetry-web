@@ -19,10 +19,9 @@ export const LayoutProvider: React.FC<LayoutProviderProps> = ({ children }) => {
 
   // Apply theme to document
   useEffect(() => {
-    console.log("Setting theme to:", theme);
     document.documentElement.setAttribute("data-bs-theme", theme);
 
-    // Force a re-render by toggling a CSS class
+    // Force a re-render by toggling a CSS class for smooth transitions
     document.body.classList.remove("theme-transition");
     requestAnimationFrame(() => {
       document.body.classList.add("theme-transition");
