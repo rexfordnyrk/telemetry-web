@@ -82,9 +82,78 @@ const Beneficiaries: React.FC = () => {
     },
   ];
 
-  // Memoize beneficiaries to prevent unnecessary re-renders
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const memoizedBeneficiaries = useMemo(() => beneficiaries, []);
+  // Filter beneficiaries based on active filters
+  const filteredBeneficiaries = useMemo(() => {
+    if (Object.keys(activeFilters).length === 0) return beneficiaries;
+
+    return beneficiaries.filter((beneficiary) => {
+      // Organization filter
+      if (
+        activeFilters.organization &&
+        activeFilters.organization !== beneficiary.organization
+      ) {
+        return false;
+      }
+
+      // District filter
+      if (
+        activeFilters.district &&
+        activeFilters.district !== beneficiary.district
+      ) {
+        return false;
+      }
+
+      // Programme filter
+      if (
+        activeFilters.programme &&
+        activeFilters.programme !== beneficiary.programme
+      ) {
+        return false;
+      }
+
+      // Status filter
+      if (activeFilters.status) {
+        const isActive = activeFilters.status === "active";
+        if (beneficiary.is_active !== isActive) return false;
+      }
+
+      // Date range filters
+      if (activeFilters.created_at_from) {
+        const beneficiaryDate = new Date(beneficiary.created_at);
+        const fromDate = new Date(activeFilters.created_at_from);
+        if (beneficiaryDate < fromDate) return false;
+      }
+
+      if (activeFilters.created_at_to) {
+        const beneficiaryDate = new Date(beneficiary.created_at);
+        const toDate = new Date(activeFilters.created_at_to);
+        if (beneficiaryDate > toDate) return false;
+      }
+
+      return true;
+    });
+  }, [beneficiaries, activeFilters]);
+
+  // Memoize filtered beneficiaries to prevent unnecessary re-renders
+  const memoizedBeneficiaries = useMemo(
+    () => filteredBeneficiaries,
+    [filteredBeneficiaries],
+  );
+
+  // Define filter options
+  const filterOptions = useMemo(() => {
+    const organizationsSet = new Set(beneficiaries.map((b) => b.organization));
+    const districtsSet = new Set(beneficiaries.map((b) => b.district));
+    const programmesSet = new Set(beneficiaries.map((b) => b.programme));
+
+    return {
+      organization: Array.from(organizationsSet),
+      district: Array.from(districtsSet),
+      programme: Array.from(programmesSet),
+      status: ["active", "inactive"],
+      created_at: [], // Date range filter
+    };
+  }, [beneficiaries]);
 
   // Initialize DataTable using custom hook
   useDataTable("beneficiaries-datatable", memoizedBeneficiaries);
