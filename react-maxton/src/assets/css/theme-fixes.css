@@ -179,6 +179,19 @@
   color: #d3d7dc;
 }
 
+[data-bs-theme="blue-theme"] * {
+  color: inherit !important;
+}
+
+[data-bs-theme="blue-theme"] .breadcrumb-item a,
+[data-bs-theme="blue-theme"] .breadcrumb-item {
+  color: #d3d7dc !important;
+}
+
+[data-bs-theme="blue-theme"] .breadcrumb-item.active {
+  color: #a0a6b0 !important;
+}
+
 [data-bs-theme="blue-theme"] .card {
   background-color: #0f1535;
   border-color: #2d3748;
