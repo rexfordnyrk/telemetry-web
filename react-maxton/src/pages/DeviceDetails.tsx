@@ -570,59 +570,65 @@ const DeviceDetails: React.FC = () => {
         </div>
 
         {/* Installed Apps */}
-        <div className="card rounded-4 mt-4">
-          <div className="card-body p-4">
-            <h5 className="mb-3 fw-bold">
-              Installed Apps
-              <span className="fw-light ms-2">
-                ({device.installed_apps?.length || 0})
-              </span>
-            </h5>
-            <div className="product-table">
-              <div className="table-responsive white-space-nowrap">
-                <table className="table align-middle">
-                  <thead className="table-light">
-                    <tr>
-                      <th>App Name</th>
-                      <th>Version</th>
-                      <th>Category</th>
-                      <th>Size</th>
-                      <th>Install Date</th>
-                      <th>Last Updated</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {device.installed_apps?.map((app) => (
-                      <tr key={app.id}>
-                        <td>
-                          <div className="d-flex align-items-center gap-3">
-                            <div className="app-icon">
-                              <span style={{ fontSize: "24px" }}>
-                                {app.app_icon}
-                              </span>
+        <div className="d-flex justify-content-between align-items-center mb-3 mt-4">
+          <h6 className="mb-0 text-uppercase">Installed Apps</h6>
+        </div>
+        <hr />
+        <div className="card">
+          <div className="card-body">
+            <div className="table-responsive">
+              <table
+                id="installed-apps-datatable"
+                className="table table-striped table-bordered"
+                style={{ width: "100%" }}
+              >
+                <thead>
+                  <tr>
+                    <th>App Name</th>
+                    <th>Version</th>
+                    <th>Category</th>
+                    <th>Size</th>
+                    <th>Install Date</th>
+                    <th>Last Updated</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {device.installed_apps?.map((app) => (
+                    <tr key={app.id}>
+                      <td>
+                        <div className="d-flex align-items-center gap-3">
+                          <span style={{ fontSize: "24px" }}>
+                            {app.app_icon}
+                          </span>
+                          <div>
+                            <div className="fw-semibold text-decoration-none text-dark">
+                              {app.app_name}
                             </div>
-                            <div className="app-info">
-                              <div className="fw-semibold">{app.app_name}</div>
-                              <small className="text-muted">
-                                {app.package_name}
-                              </small>
-                            </div>
+                            <small className="text-muted">
+                              {app.package_name}
+                            </small>
                           </div>
-                        </td>
-                        <td>{app.version}</td>
-                        <td>{app.category}</td>
-                        <td>{app.size}</td>
-                        <td>
-                          {new Date(app.install_date).toLocaleDateString()}
-                        </td>
-                        <td>
-                          {new Date(app.last_updated).toLocaleDateString()}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                        </div>
+                      </td>
+                      <td>{app.version}</td>
+                      <td>{app.category}</td>
+                      <td>{app.size}</td>
+                      <td>{new Date(app.install_date).toLocaleDateString()}</td>
+                      <td>{new Date(app.last_updated).toLocaleDateString()}</td>
+                    </tr>
+                  ))}
+                </tbody>
+                <tfoot>
+                  <tr>
+                    <th>App Name</th>
+                    <th>Version</th>
+                    <th>Category</th>
+                    <th>Size</th>
+                    <th>Install Date</th>
+                    <th>Last Updated</th>
+                  </tr>
+                </tfoot>
+              </table>
             </div>
           </div>
         </div>
