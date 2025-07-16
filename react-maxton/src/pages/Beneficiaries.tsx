@@ -512,6 +512,15 @@ const Beneficiaries: React.FC = () => {
         show={showNewBeneficiaryModal}
         onHide={() => setShowNewBeneficiaryModal(false)}
       />
+
+      {/* Filter Modal */}
+      <FilterModal
+        show={showFilterModal}
+        onClose={() => setShowFilterModal(false)}
+        filterOptions={filterOptions}
+        onApplyFilters={handleApplyFilters}
+        title="Beneficiaries"
+      />
     </MainLayout>
   );
 };
