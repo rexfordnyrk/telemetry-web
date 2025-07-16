@@ -842,13 +842,16 @@ const DeviceDetails: React.FC = () => {
     <div className="row">
       <div className="col-12">
         {/* Assignment History */}
-        <Card className="rounded-4 mb-4">
-          <Card.Body>
-            <Card.Title className="fw-bold">
+        <div className="card mb-4">
+          <div className="card-body">
+            <h6 className="mb-3 text-uppercase fw-bold">
               Device Assignment History
-            </Card.Title>
+            </h6>
             <div className="table-responsive">
-              <Table striped hover>
+              <table
+                className="table table-striped table-bordered"
+                style={{ width: "100%" }}
+              >
                 <thead>
                   <tr>
                     <th>Beneficiary</th>
@@ -870,16 +873,22 @@ const DeviceDetails: React.FC = () => {
                         {assignment.unassigned_at ? (
                           new Date(assignment.unassigned_at).toLocaleString()
                         ) : (
-                          <Badge bg="success">Currently Assigned</Badge>
+                          <span className="dash-lable mb-0 bg-success bg-opacity-10 text-success rounded-2">
+                            Currently Assigned
+                          </span>
                         )}
                       </td>
                       <td>{assignment.assigned_by}</td>
                       <td>
-                        <Badge
-                          bg={assignment.is_active ? "success" : "secondary"}
+                        <span
+                          className={`dash-lable mb-0 bg-${
+                            assignment.is_active ? "success" : "secondary"
+                          } bg-opacity-10 text-${
+                            assignment.is_active ? "success" : "secondary"
+                          } rounded-2`}
                         >
                           {assignment.is_active ? "Active" : "Inactive"}
-                        </Badge>
+                        </span>
                       </td>
                       <td>
                         <small className="text-muted">{assignment.notes}</small>
@@ -887,17 +896,30 @@ const DeviceDetails: React.FC = () => {
                     </tr>
                   ))}
                 </tbody>
-              </Table>
+                <tfoot>
+                  <tr>
+                    <th>Beneficiary</th>
+                    <th>Assigned At</th>
+                    <th>Unassigned At</th>
+                    <th>Assigned By</th>
+                    <th>Status</th>
+                    <th>Notes</th>
+                  </tr>
+                </tfoot>
+              </table>
             </div>
-          </Card.Body>
-        </Card>
+          </div>
+        </div>
 
         {/* Sync History */}
-        <Card className="rounded-4">
-          <Card.Body>
-            <Card.Title className="fw-bold">Sync History</Card.Title>
+        <div className="card">
+          <div className="card-body">
+            <h6 className="mb-3 text-uppercase fw-bold">Sync History</h6>
             <div className="table-responsive">
-              <Table striped hover>
+              <table
+                className="table table-striped table-bordered"
+                style={{ width: "100%" }}
+              >
                 <thead>
                   <tr>
                     <th>Date</th>
@@ -912,32 +934,45 @@ const DeviceDetails: React.FC = () => {
                     <tr key={sync.id}>
                       <td>{new Date(sync.created_at).toLocaleString()}</td>
                       <td>
-                        <Badge
-                          bg={
+                        <span
+                          className={`dash-lable mb-0 bg-${
                             sync.sync_type === "full_sync" ? "primary" : "info"
-                          }
+                          } bg-opacity-10 text-${
+                            sync.sync_type === "full_sync" ? "primary" : "info"
+                          } rounded-2`}
                         >
                           {sync.sync_type.replace("_", " ").toUpperCase()}
-                        </Badge>
+                        </span>
                       </td>
                       <td>
-                        <Badge
-                          bg={
+                        <span
+                          className={`dash-lable mb-0 bg-${
                             sync.status === "completed" ? "success" : "danger"
-                          }
+                          } bg-opacity-10 text-${
+                            sync.status === "completed" ? "success" : "danger"
+                          } rounded-2`}
                         >
                           {sync.status.toUpperCase()}
-                        </Badge>
+                        </span>
                       </td>
                       <td>{sync.records_synced.toLocaleString()}</td>
                       <td>{(sync.sync_duration_ms / 1000).toFixed(2)}s</td>
                     </tr>
                   ))}
                 </tbody>
-              </Table>
+                <tfoot>
+                  <tr>
+                    <th>Date</th>
+                    <th>Sync Type</th>
+                    <th>Status</th>
+                    <th>Records Synced</th>
+                    <th>Duration</th>
+                  </tr>
+                </tfoot>
+              </table>
             </div>
-          </Card.Body>
-        </Card>
+          </div>
+        </div>
       </div>
     </div>
   );
