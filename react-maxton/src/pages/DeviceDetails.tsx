@@ -320,17 +320,19 @@ const DeviceDetails: React.FC = () => {
   };
 
   const handleCancel = () => {
-    setFormData({
-      device_name: device.device_name,
-      android_version: device.android_version,
-      app_version: device.app_version,
-      organization: device.organization,
-      programme: device.programme,
-      is_active: device.is_active,
-      imei: device.imei || "",
-      serial_number: device.serial_number || "",
-      fingerprint: device.fingerprint || "",
-    });
+    if (device) {
+      setFormData({
+        device_name: device.device_name,
+        android_version: device.android_version,
+        app_version: device.app_version,
+        organization: device.organization,
+        programme: device.programme,
+        is_active: device.is_active,
+        imei: device.imei || "",
+        serial_number: device.serial_number || "",
+        fingerprint: device.fingerprint || "",
+      });
+    }
     setIsEditing(false);
   };
 
