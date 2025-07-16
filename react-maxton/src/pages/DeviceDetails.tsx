@@ -862,6 +862,7 @@ const DeviceDetails: React.FC = () => {
             </h6>
             <div className="table-responsive">
               <table
+                id="assignment-history-datatable"
                 className="table table-striped table-bordered"
                 style={{ width: "100%" }}
               >
