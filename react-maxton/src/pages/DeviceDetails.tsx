@@ -739,6 +739,7 @@ const DeviceDetails: React.FC = () => {
             <h6 className="mb-3 text-uppercase fw-bold">App Usage Sessions</h6>
             <div className="table-responsive">
               <table
+                id="app-sessions-datatable"
                 className="table table-striped table-bordered"
                 style={{ width: "100%" }}
               >
