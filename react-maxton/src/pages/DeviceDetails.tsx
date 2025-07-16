@@ -592,6 +592,23 @@ const DeviceDetails: React.FC = () => {
                         </p>
                       </div>
                     </div>
+
+                    {/* Additional Beneficiary Details */}
+                    <div className="mb-3">
+                      <div className="mb-2">
+                        <span className="text-muted">Partner:</span>
+                        <p className="mb-0 fw-semibold">
+                          {device.current_beneficiary.organization}
+                        </p>
+                      </div>
+                      <div className="mb-2">
+                        <span className="text-muted">Intervention:</span>
+                        <p className="mb-0 fw-semibold">
+                          {device.current_beneficiary.programme}
+                        </p>
+                      </div>
+                    </div>
+
                     <button
                       className="btn btn-outline-primary btn-sm w-100"
                       onClick={handleNavigateToBeneficiary}
