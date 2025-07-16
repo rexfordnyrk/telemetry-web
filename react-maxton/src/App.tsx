@@ -25,8 +25,7 @@ import "./styles/table-fixes.css";
 
 function App() {
   useEffect(() => {
-    // Set the theme to match original HTML
-    document.documentElement.setAttribute("data-bs-theme", "blue-theme");
+    // Set the language attribute
     document.documentElement.setAttribute("lang", "en");
 
     // Add global error handler to prevent app crashes
