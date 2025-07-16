@@ -451,7 +451,7 @@ const RolesPermissions: React.FC = () => {
                       {getAvailablePermissions().map((permission: any) => (
                         <span
                           key={permission.id}
-                          className="badge bg-light text-dark border cursor-pointer"
+                          className="badge bg-light border cursor-pointer"
                           style={{ cursor: "pointer", fontSize: "0.85em" }}
                           onClick={() => handleAssignPermission(permission)}
                           title={permission.description}
