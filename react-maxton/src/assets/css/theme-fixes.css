@@ -185,6 +185,9 @@
   color: #d3d7dc;
 }
 
+[data-bs-theme="blue-theme"] body,
+[data-bs-theme="blue-theme"] .card-body,
+[data-bs-theme="blue-theme"] .main-content,
 [data-bs-theme="blue-theme"] .card-title,
 [data-bs-theme="blue-theme"] .card-text,
 [data-bs-theme="blue-theme"] h1,
@@ -194,7 +197,15 @@
 [data-bs-theme="blue-theme"] h5,
 [data-bs-theme="blue-theme"] h6,
 [data-bs-theme="blue-theme"] p,
-[data-bs-theme="blue-theme"] span {
+[data-bs-theme="blue-theme"] span,
+[data-bs-theme="blue-theme"] div,
+[data-bs-theme="blue-theme"] td,
+[data-bs-theme="blue-theme"] th,
+[data-bs-theme="blue-theme"] label,
+[data-bs-theme="blue-theme"] .breadcrumb-item,
+[data-bs-theme="blue-theme"] .text-center,
+[data-bs-theme="blue-theme"] .font-12,
+[data-bs-theme="blue-theme"] .mb-0 {
   color: #d3d7dc !important;
 }
 
