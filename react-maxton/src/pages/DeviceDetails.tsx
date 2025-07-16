@@ -37,6 +37,8 @@ const DeviceDetails: React.FC = () => {
           id: "f854c2a8-12ff-4075-95f6-abf2ad6d61de",
           name: "John Doe",
           email: "john.doe@example.com",
+          organization: "Research Institute",
+          programme: "Digital Literacy Study",
         },
         device_specs: {
           storage: "128GB",
