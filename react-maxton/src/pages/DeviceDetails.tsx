@@ -723,11 +723,14 @@ const DeviceDetails: React.FC = () => {
     <div className="row">
       <div className="col-12">
         {/* App Sessions Table */}
-        <Card className="rounded-4 mb-4">
-          <Card.Body>
-            <Card.Title className="fw-bold">App Usage Sessions</Card.Title>
+        <div className="card mb-4">
+          <div className="card-body">
+            <h6 className="mb-3 text-uppercase fw-bold">App Usage Sessions</h6>
             <div className="table-responsive">
-              <Table striped hover>
+              <table
+                className="table table-striped table-bordered"
+                style={{ width: "100%" }}
+              >
                 <thead>
                   <tr>
                     <th>App</th>
@@ -741,10 +744,12 @@ const DeviceDetails: React.FC = () => {
                   {device.app_sessions?.map((session) => (
                     <tr key={session.id}>
                       <td>
-                        <div className="d-flex align-items-center">
-                          <span className="me-2">{session.app_icon}</span>
+                        <div className="d-flex align-items-center gap-3">
+                          <span style={{ fontSize: "24px" }}>
+                            {session.app_icon}
+                          </span>
                           <div>
-                            <div className="fw-semibold">
+                            <div className="fw-semibold text-decoration-none text-dark">
                               {session.app_name}
                             </div>
                             <small className="text-muted">
@@ -760,17 +765,29 @@ const DeviceDetails: React.FC = () => {
                     </tr>
                   ))}
                 </tbody>
-              </Table>
+                <tfoot>
+                  <tr>
+                    <th>App</th>
+                    <th>Session Start</th>
+                    <th>Session End</th>
+                    <th>Duration</th>
+                    <th>Network Usage</th>
+                  </tr>
+                </tfoot>
+              </table>
             </div>
-          </Card.Body>
-        </Card>
+          </div>
+        </div>
 
         {/* Screen Sessions Table */}
-        <Card className="rounded-4 mb-4">
-          <Card.Body>
-            <Card.Title className="fw-bold">Screen Sessions</Card.Title>
+        <div className="card mb-4">
+          <div className="card-body">
+            <h6 className="mb-3 text-uppercase fw-bold">Screen Sessions</h6>
             <div className="table-responsive">
-              <Table striped hover>
+              <table
+                className="table table-striped table-bordered"
+                style={{ width: "100%" }}
+              >
                 <thead>
                   <tr>
                     <th>Screen On</th>
@@ -786,25 +803,37 @@ const DeviceDetails: React.FC = () => {
                       <td>{formatTimestamp(session.screen_off_time_stamp)}</td>
                       <td>{session.session_duration.formatted}</td>
                       <td>
-                        <Badge
-                          bg={
+                        <span
+                          className={`dash-lable mb-0 bg-${
                             session.trigger_source === "power_button"
                               ? "primary"
                               : "info"
-                          }
+                          } bg-opacity-10 text-${
+                            session.trigger_source === "power_button"
+                              ? "primary"
+                              : "info"
+                          } rounded-2`}
                         >
                           {session.trigger_source
                             .replace("_", " ")
                             .toUpperCase()}
-                        </Badge>
+                        </span>
                       </td>
                     </tr>
                   ))}
                 </tbody>
-              </Table>
+                <tfoot>
+                  <tr>
+                    <th>Screen On</th>
+                    <th>Screen Off</th>
+                    <th>Duration</th>
+                    <th>Trigger Source</th>
+                  </tr>
+                </tfoot>
+              </table>
             </div>
-          </Card.Body>
-        </Card>
+          </div>
+        </div>
       </div>
     </div>
   );
