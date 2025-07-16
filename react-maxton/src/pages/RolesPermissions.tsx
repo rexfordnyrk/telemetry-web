@@ -387,7 +387,7 @@ const RolesPermissions: React.FC = () => {
                         {removedPermissions.map((permission: any) => (
                           <span
                             key={permission.id}
-                            className="badge bg-warning text-dark cursor-pointer"
+                            className="badge bg-warning cursor-pointer"
                             onClick={() => handleRestorePermission(permission)}
                             title="Click to restore"
                           >
