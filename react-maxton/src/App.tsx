@@ -27,6 +27,7 @@ import "./sass/blue-theme.scss";
 import "./sass/semi-dark.scss";
 import "./sass/bordered-theme.scss";
 import "./sass/responsive.scss";
+import "./sass/theme-text-fixes.scss";
 // import "./styles/table-fixes.css"; // Temporarily disabled for observations
 // import "./assets/css/theme-fixes.css"; // Temporarily disabled - causing icon font issues
 
