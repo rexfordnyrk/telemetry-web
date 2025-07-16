@@ -787,7 +787,7 @@ const DeviceDetails: React.FC = () => {
               <div className="d-flex flex-column gap-4">
                 <div className="d-flex align-items-center gap-3">
                   <div className="social-icon d-flex align-items-center gap-3 flex-grow-1">
-                    <img src="assets/images/apps/17.png" width="40" alt="" />
+                    <img src="/assets/images/apps/17.png" width="40" alt="" />
                     <div>
                       <h6 className="mb-0">Facebook</h6>
                       <p className="mb-0">Social Media</p>
@@ -801,7 +801,7 @@ const DeviceDetails: React.FC = () => {
                 <div className="d-flex align-items-center gap-3">
                   <div className="social-icon d-flex align-items-center gap-3 flex-grow-1">
                     <img
-                      src="assets/images/apps/twitter-circle.png"
+                      src="/assets/images/apps/twitter-circle.png"
                       width="40"
                       alt=""
                     />
@@ -817,7 +817,7 @@ const DeviceDetails: React.FC = () => {
                 </div>
                 <div className="d-flex align-items-center gap-3">
                   <div className="social-icon d-flex align-items-center gap-3 flex-grow-1">
-                    <img src="assets/images/apps/03.png" width="40" alt="" />
+                    <img src="/assets/images/apps/03.png" width="40" alt="" />
                     <div>
                       <h6 className="mb-0">Tik Tok</h6>
                       <p className="mb-0">Entertainment</p>
@@ -830,7 +830,7 @@ const DeviceDetails: React.FC = () => {
                 </div>
                 <div className="d-flex align-items-center gap-3">
                   <div className="social-icon d-flex align-items-center gap-3 flex-grow-1">
-                    <img src="assets/images/apps/19.png" width="40" alt="" />
+                    <img src="/assets/images/apps/19.png" width="40" alt="" />
                     <div>
                       <h6 className="mb-0">Instagram</h6>
                       <p className="mb-0">Social Media</p>
@@ -843,7 +843,7 @@ const DeviceDetails: React.FC = () => {
                 </div>
                 <div className="d-flex align-items-center gap-3">
                   <div className="social-icon d-flex align-items-center gap-3 flex-grow-1">
-                    <img src="assets/images/apps/20.png" width="40" alt="" />
+                    <img src="/assets/images/apps/20.png" width="40" alt="" />
                     <div>
                       <h6 className="mb-0">Snapchat</h6>
                       <p className="mb-0">Conversation</p>
