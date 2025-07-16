@@ -49,6 +49,67 @@ const DeviceDetails: React.FC = () => {
           battery: "4355mAh",
           screen_size: "6.3 inches",
         },
+        imei: "123456789012345",
+        serial_number: "GXB123456",
+        fingerprint:
+          "google/pixel7/pixel7:13/TQ3A.230705.001/10216780:user/release-keys",
+        installed_apps: [
+          {
+            id: "app_001",
+            package_name: "com.google.android.youtube",
+            app_name: "YouTube",
+            app_icon: "🎥",
+            version: "18.45.43",
+            size: "156.7 MB",
+            install_date: "2024-01-10T09:00:00Z",
+            last_updated: "2024-01-12T14:30:00Z",
+            category: "Entertainment",
+          },
+          {
+            id: "app_002",
+            package_name: "com.whatsapp",
+            app_name: "WhatsApp",
+            app_icon: "💬",
+            version: "2.24.1.78",
+            size: "89.3 MB",
+            install_date: "2024-01-10T09:15:00Z",
+            last_updated: "2024-01-14T10:20:00Z",
+            category: "Communication",
+          },
+          {
+            id: "app_003",
+            package_name: "com.google.android.gms",
+            app_name: "Google Play Services",
+            app_icon: "⚙️",
+            version: "23.49.13",
+            size: "312.4 MB",
+            install_date: "2024-01-10T08:45:00Z",
+            last_updated: "2024-01-15T09:10:00Z",
+            category: "System",
+          },
+          {
+            id: "app_004",
+            package_name: "com.facebook.katana",
+            app_name: "Facebook",
+            app_icon: "📘",
+            version: "442.0.0.39.108",
+            size: "203.8 MB",
+            install_date: "2024-01-11T16:30:00Z",
+            last_updated: "2024-01-13T11:45:00Z",
+            category: "Social",
+          },
+          {
+            id: "app_005",
+            package_name: "com.spotify.music",
+            app_name: "Spotify",
+            app_icon: "🎵",
+            version: "8.8.84.490",
+            size: "78.9 MB",
+            install_date: "2024-01-12T10:15:00Z",
+            last_updated: "2024-01-14T15:20:00Z",
+            category: "Music",
+          },
+        ],
         sync_history: [
           {
             id: "550e8400-e29b-41d4-a716-446655440002",
@@ -188,6 +249,9 @@ const DeviceDetails: React.FC = () => {
     organization: device?.organization || "",
     programme: device?.programme || "",
     is_active: device?.is_active || false,
+    imei: device?.imei || "",
+    serial_number: device?.serial_number || "",
+    fingerprint: device?.fingerprint || "",
   });
 
   // Update form data when device changes
@@ -200,6 +264,9 @@ const DeviceDetails: React.FC = () => {
         organization: device.organization,
         programme: device.programme,
         is_active: device.is_active,
+        imei: device.imei || "",
+        serial_number: device.serial_number || "",
+        fingerprint: device.fingerprint || "",
       });
     }
   }, [device]);
@@ -249,6 +316,9 @@ const DeviceDetails: React.FC = () => {
       organization: device.organization,
       programme: device.programme,
       is_active: device.is_active,
+      imei: device.imei || "",
+      serial_number: device.serial_number || "",
+      fingerprint: device.fingerprint || "",
     });
     setIsEditing(false);
   };
@@ -379,6 +449,54 @@ const DeviceDetails: React.FC = () => {
                 />
               </div>
 
+              <div className="col-md-6">
+                <label htmlFor="imei" className="form-label">
+                  IMEI
+                </label>
+                <input
+                  type="text"
+                  className="form-control"
+                  id="imei"
+                  name="imei"
+                  value={formData.imei}
+                  onChange={handleInputChange}
+                  disabled={!isEditing}
+                  placeholder="Enter IMEI number"
+                />
+              </div>
+
+              <div className="col-md-6">
+                <label htmlFor="serial_number" className="form-label">
+                  Serial Number
+                </label>
+                <input
+                  type="text"
+                  className="form-control"
+                  id="serial_number"
+                  name="serial_number"
+                  value={formData.serial_number}
+                  onChange={handleInputChange}
+                  disabled={!isEditing}
+                  placeholder="Enter serial number"
+                />
+              </div>
+
+              <div className="col-12">
+                <label htmlFor="fingerprint" className="form-label">
+                  Device Fingerprint
+                </label>
+                <input
+                  type="text"
+                  className="form-control"
+                  id="fingerprint"
+                  name="fingerprint"
+                  value={formData.fingerprint}
+                  onChange={handleInputChange}
+                  disabled={!isEditing}
+                  placeholder="Enter device fingerprint"
+                />
+              </div>
+
               <div className="col-md-6 d-flex align-items-end">
                 <div className="form-check">
                   <input
@@ -435,6 +553,64 @@ const DeviceDetails: React.FC = () => {
                     {device.device_specs?.screen_size || "N/A"}
                   </span>
                 </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Installed Apps */}
+        <div className="card rounded-4 mt-4">
+          <div className="card-body p-4">
+            <h5 className="mb-3 fw-bold">
+              Installed Apps
+              <span className="fw-light ms-2">
+                ({device.installed_apps?.length || 0})
+              </span>
+            </h5>
+            <div className="product-table">
+              <div className="table-responsive white-space-nowrap">
+                <table className="table align-middle">
+                  <thead className="table-light">
+                    <tr>
+                      <th>App Name</th>
+                      <th>Version</th>
+                      <th>Category</th>
+                      <th>Size</th>
+                      <th>Install Date</th>
+                      <th>Last Updated</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {device.installed_apps?.map((app) => (
+                      <tr key={app.id}>
+                        <td>
+                          <div className="d-flex align-items-center gap-3">
+                            <div className="app-icon">
+                              <span style={{ fontSize: "24px" }}>
+                                {app.app_icon}
+                              </span>
+                            </div>
+                            <div className="app-info">
+                              <div className="fw-semibold">{app.app_name}</div>
+                              <small className="text-muted">
+                                {app.package_name}
+                              </small>
+                            </div>
+                          </div>
+                        </td>
+                        <td>{app.version}</td>
+                        <td>{app.category}</td>
+                        <td>{app.size}</td>
+                        <td>
+                          {new Date(app.install_date).toLocaleDateString()}
+                        </td>
+                        <td>
+                          {new Date(app.last_updated).toLocaleDateString()}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
             </div>
           </div>
