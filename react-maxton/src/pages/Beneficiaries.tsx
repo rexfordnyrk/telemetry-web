@@ -218,6 +218,10 @@ const Beneficiaries: React.FC = () => {
     setShowModal(true);
   };
 
+  const handleApplyFilters = (filters: { [key: string]: any }) => {
+    setActiveFilters(filters);
+  };
+
   const handleConfirmAction = () => {
     if (modalAction === "delete") {
       dispatch(
