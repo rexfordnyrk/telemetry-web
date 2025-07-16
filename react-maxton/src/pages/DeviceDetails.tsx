@@ -666,7 +666,7 @@ const DeviceDetails: React.FC = () => {
         </div>
 
         {/* Assigned Beneficiary */}
-        <div className="card rounded-4">
+        <div className="card rounded-4 mb-3">
           <div className="card-body">
             <h5 className="mb-3 fw-bold">Assigned Beneficiary</h5>
             {device.current_beneficiary ? (
@@ -730,6 +730,173 @@ const DeviceDetails: React.FC = () => {
                 <p>No beneficiary assigned</p>
               </div>
             )}
+          </div>
+        </div>
+
+        {/* Top 5 Most Used Apps */}
+        <div className="card rounded-4 mb-3">
+          <div className="card-body">
+            <div className="d-flex align-items-start justify-content-between mb-3">
+              <div>
+                <h5 className="mb-0">Top 5 Most Used Apps</h5>
+              </div>
+              <div className="dropdown">
+                <a
+                  href="javascript:;"
+                  className="dropdown-toggle-nocaret options dropdown-toggle"
+                  data-bs-toggle="dropdown"
+                >
+                  <span className="material-icons-outlined fs-5">
+                    more_vert
+                  </span>
+                </a>
+                <ul className="dropdown-menu">
+                  <li>
+                    <a className="dropdown-item" href="javascript:;">
+                      Action
+                    </a>
+                  </li>
+                  <li>
+                    <a className="dropdown-item" href="javascript:;">
+                      Another action
+                    </a>
+                  </li>
+                  <li>
+                    <a className="dropdown-item" href="javascript:;">
+                      Something else here
+                    </a>
+                  </li>
+                </ul>
+              </div>
+            </div>
+            <div className="mb-4">
+              <div className="d-flex align-items-center gap-3">
+                <h3 className="mb-0">
+                  {device.app_sessions?.reduce(
+                    (total, session) => total + session.session_time,
+                    0,
+                  ) || 0}
+                </h3>
+                <p className="mb-0 text-success gap-3">
+                  15%
+                  <span className="material-icons-outlined fs-6">
+                    arrow_upward
+                  </span>
+                </p>
+              </div>
+              <p className="mb-0 font-13">Total Usage Time (ms)</p>
+            </div>
+            <div className="table-responsive">
+              <div className="d-flex flex-column gap-4">
+                {device.app_sessions
+                  ?.slice()
+                  .sort((a, b) => b.session_time - a.session_time)
+                  .slice(0, 5)
+                  .map((session, index) => (
+                    <div
+                      key={session.id}
+                      className="d-flex align-items-center gap-3"
+                    >
+                      <div className="social-icon d-flex align-items-center gap-3 flex-grow-1">
+                        <span style={{ fontSize: "40px" }}>
+                          {session.app_icon}
+                        </span>
+                        <div>
+                          <h6 className="mb-0">{session.app_name}</h6>
+                          <p className="mb-0">Mobile App</p>
+                        </div>
+                      </div>
+                      <h5 className="mb-0">
+                        {session.session_duration.formatted}
+                      </h5>
+                      <div className="card-lable bg-success text-success bg-opacity-10">
+                        <p className="text-success mb-0">#{index + 1}</p>
+                      </div>
+                    </div>
+                  ))}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Top 5 Data Consuming Apps */}
+        <div className="card rounded-4">
+          <div className="card-body">
+            <div className="d-flex align-items-start justify-content-between mb-3">
+              <div>
+                <h5 className="mb-0">Top Data Consuming Apps</h5>
+              </div>
+              <div className="dropdown">
+                <a
+                  href="javascript:;"
+                  className="dropdown-toggle-nocaret options dropdown-toggle"
+                  data-bs-toggle="dropdown"
+                >
+                  <span className="material-icons-outlined fs-5">
+                    more_vert
+                  </span>
+                </a>
+                <ul className="dropdown-menu">
+                  <li>
+                    <a className="dropdown-item" href="javascript:;">
+                      Action
+                    </a>
+                  </li>
+                  <li>
+                    <a className="dropdown-item" href="javascript:;">
+                      Another action
+                    </a>
+                  </li>
+                  <li>
+                    <a className="dropdown-item" href="javascript:;">
+                      Something else here
+                    </a>
+                  </li>
+                </ul>
+              </div>
+            </div>
+            <div className="d-flex flex-column gap-4">
+              {device.app_sessions
+                ?.slice()
+                .sort((a, b) => {
+                  const aUsage = parseFloat(
+                    a.network_usage.formatted.replace(/[^\d.]/g, ""),
+                  );
+                  const bUsage = parseFloat(
+                    b.network_usage.formatted.replace(/[^\d.]/g, ""),
+                  );
+                  return bUsage - aUsage;
+                })
+                .slice(0, 5)
+                .map((session, index) => (
+                  <div
+                    key={session.id}
+                    className="d-flex align-items-center gap-3"
+                  >
+                    <span
+                      style={{ fontSize: "55px" }}
+                      className="rounded-circle"
+                    >
+                      {session.app_icon}
+                    </span>
+                    <div className="flex-grow-1">
+                      <h6 className="mb-0">{session.app_name}</h6>
+                      <p className="mb-0">
+                        Data: {session.network_usage.formatted}
+                      </p>
+                    </div>
+                    <div className="text-center">
+                      <h6 className="mb-1">#{index + 1}</h6>
+                      <p
+                        className={`mb-0 font-13 ${index < 2 ? "text-success" : "text-danger"}`}
+                      >
+                        {index < 2 ? "+" : "-"}
+                        {Math.floor(Math.random() * 30)}%
+                      </p>
+                    </div>
+                  </div>
+                ))}
+            </div>
           </div>
         </div>
       </div>
