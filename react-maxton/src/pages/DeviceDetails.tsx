@@ -603,7 +603,7 @@ const DeviceDetails: React.FC = () => {
                             {app.app_icon}
                           </span>
                           <div>
-                            <div className="fw-semibold text-decoration-none text-dark">
+                            <div className="fw-semibold text-decoration-none">
                               {app.app_name}
                             </div>
                             <small className="text-muted">
