@@ -330,7 +330,7 @@ const Beneficiaries: React.FC = () => {
                           <div>
                             <a
                               href="#"
-                              className="text-decoration-none fw-bold text-dark"
+                              className="text-decoration-none fw-bold"
                               onClick={(e) => {
                                 e.preventDefault();
                                 navigate(
