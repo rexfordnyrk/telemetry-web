@@ -2,7 +2,6 @@ import React from "react";
 import { Card, Row, Col, Dropdown, Table } from "react-bootstrap";
 import SafeApexChart from "../components/SafeApexChart";
 import MainLayout from "../layouts/MainLayout";
-import ThemeTestCard from "../components/ThemeTestCard";
 
 // jQuery and Peity charts are handled by external JS
 
