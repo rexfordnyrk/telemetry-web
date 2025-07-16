@@ -5,6 +5,7 @@ import { useAppDispatch } from "../store/hooks";
 import { addAlert } from "../store/slices/alertSlice";
 import { useDataTable } from "../hooks/useDataTable";
 import NewBeneficiaryModal from "../components/NewBeneficiaryModal";
+import FilterModal from "../components/FilterModal";
 
 const Beneficiaries: React.FC = () => {
   const dispatch = useAppDispatch();
