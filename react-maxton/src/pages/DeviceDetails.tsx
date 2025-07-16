@@ -1,16 +1,6 @@
 import React, { useState, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import {
-  Nav,
-  Tab,
-  Table,
-  Badge,
-  Card,
-  Row,
-  Col,
-  Form,
-  Button,
-} from "react-bootstrap";
+import { Nav, Tab, Table, Badge, Card, Row, Col, Form, Button } from "react-bootstrap";
 import MainLayout from "../layouts/MainLayout";
 import { useAppDispatch } from "../store/hooks";
 import { addAlert } from "../store/slices/alertSlice";
@@ -33,7 +23,7 @@ const DeviceDetails: React.FC = () => {
         is_active: true,
         last_synced: "2025-01-15T14:30:00.000Z",
         date_enrolled: "2025-01-10T09:00:00.000Z",
-        current_beneficiary: {
+                current_beneficiary: {
           id: "f854c2a8-12ff-4075-95f6-abf2ad6d61de",
           name: "John Doe",
           email: "john.doe@example.com",
@@ -46,7 +36,7 @@ const DeviceDetails: React.FC = () => {
           battery: "4355mAh",
           screen_size: "6.3 inches",
         },
-        sync_history: [
+                sync_history: [
           {
             id: "550e8400-e29b-41d4-a716-446655440002",
             device_id: "8c07e7e2-944f-4fb6-8817-2cf53a5bd952",
@@ -54,7 +44,7 @@ const DeviceDetails: React.FC = () => {
             status: "completed",
             records_synced: 150,
             sync_duration_ms: 2500,
-            created_at: "2025-01-15T10:30:00Z",
+            created_at: "2025-01-15T10:30:00Z"
           },
           {
             id: "550e8400-e29b-41d4-a716-446655440003",
@@ -63,8 +53,8 @@ const DeviceDetails: React.FC = () => {
             status: "completed",
             records_synced: 25,
             sync_duration_ms: 800,
-            created_at: "2025-01-15T09:15:00Z",
-          },
+            created_at: "2025-01-15T09:15:00Z"
+          }
         ],
         assignment_history: [
           {
@@ -80,8 +70,8 @@ const DeviceDetails: React.FC = () => {
             updated_at: "2024-01-10T08:00:00Z",
             beneficiary: {
               id: "f854c2a8-12ff-4075-95f6-abf2ad6d61de",
-              name: "John Doe",
-            },
+              name: "John Doe"
+            }
           },
           {
             id: "550e8400-e29b-41d4-a716-446655440005",
@@ -96,9 +86,9 @@ const DeviceDetails: React.FC = () => {
             updated_at: "2024-01-10T07:45:00Z",
             beneficiary: {
               id: "550e8400-e29b-41d4-a716-446655440006",
-              name: "Jane Smith",
-            },
-          },
+              name: "Jane Smith"
+            }
+          }
         ],
         app_sessions: [
           {
@@ -112,13 +102,13 @@ const DeviceDetails: React.FC = () => {
             session_duration: {
               hours: 1,
               minutes: 0,
-              formatted: "1h 0m",
+              formatted: "1h 0m"
             },
             start_activity_class: "com.google.android.youtube.HomeActivity",
             end_activity_class: "com.google.android.youtube.MainActivity",
             network_usage: {
-              formatted: "45.67 MB",
-            },
+              formatted: "45.67 MB"
+            }
           },
           {
             id: "550e8400-e29b-41d4-a716-446655440010",
@@ -131,14 +121,14 @@ const DeviceDetails: React.FC = () => {
             session_duration: {
               hours: 1,
               minutes: 0,
-              formatted: "1h 0m",
+              formatted: "1h 0m"
             },
             start_activity_class: "com.whatsapp.Main",
             end_activity_class: "com.whatsapp.Conversation",
             network_usage: {
-              formatted: "12.34 MB",
-            },
-          },
+              formatted: "12.34 MB"
+            }
+          }
         ],
         screen_sessions: [
           {
@@ -149,10 +139,10 @@ const DeviceDetails: React.FC = () => {
               milliseconds: 3600000,
               hours: 1,
               minutes: 0,
-              formatted: "1h 0m",
+              formatted: "1h 0m"
             },
             trigger_source: "power_button",
-            created_at: "2024-01-15T10:30:00Z",
+            created_at: "2024-01-15T10:30:00Z"
           },
           {
             id: "550e8400-e29b-41d4-a716-446655440012",
@@ -162,11 +152,11 @@ const DeviceDetails: React.FC = () => {
               milliseconds: 3600000,
               hours: 1,
               minutes: 0,
-              formatted: "1h 0m",
+              formatted: "1h 0m"
             },
             trigger_source: "notification",
-            created_at: "2024-01-15T09:10:00Z",
-          },
+            created_at: "2024-01-15T09:10:00Z"
+          }
         ],
       },
     ],
@@ -176,7 +166,7 @@ const DeviceDetails: React.FC = () => {
   // Find device by ID - memoized to prevent infinite re-renders
   const device = useMemo(() => devices.find((d) => d.id === id), [devices, id]);
 
-  // Tab state
+    // Tab state
   const [activeTab, setActiveTab] = useState("home");
 
   // Form state for editing
@@ -264,7 +254,7 @@ const DeviceDetails: React.FC = () => {
   return (
     <MainLayout>
       <div className="main-content">
-        {/* Breadcrumb */}
+                {/* Breadcrumb */}
         <div className="page-breadcrumb d-none d-sm-flex align-items-center justify-content-between mb-3">
           <div className="d-flex align-items-center">
             <div className="breadcrumb-title pe-3">Device Management</div>
@@ -288,11 +278,7 @@ const DeviceDetails: React.FC = () => {
           </div>
 
           {/* Tabs */}
-          <Nav
-            variant="tabs"
-            activeKey={activeTab}
-            onSelect={(selectedKey) => setActiveTab(selectedKey || "home")}
-          >
+          <Nav variant="tabs" activeKey={activeTab} onSelect={(selectedKey) => setActiveTab(selectedKey || "home")}>
             <Nav.Item>
               <Nav.Link eventKey="home">Home</Nav.Link>
             </Nav.Item>
@@ -308,9 +294,12 @@ const DeviceDetails: React.FC = () => {
           </Nav>
         </div>
 
-        <div className="row">
-          {/* Main Content */}
-          <div className="col-12 col-xl-8">
+                <Tab.Content>
+          {/* Home Tab */}
+          <Tab.Pane eventKey="home" active={activeTab === "home"}>
+            <div className="row">
+              {/* Main Content */}
+              <div className="col-12 col-xl-8">
             <div className="card rounded-4 border-top border-4 border-info border-gradient-1">
               <div className="card-body p-4">
                 <div className="d-flex align-items-start justify-content-between mb-3">
@@ -555,7 +544,7 @@ const DeviceDetails: React.FC = () => {
               </div>
             </div>
 
-            {/* Assigned Beneficiary */}
+                        {/* Assigned Beneficiary */}
             <div className="card rounded-4">
               <div className="card-body">
                 <h5 className="mb-3 fw-bold">Assigned Beneficiary</h5>
