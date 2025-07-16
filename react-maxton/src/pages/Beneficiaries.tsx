@@ -15,6 +15,10 @@ const Beneficiaries: React.FC = () => {
     "disable",
   );
   const [targetBeneficiary, setTargetBeneficiary] = useState<any>(null);
+  const [showFilterModal, setShowFilterModal] = useState(false);
+  const [activeFilters, setActiveFilters] = useState<{ [key: string]: any }>(
+    {},
+  );
 
   // Sample beneficiaries data - memoized to prevent re-renders
   const beneficiaries = [
