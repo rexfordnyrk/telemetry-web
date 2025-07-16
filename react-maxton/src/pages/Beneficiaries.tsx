@@ -272,9 +272,7 @@ const Beneficiaries: React.FC = () => {
             <button
               type="button"
               className="btn btn-outline-primary px-4"
-              onClick={() => {
-                /* TODO: Implement filters modal */
-              }}
+              onClick={() => setShowFilterModal(true)}
             >
               <i className="material-icons-outlined me-1">filter_list</i>
               Filters
