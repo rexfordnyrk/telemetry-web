@@ -265,25 +265,47 @@ const DeviceDetails: React.FC = () => {
     <MainLayout>
       <div className="main-content">
         {/* Breadcrumb */}
-        <div className="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
-          <div className="breadcrumb-title pe-3">Device Management</div>
-          <div className="ps-3">
-            <nav aria-label="breadcrumb">
-              <ol className="breadcrumb mb-0 p-0">
-                <li className="breadcrumb-item">
-                  <a href="/">
-                    <i className="bx bx-home-alt"></i>
-                  </a>
-                </li>
-                <li className="breadcrumb-item">
-                  <a href="/device-management/devices">Devices</a>
-                </li>
-                <li className="breadcrumb-item active" aria-current="page">
-                  {device.device_name}
-                </li>
-              </ol>
-            </nav>
+        <div className="page-breadcrumb d-none d-sm-flex align-items-center justify-content-between mb-3">
+          <div className="d-flex align-items-center">
+            <div className="breadcrumb-title pe-3">Device Management</div>
+            <div className="ps-3">
+              <nav aria-label="breadcrumb">
+                <ol className="breadcrumb mb-0 p-0">
+                  <li className="breadcrumb-item">
+                    <a href="/">
+                      <i className="bx bx-home-alt"></i>
+                    </a>
+                  </li>
+                  <li className="breadcrumb-item">
+                    <a href="/device-management/devices">Devices</a>
+                  </li>
+                  <li className="breadcrumb-item active" aria-current="page">
+                    {device.device_name}
+                  </li>
+                </ol>
+              </nav>
+            </div>
           </div>
+
+          {/* Tabs */}
+          <Nav
+            variant="tabs"
+            activeKey={activeTab}
+            onSelect={(selectedKey) => setActiveTab(selectedKey || "home")}
+          >
+            <Nav.Item>
+              <Nav.Link eventKey="home">Home</Nav.Link>
+            </Nav.Item>
+            <Nav.Item>
+              <Nav.Link eventKey="usage">Usage</Nav.Link>
+            </Nav.Item>
+            <Nav.Item>
+              <Nav.Link eventKey="device-history">Device History</Nav.Link>
+            </Nav.Item>
+            <Nav.Item>
+              <Nav.Link eventKey="location-history">Location History</Nav.Link>
+            </Nav.Item>
+          </Nav>
         </div>
 
         <div className="row">
