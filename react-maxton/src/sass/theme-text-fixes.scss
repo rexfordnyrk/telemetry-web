@@ -1,0 +1,80 @@
+/* Bootstrap Text Color Fixes for Themes */
+
+// Add missing CSS custom properties for Bootstrap color system
+[data-bs-theme="dark"] {
+  --bs-heading-color: #dee2e6;
+  --bs-body-color: #dee2e6;
+  --bs-body-bg: #212529;
+  --bs-body-bg-2: #1a1d20;
+  --bs-border-color: #495057;
+  --bs-border-color-translucent: rgba(255, 255, 255, 0.15);
+  --bs-secondary-color: #6c757d;
+  --bs-emphasis-color: #ffffff;
+}
+
+[data-bs-theme="blue-theme"] {
+  // Already has most properties, just ensure text-muted works
+  --bs-secondary-color: #8a9198;
+  --bs-emphasis-color: #ffffff;
+}
+
+[data-bs-theme="semi-dark"] {
+  --bs-heading-color: #212529;
+  --bs-body-color: #212529;
+  --bs-body-bg: #ffffff;
+  --bs-border-color: #dee2e6;
+  --bs-border-color-translucent: rgba(0, 0, 0, 0.15);
+  --bs-secondary-color: #6c757d;
+  --bs-emphasis-color: #000000;
+}
+
+// Ensure .text-muted uses the secondary color variable
+.text-muted {
+  color: var(--bs-secondary-color) !important;
+}
+
+// Fix other Bootstrap text utilities to use CSS custom properties
+.text-body {
+  color: var(--bs-body-color) !important;
+}
+
+.text-emphasis {
+  color: var(--bs-emphasis-color) !important;
+}
+
+// Fix text colors in specific themes
+[data-bs-theme="blue-theme"] {
+  .text-muted {
+    color: #8a9198 !important;
+  }
+
+  .text-body-secondary {
+    color: #8a9198 !important;
+  }
+}
+
+[data-bs-theme="dark"] {
+  .text-muted {
+    color: #6c757d !important;
+  }
+
+  .text-body-secondary {
+    color: #6c757d !important;
+  }
+}
+
+// Fix small text and other secondary text elements
+[data-bs-theme="blue-theme"],
+[data-bs-theme="dark"] {
+  .small,
+  small,
+  .text-small,
+  .font-12 {
+    color: inherit;
+  }
+
+  .text-muted.small,
+  small.text-muted {
+    color: var(--bs-secondary-color) !important;
+  }
+}
