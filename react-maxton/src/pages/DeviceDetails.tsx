@@ -14,6 +14,7 @@ import {
 import MainLayout from "../layouts/MainLayout";
 import { useAppDispatch } from "../store/hooks";
 import { addAlert } from "../store/slices/alertSlice";
+import { useDataTable } from "../hooks/useDataTable";
 
 const DeviceDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
