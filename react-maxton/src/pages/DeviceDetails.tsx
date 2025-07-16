@@ -24,6 +24,16 @@ const DeviceDetails: React.FC = () => {
   // Tab state
   const [activeTab, setActiveTab] = useState("home");
 
+  // Initialize DataTables for each tab
+  useDataTable("app-sessions-datatable", device?.app_sessions || []);
+  useDataTable("screen-sessions-datatable", device?.screen_sessions || []);
+  useDataTable(
+    "assignment-history-datatable",
+    device?.assignment_history || [],
+  );
+  useDataTable("sync-history-datatable", device?.sync_history || []);
+  useDataTable("installed-apps-datatable", device?.installed_apps || []);
+
   // Sample devices data (would come from store in real app) - memoized to prevent re-renders
   const devices = useMemo(
     () => [
