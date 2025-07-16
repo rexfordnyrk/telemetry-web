@@ -264,7 +264,7 @@ const Devices: React.FC = () => {
                           className="text-decoration-none fw-bold"
                           onClick={(e) => {
                             e.preventDefault();
-                            // TODO: Navigate to device details page
+                            navigate(`/device-management/devices/${device.id}`);
                           }}
                         >
                           {device.device_name}
