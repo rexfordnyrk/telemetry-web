@@ -1,10 +1,9 @@
-[data-bs-theme=blue-theme] body {
-
+[data-bs-theme="blue-theme"] body {
   --bs-heading-color: #e6ecf0;
   --bs-body-color: #d3d7dc;
   --bs-body-bg: #0f1535;
   --bs-body-bg-2: #181f4a;
-  --bs-transparent-bg: rgba(255, 255, 255, 0.10);
+  --bs-transparent-bg: rgba(255, 255, 255, 0.1);
   --bs-border-color-translucent: rgba(226, 232, 240, 0.15);
   --bs-border-color: rgba(255, 255, 255, 0.15);
   --sticky-header-bg: rgba(255, 255, 255, 0.45);
@@ -12,8 +11,7 @@
   --bs-tertiary-bg: #181f4a;
   --bs-card-bg: #070c29;
 
-
-  background-image: url(../assets/images/bg-themes/body-background-1.webp);
+  background-image: url(/assets/images/bg-themes/body-background-1.webp);
   background-attachment: fixed;
   background-size: cover;
   background-repeat: no-repeat;
@@ -22,20 +20,18 @@
   color: var(--bs-body-color);
   background-color: var(--bs-body-bg-2);
 
-
   $headingColor: #d5d5d5;
   $headerbg: transparent;
 
-
   .form-control:hover:not(:disabled):not([readonly])::file-selector-button {
-    background-color: var(--bs-tertiary-bg)
+    background-color: var(--bs-tertiary-bg);
   }
 
   textarea::placeholder {
     color: #fff !important;
     opacity: 0.5;
   }
-  
+
   input::placeholder {
     color: #fff !important;
   }
@@ -46,21 +42,22 @@
 
   .bg-none {
     background-image: none !important;
-   
   }
   .card {
-    background-image: linear-gradient(127.09deg, rgba(6, 11, 40, 0.94) 19.41%, rgba(10, 14, 35, 0.49) 76.65%);
+    background-image: linear-gradient(
+      127.09deg,
+      rgba(6, 11, 40, 0.94) 19.41%,
+      rgba(10, 14, 35, 0.49) 76.65%
+    );
   }
 
   .card-title {
     color: #dee2e6;
   }
 
-
   /* aligns */
 
   @mixin sidelinks {
-
     color: #dee2e6;
 
     &:hover,
@@ -68,16 +65,11 @@
       color: #ffffff;
       background-color: var(--bs-body-bg-2);
     }
-
   }
-
-
-
 
   /*header*/
 
   .top-header {
-
     .navbar {
       background-color: $headerbg;
       box-shadow: none;
@@ -105,21 +97,18 @@
             &:hover {
               color: var(--bs-body-color);
               background-color: var(--bs-body-bg-2);
-
             }
           }
           .search-list-item {
             &:hover {
               color: var(--bs-body-color);
-              background-color: var(--bs-body-bg-2)
+              background-color: var(--bs-body-bg-2);
             }
 
             .list-icon {
               background-color: var(--bs-body-bg-2);
             }
-
           }
-
         }
       }
 
@@ -132,16 +121,13 @@
           }
 
           .card {
-
             &:hover {
               background-color: var(--bs-body-bg-2);
             }
           }
-
         }
 
         .dropdown-apps {
-
           .app-wrapper {
             background-color: var(--bs-body-bg);
 
@@ -152,7 +138,6 @@
         }
 
         .dropdown-notify {
-
           .option {
             color: var(--bs-body-color);
             background-color: var(--bs-body-bg);
@@ -168,7 +153,10 @@
           }
 
           .notify-desc {
-            color: rgba(var(--bs-body-color-rgb), var(--bs-text-opacity)) !important;
+            color: rgba(
+              var(--bs-body-color-rgb),
+              var(--bs-text-opacity)
+            ) !important;
           }
 
           .notify-time {
@@ -182,10 +170,7 @@
           .notify-close {
             background-color: var(--bs-body-bg-2);
           }
-
         }
-
-
       }
 
       .dropdown-menu {
@@ -210,9 +195,7 @@
         }
       }
     }
-
   }
-
 
   /* sidebar */
 
@@ -225,7 +208,7 @@
       border-right: 1px solid var(--bs-border-color);
 
       .sidebar-close {
-        @include sidelinks()
+        @include sidelinks();
       }
     }
 
@@ -234,24 +217,20 @@
     }
 
     .sidebar-bottom {
-
       background-color: var(--bs-body-bg);
       border-top: 1px solid var(--bs-border-color);
       border-right: 1px solid var(--bs-border-color);
 
       .footer-icon {
-        @include sidelinks()
+        @include sidelinks();
       }
 
       .dropdown-menu {
         background-color: var(--bs-body-bg-2);
         border: 1px solid var(--bs-border-color-translucent);
       }
-
     }
-
   }
-
 
   .chip {
     color: var(--bs-body-color);
@@ -265,17 +244,15 @@
 
   .form-select:disabled,
   .form-control:disabled {
-    background-color: var(--bs-disabled-bg)
+    background-color: var(--bs-disabled-bg);
   }
-
 
   /* main content */
 
   .main-wrapper {
-
     .main-content {
       .sharelink {
-        @include sidelinks()
+        @include sidelinks();
       }
 
       .options {
@@ -291,7 +268,6 @@
             border-bottom: 0px solid #dee2e6;
           }
         }
-
       }
 
       .customer-table {
@@ -304,7 +280,6 @@
 
       .product-table {
         table {
-
           .product-category {
             color: #878d96;
           }
@@ -318,14 +293,12 @@
               background-color: var(--bs-body-bg-2);
               color: var(--bs-body-color);
             }
-
           }
 
           .product-rating {
             background-color: var(--bs-body-bg);
             border: 1px solid var(--bs-border-color);
           }
-
         }
       }
 
@@ -334,10 +307,8 @@
       .apexcharts-datalabel-value,
       .apexcharts-datalabels,
       .apexcharts-pie-label {
-        fill: #fff
+        fill: #fff;
       }
-
-
     }
   }
 
@@ -345,7 +316,6 @@
     .line {
       background-color: var(--bs-border-color);
     }
-
   }
 
   .auth-cover-right {
@@ -368,7 +338,6 @@
     border-top: 1px solid var(--bs-border-color);
   }
 
-
   /* Metis Menu */
   $color_1: #a7acb1;
   $color_2: #ffffff;
@@ -377,13 +346,10 @@
   $border-color_1: initial;
 
   .sidebar-nav {
-
-
     .metismenu {
       background: 0 0;
 
       a {
-
         color: $color_1;
 
         &:active {
@@ -403,12 +369,11 @@
       }
 
       ul {
-
         background-color: var(--bs-body-bg);
       }
 
       .mm-active {
-        >a {
+        > a {
           color: $color_2;
           background-color: $background-color_1;
         }
@@ -428,15 +393,13 @@
     }
   }
 
-
   /* order offcanvas */
 
   /* utilities */
 
   .primaery-menu-close {
-    @include sidelinks()
+    @include sidelinks();
   }
-
 
   .theme-icons {
     background-color: var(--bs-body-bg);
@@ -446,12 +409,9 @@
     color: #fe1010;
   }
 
-
   .dash-lable {
     background-color: #f3f3f3;
   }
-
- 
 
   form select.error,
   form textarea.error,
@@ -462,18 +422,15 @@
     border-color: #fe1010 !important;
   }
 
-
   .gmaps,
   .gmaps-panaroma {
     background: var(--bs-body-bg-2);
   }
 
-
   .bootstrap-tagsinput {
     background-color: var(--bs-body-bg);
     border-color: var(--bs-border-color);
   }
-
 
   .page-breadcrumb {
     .breadcrumb-item.active {
@@ -487,7 +444,7 @@
       border-color: var(--bs-border-color);
     }
 
-    .breadcrumb-item+.breadcrumb-item {
+    .breadcrumb-item + .breadcrumb-item {
       &::before {
         color: #fff;
       }
@@ -504,9 +461,10 @@
     }
   }
 
-
   .sticky-header {
-    box-shadow: rgba(255, 255, 255, 0.9) 0rem 0rem 0.0625rem 0.0625rem inset, rgba(0, 0, 0, 0.05) 0rem 1.25rem 1.6875rem 0rem;
+    box-shadow:
+      rgba(255, 255, 255, 0.9) 0rem 0rem 0.0625rem 0.0625rem inset,
+      rgba(0, 0, 0, 0.05) 0rem 1.25rem 1.6875rem 0rem;
     backdrop-filter: blur(2.625rem);
     border-bottom: 1px solid var(--bs-border-color);
   }
@@ -584,295 +542,285 @@
     background-color: var(--bs-body-bg-2) !important;
   }
 
-
   /* email box */
   .email-wrapper {
     background-color: var(--bs-body-bg);
   }
-    .email-sidebar {
-      background-color: var(--bs-body-bg);
-      border-right: 1px solid var(--bs-border-color-translucent);
-    }
-
-    .email-sidebar-header {
-      background-color: var(--bs-body-bg);
-      border-bottom: 1px solid var(--bs-border-color-translucent);
-    }
-
-    .email-navigation {
-      border-bottom: 1px solid var(--bs-border-color-translucent);
-
-      a {
-        &.list-group-item {
-          color: var(--bs-body-color-rgb);
-          background-color: var(--bs-body-bg);
-
-          &:hover {
-            background-color: var(--bs-body-bg-2);
-          }
-
-          &.active {
-            color: #0b5ed7;
-            background-color: var(--bs-body-bg-2);
-          }
-        }
-      }
-    }
-
-    .email-header {
-      background-color: var(--bs-body-bg);
-      border-bottom: 1px solid var(--bs-border-color-translucent);
-    }
-
-    .email-content {
-      background-color: var(--bs-body-bg);
-    }
-
-    .email-meeting {
-      a {
-        &.list-group-item {
-          color: var(--bs-body-color-rgb);
-          background-color: var(--bs-body-bg);
-
-          &:hover {
-            background-color: var(--bs-body-bg-2);
-          }
-        }
-      }
-    }
-
-    .email-hangout {
-      .chat-user-online {
-        &:before {
-          box-shadow: 0 0 0 2px #fff;
-          background: #16e15e;
-        }
-      }
-    }
-
-    .email-toggle-btn {
-      color: var(--bs-body-color);
-      background-color: var(--bs-body-bg);
-    }
-
-    .email-time {
-      color: var(--bs-body-color);
-    }
-
-    .email-list {
-      div {
-        &.email-message {
-          background-color: var(--bs-body-bg);
-          border-bottom: 1px solid rgb(0 0 0 / 8%);
-          color: var(--bs-body-color);
-
-          &:hover {
-            transition: all .2s ease-out;
-            background-color: var(--bs-body-bg-2) !important;
-            color: var(--bs-body-color);
-          }
-        }
-      }
-    }
-
-    .email-star {
-      color: #6c757d;
-    }
-
-    .email-read-box {
-      position: relative;
-      height: 530px;
-    }
-
-    .compose-mail-popup {
-      width: 42%;
-      position: fixed;
-      bottom: -30px;
-      right: 30px;
-      z-index: 15;
-      display: none;
-    }
-
-    .compose-mail-toggled {
-      display: block;
-    }
-
-    .compose-mail-title {
-      font-size: 16px;
-    }
-
-    .compose-mail-close {
-      width: 25px;
-      height: 25px;
-      line-height: 25px;
-      text-align: center;
-      font-size: 14px;
-      border-radius: 2px;
-      background-color: rgb(255 255 255 / 0%);
-
-      &:hover {
-        background-color: rgb(255 255 255 / 20%);
-      }
-   
-
+  .email-sidebar {
+    background-color: var(--bs-body-bg);
+    border-right: 1px solid var(--bs-border-color-translucent);
   }
 
+  .email-sidebar-header {
+    background-color: var(--bs-body-bg);
+    border-bottom: 1px solid var(--bs-border-color-translucent);
+  }
 
+  .email-navigation {
+    border-bottom: 1px solid var(--bs-border-color-translucent);
 
+    a {
+      &.list-group-item {
+        color: var(--bs-body-color-rgb);
+        background-color: var(--bs-body-bg);
 
-/* chat box */
+        &:hover {
+          background-color: var(--bs-body-bg-2);
+        }
 
-.chat-wrapper {
-	background-color: var(--bs-body-bg);
-	box-shadow: 0 .1rem .7rem rgba(0, 0, 0, .1);
-}
-.chat-sidebar {
-	background-color: var(--bs-body-bg);
-	border-right: 1px solid var(--bs-border-color-translucent);
-}
-.chat-sidebar-header {
-	background-color: var(--bs-body-bg);
-	border-bottom: 1px solid var(--bs-border-color-translucent);
-	
-}
+        &.active {
+          color: #0b5ed7;
+          background-color: var(--bs-body-bg-2);
+        }
+      }
+    }
+  }
 
+  .email-header {
+    background-color: var(--bs-body-bg);
+    border-bottom: 1px solid var(--bs-border-color-translucent);
+  }
 
+  .email-content {
+    background-color: var(--bs-body-bg);
+  }
+
+  .email-meeting {
+    a {
+      &.list-group-item {
+        color: var(--bs-body-color-rgb);
+        background-color: var(--bs-body-bg);
+
+        &:hover {
+          background-color: var(--bs-body-bg-2);
+        }
+      }
+    }
+  }
+
+  .email-hangout {
+    .chat-user-online {
+      &:before {
+        box-shadow: 0 0 0 2px #fff;
+        background: #16e15e;
+      }
+    }
+  }
+
+  .email-toggle-btn {
+    color: var(--bs-body-color);
+    background-color: var(--bs-body-bg);
+  }
+
+  .email-time {
+    color: var(--bs-body-color);
+  }
+
+  .email-list {
+    div {
+      &.email-message {
+        background-color: var(--bs-body-bg);
+        border-bottom: 1px solid rgb(0 0 0 / 8%);
+        color: var(--bs-body-color);
+
+        &:hover {
+          transition: all 0.2s ease-out;
+          background-color: var(--bs-body-bg-2) !important;
+          color: var(--bs-body-color);
+        }
+      }
+    }
+  }
+
+  .email-star {
+    color: #6c757d;
+  }
+
+  .email-read-box {
+    position: relative;
+    height: 530px;
+  }
+
+  .compose-mail-popup {
+    width: 42%;
+    position: fixed;
+    bottom: -30px;
+    right: 30px;
+    z-index: 15;
+    display: none;
+  }
+
+  .compose-mail-toggled {
+    display: block;
+  }
+
+  .compose-mail-title {
+    font-size: 16px;
+  }
+
+  .compose-mail-close {
+    width: 25px;
+    height: 25px;
+    line-height: 25px;
+    text-align: center;
+    font-size: 14px;
+    border-radius: 2px;
+    background-color: rgb(255 255 255 / 0%);
+
+    &:hover {
+      background-color: rgb(255 255 255 / 20%);
+    }
+  }
+
+  /* chat box */
+
+  .chat-wrapper {
+    background-color: var(--bs-body-bg);
+    box-shadow: 0 0.1rem 0.7rem rgba(0, 0, 0, 0.1);
+  }
+  .chat-sidebar {
+    background-color: var(--bs-body-bg);
+    border-right: 1px solid var(--bs-border-color-translucent);
+  }
+  .chat-sidebar-header {
+    background-color: var(--bs-body-bg);
+    border-bottom: 1px solid var(--bs-border-color-translucent);
+  }
 }
 
 .chat-header {
-	background-color: var(--bs-body-bg);
-	border-bottom: 1px solid var(--bs-border-color-translucent);
+  background-color: var(--bs-body-bg);
+  border-bottom: 1px solid var(--bs-border-color-translucent);
 }
 .chat-footer {
-	background-color: var(--bs-body-bg);
-	border-top: 1px solid var(--bs-border-color-translucent);
+  background-color: var(--bs-body-bg);
+  border-top: 1px solid var(--bs-border-color-translucent);
 }
 .chat-footer-menu {
-	a {
-		color: var(--bs-body-color);
-		background-color: var(--bs-body-bg);
-		border: 1px solid var(--bs-border-color-translucent);
-	}
+  a {
+    color: var(--bs-body-color);
+    background-color: var(--bs-body-bg);
+    border: 1px solid var(--bs-border-color-translucent);
+  }
 }
 .chat-tab-menu {
-	li {
-		a {
-			&.nav-link {
-				color: var(--bs-body-color);
-			}
-		}
-	}
+  li {
+    a {
+      &.nav-link {
+        color: var(--bs-body-color);
+      }
+    }
+  }
 }
 .chat-tab-menu .nav-pills .nav-link.active,
-.chat-tab-menu .nav-pills .show>.nav-link {
-	color: #008cff;
-	background-color: rgb(0 123 255 / 0%);
+.chat-tab-menu .nav-pills .show > .nav-link {
+  color: #008cff;
+  background-color: rgb(0 123 255 / 0%);
 }
 .chat-title {
-	color: var(--bs-body-color);
+  color: var(--bs-body-color);
 }
 .chat-msg {
-	color: #a3a7aa;
+  color: #a3a7aa;
 }
 .chat-time {
-	color: #cdcfd2;
+  color: #cdcfd2;
 }
 .chart-online {
-	color: #16e15e;
+  color: #16e15e;
 }
 .chat-top-header-menu {
-	a {
-		color: var(--bs-body-color);
-		background-color: var(--bs-body-bg-2);
-		border: 1px solid var(--bs-border-color-translucent);
-	}
+  a {
+    color: var(--bs-body-color);
+    background-color: var(--bs-body-bg-2);
+    border: 1px solid var(--bs-border-color-translucent);
+  }
 }
 .chat-content-leftside {
-	.chat-left-msg {
-		background-image: linear-gradient(310deg, #00c6fb 0%, #005bea 100%) !important;
-	}
+  .chat-left-msg {
+    background-image: linear-gradient(
+      310deg,
+      #00c6fb 0%,
+      #005bea 100%
+    ) !important;
+  }
 }
 .chat-content-rightside {
-	.chat-right-msg {
-		background-image: linear-gradient(310deg, #7928ca, #ff0080) !important;
-	}
+  .chat-right-msg {
+    background-image: linear-gradient(310deg, #7928ca, #ff0080) !important;
+  }
 }
 .chat-toggle-btn {
-	color: var(--bs-body-color);
-	background-color: var(--bs-body-bg-2);
-	border: 1px solid var(--bs-border-color-translucent);
+  color: var(--bs-body-color);
+  background-color: var(--bs-body-bg-2);
+  border: 1px solid var(--bs-border-color-translucent);
 }
-
-
-
 
 /* file manager */
 
 .fm-menu {
-	.list-group {
-		a {
-			color: var(--bs-body-color);
-			i {
-				font-size: 23px;
-			}
-			&:hover {
-				background: #008cff;
-			}
-		}
-	}
+  .list-group {
+    a {
+      color: var(--bs-body-color);
+      i {
+        font-size: 23px;
+      }
+      &:hover {
+        background: #008cff;
+      }
+    }
+  }
 }
 .fm-file-box {
-	background-color: var(--bs-body-bg-2);
+  background-color: var(--bs-body-bg-2);
 }
 .fm-icon-box {
-	background-color: var(--bs-body-bg-2);
+  background-color: var(--bs-body-bg-2);
 }
 .user-plus {
-	background-color: var(--bs-body-bg-2);
-	border: 1px dotted var(--bs-border-color-translucent);
-	color: var(--bs-body-color);
+  background-color: var(--bs-body-bg-2);
+  border: 1px dotted var(--bs-border-color-translucent);
+  color: var(--bs-body-color);
 }
 .user-groups {
-	img {
-		border: 1px solid var(--bs-border-color-translucent);
-	}
+  img {
+    border: 1px solid var(--bs-border-color-translucent);
+  }
 }
 
 .table {
-	--bs-table-color: var(--bs-body-color);
-	--bs-table-bg: var(--bs-table-bg);
-	--bs-table-border-color: var(--bs-border-color);
-	--bs-table-striped-color: var(--bs-body-color);
-	--bs-table-striped-bg: rgba(255, 255, 255, 0.05);
-	--bs-table-active-color: var(--bs-body-color);
-	--bs-table-active-bg: rgba(255, 255, 255, 0.1);
-	--bs-table-hover-color: var(--bs-body-color);
-	--bs-table-hover-bg: rgba(255, 255, 255, 0.075);
-	  border-color: var(--bs-table-border-color)
+  --bs-table-color: var(--bs-body-color);
+  --bs-table-bg: var(--bs-table-bg);
+  --bs-table-border-color: var(--bs-border-color);
+  --bs-table-striped-color: var(--bs-body-color);
+  --bs-table-striped-bg: rgba(255, 255, 255, 0.05);
+  --bs-table-active-color: var(--bs-body-color);
+  --bs-table-active-bg: rgba(255, 255, 255, 0.1);
+  --bs-table-hover-color: var(--bs-body-color);
+  --bs-table-hover-bg: rgba(255, 255, 255, 0.075);
+  border-color: var(--bs-table-border-color);
 }
-
 
 .list-group {
-	--bs-list-group-color: var(--bs-body-color);
-	--bs-list-group-bg: var(--bs-card-bg) ;
-	--bs-list-group-border-color: var(--bs-border-color);
-	--bs-list-group-border-width: var(--bs-border-width);
-	--bs-list-group-border-radius: var(--bs-border-radius);
-	--bs-list-group-item-padding-x: 1rem;
-	--bs-list-group-item-padding-y: 0.5rem;
-	--bs-list-group-action-color: var(--bs-secondary-color);
-	--bs-list-group-action-hover-color: var(--bs-emphasis-color);
-	--bs-list-group-action-hover-bg: var(--bs-tertiary-bg);
-	--bs-list-group-action-active-color: var(--bs-body-color);
-	--bs-list-group-action-active-bg: var(--bs-secondary-bg);
-	--bs-list-group-disabled-color: var(--bs-secondary-color);
-	--bs-list-group-disabled-bg: var(--bs-body-bg);
-	--bs-list-group-active-color: #fff;
-	--bs-list-group-active-bg: #0d6efd;
-	--bs-list-group-active-border-color: #0d6efd;
-	border-radius: var(--bs-list-group-border-radius)
+  --bs-list-group-color: var(--bs-body-color);
+  --bs-list-group-bg: var(--bs-card-bg);
+  --bs-list-group-border-color: var(--bs-border-color);
+  --bs-list-group-border-width: var(--bs-border-width);
+  --bs-list-group-border-radius: var(--bs-border-radius);
+  --bs-list-group-item-padding-x: 1rem;
+  --bs-list-group-item-padding-y: 0.5rem;
+  --bs-list-group-action-color: var(--bs-secondary-color);
+  --bs-list-group-action-hover-color: var(--bs-emphasis-color);
+  --bs-list-group-action-hover-bg: var(--bs-tertiary-bg);
+  --bs-list-group-action-active-color: var(--bs-body-color);
+  --bs-list-group-action-active-bg: var(--bs-secondary-bg);
+  --bs-list-group-disabled-color: var(--bs-secondary-color);
+  --bs-list-group-disabled-bg: var(--bs-body-bg);
+  --bs-list-group-active-color: #fff;
+  --bs-list-group-active-bg: #0d6efd;
+  --bs-list-group-active-border-color: #0d6efd;
+  border-radius: var(--bs-list-group-border-radius);
 }
-
 
 .card-lable {
   font-size: 13px;
