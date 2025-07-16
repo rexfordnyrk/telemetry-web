@@ -898,7 +898,7 @@ const DeviceDetails: React.FC = () => {
             <div className="d-flex flex-column gap-4">
               <div className="d-flex align-items-center gap-3">
                 <img
-                  src="assets/images/top-products/01.png"
+                  src="/assets/images/top-products/01.png"
                   width="55"
                   className="rounded-circle"
                   alt=""
@@ -914,7 +914,7 @@ const DeviceDetails: React.FC = () => {
               </div>
               <div className="d-flex align-items-center gap-3">
                 <img
-                  src="assets/images/top-products/02.png"
+                  src="/assets/images/top-products/02.png"
                   width="55"
                   className="rounded-circle"
                   alt=""
@@ -930,7 +930,7 @@ const DeviceDetails: React.FC = () => {
               </div>
               <div className="d-flex align-items-center gap-3">
                 <img
-                  src="assets/images/top-products/04.png"
+                  src="/assets/images/top-products/04.png"
                   width="55"
                   className="rounded-circle"
                   alt=""
@@ -948,7 +948,7 @@ const DeviceDetails: React.FC = () => {
               </div>
               <div className="d-flex align-items-center gap-3">
                 <img
-                  src="assets/images/top-products/05.png"
+                  src="/assets/images/top-products/05.png"
                   width="55"
                   className="rounded-circle"
                   alt=""
@@ -964,7 +964,7 @@ const DeviceDetails: React.FC = () => {
               </div>
               <div className="d-flex align-items-center gap-3">
                 <img
-                  src="assets/images/top-products/06.png"
+                  src="/assets/images/top-products/06.png"
                   width="55"
                   className="rounded-circle"
                   alt=""
