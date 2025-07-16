@@ -252,6 +252,38 @@
   color: #d3d7dc;
 }
 
+[data-bs-theme="blue-theme"] .form-control {
+  background-color: #0f1535;
+  border-color: #2d3748;
+  color: #d3d7dc;
+}
+
+[data-bs-theme="blue-theme"] .form-control:focus {
+  background-color: #0f1535;
+  border-color: #4299e1;
+  color: #d3d7dc;
+  box-shadow: 0 0 0 0.25rem rgba(66, 153, 225, 0.25);
+}
+
+[data-bs-theme="blue-theme"] .btn {
+  color: inherit;
+}
+
+[data-bs-theme="blue-theme"] .dropdown-menu {
+  background-color: #0f1535;
+  border-color: #2d3748;
+}
+
+[data-bs-theme="blue-theme"] .dropdown-item {
+  color: #d3d7dc;
+}
+
+[data-bs-theme="blue-theme"] .dropdown-item:hover,
+[data-bs-theme="blue-theme"] .dropdown-item:focus {
+  background-color: #2d3748;
+  color: #ffffff;
+}
+
 /* Bordered theme fixes */
 [data-bs-theme="bordered-theme"] .card {
   border: 2px solid var(--bs-border-color, #dee2e6) !important;
