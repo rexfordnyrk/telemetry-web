@@ -9,7 +9,7 @@ const NotFound: React.FC = () => {
         <Row className="justify-content-center">
           <Col md={8} lg={6} className="text-center">
             <div className="error-title text-primary">404</div>
-            <div className="error-sub-title text-dark mb-4">Page Not Found</div>
+            <div className="error-sub-title mb-4">Page Not Found</div>
             <p className="mb-4">
               The page you are looking for might have been removed, had its name
               changed, or is temporarily unavailable.
