@@ -337,7 +337,7 @@ const DeviceDetails: React.FC = () => {
   };
 
   const handleNavigateToBeneficiary = () => {
-    if (device.current_beneficiary) {
+    if (device?.current_beneficiary) {
       navigate(
         `/beneficiary-management/beneficiaries/${device.current_beneficiary.id}`,
       );
