@@ -176,6 +176,9 @@ const DeviceDetails: React.FC = () => {
   // Find device by ID - memoized to prevent infinite re-renders
   const device = useMemo(() => devices.find((d) => d.id === id), [devices, id]);
 
+  // Tab state
+  const [activeTab, setActiveTab] = useState("home");
+
   // Form state for editing
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
