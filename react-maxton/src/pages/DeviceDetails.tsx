@@ -241,6 +241,16 @@ const DeviceDetails: React.FC = () => {
   // Find device by ID - memoized to prevent infinite re-renders
   const device = useMemo(() => devices.find((d) => d.id === id), [devices, id]);
 
+  // Initialize DataTables for each tab
+  useDataTable("app-sessions-datatable", device?.app_sessions || []);
+  useDataTable("screen-sessions-datatable", device?.screen_sessions || []);
+  useDataTable(
+    "assignment-history-datatable",
+    device?.assignment_history || [],
+  );
+  useDataTable("sync-history-datatable", device?.sync_history || []);
+  useDataTable("installed-apps-datatable", device?.installed_apps || []);
+
   // Form state for editing
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
