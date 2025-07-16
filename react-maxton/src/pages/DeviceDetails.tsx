@@ -1016,7 +1016,7 @@ const DeviceDetails: React.FC = () => {
                             {session.app_icon}
                           </span>
                           <div>
-                            <div className="fw-semibold text-decoration-none text-dark">
+                            <div className="fw-semibold text-decoration-none">
                               {session.app_name}
                             </div>
                             <small className="text-muted">
