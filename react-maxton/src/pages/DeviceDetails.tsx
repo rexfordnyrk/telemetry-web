@@ -859,12 +859,12 @@ const DeviceDetails: React.FC = () => {
           </div>
         </div>
 
-        {/* Top 5 Data Consuming Apps */}
-        <div className="card rounded-4">
+        {/* Popular Products Widget Clone */}
+        <div className="card w-100 rounded-4">
           <div className="card-body">
             <div className="d-flex align-items-start justify-content-between mb-3">
-              <div>
-                <h5 className="mb-0">Top Data Consuming Apps</h5>
+              <div className="">
+                <h5 className="mb-0">Popular Products</h5>
               </div>
               <div className="dropdown">
                 <a
@@ -896,46 +896,88 @@ const DeviceDetails: React.FC = () => {
               </div>
             </div>
             <div className="d-flex flex-column gap-4">
-              {device.app_sessions
-                ?.slice()
-                .sort((a, b) => {
-                  const aUsage = parseFloat(
-                    a.network_usage.formatted.replace(/[^\d.]/g, ""),
-                  );
-                  const bUsage = parseFloat(
-                    b.network_usage.formatted.replace(/[^\d.]/g, ""),
-                  );
-                  return bUsage - aUsage;
-                })
-                .slice(0, 5)
-                .map((session, index) => (
-                  <div
-                    key={session.id}
-                    className="d-flex align-items-center gap-3"
-                  >
-                    <span
-                      style={{ fontSize: "55px" }}
-                      className="rounded-circle"
-                    >
-                      {session.app_icon}
-                    </span>
-                    <div className="flex-grow-1">
-                      <h6 className="mb-0">{session.app_name}</h6>
-                      <p className="mb-0">
-                        Data: {session.network_usage.formatted}
-                      </p>
-                    </div>
-                    <div className="text-center">
-                      <h6 className="mb-1">#{index + 1}</h6>
-                      <p
-                        className={`mb-0 font-13 ${index < 2 ? "text-success" : "text-danger"}`}
-                      >
-                        {index < 2 ? "+" : "-"}
-                        {Math.floor(Math.random() * 30)}%
-                      </p>
-                    </div>
+              <div className="d-flex align-items-center gap-3">
+                <img
+                  src="assets/images/top-products/01.png"
+                  width="55"
+                  className="rounded-circle"
+                  alt=""
+                />
+                <div className="flex-grow-1">
+                  <h6 className="mb-0">Apple Hand Watch</h6>
+                  <p className="mb-0">Sale: 258</p>
+                </div>
+                <div className="text-center">
+                  <h6 className="mb-1">$199</h6>
+                  <p className="mb-0 text-success font-13">+12%</p>
+                </div>
+              </div>
+              <div className="d-flex align-items-center gap-3">
+                <img
+                  src="assets/images/top-products/02.png"
+                  width="55"
+                  className="rounded-circle"
+                  alt=""
+                />
+                <div className="flex-grow-1">
+                  <h6 className="mb-0">Mobile Phone Set</h6>
+                  <p className="mb-0">Sale: 169</p>
+                </div>
+                <div className="text-center">
+                  <h6 className="mb-1">$159</h6>
+                  <p className="mb-0 text-success font-13">+14%</p>
+                </div>
+              </div>
+              <div className="d-flex align-items-center gap-3">
+                <img
+                  src="assets/images/top-products/04.png"
+                  width="55"
+                  className="rounded-circle"
+                  alt=""
+                />
+                <div className="flex-grow-1">
+                  <h6 className="mb-0">Grey Shoes Pair</h6>
+                  <p className="mb-0">Sale: 859</p>
+                </div>
+                <div className="">
+                  <div className="text-center">
+                    <h6 className="mb-1">$279</h6>
+                    <p className="mb-0 text-danger font-13">-12%</p>
                   </div>
-                ))}
+                </div>
+              </div>
+              <div className="d-flex align-items-center gap-3">
+                <img
+                  src="assets/images/top-products/05.png"
+                  width="55"
+                  className="rounded-circle"
+                  alt=""
+                />
+                <div className="flex-grow-1">
+                  <h6 className="mb-0">Blue Yoga Mat</h6>
+                  <p className="mb-0">Sale: 328</p>
+                </div>
+                <div className="text-center">
+                  <h6 className="mb-1">$389</h6>
+                  <p className="mb-0 text-success font-13">+25%</p>
+                </div>
+              </div>
+              <div className="d-flex align-items-center gap-3">
+                <img
+                  src="assets/images/top-products/06.png"
+                  width="55"
+                  className="rounded-circle"
+                  alt=""
+                />
+                <div className="flex-grow-1">
+                  <h6 className="mb-0">White water Bottle</h6>
+                  <p className="mb-0">Sale: 992</p>
+                </div>
+                <div className="text-center">
+                  <h6 className="mb-1">$584</h6>
+                  <p className="mb-0 text-danger font-13">-25%</p>
+                </div>
+              </div>
             </div>
           </div>
         </div>
