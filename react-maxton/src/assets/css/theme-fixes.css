@@ -211,9 +211,19 @@
 
 [data-bs-theme="blue-theme"] .table,
 [data-bs-theme="blue-theme"] .table td,
-[data-bs-theme="blue-theme"] .table th {
+[data-bs-theme="blue-theme"] .table th,
+[data-bs-theme="blue-theme"] .table tr {
   color: #d3d7dc !important;
   border-color: #2d3748;
+}
+
+[data-bs-theme="blue-theme"] .table .btn-link,
+[data-bs-theme="blue-theme"] .table a {
+  color: #87ceeb !important;
+}
+
+[data-bs-theme="blue-theme"] .table a:hover {
+  color: #add8e6 !important;
 }
 
 [data-bs-theme="blue-theme"] .top-header .navbar {
