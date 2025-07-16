@@ -21,6 +21,12 @@ import ErrorBoundary from "./components/ErrorBoundary";
 import Alert from "./components/Alert";
 import "react-toastify/dist/ReactToastify.css";
 import "./index.css";
+import "./sass/main.scss";
+import "./sass/dark-theme.scss";
+import "./sass/blue-theme.scss";
+import "./sass/semi-dark.scss";
+import "./sass/bordered-theme.scss";
+import "./sass/responsive.scss";
 // import "./styles/table-fixes.css"; // Temporarily disabled for observations
 // import "./assets/css/theme-fixes.css"; // Temporarily disabled - causing icon font issues
 
