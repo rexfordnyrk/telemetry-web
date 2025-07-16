@@ -805,41 +805,6 @@ const DeviceDetails: React.FC = () => {
             </div>
           </Card.Body>
         </Card>
-
-        {/* Usage Timeline Visual */}
-        <Card className="rounded-4">
-          <Card.Body>
-            <Card.Title className="fw-bold">Usage Timeline</Card.Title>
-            <div className="timeline-container">
-              {device.app_sessions?.map((session, index) => (
-                <div
-                  key={session.id}
-                  className="timeline-item d-flex align-items-center mb-3"
-                >
-                  <div className="timeline-marker me-3">
-                    <span className="badge bg-primary rounded-circle p-2">
-                      {session.app_icon}
-                    </span>
-                  </div>
-                  <div className="timeline-content flex-grow-1">
-                    <div className="d-flex justify-content-between align-items-center">
-                      <div>
-                        <h6 className="mb-1">{session.app_name}</h6>
-                        <small className="text-muted">
-                          {formatTimestamp(session.foreground_time_stamp)} -{" "}
-                          {formatTimestamp(session.background_time_stamp)}
-                        </small>
-                      </div>
-                      <Badge bg="secondary">
-                        {session.session_duration.formatted}
-                      </Badge>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </Card.Body>
-        </Card>
       </div>
     </div>
   );
