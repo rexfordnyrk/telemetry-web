@@ -735,12 +735,12 @@ const DeviceDetails: React.FC = () => {
           </div>
         </div>
 
-        {/* Top 5 Most Used Apps */}
-        <div className="card rounded-4 mb-3">
+        {/* Social Revenue Widget Clone */}
+        <div className="card w-100 rounded-4 mb-3">
           <div className="card-body">
             <div className="d-flex align-items-start justify-content-between mb-3">
-              <div>
-                <h5 className="mb-0">Top 5 Most Used Apps</h5>
+              <div className="">
+                <h5 className="mb-0">Social Revenue</h5>
               </div>
               <div className="dropdown">
                 <a
@@ -773,49 +773,87 @@ const DeviceDetails: React.FC = () => {
             </div>
             <div className="mb-4">
               <div className="d-flex align-items-center gap-3">
-                <h3 className="mb-0">
-                  {device.app_sessions?.reduce(
-                    (total, session) => total + session.session_time,
-                    0,
-                  ) || 0}
-                </h3>
+                <h3 className="mb-0">48,569</h3>
                 <p className="mb-0 text-success gap-3">
-                  15%
+                  27%
                   <span className="material-icons-outlined fs-6">
                     arrow_upward
                   </span>
                 </p>
               </div>
-              <p className="mb-0 font-13">Total Usage Time (ms)</p>
+              <p className="mb-0 font-13">Last 1 Year Income</p>
             </div>
             <div className="table-responsive">
               <div className="d-flex flex-column gap-4">
-                {device.app_sessions
-                  ?.slice()
-                  .sort((a, b) => b.session_time - a.session_time)
-                  .slice(0, 5)
-                  .map((session, index) => (
-                    <div
-                      key={session.id}
-                      className="d-flex align-items-center gap-3"
-                    >
-                      <div className="social-icon d-flex align-items-center gap-3 flex-grow-1">
-                        <span style={{ fontSize: "40px" }}>
-                          {session.app_icon}
-                        </span>
-                        <div>
-                          <h6 className="mb-0">{session.app_name}</h6>
-                          <p className="mb-0">Mobile App</p>
-                        </div>
-                      </div>
-                      <h5 className="mb-0">
-                        {session.session_duration.formatted}
-                      </h5>
-                      <div className="card-lable bg-success text-success bg-opacity-10">
-                        <p className="text-success mb-0">#{index + 1}</p>
-                      </div>
+                <div className="d-flex align-items-center gap-3">
+                  <div className="social-icon d-flex align-items-center gap-3 flex-grow-1">
+                    <img src="assets/images/apps/17.png" width="40" alt="" />
+                    <div>
+                      <h6 className="mb-0">Facebook</h6>
+                      <p className="mb-0">Social Media</p>
                     </div>
-                  ))}
+                  </div>
+                  <h5 className="mb-0">45,689</h5>
+                  <div className="card-lable bg-success text-success bg-opacity-10">
+                    <p className="text-success mb-0">+28.5%</p>
+                  </div>
+                </div>
+                <div className="d-flex align-items-center gap-3">
+                  <div className="social-icon d-flex align-items-center gap-3 flex-grow-1">
+                    <img
+                      src="assets/images/apps/twitter-circle.png"
+                      width="40"
+                      alt=""
+                    />
+                    <div>
+                      <h6 className="mb-0">Twitter</h6>
+                      <p className="mb-0">Social Media</p>
+                    </div>
+                  </div>
+                  <h5 className="mb-0">34,248</h5>
+                  <div className="card-lable bg-danger text-danger bg-opacity-10">
+                    <p className="text-red mb-0">-14.5%</p>
+                  </div>
+                </div>
+                <div className="d-flex align-items-center gap-3">
+                  <div className="social-icon d-flex align-items-center gap-3 flex-grow-1">
+                    <img src="assets/images/apps/03.png" width="40" alt="" />
+                    <div>
+                      <h6 className="mb-0">Tik Tok</h6>
+                      <p className="mb-0">Entertainment</p>
+                    </div>
+                  </div>
+                  <h5 className="mb-0">45,689</h5>
+                  <div className="card-lable bg-success text-success bg-opacity-10">
+                    <p className="text-green mb-0">+28.5%</p>
+                  </div>
+                </div>
+                <div className="d-flex align-items-center gap-3">
+                  <div className="social-icon d-flex align-items-center gap-3 flex-grow-1">
+                    <img src="assets/images/apps/19.png" width="40" alt="" />
+                    <div>
+                      <h6 className="mb-0">Instagram</h6>
+                      <p className="mb-0">Social Media</p>
+                    </div>
+                  </div>
+                  <h5 className="mb-0">67,249</h5>
+                  <div className="card-lable bg-danger text-danger bg-opacity-10">
+                    <p className="text-red mb-0">-43.5%</p>
+                  </div>
+                </div>
+                <div className="d-flex align-items-center gap-3">
+                  <div className="social-icon d-flex align-items-center gap-3 flex-grow-1">
+                    <img src="assets/images/apps/20.png" width="40" alt="" />
+                    <div>
+                      <h6 className="mb-0">Snapchat</h6>
+                      <p className="mb-0">Conversation</p>
+                    </div>
+                  </div>
+                  <h5 className="mb-0">89,178</h5>
+                  <div className="card-lable bg-success text-success bg-opacity-10">
+                    <p className="text-green mb-0">+24.7%</p>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
