@@ -797,6 +797,7 @@ const DeviceDetails: React.FC = () => {
             <h6 className="mb-3 text-uppercase fw-bold">Screen Sessions</h6>
             <div className="table-responsive">
               <table
+                id="screen-sessions-datatable"
                 className="table table-striped table-bordered"
                 style={{ width: "100%" }}
               >
