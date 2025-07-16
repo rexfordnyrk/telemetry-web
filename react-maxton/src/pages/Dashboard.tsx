@@ -798,6 +798,9 @@ const Dashboard: React.FC = () => {
         </div>
       </div>
 
+      {/* Theme Test Card - Remove this after testing */}
+      <ThemeTestCard />
+
       <Row>
         {/* Row 1: Welcome Card + Active Users + Total Users */}
         <Col xxl={8} className="d-flex align-items-stretch">
