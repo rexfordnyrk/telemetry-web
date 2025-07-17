@@ -814,16 +814,18 @@ const Dashboard: React.FC = () => {
                     />
                     <div>
                       <p className="mb-0 fw-semibold">Welcome back</p>
-                      <h4 className="fw-semibold mb-0 fs-4">Jhon Anderson!</h4>
+                      <h4 className="fw-semibold mb-0 fs-4">
+                        Research Coordinator!
+                      </h4>
                     </div>
                   </div>
                   <div className="d-flex align-items-center gap-5">
                     <div>
                       <h4 className="mb-1 fw-semibold d-flex align-content-center">
-                        $65.4K
+                        4.2h
                         <i className="ti ti-arrow-up-right fs-5 lh-base text-success"></i>
                       </h4>
-                      <p className="mb-3">Today's Sales</p>
+                      <p className="mb-3">Total Screen Time Today</p>
                       <div className="progress mb-0" style={{ height: "5px" }}>
                         <div
                           className="progress-bar bg-grd-success"
@@ -838,10 +840,10 @@ const Dashboard: React.FC = () => {
                     <div className="vr"></div>
                     <div>
                       <h4 className="mb-1 fw-semibold d-flex align-content-center">
-                        78.4%
+                        89.2%
                         <i className="ti ti-arrow-up-right fs-5 lh-base text-success"></i>
                       </h4>
-                      <p className="mb-3">Growth Rate</p>
+                      <p className="mb-3">Active Devices Rate</p>
                       <div className="progress mb-0" style={{ height: "5px" }}>
                         <div
                           className="progress-bar bg-grd-danger"
@@ -874,8 +876,8 @@ const Dashboard: React.FC = () => {
             <Card.Body>
               <div className="d-flex align-items-start justify-content-between mb-1">
                 <div>
-                  <h5 className="mb-0">42.5K</h5>
-                  <p className="mb-0">Active Users</p>
+                  <h5 className="mb-0">847</h5>
+                  <p className="mb-0">Active Participants Today</p>
                 </div>
                 <Dropdown>
                   <Dropdown.Toggle
@@ -903,7 +905,7 @@ const Dashboard: React.FC = () => {
               </div>
               <div className="text-center">
                 <p className="mb-0 font-12">
-                  24K users increased from last month
+                  67 new active participants from last week
                 </p>
               </div>
             </Card.Body>
@@ -915,8 +917,8 @@ const Dashboard: React.FC = () => {
             <Card.Body>
               <div className="d-flex align-items-start justify-content-between mb-3">
                 <div>
-                  <h5 className="mb-0">97.4K</h5>
-                  <p className="mb-0">Total Users</p>
+                  <h5 className="mb-0">1,247</h5>
+                  <p className="mb-0">Enrolled Participants</p>
                 </div>
                 <Dropdown>
                   <Dropdown.Toggle
@@ -957,7 +959,7 @@ const Dashboard: React.FC = () => {
           <Card className="w-100 rounded-4">
             <Card.Body>
               <div className="text-center">
-                <h6 className="mb-0">Monthly Revenue</h6>
+                <h6 className="mb-0">Screen Time Trends</h6>
               </div>
               <div className="mt-4">
                 <SafeApexChart
@@ -967,7 +969,7 @@ const Dashboard: React.FC = () => {
                   height={280}
                 />
               </div>
-              <p>Avrage monthly sale for every author</p>
+              <p>Average daily screen time across all participants</p>
               <div className="d-flex align-items-center gap-3 mt-4">
                 <div>
                   <h1 className="mb-0 text-primary">68.9%</h1>
@@ -989,7 +991,7 @@ const Dashboard: React.FC = () => {
               <div className="d-flex flex-column gap-3">
                 <div className="d-flex align-items-start justify-content-between">
                   <div>
-                    <h5 className="mb-0">Device Type</h5>
+                    <h5 className="mb-0">Top App Categories Usage</h5>
                   </div>
                   <Dropdown>
                     <Dropdown.Toggle
@@ -1010,7 +1012,7 @@ const Dashboard: React.FC = () => {
                 <div className="position-relative">
                   <div className="piechart-legend">
                     <h2 className="mb-1">68%</h2>
-                    <h6 className="mb-0">Total Views</h6>
+                    <h6 className="mb-0">Most Used</h6>
                   </div>
                   <SafeApexChart
                     options={chart6Options}
@@ -1025,7 +1027,7 @@ const Dashboard: React.FC = () => {
                       <span className="material-icons-outlined fs-6 text-primary">
                         desktop_windows
                       </span>
-                      Desktop
+                      Social Media
                     </p>
                     <div>
                       <p className="mb-0">35%</p>
@@ -1036,7 +1038,7 @@ const Dashboard: React.FC = () => {
                       <span className="material-icons-outlined fs-6 text-danger">
                         tablet_mac
                       </span>
-                      Tablet
+                      Entertainment
                     </p>
                     <div>
                       <p className="mb-0">48%</p>
@@ -1047,7 +1049,7 @@ const Dashboard: React.FC = () => {
                       <span className="material-icons-outlined fs-6 text-success">
                         phone_android
                       </span>
-                      Mobile
+                      Productivity
                     </p>
                     <div>
                       <p className="mb-0">27%</p>
@@ -1066,8 +1068,8 @@ const Dashboard: React.FC = () => {
                 <Card.Body>
                   <div className="d-flex align-items-start justify-content-between mb-1">
                     <div>
-                      <h5 className="mb-0">82.7K</h5>
-                      <p className="mb-0">Total Clicks</p>
+                      <h5 className="mb-0">2.1GB</h5>
+                      <p className="mb-0">Data Consumed Today</p>
                     </div>
                     <Dropdown>
                       <Dropdown.Toggle
@@ -1107,8 +1109,8 @@ const Dashboard: React.FC = () => {
                 <Card.Body>
                   <div className="d-flex align-items-start justify-content-between mb-1">
                     <div>
-                      <h5 className="mb-0">68.4K</h5>
-                      <p className="mb-0">Total Views</p>
+                      <h5 className="mb-0">1,156</h5>
+                      <p className="mb-0">App Sessions Today</p>
                     </div>
                     <Dropdown>
                       <Dropdown.Toggle
@@ -1136,7 +1138,7 @@ const Dashboard: React.FC = () => {
                   </div>
                   <div className="text-center">
                     <p className="mb-0 font-12">
-                      35K users increased from last month
+                      142 sessions increased from yesterday
                     </p>
                   </div>
                 </Card.Body>
@@ -1158,7 +1160,7 @@ const Dashboard: React.FC = () => {
                   </p>
                 </div>
               </div>
-              <p className="mb-0">Total Accounts</p>
+              <p className="mb-0">Sync Success Rate</p>
               <div>
                 <SafeApexChart
                   options={chart7Options}
@@ -1177,7 +1179,7 @@ const Dashboard: React.FC = () => {
             <Card.Body>
               <div className="d-flex align-items-start justify-content-between mb-3">
                 <div>
-                  <h6 className="mb-0 fw-bold">Campaign Stats</h6>
+                  <h6 className="mb-0 fw-bold">Program Performance</h6>
                 </div>
                 <Dropdown>
                   <Dropdown.Toggle
@@ -1248,11 +1250,11 @@ const Dashboard: React.FC = () => {
                   <p className="mb-0 text-success">34.5%</p>
                 </div>
               </div>
-              <p className="mb-4">Visitors Growth</p>
+              <p className="mb-4">Engagement Quality</p>
               <div className="d-flex flex-column gap-3">
                 <div>
                   <p className="mb-1">
-                    Cliks <span className="float-end">2589</span>
+                    High Engagement <span className="float-end">2589</span>
                   </p>
                   <div className="progress" style={{ height: "5px" }}>
                     <div
@@ -1263,7 +1265,7 @@ const Dashboard: React.FC = () => {
                 </div>
                 <div>
                   <p className="mb-1">
-                    Likes <span className="float-end">6748</span>
+                    Medium Engagement <span className="float-end">6748</span>
                   </p>
                   <div className="progress" style={{ height: "5px" }}>
                     <div
@@ -1274,7 +1276,7 @@ const Dashboard: React.FC = () => {
                 </div>
                 <div>
                   <p className="mb-1">
-                    Upvotes <span className="float-end">9842</span>
+                    Low Engagement <span className="float-end">9842</span>
                   </p>
                   <div className="progress" style={{ height: "5px" }}>
                     <div
@@ -1293,7 +1295,7 @@ const Dashboard: React.FC = () => {
             <Card.Body>
               <div className="d-flex align-items-start justify-content-between mb-3">
                 <div>
-                  <h5 className="mb-0 fw-bold">Social Leads</h5>
+                  <h5 className="mb-0 fw-bold">Top 7 Most Used Apps</h5>
                 </div>
                 <Dropdown>
                   <Dropdown.Toggle
@@ -1366,7 +1368,7 @@ const Dashboard: React.FC = () => {
             <Card.Header className="border-0 p-3 border-bottom">
               <div className="d-flex align-items-start justify-content-between">
                 <div>
-                  <h5 className="mb-0">New Users</h5>
+                  <h5 className="mb-0">Recent Enrollments</h5>
                 </div>
                 <Dropdown>
                   <Dropdown.Toggle
@@ -1442,7 +1444,7 @@ const Dashboard: React.FC = () => {
             <Card.Body>
               <div className="d-flex align-items-start justify-content-between mb-3">
                 <div>
-                  <h5 className="mb-0">Recent Orders</h5>
+                  <h5 className="mb-0">Recent Device Issues/Alerts</h5>
                 </div>
                 <Dropdown>
                   <Dropdown.Toggle
@@ -1474,11 +1476,11 @@ const Dashboard: React.FC = () => {
                 <Table className="table align-middle">
                   <thead>
                     <tr>
-                      <th>Item Name</th>
-                      <th>Amount</th>
-                      <th>Vendor</th>
+                      <th>Device ID</th>
+                      <th>Issue Type</th>
+                      <th>Participant</th>
                       <th>Status</th>
-                      <th>Rating</th>
+                      <th>Severity</th>
                     </tr>
                   </thead>
                   <tbody>
