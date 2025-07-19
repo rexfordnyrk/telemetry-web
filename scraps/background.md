@@ -384,6 +384,5 @@ LEFT JOIN installed_apps ia ON
 4. **Data Synchronization**: Data is synced to the server and logged
 5. **Analytics**: Data is queried through views for analytics and reporting
 
-if you have over 2000 devices syncing in data, with the above information, tell me the various levels of analysis can be derived or extracted from this data being captured. from basic data points or detailed analyticsand trends especially for wed dash board.  You can group analytics by the various entities or  thematic areas. eg. General Dashboard(Overview), Aggregated analytics on device usage, location based analysis, programme based, app-based, network usage based, or combined entities analysis and then per device analytics
 
 
