@@ -9,6 +9,7 @@
  * 2. Validate token and set authentication state
  * 3. Clear invalid or expired tokens
  * 4. Provide a foundation for authentication state management
+ * 5. Log JWT claims for debugging purposes
  * 
  * This component wraps the entire app to ensure authentication state
  * is properly initialized before any other components render.
@@ -18,6 +19,7 @@ import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../store';
 import { setToken, clearAuth } from '../store/slices/authSlice';
+import { logJWTClaims, isTokenExpired, decodeJWT } from '../utils/jwtUtils';
 
 /**
  * Props interface for AuthInitializer component
@@ -50,9 +52,44 @@ const AuthInitializer: React.FC<AuthInitializerProps> = ({ children }) => {
     const storedToken = localStorage.getItem('auth_token');
     
     if (storedToken) {
-      // If we have a stored token, set it in the Redux store
-      // This will mark the user as authenticated
-      dispatch(setToken(storedToken));
+      // Check if token is expired first
+      if (isTokenExpired(storedToken)) {
+        console.warn('Stored token is expired, clearing authentication state');
+        dispatch(clearAuth());
+        return;
+      }
+      
+      // Extract user information from JWT claims
+      const claims = decodeJWT(storedToken);
+      if (claims) {
+        // Set token and user info in Redux store
+        dispatch(setToken(storedToken));
+        
+        // Log JWT claims for debugging
+        console.log('=== APP STARTUP - STORED TOKEN ===');
+        console.log('Stored Token:', storedToken);
+        logJWTClaims(storedToken, 'Stored JWT Claims');
+        
+        // Log extracted user info
+        const userInfo = {
+          id: claims.user_id || claims.sub || '',
+          username: claims.username || '',
+          email: claims.email || '',
+          firstName: claims.first_name || '',
+          lastName: claims.last_name || '',
+          fullName: `${claims.first_name || ''} ${claims.last_name || ''}`.trim(),
+          roles: claims.roles || [],
+          permissions: claims.permissions || [],
+          clientId: claims.client_id,
+          scopes: claims.scopes,
+        };
+        console.log('Extracted User Info:', userInfo);
+        console.log('Stored token is valid');
+        console.log('=== END APP STARTUP ===');
+      } else {
+        console.error('Failed to decode stored token, clearing authentication state');
+        dispatch(clearAuth());
+      }
     } else {
       // If no stored token, clear any stale authentication state
       // This ensures we start with a clean authentication state

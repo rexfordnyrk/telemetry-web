@@ -12,6 +12,7 @@
 
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { buildApiUrl, getAuthHeaders, API_CONFIG } from "../../config/api";
+import { logJWTClaims, decodeJWT } from "../../utils/jwtUtils";
 
 // ============================================================================
 // TYPE DEFINITIONS
@@ -53,12 +54,58 @@ export interface ServerError {
 }
 
 /**
+ * Interface for JWT claims structure
+ * This matches the actual JWT token structure from your API
+ */
+export interface JWTClaims {
+  // Standard JWT claims
+  iss?: string;        // Issuer
+  sub?: string;        // Subject (usually user ID)
+  aud?: string | string[]; // Audience
+  exp?: number;        // Expiration time
+  nbf?: number;        // Not before time
+  iat?: number;        // Issued at time
+  jti?: string;        // JWT ID
+  
+  // Custom claims (specific to your application)
+  user_id?: string;    // User ID
+  username?: string;   // Username
+  email?: string;      // User email
+  first_name?: string; // User first name
+  last_name?: string;  // User last name
+  roles?: string[];    // User roles
+  permissions?: string[]; // User permissions
+  client_id?: string;  // OAuth2 client ID
+  scopes?: string[];   // OAuth2 scopes
+  token_type?: string; // Token type (Bearer)
+  
+  [key: string]: any;  // Allow for additional custom claims
+}
+
+/**
+ * Interface for user information extracted from JWT
+ * This provides a clean structure for user data throughout the app
+ */
+export interface UserInfo {
+  id: string;
+  username: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  fullName: string;
+  roles: string[];
+  permissions: string[];
+  clientId?: string;
+  scopes?: string[];
+}
+
+/**
  * Interface for the authentication state in Redux store
  * This defines the structure of our auth state
  */
 export interface AuthState {
   isAuthenticated: boolean;        // Whether user is logged in
-  user: AuthResponse['user'] | null;  // Current user data
+  user: UserInfo | null;           // Current user information from JWT
   token: string | null;            // JWT token for API requests
   loading: boolean;                // Loading state for async operations
   error: string | null;            // Error message if something goes wrong
@@ -279,6 +326,26 @@ const authSlice = createSlice({
     setToken: (state, action: PayloadAction<string>) => {
       state.token = action.payload;
       state.isAuthenticated = true;
+      
+      // Extract user information from JWT claims
+      const claims = decodeJWT(action.payload);
+      if (claims) {
+        state.user = {
+          id: claims.user_id || claims.sub || '',
+          username: claims.username || '',
+          email: claims.email || '',
+          firstName: claims.first_name || '',
+          lastName: claims.last_name || '',
+          fullName: `${claims.first_name || ''} ${claims.last_name || ''}`.trim(),
+          roles: claims.roles || [],
+          permissions: claims.permissions || [],
+          clientId: claims.client_id,
+          scopes: claims.scopes,
+        };
+      } else {
+        state.user = null;
+      }
+      
       localStorage.setItem('auth_token', action.payload);  // Persist to localStorage
     },
     
@@ -307,7 +374,26 @@ const authSlice = createSlice({
         state.loading = false;
         state.isAuthenticated = true;
         state.token = action.payload.token;
-        state.user = action.payload.user || null;
+        
+        // Extract user information from JWT claims
+        const claims = decodeJWT(action.payload.token);
+        if (claims) {
+          state.user = {
+            id: claims.user_id || claims.sub || '',
+            username: claims.username || '',
+            email: claims.email || '',
+            firstName: claims.first_name || '',
+            lastName: claims.last_name || '',
+            fullName: `${claims.first_name || ''} ${claims.last_name || ''}`.trim(),
+            roles: claims.roles || [],
+            permissions: claims.permissions || [],
+            clientId: claims.client_id,
+            scopes: claims.scopes,
+          };
+        } else {
+          state.user = null;
+        }
+        
         state.error = null;
         // Clear form data only on successful login
         state.formData = {
@@ -316,6 +402,13 @@ const authSlice = createSlice({
           rememberMe: false,
         };
         localStorage.setItem('auth_token', action.payload.token);  // Save token
+        
+        // Log the JWT token and its claims for debugging
+        console.log('=== LOGIN SUCCESSFUL ===');
+        console.log('Full JWT Token:', action.payload.token);
+        logJWTClaims(action.payload.token, 'Login JWT Claims');
+        console.log('Extracted User Info:', state.user);
+        console.log('=== END LOGIN SUCCESS ===');
       })
       .addCase(loginUser.rejected, (state, action) => {
         // Login failed
