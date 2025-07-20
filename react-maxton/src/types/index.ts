@@ -23,6 +23,11 @@ export interface NavigationItem {
       | "warning"
       | "info";
   };
+  // Permission requirements for menu visibility
+  requiredPermissions?: string[];    // User needs any of these permissions
+  requiredAllPermissions?: string[]; // User needs all of these permissions
+  requiredRoles?: string[];          // User needs any of these roles
+  requiredAllRoles?: string[];       // User needs all of these roles
 }
 
 // User types

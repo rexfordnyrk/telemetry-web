@@ -48,6 +48,32 @@ const UserProfile: React.FC = () => {
             </div>
             <div className="card-body">
               <div className="row">
+                {/* Profile Photo */}
+                <div className="col-12 mb-4">
+                  <div className="text-center">
+                    {user.photo ? (
+                      <img
+                        src={user.photo}
+                        alt="Profile Photo"
+                        className="rounded-circle"
+                        style={{ width: '120px', height: '120px', objectFit: 'cover' }}
+                      />
+                    ) : (
+                      <div
+                        className="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center mx-auto"
+                        style={{ width: '120px', height: '120px', fontSize: '48px' }}
+                      >
+                        {user.firstName?.charAt(0)}{user.lastName?.charAt(0)}
+                      </div>
+                    )}
+                    <h5 className="mt-3 mb-1">{user.fullName}</h5>
+                    <p className="text-muted mb-0">{user.designation || 'No designation'}</p>
+                    {user.organization && (
+                      <p className="text-muted mb-0">{user.organization}</p>
+                    )}
+                  </div>
+                </div>
+
                 {/* Personal Information */}
                 <div className="col-md-6">
                   <h5 className="mb-3">Personal Information</h5>
@@ -73,6 +99,30 @@ const UserProfile: React.FC = () => {
                         <tr>
                           <td><strong>Email:</strong></td>
                           <td>{user.email}</td>
+                        </tr>
+                        <tr>
+                          <td><strong>Phone:</strong></td>
+                          <td>{user.phone || 'Not provided'}</td>
+                        </tr>
+                        <tr>
+                          <td><strong>Organization:</strong></td>
+                          <td>{user.organization || 'Not provided'}</td>
+                        </tr>
+                        <tr>
+                          <td><strong>Designation:</strong></td>
+                          <td>{user.designation || 'Not provided'}</td>
+                        </tr>
+                        <tr>
+                          <td><strong>Status:</strong></td>
+                          <td>
+                            {user.status ? (
+                              <span className={`badge ${user.status === 'active' ? 'bg-success' : 'bg-warning'}`}>
+                                {user.status}
+                              </span>
+                            ) : (
+                              'Not provided'
+                            )}
+                          </td>
                         </tr>
                         <tr>
                           <td><strong>User ID:</strong></td>

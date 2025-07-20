@@ -4,6 +4,7 @@ import { Collapse } from "react-bootstrap";
 import { useLayout } from "../context/LayoutContext";
 import { NavigationItem } from "../types";
 import { navigationData } from "../utils/navigationData";
+import { usePermissions } from "../hooks/usePermissions";
 
 // Declare global libraries
 declare const $: any;
@@ -13,7 +14,116 @@ interface SidebarItemProps {
   level?: number;
 }
 
-const SidebarItem: React.FC<SidebarItemProps> = ({ item, level = 0 }) => {
+/**
+ * Check if user has permission to see this navigation item
+ * 
+ * @param item - Navigation item to check
+ * @param permissions - User permissions hook
+ * @returns True if user has permission to see this item
+ */
+const hasPermissionToSeeItem = (
+  item: NavigationItem,
+  permissions: ReturnType<typeof usePermissions>
+): boolean => {
+  // If no permission requirements, show the item
+  if (!item.requiredPermissions && 
+      !item.requiredAllPermissions && 
+      !item.requiredRoles && 
+      !item.requiredAllRoles) {
+    return true;
+  }
+
+  // Check permissions
+  if (item.requiredPermissions && item.requiredPermissions.length > 0) {
+    if (!permissions.hasAnyPermission(item.requiredPermissions)) {
+      return false;
+    }
+  }
+
+  if (item.requiredAllPermissions && item.requiredAllPermissions.length > 0) {
+    if (!permissions.hasAllPermissions(item.requiredAllPermissions)) {
+      return false;
+    }
+  }
+
+  // Check roles
+  if (item.requiredRoles && item.requiredRoles.length > 0) {
+    if (!permissions.hasAnyRole(item.requiredRoles)) {
+      return false;
+    }
+  }
+
+  if (item.requiredAllRoles && item.requiredAllRoles.length > 0) {
+    if (!permissions.hasAllRoles(item.requiredAllRoles)) {
+      return false;
+    }
+  }
+
+  return true;
+};
+
+/**
+ * Filter navigation items based on user permissions
+ * 
+ * @param items - Array of navigation items to filter
+ * @param permissions - User permissions hook
+ * @returns Filtered array of navigation items
+ */
+const filterNavigationItems = (
+  items: NavigationItem[],
+  permissions: ReturnType<typeof usePermissions>
+): NavigationItem[] => {
+  return items
+    .map(item => {
+      // Check if this item should be visible
+      if (!hasPermissionToSeeItem(item, permissions)) {
+        return null;
+      }
+
+      // If item has children, filter them too
+      if (item.children) {
+        const filteredChildren = filterNavigationItems(item.children, permissions);
+        
+        // If no children are visible, don't show the parent
+        if (filteredChildren.length === 0) {
+          return null;
+        }
+
+        return {
+          ...item,
+          children: filteredChildren
+        };
+      }
+
+      return item;
+    })
+    .filter((item): item is NavigationItem => item !== null);
+};
+
+/**
+ * Wrapper component that handles permission checking
+ * This ensures hooks are always called in the same order
+ */
+const SidebarItemWrapper: React.FC<SidebarItemProps> = ({ item, level = 0 }) => {
+  const permissions = usePermissions();
+  
+  // Check if user has permission to see this item
+  const hasPermission = hasPermissionToSeeItem(item, permissions);
+  
+  // If no permission, return null
+  if (!hasPermission) {
+    return null;
+  }
+  
+  // If user has permission, render the actual sidebar item
+  return <SidebarItemContent item={item} level={level} />;
+};
+
+/**
+ * The actual sidebar item content component
+ * This component contains all the hooks and logic
+ */
+const SidebarItemContent: React.FC<SidebarItemProps> = ({ item, level = 0 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
 
@@ -64,7 +174,7 @@ const SidebarItem: React.FC<SidebarItemProps> = ({ item, level = 0 }) => {
           <Collapse in={isOpen}>
             <ul className={`mm-collapse ${isOpen ? "mm-show" : ""}`}>
               {item.children.map((child) => (
-                <SidebarItem key={child.id} item={child} level={level + 1} />
+                <SidebarItemContent key={child.id} item={child} level={level + 1} />
               ))}
             </ul>
           </Collapse>
@@ -89,7 +199,7 @@ const SidebarItem: React.FC<SidebarItemProps> = ({ item, level = 0 }) => {
           <Collapse in={isOpen}>
             <ul className={`mm-collapse ${isOpen ? "mm-show" : ""}`}>
               {item.children.map((child) => (
-                <SidebarItem key={child.id} item={child} level={level + 1} />
+                <SidebarItemContent key={child.id} item={child} level={level + 1} />
               ))}
             </ul>
           </Collapse>
@@ -160,6 +270,10 @@ const SidebarItem: React.FC<SidebarItemProps> = ({ item, level = 0 }) => {
 const Sidebar: React.FC = () => {
   const { setSidebarToggled } = useLayout();
   const metismenuRef = useRef<HTMLUListElement>(null);
+  const permissions = usePermissions();
+
+  // Filter navigation data based on user permissions
+  const filteredNavigationData = filterNavigationItems(navigationData, permissions);
 
   const handleSidebarClose = () => {
     setSidebarToggled(false);
@@ -210,8 +324,8 @@ const Sidebar: React.FC = () => {
 
       <div className="sidebar-nav">
         <ul className="metismenu" id="sidenav" ref={metismenuRef}>
-          {navigationData.map((item) => (
-            <SidebarItem key={item.id} item={item} />
+          {filteredNavigationData.map((item) => (
+            <SidebarItemWrapper key={item.id} item={item} />
           ))}
         </ul>
       </div>

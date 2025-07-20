@@ -73,6 +73,11 @@ export interface JWTClaims {
   email?: string;      // User email
   first_name?: string; // User first name
   last_name?: string;  // User last name
+  phone?: string;      // User phone number
+  photo?: string;      // User profile photo URL
+  organization?: string; // User organization
+  designation?: string;  // User job designation/title
+  status?: string;     // User account status (active, disabled, etc.)
   roles?: string[];    // User roles
   permissions?: string[]; // User permissions
   client_id?: string;  // OAuth2 client ID
@@ -93,6 +98,11 @@ export interface UserInfo {
   firstName: string;
   lastName: string;
   fullName: string;
+  phone?: string;
+  photo?: string;
+  organization?: string;
+  designation?: string;
+  status?: string;
   roles: string[];
   permissions: string[];
   clientId?: string;
@@ -337,6 +347,11 @@ const authSlice = createSlice({
           firstName: claims.first_name || '',
           lastName: claims.last_name || '',
           fullName: `${claims.first_name || ''} ${claims.last_name || ''}`.trim(),
+          phone: claims.phone,
+          photo: claims.photo,
+          organization: claims.organization,
+          designation: claims.designation,
+          status: claims.status,
           roles: claims.roles || [],
           permissions: claims.permissions || [],
           clientId: claims.client_id,
@@ -385,6 +400,11 @@ const authSlice = createSlice({
             firstName: claims.first_name || '',
             lastName: claims.last_name || '',
             fullName: `${claims.first_name || ''} ${claims.last_name || ''}`.trim(),
+            phone: claims.phone,
+            photo: claims.photo,
+            organization: claims.organization,
+            designation: claims.designation,
+            status: claims.status,
             roles: claims.roles || [],
             permissions: claims.permissions || [],
             clientId: claims.client_id,
