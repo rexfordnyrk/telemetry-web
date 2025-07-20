@@ -119,12 +119,74 @@ export interface AuthState {
   token: string | null;            // JWT token for API requests
   loading: boolean;                // Loading state for async operations
   error: string | null;            // Error message if something goes wrong
+  initialized: boolean;             // Whether auth state has been initialized from localStorage
   formData: {                      // Form data that persists across re-renders
     email: string;
     password: string;
     rememberMe: boolean;
   };
 }
+
+// ============================================================================
+// LOCALSTORAGE PERSISTENCE UTILITIES
+// ============================================================================
+
+/**
+ * Save complete authentication state to localStorage
+ * This ensures all auth data persists across page reloads
+ * 
+ * @param authState - The complete authentication state to save
+ */
+const saveAuthToStorage = (authState: AuthState) => {
+  try {
+    const authData = {
+      token: authState.token,
+      user: authState.user,
+      isAuthenticated: authState.isAuthenticated,
+      initialized: authState.initialized,
+    };
+    localStorage.setItem('auth_state', JSON.stringify(authData));
+  } catch (error) {
+    console.error('Failed to save auth state to localStorage:', error);
+  }
+};
+
+/**
+ * Load authentication state from localStorage
+ * This restores the complete auth state on app startup
+ * 
+ * @returns The restored authentication state or null if not found
+ */
+const loadAuthFromStorage = (): Partial<AuthState> | null => {
+  try {
+    const authData = localStorage.getItem('auth_state');
+    if (authData) {
+      const parsed = JSON.parse(authData);
+      return {
+        token: parsed.token || null,
+        user: parsed.user || null,
+        isAuthenticated: parsed.isAuthenticated || false,
+        initialized: parsed.initialized || false,
+      };
+    }
+  } catch (error) {
+    console.error('Failed to load auth state from localStorage:', error);
+  }
+  return null;
+};
+
+/**
+ * Clear authentication state from localStorage
+ * Used during logout or when clearing invalid tokens
+ */
+const clearAuthFromStorage = () => {
+  try {
+    localStorage.removeItem('auth_state');
+    localStorage.removeItem('auth_token'); // Legacy cleanup
+  } catch (error) {
+    console.error('Failed to clear auth state from localStorage:', error);
+  }
+};
 
 // ============================================================================
 // INITIAL STATE
@@ -137,15 +199,25 @@ export interface AuthState {
 const initialState: AuthState = {
   isAuthenticated: false,  // User starts as not authenticated
   user: null,              // No user data initially
-  token: localStorage.getItem('auth_token'),  // Try to get token from localStorage
+  token: null,             // No token initially
   loading: false,          // Not loading initially
   error: null,             // No errors initially
+  initialized: false,       // Not initialized initially
   formData: {
     email: '',
     password: '',
     rememberMe: false,
   },
 };
+
+// Load persisted auth state from localStorage
+const persistedAuth = loadAuthFromStorage();
+if (persistedAuth) {
+  initialState.token = persistedAuth.token || null;
+  initialState.user = persistedAuth.user || null;
+  initialState.isAuthenticated = persistedAuth.isAuthenticated || false;
+  initialState.initialized = persistedAuth.initialized || false;
+}
 
 // ============================================================================
 // ERROR HANDLING UTILITIES
@@ -336,6 +408,7 @@ const authSlice = createSlice({
     setToken: (state, action: PayloadAction<string>) => {
       state.token = action.payload;
       state.isAuthenticated = true;
+      state.initialized = true; // Mark as initialized
       
       // Extract user information from JWT claims
       const claims = decodeJWT(action.payload);
@@ -361,19 +434,41 @@ const authSlice = createSlice({
         state.user = null;
       }
       
-      localStorage.setItem('auth_token', action.payload);  // Persist to localStorage
+      // Save complete auth state to localStorage
+      saveAuthToStorage(state);
+    },
+
+    /**
+     * Mark authentication state as initialized
+     * Used when auth initialization is complete
+     * 
+     * @param state - Current auth state
+     */
+    setInitialized: (state) => {
+      state.initialized = true;
+      // Save complete auth state to localStorage
+      saveAuthToStorage(state);
     },
     
     /**
-     * Clear all authentication data
-     * Used for logout or when clearing invalid tokens
+     * Clear authentication state
+     * Used for logout and clearing invalid tokens
+     * 
+     * @param state - Current auth state
      */
     clearAuth: (state) => {
       state.isAuthenticated = false;
       state.user = null;
       state.token = null;
       state.error = null;
-      localStorage.removeItem('auth_token');  // Remove from localStorage
+      state.initialized = true; // Mark as initialized even when clearing
+      state.formData = {
+        email: '',
+        password: '',
+        rememberMe: false,
+      };
+      // Clear auth state from localStorage
+      clearAuthFromStorage();
     },
   },
   extraReducers: (builder) => {
@@ -421,7 +516,9 @@ const authSlice = createSlice({
           password: '',
           rememberMe: false,
         };
-        localStorage.setItem('auth_token', action.payload.token);  // Save token
+        
+        // Save complete auth state to localStorage
+        saveAuthToStorage(state);
         
         // Log the JWT token and its claims for debugging
         console.log('=== LOGIN SUCCESSFUL ===');
@@ -449,7 +546,7 @@ const authSlice = createSlice({
 });
 
 // Export actions for use in components
-export const { clearError, updateFormData, clearFormData, setToken, clearAuth } = authSlice.actions;
+export const { clearError, updateFormData, clearFormData, setToken, clearAuth, setInitialized } = authSlice.actions;
 
 // Export the reducer for use in store configuration
 export default authSlice.reducer; 

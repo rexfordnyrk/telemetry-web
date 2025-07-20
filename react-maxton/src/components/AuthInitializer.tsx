@@ -18,7 +18,7 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../store';
-import { setToken, clearAuth } from '../store/slices/authSlice';
+import { setToken, clearAuth, setInitialized } from '../store/slices/authSlice';
 import { logJWTClaims, isTokenExpired, decodeJWT } from '../utils/jwtUtils';
 
 /**
@@ -37,7 +37,7 @@ interface AuthInitializerProps {
 const AuthInitializer: React.FC<AuthInitializerProps> = ({ children }) => {
   // Redux hooks for dispatching actions and accessing state
   const dispatch = useDispatch<AppDispatch>();
-  const { token } = useSelector((state: RootState) => state.auth);
+  const { token, initialized } = useSelector((state: RootState) => state.auth);
 
   // ============================================================================
   // INITIALIZATION EFFECT
@@ -48,9 +48,33 @@ const AuthInitializer: React.FC<AuthInitializerProps> = ({ children }) => {
    * This runs once when the component mounts
    */
   useEffect(() => {
+    // Check if auth state is already initialized from localStorage
+    if (initialized) {
+      console.log('Auth state already initialized from localStorage');
+      return;
+    }
+
     // Check if there's a stored authentication token in localStorage
-    const storedToken = localStorage.getItem('auth_token');
+    const storedToken = localStorage.getItem('auth_token'); // Legacy check
+    const storedAuthState = localStorage.getItem('auth_state'); // New approach
     
+    if (storedAuthState) {
+      try {
+        const authData = JSON.parse(storedAuthState);
+        if (authData.token && !isTokenExpired(authData.token)) {
+          // Use the stored auth state
+          dispatch(setToken(authData.token));
+          console.log('=== APP STARTUP - RESTORED AUTH STATE ===');
+          console.log('Restored Auth State:', authData);
+          console.log('=== END APP STARTUP ===');
+          return;
+        }
+      } catch (error) {
+        console.error('Failed to parse stored auth state:', error);
+      }
+    }
+    
+    // Legacy fallback - check for stored token
     if (storedToken) {
       // Check if token is expired first
       if (isTokenExpired(storedToken)) {
@@ -66,7 +90,7 @@ const AuthInitializer: React.FC<AuthInitializerProps> = ({ children }) => {
         dispatch(setToken(storedToken));
         
         // Log JWT claims for debugging
-        console.log('=== APP STARTUP - STORED TOKEN ===');
+        console.log('=== APP STARTUP - STORED TOKEN (LEGACY) ===');
         console.log('Stored Token:', storedToken);
         logJWTClaims(storedToken, 'Stored JWT Claims');
         
@@ -100,7 +124,7 @@ const AuthInitializer: React.FC<AuthInitializerProps> = ({ children }) => {
       // This ensures we start with a clean authentication state
       dispatch(clearAuth());
     }
-  }, [dispatch]); // Only re-run if dispatch function changes
+  }, [dispatch, initialized]); // Re-run if dispatch or initialized changes
 
   // ============================================================================
   // TOKEN VALIDATION EFFECT (OPTIONAL)

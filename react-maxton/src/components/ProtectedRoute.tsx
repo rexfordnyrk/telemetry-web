@@ -42,10 +42,29 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   redirectTo = '/login'  // Default redirect path
 }) => {
   // Get authentication state from Redux store
-  const { isAuthenticated, loading } = useSelector((state: RootState) => state.auth);
+  const { isAuthenticated, loading, initialized } = useSelector((state: RootState) => state.auth);
   
   // Get current location for redirect state
   const location = useLocation();
+
+  // ============================================================================
+  // INITIALIZATION CHECK
+  // ============================================================================
+  
+  // Show loading spinner while auth state is being initialized
+  // This prevents premature redirects before localStorage is checked
+  if (!initialized) {
+    return (
+      <div className="d-flex justify-content-center align-items-center" style={{ height: '100vh' }}>
+        <div className="spinner-border text-primary" role="status">
+          <span className="visually-hidden">Initializing...</span>
+        </div>
+        <div className="ms-3">
+          <small className="text-muted">Initializing authentication...</small>
+        </div>
+      </div>
+    );
+  }
 
   // ============================================================================
   // LOADING STATE

@@ -42,7 +42,26 @@ const PublicRoute: React.FC<PublicRouteProps> = ({
   redirectTo = '/dashboard'  // Default redirect path for authenticated users
 }) => {
   // Get authentication state from Redux store
-  const { isAuthenticated, loading } = useSelector((state: RootState) => state.auth);
+  const { isAuthenticated, loading, initialized } = useSelector((state: RootState) => state.auth);
+
+  // ============================================================================
+  // INITIALIZATION CHECK
+  // ============================================================================
+  
+  // Show loading spinner while auth state is being initialized
+  // This prevents premature redirects before localStorage is checked
+  if (!initialized) {
+    return (
+      <div className="d-flex justify-content-center align-items-center" style={{ height: '100vh' }}>
+        <div className="spinner-border text-primary" role="status">
+          <span className="visually-hidden">Initializing...</span>
+        </div>
+        <div className="ms-3">
+          <small className="text-muted">Initializing authentication...</small>
+        </div>
+      </div>
+    );
+  }
 
   // ============================================================================
   // LOADING STATE

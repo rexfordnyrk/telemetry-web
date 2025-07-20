@@ -1,10 +1,10 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import MainLayout from "../layouts/MainLayout";
 import NewUserModal from "../components/NewUserModal";
 import FilterModal from "../components/FilterModal";
 import PermissionRoute from "../components/PermissionRoute";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
-import { deleteUser } from "../store/slices/userSlice";
+import { deleteUserAsync, fetchUsers } from "../store/slices/userSlice";
 import { addAlert } from "../store/slices/alertSlice";
 import { useNavigate } from "react-router-dom";
 import { useDataTable } from "../hooks/useDataTable";
@@ -27,7 +27,7 @@ import { useDataTable } from "../hooks/useDataTable";
 const Users: React.FC = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const { users } = useAppSelector((state) => state.users);
+  const { users, loading, error } = useAppSelector((state) => state.users);
   const [showModal, setShowModal] = useState(false);
   const [modalAction, setModalAction] = useState<"disable" | "delete">(
     "disable",
@@ -38,6 +38,11 @@ const Users: React.FC = () => {
   const [activeFilters, setActiveFilters] = useState<{ [key: string]: any }>(
     {},
   );
+
+  // Fetch users from API when component mounts
+  useEffect(() => {
+    dispatch(fetchUsers());
+  }, [dispatch]);
 
   // Filter users based on active filters
   const filteredUsers = useMemo(() => {
@@ -139,7 +144,7 @@ const Users: React.FC = () => {
 
   const handleConfirmAction = () => {
     if (modalAction === "delete") {
-      dispatch(deleteUser(targetUser.id));
+      dispatch(deleteUserAsync(targetUser.id));
       dispatch(
         addAlert({
           type: "success",
@@ -192,6 +197,7 @@ const Users: React.FC = () => {
                 type="button"
                 className="btn btn-outline-primary px-4"
                 onClick={() => setShowFilterModal(true)}
+                disabled={loading}
               >
                 <i className="material-icons-outlined me-1">filter_list</i>
                 Filters
@@ -200,6 +206,7 @@ const Users: React.FC = () => {
                 type="button"
                 className="btn btn-grd-primary px-4"
                 onClick={() => setShowNewUserModal(true)}
+                disabled={loading}
               >
                 + | New User
               </button>
@@ -209,136 +216,167 @@ const Users: React.FC = () => {
           {/* Page Title */}
           <div className="d-flex justify-content-between align-items-center mb-3">
             <h6 className="mb-0 text-uppercase">Users Management</h6>
+            {loading && (
+              <div className="d-flex align-items-center">
+                <div className="spinner-border spinner-border-sm me-2" role="status">
+                  <span className="visually-hidden">Loading...</span>
+                </div>
+                <span className="text-muted">Loading users...</span>
+              </div>
+            )}
           </div>
           <hr />
+
+          {/* Error Alert */}
+          {error && (
+            <div className="alert alert-danger alert-dismissible fade show" role="alert">
+              <strong>Error:</strong> {error}
+              <button
+                type="button"
+                className="btn-close"
+                onClick={() => dispatch({ type: 'users/clearError' })}
+              ></button>
+            </div>
+          )}
+
+          {/* Users Table */}
           <div className="card">
             <div className="card-body">
-              <div className="table-responsive">
-                <table
-                  id="users-datatable"
-                  className="table table-striped table-bordered"
-                  style={{ width: "100%" }}
-                >
-                  <thead>
-                    <tr>
-                      <th>Name</th>
-                      <th>Email</th>
-                      <th>Organization</th>
-                      <th>Role</th>
-                      <th>Status</th>
-                      <th>Created At</th>
-                      <th>Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {memoizedUsers.map((user: any) => (
-                      <tr key={user.id}>
-                        <td>
-                          <div className="d-flex align-items-center gap-3">
-                            {user.photo ? (
-                              <img
-                                src={user.photo}
-                                alt=""
-                                className="rounded-circle"
-                                width="40"
-                                height="40"
-                              />
-                            ) : (
-                              <div
-                                className="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center"
-                                style={{
-                                  width: "40px",
-                                  height: "40px",
-                                  fontSize: "14px",
-                                }}
-                              >
-                                {getInitials(user.first_name, user.last_name)}
-                              </div>
-                            )}
-                            <div>
-                              <a
-                                href="#"
-                                className="text-decoration-none fw-bold"
-                                onClick={(e) => {
-                                  e.preventDefault();
-                                  handleUserClick(user.id);
-                                }}
-                              >
-                                {user.first_name} {user.last_name}
-                              </a>
-                            </div>
-                          </div>
-                        </td>
-                        <td>{user.email}</td>
-                        <td>{user.organization}</td>
-                        <td>{getUserRoles(user.roles)}</td>
-                        <td>{getStatusElement(user.status)}</td>
-                        <td>{new Date(user.created_at).toLocaleDateString()}</td>
-                        <td>
-                          <div className="d-flex gap-1">
-                            <button
-                              className="btn btn-sm p-1"
-                              title="Edit User"
-                              onClick={() => handleUserClick(user.id)}
-                              style={{
-                                border: "none",
-                                background: "transparent",
-                              }}
-                            >
-                              <i className="material-icons-outlined text-primary">
-                                edit
-                              </i>
-                            </button>
-                            <button
-                              className="btn btn-sm p-1"
-                              title={
-                                user.status === "disabled"
-                                  ? "Enable User"
-                                  : "Disable User"
-                              }
-                              onClick={() => handleActionClick(user, "disable")}
-                              style={{
-                                border: "none",
-                                background: "transparent",
-                              }}
-                            >
-                              <i className="material-icons-outlined text-warning">
-                                {user.status === "disabled"
-                                  ? "check_circle"
-                                  : "block"}
-                              </i>
-                            </button>
-                            <button
-                              className="btn btn-sm p-1"
-                              title="Delete User"
-                              onClick={() => handleActionClick(user, "delete")}
-                              style={{
-                                border: "none",
-                                background: "transparent",
-                              }}
-                            >
-                              <i className="material-icons-outlined text-danger">
-                                delete
-                              </i>
-                            </button>
-                          </div>
-                        </td>
+              {loading ? (
+                <div className="text-center py-5">
+                  <div className="spinner-border text-primary" role="status">
+                    <span className="visually-hidden">Loading...</span>
+                  </div>
+                  <p className="mt-3 text-muted">Loading users from server...</p>
+                </div>
+              ) : (
+                <div className="table-responsive">
+                  <table
+                    id="users-datatable"
+                    className="table table-striped table-bordered"
+                    style={{ width: "100%" }}
+                  >
+                    <thead>
+                      <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Organization</th>
+                        <th>Role</th>
+                        <th>Status</th>
+                        <th>Created At</th>
+                        <th>Actions</th>
                       </tr>
-                    ))}
-                  </tbody>
-                  <tfoot>
-                    <tr>
-                      <th>Name</th>
-                      <th>Email</th>
-                      <th>Organization</th>
-                      <th>Role</th>
-                      <th>Status</th>
-                      <th>Created At</th>
-                      <th>Actions</th>
-                    </tr>
-                  </tfoot>
-                </table>
-              </div>
+                    </thead>
+                    <tbody>
+                      {memoizedUsers.map((user: any) => (
+                        <tr key={user.id}>
+                          <td>
+                            <div className="d-flex align-items-center gap-3">
+                              {user.photo ? (
+                                <img
+                                  src={user.photo}
+                                  alt=""
+                                  className="rounded-circle"
+                                  width="40"
+                                  height="40"
+                                />
+                              ) : (
+                                <div
+                                  className="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center"
+                                  style={{
+                                    width: "40px",
+                                    height: "40px",
+                                    fontSize: "14px",
+                                  }}
+                                >
+                                  {getInitials(user.first_name, user.last_name)}
+                                </div>
+                              )}
+                              <div>
+                                <a
+                                  href="#"
+                                  className="text-decoration-none fw-bold"
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    handleUserClick(user.id);
+                                  }}
+                                >
+                                  {user.first_name} {user.last_name}
+                                </a>
+                              </div>
+                            </div>
+                          </td>
+                          <td>{user.email}</td>
+                          <td>{user.organization}</td>
+                          <td>{getUserRoles(user.roles)}</td>
+                          <td>{getStatusElement(user.status)}</td>
+                          <td>{new Date(user.created_at).toLocaleDateString()}</td>
+                          <td>
+                            <div className="d-flex gap-1">
+                              <button
+                                className="btn btn-sm p-1"
+                                title="Edit User"
+                                onClick={() => handleUserClick(user.id)}
+                                style={{
+                                  border: "none",
+                                  background: "transparent",
+                                }}
+                              >
+                                <i className="material-icons-outlined text-primary">
+                                  edit
+                                </i>
+                              </button>
+                              <button
+                                className="btn btn-sm p-1"
+                                title={
+                                  user.status === "disabled"
+                                    ? "Enable User"
+                                    : "Disable User"
+                                }
+                                onClick={() => handleActionClick(user, "disable")}
+                                style={{
+                                  border: "none",
+                                  background: "transparent",
+                                }}
+                              >
+                                <i className="material-icons-outlined text-warning">
+                                  {user.status === "disabled"
+                                    ? "check_circle"
+                                    : "block"}
+                                </i>
+                              </button>
+                              <button
+                                className="btn btn-sm p-1"
+                                title="Delete User"
+                                onClick={() => handleActionClick(user, "delete")}
+                                style={{
+                                  border: "none",
+                                  background: "transparent",
+                                }}
+                              >
+                                <i className="material-icons-outlined text-danger">
+                                  delete
+                                </i>
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                    <tfoot>
+                      <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Organization</th>
+                        <th>Role</th>
+                        <th>Status</th>
+                        <th>Created At</th>
+                        <th>Actions</th>
+                      </tr>
+                    </tfoot>
+                  </table>
+                </div>
+              )}
             </div>
           </div>
         </div>
