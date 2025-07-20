@@ -678,100 +678,102 @@ const UserDetails: React.FC = () => {
             )}
 
             {/* Password Management Card */}
-            <div className="card rounded-4">
-              <div className="card-body">
-                <div className="d-flex align-items-start justify-content-between mb-3">
-                  <div className="">
-                    <h5 className="mb-0 fw-bold">Password Reset</h5>
+            {canUpdateUsers && (
+              <div className="card rounded-4">
+                <div className="card-body">
+                  <div className="d-flex align-items-start justify-content-between mb-3">
+                    <div className="">
+                      <h5 className="mb-0 fw-bold">Password Reset</h5>
+                    </div>
+                    <div className="dropdown">
+                      <a
+                        href="javascript:;"
+                        className="dropdown-toggle-nocaret options dropdown-toggle"
+                        data-bs-toggle="dropdown"
+                      >
+                        <span className="material-icons-outlined fs-5">
+                          more_vert
+                        </span>
+                      </a>
+                      <ul className="dropdown-menu">
+                        <li>
+                          <a className="dropdown-item" href="javascript:;">
+                            Action
+                          </a>
+                        </li>
+                        <li>
+                          <a className="dropdown-item" href="javascript:;">
+                            Another action
+                          </a>
+                        </li>
+                        <li>
+                          <a className="dropdown-item" href="javascript:;">
+                            Something else here
+                          </a>
+                        </li>
+                      </ul>
+                    </div>
                   </div>
-                  <div className="dropdown">
-                    <a
-                      href="javascript:;"
-                      className="dropdown-toggle-nocaret options dropdown-toggle"
-                      data-bs-toggle="dropdown"
+
+                  {/* Password Reset Form */}
+                  <div className="mb-4">
+                    <div className="row g-3">
+                      <div className="col-12">
+                        <label htmlFor="newPassword" className="form-label">
+                          New Password
+                        </label>
+                        <input
+                          type="password"
+                          className="form-control"
+                          id="newPassword"
+                          name="newPassword"
+                          value={passwordData.newPassword}
+                          onChange={handlePasswordChange}
+                          placeholder="Enter new password"
+                          minLength={6}
+                        />
+                      </div>
+                      <div className="col-12">
+                        <label htmlFor="confirmPassword" className="form-label">
+                          Confirm Password
+                        </label>
+                        <input
+                          type="password"
+                          className="form-control"
+                          id="confirmPassword"
+                          name="confirmPassword"
+                          value={passwordData.confirmPassword}
+                          onChange={handlePasswordChange}
+                          placeholder="Confirm new password"
+                          minLength={6}
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="d-grid gap-2">
+                    <button
+                      className="btn btn-grd-warning px-4 d-flex align-items-center justify-content-center gap-2"
+                      onClick={handlePasswordReset}
                     >
-                      <span className="material-icons-outlined fs-5">
-                        more_vert
-                      </span>
-                    </a>
-                    <ul className="dropdown-menu">
-                      <li>
-                        <a className="dropdown-item" href="javascript:;">
-                          Action
-                        </a>
-                      </li>
-                      <li>
-                        <a className="dropdown-item" href="javascript:;">
-                          Another action
-                        </a>
-                      </li>
-                      <li>
-                        <a className="dropdown-item" href="javascript:;">
-                          Something else here
-                        </a>
-                      </li>
-                    </ul>
+                      <i className="material-icons-outlined">lock_reset</i>
+                      Reset Password
+                    </button>
+                    <button
+                      className="btn btn-grd-info px-4 d-flex align-items-center justify-content-center gap-2"
+                      onClick={handleSendResetLink}
+                    >
+                      <i className="material-icons-outlined">send</i>
+                      Send Reset Link
+                    </button>
+                    <small className="text-muted">
+                      Click to reset the user's password or send them a reset link
+                      via email.
+                    </small>
                   </div>
-                </div>
-
-                {/* Password Reset Form */}
-                <div className="mb-4">
-                  <div className="row g-3">
-                    <div className="col-12">
-                      <label htmlFor="newPassword" className="form-label">
-                        New Password
-                      </label>
-                      <input
-                        type="password"
-                        className="form-control"
-                        id="newPassword"
-                        name="newPassword"
-                        value={passwordData.newPassword}
-                        onChange={handlePasswordChange}
-                        placeholder="Enter new password"
-                        minLength={6}
-                      />
-                    </div>
-                    <div className="col-12">
-                      <label htmlFor="confirmPassword" className="form-label">
-                        Confirm Password
-                      </label>
-                      <input
-                        type="password"
-                        className="form-control"
-                        id="confirmPassword"
-                        name="confirmPassword"
-                        value={passwordData.confirmPassword}
-                        onChange={handlePasswordChange}
-                        placeholder="Confirm new password"
-                        minLength={6}
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                <div className="d-grid gap-2">
-                  <button
-                    className="btn btn-grd-warning px-4 d-flex align-items-center justify-content-center gap-2"
-                    onClick={handlePasswordReset}
-                  >
-                    <i className="material-icons-outlined">lock_reset</i>
-                    Reset Password
-                  </button>
-                  <button
-                    className="btn btn-grd-info px-4 d-flex align-items-center justify-content-center gap-2"
-                    onClick={handleSendResetLink}
-                  >
-                    <i className="material-icons-outlined">send</i>
-                    Send Reset Link
-                  </button>
-                  <small className="text-muted">
-                    Click to reset the user's password or send them a reset link
-                    via email.
-                  </small>
                 </div>
               </div>
-            </div>
+            )}
           </div>
         </div>
       </div>
