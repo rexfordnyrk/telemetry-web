@@ -5,6 +5,7 @@ import { useLayout } from "../context/LayoutContext";
 import { NavigationItem } from "../types";
 import { navigationData } from "../utils/navigationData";
 import { usePermissions } from "../hooks/usePermissions";
+import LogoutButton from "./LogoutButton";
 
 // Declare global libraries
 declare const $: any;
@@ -328,6 +329,22 @@ const Sidebar: React.FC = () => {
             <SidebarItemWrapper key={item.id} item={item} />
           ))}
         </ul>
+        
+        {/* Logout Button at the bottom of sidebar */}
+        <div className="sidebar-footer" style={{
+          position: 'absolute',
+          bottom: 0,
+          left: 0,
+          right: 0,
+          padding: '1rem',
+          borderTop: '1px solid var(--bs-border-color)',
+          backgroundColor: '#ffffff'
+        }}>
+          <LogoutButton className="btn btn-outline-danger w-100">
+            <i className="material-icons-outlined me-2">logout</i>
+            Logout
+          </LogoutButton>
+        </div>
       </div>
     </aside>
   );
