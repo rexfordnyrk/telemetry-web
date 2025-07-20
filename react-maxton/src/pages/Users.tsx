@@ -103,7 +103,26 @@ const Users: React.FC = () => {
   }, [users]);
 
   // Initialize DataTable using custom hook
-  useDataTable("users-datatable", memoizedUsers);
+  // Only initialize when we have data and are not loading
+  const { isInitialized } = useDataTable(
+    "users-datatable", 
+    memoizedUsers,
+    {
+      responsive: true,
+      pageLength: 10,
+      lengthChange: true,
+      searching: true,
+      ordering: true,
+      info: true,
+      autoWidth: false,
+      order: [[0, "asc"]],
+      columnDefs: [
+        { orderable: false, targets: -1 }, // Disable ordering on last column (actions)
+      ],
+    },
+    // Only initialize when we have data and are not loading
+    !loading && memoizedUsers.length > 0
+  );
 
   const getInitials = (firstName: string, lastName: string) => {
     return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase();
@@ -255,6 +274,7 @@ const Users: React.FC = () => {
                     id="users-datatable"
                     className="table table-striped table-bordered"
                     style={{ width: "100%" }}
+                    key={`users-table-${memoizedUsers.length}-${loading}`}
                   >
                     <thead>
                       <tr>

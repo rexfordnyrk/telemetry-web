@@ -16,13 +16,14 @@ export const useDataTable = (
   tableId: string,
   data: any[],
   options: DataTableOptions = {},
+  shouldInitialize: boolean = true,
 ) => {
   const isInitializedRef = useRef(false);
   const tableInstanceRef = useRef<any>(null);
 
   useEffect(() => {
-    // Don't initialize if already done or if jQuery/DataTable isn't available
-    if (isInitializedRef.current || !window.$ || !window.$.fn.DataTable) {
+    // Don't initialize if condition is false, already done, or if jQuery/DataTable isn't available
+    if (!shouldInitialize || isInitializedRef.current || !window.$ || !window.$.fn.DataTable) {
       return;
     }
 
@@ -110,18 +111,41 @@ export const useDataTable = (
       tableInstanceRef.current = null;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // Empty dependency array - only run once to avoid re-initialization
+  }, [shouldInitialize]); // Include shouldInitialize in dependencies
+
+  // Reset initialization flag when shouldInitialize changes
+  useEffect(() => {
+    if (!shouldInitialize) {
+      isInitializedRef.current = false;
+      tableInstanceRef.current = null;
+    }
+  }, [shouldInitialize]);
 
   // Effect to handle data changes (reinitialize if needed)
   useEffect(() => {
-    if (
-      isInitializedRef.current &&
-      tableInstanceRef.current &&
-      data.length > 0
-    ) {
+    if (isInitializedRef.current && tableInstanceRef.current) {
       try {
-        // Clear and redraw the table with new data
-        tableInstanceRef.current.clear().draw();
+        // Clear existing data
+        tableInstanceRef.current.clear();
+        
+        // Add new data rows
+        if (data && data.length > 0) {
+          // Convert data to DataTable format
+          const rows = data.map((item, index) => {
+            // This will be handled by the table body rendering
+            // The DataTable will automatically pick up the rendered rows
+            return index; // Just return index for now
+          });
+          
+          // Redraw the table
+          tableInstanceRef.current.draw();
+          
+          console.log(`DataTable updated with ${data.length} rows for ${tableId}`);
+        } else {
+          // Clear and redraw empty table
+          tableInstanceRef.current.draw();
+          console.log(`DataTable cleared for ${tableId}`);
+        }
       } catch (error) {
         console.warn(`Error updating DataTable data for ${tableId}:`, error);
       }
