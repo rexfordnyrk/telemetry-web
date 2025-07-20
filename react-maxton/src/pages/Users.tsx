@@ -8,6 +8,7 @@ import { deleteUserAsync, fetchUsers } from "../store/slices/userSlice";
 import { addAlert } from "../store/slices/alertSlice";
 import { useNavigate } from "react-router-dom";
 import { useDataTable } from "../hooks/useDataTable";
+import { usePermissions } from "../hooks/usePermissions";
 
 /**
  * Users Page Component
@@ -18,7 +19,7 @@ import { useDataTable } from "../hooks/useDataTable";
  * Features:
  * - View all users in a data table
  * - Filter users by various criteria
- * - Add new users
+ * - Add new users (requires 'create_users' permission)
  * - Edit existing users
  * - Disable/enable users
  * - Delete users
@@ -28,6 +29,9 @@ const Users: React.FC = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const { users, loading, error } = useAppSelector((state) => state.users);
+  const { user } = useAppSelector((state) => state.auth);
+  const permissions = usePermissions();
+  
   const [showModal, setShowModal] = useState(false);
   const [modalAction, setModalAction] = useState<"disable" | "delete">(
     "disable",
@@ -38,6 +42,9 @@ const Users: React.FC = () => {
   const [activeFilters, setActiveFilters] = useState<{ [key: string]: any }>(
     {},
   );
+
+  // Check if user has permission to create users
+  const canCreateUsers = permissions.hasPermission('create_users');
 
   // Fetch users from API when component mounts
   useEffect(() => {
@@ -245,14 +252,23 @@ const Users: React.FC = () => {
                 <i className="material-icons-outlined me-1">filter_list</i>
                 Filters
               </button>
-              <button
-                type="button"
-                className="btn btn-grd-primary px-4"
-                onClick={() => setShowNewUserModal(true)}
-                disabled={loading}
-              >
-                + | New User
-              </button>
+              {canCreateUsers ? (
+                <button
+                  type="button"
+                  className="btn btn-grd-primary px-4"
+                  onClick={() => setShowNewUserModal(true)}
+                  disabled={loading}
+                >
+                  + | New User
+                </button>
+              ) : (
+                <div className="d-flex align-items-center">
+                  <small className="text-muted me-2">
+                    <i className="material-icons-outlined me-1" style={{ fontSize: '16px' }}>info</i>
+                    Create users permission required
+                  </small>
+                </div>
+              )}
             </div>
           </div>
 
@@ -429,6 +445,7 @@ const Users: React.FC = () => {
         <NewUserModal
           show={showNewUserModal}
           onClose={() => setShowNewUserModal(false)}
+          onSuccess={() => dispatch(fetchUsers())}
         />
 
         {/* Filter Modal */}
