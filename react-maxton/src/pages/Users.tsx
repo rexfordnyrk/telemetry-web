@@ -104,7 +104,7 @@ const Users: React.FC = () => {
 
   // Initialize DataTable using custom hook
   // Only initialize when we have data and are not loading
-  const { isInitialized } = useDataTable(
+  const { isInitialized, destroyDataTable } = useDataTable(
     "users-datatable", 
     memoizedUsers,
     {
@@ -123,6 +123,30 @@ const Users: React.FC = () => {
     // Only initialize when we have data and are not loading
     !loading && memoizedUsers.length > 0
   );
+
+  // Generate a key for the table to force re-render when data changes
+  const tableKey = useMemo(() => {
+    // Include activeFilters in the key to force re-render when filters change
+    const filtersKey = Object.keys(activeFilters).length > 0 
+      ? Object.entries(activeFilters).map(([k, v]) => `${k}:${v}`).join('|')
+      : 'no-filters';
+    return `users-table-${memoizedUsers.length}-${loading}-${filtersKey}`;
+  }, [memoizedUsers.length, loading, activeFilters]);
+
+  // Cleanup DataTable when filters change
+  useEffect(() => {
+    // Destroy DataTable when filters change to prevent conflicts
+    if (isInitialized) {
+      destroyDataTable();
+    }
+  }, [activeFilters, destroyDataTable, isInitialized]);
+
+  // Cleanup DataTable when component unmounts
+  useEffect(() => {
+    return () => {
+      destroyDataTable();
+    };
+  }, [destroyDataTable]);
 
   const getInitials = (firstName: string, lastName: string) => {
     return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase();
@@ -274,7 +298,7 @@ const Users: React.FC = () => {
                     id="users-datatable"
                     className="table table-striped table-bordered"
                     style={{ width: "100%" }}
-                    key={`users-table-${memoizedUsers.length}-${loading}`}
+                    key={tableKey}
                   >
                     <thead>
                       <tr>
