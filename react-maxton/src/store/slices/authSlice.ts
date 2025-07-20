@@ -10,7 +10,7 @@
  * It uses Redux Toolkit's createSlice and createAsyncThunk for efficient state management.
  */
 
-import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { buildApiUrl, getAuthHeaders, API_CONFIG } from "../../config/api";
 import { logJWTClaims, decodeJWT } from "../../utils/jwtUtils";
 
@@ -457,16 +457,16 @@ const authSlice = createSlice({
      * @param state - Current auth state
      */
     clearAuth: (state) => {
-      state.isAuthenticated = false;
-      state.user = null;
       state.token = null;
-      state.error = null;
-      state.initialized = true; // Mark as initialized even when clearing
-      state.formData = {
-        email: '',
-        password: '',
-        rememberMe: false,
-      };
+      state.user = null;
+      state.isAuthenticated = false;
+      state.initialized = true;
+    },
+    sessionExpired: (state) => {
+      state.token = null;
+      state.user = null;
+      state.isAuthenticated = false;
+      state.initialized = true;
       // Clear auth state from localStorage
       clearAuthFromStorage();
     },
@@ -546,7 +546,15 @@ const authSlice = createSlice({
 });
 
 // Export actions for use in components
-export const { clearError, updateFormData, clearFormData, setToken, clearAuth, setInitialized } = authSlice.actions;
+export const {
+  clearError,
+  updateFormData,
+  clearFormData,
+  setToken,
+  clearAuth,
+  sessionExpired,
+  setInitialized,
+} = authSlice.actions;
 
 // Export the reducer for use in store configuration
 export default authSlice.reducer; 

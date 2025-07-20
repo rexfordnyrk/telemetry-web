@@ -1,6 +1,7 @@
-import { createSlice, PayloadAction, createAsyncThunk } from "@reduxjs/toolkit";
-import { buildApiUrl, getAuthHeaders } from "../../config/api";
-import { RootState } from "../index";
+import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
+import { RootState } from '../index';
+import { buildApiUrl, getAuthHeaders } from '../../config/api';
+import { handleApiError } from '../../utils/apiUtils';
 
 export interface Role {
   id: string;
@@ -37,127 +38,7 @@ interface UserState {
 }
 
 const initialState: UserState = {
-  users: [
-    {
-      id: "550e8400-e29b-41d4-a716-446655440001",
-      first_name: "John",
-      last_name: "Smith",
-      username: "john_smith",
-      email: "john.smith@example.com",
-      phone: "+1234567890",
-      designation: "Software Engineer",
-      organization: "Tech Corp",
-      photo: "/assets/images/avatars/01.png",
-      status: "active",
-      roles: [
-        {
-          id: "550e8400-e29b-41d4-a716-446655440010",
-          name: "admin",
-          description: "Administrator role with full permissions",
-          created_at: "2023-01-01T00:00:00Z",
-          updated_at: "2023-01-01T00:00:00Z",
-        },
-      ],
-      created_at: "2024-01-15T00:00:00Z",
-      updated_at: "2024-01-15T00:00:00Z",
-    },
-    {
-      id: "550e8400-e29b-41d4-a716-446655440002",
-      first_name: "Sarah",
-      last_name: "Johnson",
-      username: "sarah_johnson",
-      email: "sarah.johnson@example.com",
-      phone: "+1234567891",
-      designation: "UI/UX Designer",
-      organization: "Design Studio",
-      photo: "/assets/images/avatars/02.png",
-      status: "active",
-      roles: [
-        {
-          id: "550e8400-e29b-41d4-a716-446655440011",
-          name: "manager",
-          description: "Manager role with team permissions",
-          created_at: "2023-01-01T00:00:00Z",
-          updated_at: "2023-01-01T00:00:00Z",
-        },
-      ],
-      created_at: "2024-01-20T00:00:00Z",
-      updated_at: "2024-01-20T00:00:00Z",
-    },
-    {
-      id: "550e8400-e29b-41d4-a716-446655440003",
-      first_name: "Mike",
-      last_name: "Wilson",
-      username: "mike_wilson",
-      email: "mike.wilson@example.com",
-      phone: "+1234567892",
-      designation: "Marketing Specialist",
-      organization: "Marketing Inc",
-      status: "pending",
-      roles: [
-        {
-          id: "550e8400-e29b-41d4-a716-446655440012",
-          name: "user",
-          description: "Basic user role",
-          created_at: "2023-01-01T00:00:00Z",
-          updated_at: "2023-01-01T00:00:00Z",
-        },
-      ],
-      created_at: "2024-01-25T00:00:00Z",
-      updated_at: "2024-01-25T00:00:00Z",
-    },
-    {
-      id: "550e8400-e29b-41d4-a716-446655440004",
-      first_name: "Emily",
-      last_name: "Davis",
-      username: "emily_davis",
-      email: "emily.davis@example.com",
-      phone: "+1234567893",
-      designation: "Financial Analyst",
-      organization: "Finance Ltd",
-      status: "disabled",
-      roles: [
-        {
-          id: "550e8400-e29b-41d4-a716-446655440012",
-          name: "user",
-          description: "Basic user role",
-          created_at: "2023-01-01T00:00:00Z",
-          updated_at: "2023-01-01T00:00:00Z",
-        },
-      ],
-      created_at: "2024-01-10T00:00:00Z",
-      updated_at: "2024-01-10T00:00:00Z",
-    },
-    {
-      id: "550e8400-e29b-41d4-a716-446655440005",
-      first_name: "Robert",
-      last_name: "Brown",
-      username: "robert_brown",
-      email: "robert.brown@example.com",
-      phone: "+1234567894",
-      designation: "Senior Developer",
-      organization: "Engineering Co",
-      status: "active",
-      roles: [
-        {
-          id: "550e8400-e29b-41d4-a716-446655440011",
-          name: "manager",
-          description: "Manager role with team permissions",
-          created_at: "2023-01-01T00:00:00Z",
-          updated_at: "2023-01-01T00:00:00Z",
-        },
-        {
-          id: "550e8400-e29b-41d4-a716-446655440012",
-          name: "user",
-          description: "Basic user role",
-          created_at: "2023-01-01T00:00:00Z",
-          updated_at: "2023-01-01T00:00:00Z",
-        },
-      ],
-      created_at: "2024-01-05T00:00:00Z",
-      updated_at: "2024-01-05T00:00:00Z",
-    },
-  ],
+  users: [],
   selectedUser: null,
   availableRoles: [
     {
@@ -207,9 +88,8 @@ const initialState: UserState = {
  */
 export const fetchUsers = createAsyncThunk(
   'users/fetchUsers',
-  async (_, { getState, rejectWithValue }) => {
+  async (_, { getState, rejectWithValue, dispatch }) => {
     try {
-      // Get the current auth state to access the JWT token
       const state = getState() as RootState;
       const token = state.auth.token;
       
@@ -217,45 +97,23 @@ export const fetchUsers = createAsyncThunk(
         throw new Error('No authentication token available');
       }
       
-      // Build the API URL for fetching users
       const url = buildApiUrl('/api/v1/users');
       
-      // Make the API request with authentication headers
       const response = await fetch(url, {
         method: 'GET',
         headers: getAuthHeaders(token),
       });
       
-      // Check if the request was successful
       if (!response.ok) {
-        // Try to parse error response
-        let errorMessage = `HTTP ${response.status}: ${response.statusText}`;
-        try {
-          const errorData = await response.json();
-          errorMessage = errorData.error || errorData.message || errorMessage;
-        } catch {
-          // If error response is not JSON, use the default message
-        }
+        const errorMessage = await handleApiError(response, 'Failed to fetch users', dispatch);
         throw new Error(errorMessage);
       }
       
-      // Parse the successful response
       const data = await response.json();
-      
-      // Log the API response for debugging
-      console.log('=== USERS API RESPONSE ===');
-      console.log('URL:', url);
-      console.log('Status:', response.status);
-      console.log('Response Data:', data);
-      console.log('=== END USERS API RESPONSE ===');
-      
       return data;
       
     } catch (error) {
-      // Log the error for debugging
       console.error('Error fetching users:', error);
-      
-      // Return a rejected value that can be handled by the reducer
       return rejectWithValue(
         error instanceof Error ? error.message : 'Failed to fetch users'
       );
@@ -271,7 +129,7 @@ export const fetchUsers = createAsyncThunk(
  */
 export const createUser = createAsyncThunk(
   'users/createUser',
-  async (userData: Partial<User>, { getState, rejectWithValue }) => {
+  async (userData: Partial<User>, { getState, rejectWithValue, dispatch }) => {
     try {
       const state = getState() as RootState;
       const token = state.auth.token;
@@ -289,13 +147,7 @@ export const createUser = createAsyncThunk(
       });
       
       if (!response.ok) {
-        let errorMessage = `HTTP ${response.status}: ${response.statusText}`;
-        try {
-          const errorData = await response.json();
-          errorMessage = errorData.error || errorData.message || errorMessage;
-        } catch {
-          // Use default message if error response is not JSON
-        }
+        const errorMessage = await handleApiError(response, 'Failed to create user', dispatch);
         throw new Error(errorMessage);
       }
       
@@ -319,7 +171,7 @@ export const createUser = createAsyncThunk(
  */
 export const updateUserAsync = createAsyncThunk(
   'users/updateUser',
-  async ({ id, userData }: { id: string; userData: Partial<User> }, { getState, rejectWithValue }) => {
+  async ({ id, userData }: { id: string; userData: Partial<User> }, { getState, rejectWithValue, dispatch }) => {
     try {
       const state = getState() as RootState;
       const token = state.auth.token;
@@ -337,13 +189,7 @@ export const updateUserAsync = createAsyncThunk(
       });
       
       if (!response.ok) {
-        let errorMessage = `HTTP ${response.status}: ${response.statusText}`;
-        try {
-          const errorData = await response.json();
-          errorMessage = errorData.error || errorData.message || errorMessage;
-        } catch {
-          // Use default message if error response is not JSON
-        }
+        const errorMessage = await handleApiError(response, 'Failed to update user', dispatch);
         throw new Error(errorMessage);
       }
       
@@ -367,7 +213,7 @@ export const updateUserAsync = createAsyncThunk(
  */
 export const deleteUserAsync = createAsyncThunk(
   'users/deleteUser',
-  async (userId: string, { getState, rejectWithValue }) => {
+  async (userId: string, { getState, rejectWithValue, dispatch }) => {
     try {
       const state = getState() as RootState;
       const token = state.auth.token;
@@ -384,13 +230,7 @@ export const deleteUserAsync = createAsyncThunk(
       });
       
       if (!response.ok) {
-        let errorMessage = `HTTP ${response.status}: ${response.statusText}`;
-        try {
-          const errorData = await response.json();
-          errorMessage = errorData.error || errorData.message || errorMessage;
-        } catch {
-          // Use default message if error response is not JSON
-        }
+        const errorMessage = await handleApiError(response, 'Failed to delete user', dispatch);
         throw new Error(errorMessage);
       }
       
