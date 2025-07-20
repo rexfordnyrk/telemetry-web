@@ -338,9 +338,8 @@ const Sidebar: React.FC = () => {
           right: 0,
           padding: '1rem',
           borderTop: '1px solid var(--bs-border-color)',
-          backgroundColor: '#ffffff'
         }}>
-          <LogoutButton className="btn btn-outline-danger w-100">
+          <LogoutButton className="btn btn-grd btn-grd-danger w-100">
             <i className="material-icons-outlined me-2">logout</i>
             Logout
           </LogoutButton>
