@@ -8,6 +8,7 @@ import NewBeneficiaryModal from "../components/NewBeneficiaryModal";
 import FilterModal from "../components/FilterModal";
 import { fetchBeneficiaries } from "../store/slices/beneficiarySlice";
 import PermissionRoute from "../components/PermissionRoute";
+import { usePermissions } from "../hooks/usePermissions";
 
 const Beneficiaries: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -21,6 +22,8 @@ const Beneficiaries: React.FC = () => {
   const [targetBeneficiary, setTargetBeneficiary] = useState<any>(null);
   const [showFilterModal, setShowFilterModal] = useState(false);
   const [activeFilters, setActiveFilters] = useState<{ [key: string]: any }>({});
+
+  const permissions = usePermissions();
 
   // Fetch beneficiaries from API on mount
   useEffect(() => {
@@ -184,14 +187,16 @@ const Beneficiaries: React.FC = () => {
                 <i className="material-icons-outlined me-1">filter_list</i>
                 Filters
               </button>
-              <button
-                type="button"
-                className="btn btn-grd-primary px-4"
-                onClick={() => setShowNewBeneficiaryModal(true)}
-                disabled={loading}
-              >
-                + | New Beneficiary
-              </button>
+              {permissions.hasPermission('create_beneficiaries') && (
+                <button
+                  type="button"
+                  className="btn btn-grd-primary px-4"
+                  onClick={() => setShowNewBeneficiaryModal(true)}
+                  disabled={loading}
+                >
+                  + | New Beneficiary
+                </button>
+              )}
             </div>
           </div>
 

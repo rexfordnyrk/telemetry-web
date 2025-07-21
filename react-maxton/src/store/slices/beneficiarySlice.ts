@@ -24,6 +24,19 @@ export interface Beneficiary {
   created_at: string;
   updated_at: string;
   deleted_at?: string | null;
+  // Optional performance metrics for the beneficiary details page
+  performance_metrics?: {
+    surveys_completed?: number;
+    training_sessions_attended?: number;
+    avg_app_usage_hours?: number;
+    compliance_rate?: number;
+  };
+  // Optional participation history for the beneficiary details page
+  participation_history?: Array<{
+    date: string;
+    activity: string;
+    status: string;
+  }>;
 }
 
 // Define the state shape for beneficiaries
