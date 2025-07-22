@@ -1,0 +1,1187 @@
+<!doctype html>
+<html lang="en" data-bs-theme="blue-theme">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Per-Device Analytics | Maxton Dashboard</title>
+  <!--favicon-->
+  <link rel="icon" href="../assets/images/favicon-32x32.png" type="image/png">
+  <!-- loader-->
+	<link href="../assets/css/pace.min.css" rel="stylesheet">
+	<script src="../assets/js/pace.min.js"></script>
+
+  <!--plugins-->
+  <link href="../assets/plugins/perfect-scrollbar/css/perfect-scrollbar.css" rel="stylesheet">
+  <link rel="stylesheet" type="text/css" href="../assets/plugins/metismenu/metisMenu.min.css">
+  <link rel="stylesheet" type="text/css" href="../assets/plugins/metismenu/mm-vertical.css">
+  <link rel="stylesheet" type="text/css" href="../assets/plugins/simplebar/css/simplebar.css">
+  <link rel="stylesheet" type="text/css" href="../assets/plugins/datatable/css/dataTables.bootstrap5.min.css">
+  <!--bootstrap css-->
+  <link href="../assets/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Material+Icons+Outlined" rel="stylesheet">
+  <!--main css-->
+  <link href="../assets/css/bootstrap-extended.css" rel="stylesheet">
+  <link href="../sass/main.css" rel="stylesheet">
+  <link href="../sass/dark-theme.css" rel="stylesheet">
+  <link href="../sass/blue-theme.css" rel="stylesheet">
+  <link href="../sass/semi-dark.css" rel="stylesheet">
+  <link href="../sass/bordered-theme.css" rel="stylesheet">
+  <link href="../sass/responsive.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+  <!--start header-->
+  <header class="top-header">
+    <nav class="navbar navbar-expand align-items-center gap-4">
+      <div class="btn-toggle">
+        <a href="javascript:;"><i class="material-icons-outlined">menu</i></a>
+      </div>
+      <div class="search-bar flex-grow-1">
+        <div class="position-relative">
+          <input class="form-control rounded-5 px-5 search-control d-lg-block d-none" type="text" placeholder="Search devices...">
+          <span class="material-icons-outlined position-absolute d-lg-block d-none ms-3 translate-middle-y start-0 top-50">search</span>
+          <span class="material-icons-outlined position-absolute me-3 translate-middle-y end-0 top-50 search-close">close</span>
+        </div>
+      </div>
+      <ul class="navbar-nav gap-1 nav-right-links align-items-center">
+        <li class="nav-item d-lg-none mobile-search-btn">
+          <a class="nav-link" href="javascript:;"><i class="material-icons-outlined">search</i></a>
+        </li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle dropdown-toggle-nocaret position-relative" href="javascript:;" data-bs-toggle="dropdown">
+            <i class="material-icons-outlined">notifications</i>
+            <span class="alert-count">8</span>
+          </a>
+          <div class="dropdown-menu dropdown-menu-end p-0">
+            <div class="p-2 border-bottom m-2">
+              <h5 class="h5 mb-0">Notifications</h5>
+            </div>
+            <div class="header-notifications-list p-2">
+              <a class="dropdown-item" href="javascript:;">
+                <div class="d-flex align-items-center">
+                  <div class="notify-icon">
+                    <i class="material-icons-outlined">smartphone</i>
+                  </div>
+                  <div class="notify-text ms-2">
+                    <span>Device Alpha-07 sync completed</span>
+                    <p class="mb-0">2 minutes ago</p>
+                  </div>
+                </div>
+              </a>
+            </div>
+          </div>
+        </li>
+        <li class="nav-item dropdown">
+          <a href="javascrpt:;" class="dropdown-toggle dropdown-toggle-nocaret" data-bs-toggle="dropdown">
+            <img src="../assets/images/avatars/01.png" class="rounded-circle p-1 border" width="45" height="45" alt="">
+          </a>
+          <ul class="dropdown-menu dropdown-menu-end">
+            <li><a class="dropdown-item" href="javascript:;">
+                <div class="d-flex align-items-center">
+                  <img src="../assets/images/avatars/01.png" alt="" class="rounded-circle" width="54" height="54">
+                  <div class="ms-3">
+                    <h6 class="mb-0 dropdown-user-name">Admin User</h6>
+                    <small class="mb-0 dropdown-user-designation text-secondary">Device Manager</small>
+                  </div>
+                </div>
+              </a>
+            </li>
+            <li>
+              <hr class="dropdown-divider">
+            </li>
+            <li><a class="dropdown-item" href="javascript:;">
+                <div class="d-flex align-items-center">
+                  <div class="setting-icon"><i class="material-icons-outlined">person</i></div>
+                  <div class="setting-text ms-3"><span>Profile</span></div>
+                </div>
+              </a>
+            </li>
+            <li><a class="dropdown-item" href="javascript:;">
+                <div class="d-flex align-items-center">
+                  <div class="setting-icon"><i class="material-icons-outlined">settings</i></div>
+                  <div class="setting-text ms-3"><span>Setting</span></div>
+                </div>
+              </a>
+            </li>
+            <li>
+              <hr class="dropdown-divider">
+            </li>
+            <li><a class="dropdown-item" href="javascript:;">
+                <div class="d-flex align-items-center">
+                  <div class="setting-icon"><i class="material-icons-outlined">logout</i></div>
+                  <div class="setting-text ms-3"><span>Logout</span></div>
+                </div>
+              </a>
+            </li>
+          </ul>
+        </li>
+      </ul>
+    </nav>
+  </header>
+  <!--end top header-->
+
+  <!--start sidebar-->
+  <aside class="sidebar-wrapper" data-simplebar="true">
+    <div class="sidebar-header">
+      <div class="logo-icon">
+        <img src="../assets/images/logo-icon.png" class="logo-img" alt="">
+      </div>
+      <div class="logo-name flex-grow-1">
+        <h5 class="mb-0">Maxton</h5>
+      </div>
+      <div class="sidebar-close">
+        <span class="material-icons-outlined">close</span>
+      </div>
+    </div>
+    <div class="sidebar-nav">
+      <ul class="metismenu" id="sidenav">
+        <li>
+          <a href="../index.html">
+            <div class="parent-icon"><i class="material-icons-outlined">home</i></div>
+            <div class="menu-title">Dashboard</div>
+          </a>
+        </li>
+        <li class="menu-label">Analytics</li>
+        <li>
+          <a href="per-device-analytics.html" class="mm-active">
+            <div class="parent-icon"><i class="material-icons-outlined">smartphone</i></div>
+            <div class="menu-title">Per-Device Analytics</div>
+          </a>
+        </li>
+        <li>
+          <a href="javascript:;" class="has-arrow">
+            <div class="parent-icon"><i class="material-icons-outlined">analytics</i></div>
+            <div class="menu-title">Device Monitoring</div>
+          </a>
+          <ul>
+            <li><a href="device-timeline.html"><i class="material-icons-outlined">timeline</i>Device Timeline</a></li>
+            <li><a href="app-usage.html"><i class="material-icons-outlined">apps</i>App Usage</a></li>
+            <li><a href="network-usage.html"><i class="material-icons-outlined">network_check</i>Network Usage</a></li>
+            <li><a href="sync-logs.html"><i class="material-icons-outlined">sync</i>Sync Logs</a></li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+  </aside>
+  <!--end sidebar-->
+
+  <!--start main wrapper-->
+  <main class="main-wrapper">
+    <div class="main-content">
+      <!--breadcrumb-->
+      <div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
+        <div class="breadcrumb-title pe-3">Analytics</div>
+        <div class="ps-3">
+          <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0 p-0">
+              <li class="breadcrumb-item"><a href="javascript:;"><i class="bx bx-home-alt"></i></a></li>
+              <li class="breadcrumb-item active" aria-current="page">Per-Device Analytics</li>
+            </ol>
+          </nav>
+        </div>
+        <div class="ms-auto">
+          <div class="btn-group">
+            <button type="button" class="btn btn-primary">Settings</button>
+            <button type="button" class="btn btn-primary split-bg-primary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown">	<span class="visually-hidden">Toggle Dropdown</span>
+            </button>
+            <div class="dropdown-menu dropdown-menu-right dropdown-menu-lg-end">
+              <a class="dropdown-item" href="javascript:;">Export Data</a>
+              <a class="dropdown-item" href="javascript:;">Refresh</a>
+              <a class="dropdown-item" href="javascript:;">Configure Alerts</a>
+              <div class="dropdown-divider"></div>	<a class="dropdown-item" href="javascript:;">View All Devices</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!--end breadcrumb-->
+
+      <!-- Device Selector -->
+      <div class="row">
+        <div class="col-12">
+          <div class="card rounded-4">
+            <div class="card-body">
+              <div class="row align-items-center">
+                <div class="col-md-8">
+                  <h5 class="mb-3">Device Selection</h5>
+                  <div class="input-group">
+                    <span class="input-group-text"><i class="material-icons-outlined">smartphone</i></span>
+                    <select class="form-select" id="deviceSelector" aria-label="Select Device">
+                      <option selected>Select a device to analyze...</option>
+                      <option value="dev_001">Device Alpha-07 (John Doe) - Online</option>
+                      <option value="dev_002">Device Beta-12 (Jane Smith) - Syncing</option>
+                      <option value="dev_003">Device Gamma-15 (Mike Johnson) - Offline</option>
+                      <option value="dev_004">Device Delta-23 (Sarah Wilson) - Online</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="col-md-4 text-end">
+                  <div class="d-flex gap-2 justify-content-end">
+                    <button class="btn btn-outline-primary btn-sm" onclick="refreshData()">
+                      <i class="material-icons-outlined">refresh</i> Refresh
+                    </button>
+                    <button class="btn btn-primary btn-sm" onclick="exportData()">
+                      <i class="material-icons-outlined">file_download</i> Export
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Device Analytics Widgets -->
+      <div class="row row-cols-1 row-cols-lg-2 row-cols-xl-2 row-cols-xxl-3">
+        
+        <!-- 1. Device Timeline Widget (adapted from Recent Orders) -->
+        <div class="col">
+          <div class="card rounded-4">
+            <div class="card-header bg-transparent">
+              <div class="d-flex align-items-center">
+                <div class="">
+                  <h6 class="mb-0 fw-bold">Device Activity Timeline</h6>
+                </div>
+                <div class="dropdown ms-auto">
+                  <a href="javascript:;" class="dropdown-toggle-nocaret options dropdown-toggle" data-bs-toggle="dropdown">
+                    <span class="material-icons-outlined fs-5">more_vert</span>
+                  </a>
+                  <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="javascript:;">Filter by Type</a></li>
+                    <li><a class="dropdown-item" href="javascript:;">Export Timeline</a></li>
+                    <li><a class="dropdown-item" href="javascript:;">View Full History</a></li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="d-flex align-items-center gap-3 mb-2">
+                <div class="search-input flex-grow-1">
+                  <div class="position-relative">
+                    <input type="text" class="form-control" placeholder="Search timeline events">
+                    <span class="material-icons-outlined position-absolute ms-3 translate-middle-y start-0 top-50">search</span>
+                  </div>
+                </div>
+              </div>
+              <div class="orders-list">
+                <div class="d-flex align-items-center border-bottom pb-3 mb-3" data-bs-toggle="modal" data-bs-target="#timelineModal">
+                  <div class="orders-icon">
+                    <span class="material-icons-outlined text-primary">play_circle</span>
+                  </div>
+                  <div class="orders-info flex-grow-1 ms-3">
+                    <h6 class="mb-1 orders-title">App Session</h6>
+                    <p class="mb-0 orders-desc">Educational Learning</p>
+                  </div>
+                  <div class="d-flex align-items-center gap-2">
+                    <h6 class="mb-0">25m 47s</h6>
+                  </div>
+                  <div class="orders-status">
+                    <span class="badge bg-grd-success rounded-pill">Completed</span>
+                  </div>
+                </div>
+                <div class="d-flex align-items-center border-bottom pb-3 mb-3">
+                  <div class="orders-icon">
+                    <span class="material-icons-outlined text-success">sync</span>
+                  </div>
+                  <div class="orders-info flex-grow-1 ms-3">
+                    <h6 class="mb-1 orders-title">Sync Operation</h6>
+                    <p class="mb-0 orders-desc">32 records synced</p>
+                  </div>
+                  <div class="d-flex align-items-center gap-2">
+                    <h6 class="mb-0">45s</h6>
+                  </div>
+                  <div class="orders-status">
+                    <span class="badge bg-grd-success rounded-pill">Success</span>
+                  </div>
+                </div>
+                <div class="d-flex align-items-center border-bottom pb-3 mb-3">
+                  <div class="orders-icon">
+                    <span class="material-icons-outlined text-info">smartphone</span>
+                  </div>
+                  <div class="orders-info flex-grow-1 ms-3">
+                    <h6 class="mb-1 orders-title">Screen Session</h6>
+                    <p class="mb-0 orders-desc">Screen active session</p>
+                  </div>
+                  <div class="d-flex align-items-center gap-2">
+                    <h6 class="mb-0">39m 0s</h6>
+                  </div>
+                  <div class="orders-status">
+                    <span class="badge bg-grd-info rounded-pill">Completed</span>
+                  </div>
+                </div>
+                <div class="d-flex align-items-center border-bottom pb-3 mb-3">
+                  <div class="orders-icon">
+                    <span class="material-icons-outlined text-warning">data_usage</span>
+                  </div>
+                  <div class="orders-info flex-grow-1 ms-3">
+                    <h6 class="mb-1 orders-title">Network Usage</h6>
+                    <p class="mb-0 orders-desc">Video App - 25.7 MB consumed</p>
+                  </div>
+                  <div class="d-flex align-items-center gap-2">
+                    <h6 class="mb-0">14m 50s</h6>
+                  </div>
+                  <div class="orders-status">
+                    <span class="badge bg-grd-warning rounded-pill">Completed</span>
+                  </div>
+                </div>
+                <div class="d-flex align-items-center">
+                  <div class="orders-icon">
+                    <span class="material-icons-outlined text-danger">games</span>
+                  </div>
+                  <div class="orders-info flex-grow-1 ms-3">
+                    <h6 class="mb-1 orders-title">App Session</h6>
+                    <p class="mb-0 orders-desc">Game App - Session ended unexpectedly</p>
+                  </div>
+                  <div class="d-flex align-items-center gap-2">
+                    <h6 class="mb-0">20m 50s</h6>
+                  </div>
+                  <div class="orders-status">
+                    <span class="badge bg-grd-danger rounded-pill">Interrupted</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. App Usage Profile Widget (adapted from Popular Products) -->
+        <div class="col">
+          <div class="card rounded-4">
+            <div class="card-header bg-transparent">
+              <div class="d-flex align-items-center">
+                <div class="">
+                  <h6 class="mb-0 fw-bold">App Usage Profile</h6>
+                </div>
+                <div class="dropdown ms-auto">
+                  <a href="javascript:;" class="dropdown-toggle-nocaret options dropdown-toggle" data-bs-toggle="dropdown">
+                    <span class="material-icons-outlined fs-5">more_vert</span>
+                  </a>
+                  <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="javascript:;">View All Apps</a></li>
+                    <li><a class="dropdown-item" href="javascript:;">Export App Data</a></li>
+                    <li><a class="dropdown-item" href="javascript:;">Usage Trends</a></li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="product-list">
+                <div class="row border-bottom pb-3 mb-3">
+                  <div class="col">
+                    <div class="d-flex product-img">
+                      <div class="app-icon-container">
+                        <span class="material-icons-outlined fs-1 text-primary">school</span>
+                      </div>
+                      <div class="ms-2">
+                        <h6 class="mb-1 product-title">Educational Learning</h6>
+                        <p class="mb-0 product-desc">28 sessions</p>
+                        <div class="product-price d-flex align-items-center gap-3">
+                          <div class="h6 fw-light mb-0">4h 17m</div>
+                          <div class="h6 fw-light mb-0">45.7 MB</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col">
+                    <div class="trending-product">
+                      <p class="mb-1 product-sub-title">Usage Trend</p>
+                      <div class="d-flex align-items-center gap-2">
+                        <h6 class="mb-0">+12%</h6>
+                        <span class="material-icons-outlined text-success">trending_up</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="row border-bottom pb-3 mb-3">
+                  <div class="col">
+                    <div class="d-flex product-img">
+                      <div class="app-icon-container">
+                        <span class="material-icons-outlined fs-1 text-danger">play_circle</span>
+                      </div>
+                      <div class="ms-2">
+                        <h6 class="mb-1 product-title">Video Player</h6>
+                        <p class="mb-0 product-desc">15 sessions</p>
+                        <div class="product-price d-flex align-items-center gap-3">
+                          <div class="h6 fw-light mb-0">2h 29m</div>
+                          <div class="h6 fw-light mb-0">128.3 MB</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col">
+                    <div class="trending-product">
+                      <p class="mb-1 product-sub-title">Usage Trend</p>
+                      <div class="d-flex align-items-center gap-2">
+                        <h6 class="mb-0">+14%</h6>
+                        <span class="material-icons-outlined text-success">trending_up</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="row border-bottom pb-3 mb-3">
+                  <div class="col">
+                    <div class="d-flex product-img">
+                      <div class="app-icon-container">
+                        <span class="material-icons-outlined fs-1 text-warning">games</span>
+                      </div>
+                      <div class="ms-2">
+                        <h6 class="mb-1 product-title">Math Games</h6>
+                        <p class="mb-0 product-desc">22 sessions</p>
+                        <div class="product-price d-flex align-items-center gap-3">
+                          <div class="h6 fw-light mb-0">1h 53m</div>
+                          <div class="h6 fw-light mb-0">12.4 MB</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col">
+                    <div class="trending-product">
+                      <p class="mb-1 product-sub-title">Usage Trend</p>
+                      <div class="d-flex align-items-center gap-2">
+                        <h6 class="mb-0">-12%</h6>
+                        <span class="material-icons-outlined text-danger">trending_down</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="row border-bottom pb-3 mb-3">
+                  <div class="col">
+                    <div class="d-flex product-img">
+                      <div class="app-icon-container">
+                        <span class="material-icons-outlined fs-1 text-info">menu_book</span>
+                      </div>
+                      <div class="ms-2">
+                        <h6 class="mb-1 product-title">Reading App</h6>
+                        <p class="mb-0 product-desc">18 sessions</p>
+                        <div class="product-price d-flex align-items-center gap-3">
+                          <div class="h6 fw-light mb-0">2h 34m</div>
+                          <div class="h6 fw-light mb-0">8.9 MB</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col">
+                    <div class="trending-product">
+                      <p class="mb-1 product-sub-title">Usage Trend</p>
+                      <div class="d-flex align-items-center gap-2">
+                        <h6 class="mb-0">+25%</h6>
+                        <span class="material-icons-outlined text-success">trending_up</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col">
+                    <div class="d-flex product-img">
+                      <div class="app-icon-container">
+                        <span class="material-icons-outlined fs-1 text-secondary">camera_alt</span>
+                      </div>
+                      <div class="ms-2">
+                        <h6 class="mb-1 product-title">Camera</h6>
+                        <p class="mb-0 product-desc">8 sessions</p>
+                        <div class="product-price d-flex align-items-center gap-3">
+                          <div class="h6 fw-light mb-0">30m 40s</div>
+                          <div class="h6 fw-light mb-0">67.2 MB</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col">
+                    <div class="trending-product">
+                      <p class="mb-1 product-sub-title">Usage Trend</p>
+                      <div class="d-flex align-items-center gap-2">
+                        <h6 class="mb-0">-25%</h6>
+                        <span class="material-icons-outlined text-danger">trending_down</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. Network Consumption Profile Widget (adapted from Sales & Views) -->
+        <div class="col">
+          <div class="card rounded-4">
+            <div class="card-header bg-transparent">
+              <div class="d-flex align-items-center">
+                <div class="">
+                  <h6 class="mb-0 fw-bold">Network Consumption Profile</h6>
+                </div>
+                <div class="dropdown ms-auto">
+                  <a href="javascript:;" class="dropdown-toggle-nocaret options dropdown-toggle" data-bs-toggle="dropdown">
+                    <span class="material-icons-outlined fs-5">more_vert</span>
+                  </a>
+                  <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="javascript:;">View Details</a></li>
+                    <li><a class="dropdown-item" href="javascript:;">Export Data</a></li>
+                    <li><a class="dropdown-item" href="javascript:;">Usage History</a></li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div id="chart15" class="mb-4"></div>
+              <div class="d-flex align-items-center gap-3">
+                <div class="">
+                  <p class="mb-1 data-usage-label">7/15</p>
+                  <h4 class="mb-0 text-primary">Upload</h4>
+                  <h4 class="mb-1 fw-light">1.8 GB</h4>
+                  <p class="mb-0"><span class="text-success me-2 fw-medium">16.5%</span><span class="dash-lable">56.9 MB</span></p>
+                </div>
+                <div class="vr"></div>
+                <div class="">
+                  <p class="mb-1 data-usage-label">7/15</p>
+                  <h4 class="mb-0 text-danger">Download</h4>
+                  <h4 class="mb-1 fw-light">10.6 GB</h4>
+                  <p class="mb-0"><span class="text-success me-2 fw-medium">24.9%</span><span class="dash-lable">410.2 MB</span></p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4. Sync Performance History Widget (adapted from Transactions) -->
+        <div class="col">
+          <div class="card rounded-4">
+            <div class="card-header bg-transparent">
+              <div class="d-flex align-items-center">
+                <div class="">
+                  <h6 class="mb-0 fw-bold">Sync Performance History</h6>
+                </div>
+                <div class="dropdown ms-auto">
+                  <a href="javascript:;" class="dropdown-toggle-nocaret options dropdown-toggle" data-bs-toggle="dropdown">
+                    <span class="material-icons-outlined fs-5">more_vert</span>
+                  </a>
+                  <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="javascript:;">View All Syncs</a></li>
+                    <li><a class="dropdown-item" href="javascript:;">Export Logs</a></li>
+                    <li><a class="dropdown-item" href="javascript:;">Performance Report</a></li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="table-responsive">
+                <table class="table align-middle">
+                  <thead class="table-light">
+                    <tr>
+                      <th>Date</th>
+                      <th>Sync Type</th>
+                      <th>Status</th>
+                      <th>Records</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <div class="d-flex align-items-center gap-3">
+                          <p class="mb-0">14:25</p>
+                        </div>
+                      </td>
+                      <td>
+                        <div class="d-flex align-items-center gap-2">
+                          <span class="material-icons-outlined fs-5 text-primary">apps</span>
+                          <p class="mb-0">App Usage</p>
+                        </div>
+                      </td>
+                      <td><span class="badge bg-grd-success rounded-pill">Success</span></td>
+                      <td>
+                        <p class="mb-0 fw-bold">47</p>
+                        <p class="mb-0 text-secondary">2.1s</p>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div class="d-flex align-items-center gap-3">
+                          <p class="mb-0">13:55</p>
+                        </div>
+                      </td>
+                      <td>
+                        <div class="d-flex align-items-center gap-2">
+                          <span class="material-icons-outlined fs-5 text-success">network_check</span>
+                          <p class="mb-0">Network Usage</p>
+                        </div>
+                      </td>
+                      <td><span class="badge bg-grd-success rounded-pill">Success</span></td>
+                      <td>
+                        <p class="mb-0 fw-bold">23</p>
+                        <p class="mb-0 text-secondary">3.2s</p>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div class="d-flex align-items-center gap-3">
+                          <p class="mb-0">13:25</p>
+                        </div>
+                      </td>
+                      <td>
+                        <div class="d-flex align-items-center gap-2">
+                          <span class="material-icons-outlined fs-5 text-info">app_registration</span>
+                          <p class="mb-0">Installed Apps</p>
+                        </div>
+                      </td>
+                      <td><span class="badge bg-grd-success rounded-pill">Success</span></td>
+                      <td>
+                        <p class="mb-0 fw-bold">12</p>
+                        <p class="mb-0 text-secondary">1.8s</p>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div class="d-flex align-items-center gap-3">
+                          <p class="mb-0">12:55</p>
+                        </div>
+                      </td>
+                      <td>
+                        <div class="d-flex align-items-center gap-2">
+                          <span class="material-icons-outlined fs-5 text-danger">error</span>
+                          <p class="mb-0">App Usage</p>
+                        </div>
+                      </td>
+                      <td><span class="badge bg-grd-danger rounded-pill">Failed</span></td>
+                      <td>
+                        <p class="mb-0 fw-bold">0</p>
+                        <p class="mb-0 text-secondary">8.7s</p>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div class="d-flex align-items-center gap-3">
+                          <p class="mb-0">12:25</p>
+                        </div>
+                      </td>
+                      <td>
+                        <div class="d-flex align-items-center gap-2">
+                          <span class="material-icons-outlined fs-5 text-success">network_check</span>
+                          <p class="mb-0">Network Usage</p>
+                        </div>
+                      </td>
+                      <td><span class="badge bg-grd-success rounded-pill">Success</span></td>
+                      <td>
+                        <p class="mb-0 fw-bold">31</p>
+                        <p class="mb-0 text-secondary">2.9s</p>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div class="d-flex align-items-center gap-3">
+                          <p class="mb-0">11:55</p>
+                        </div>
+                      </td>
+                      <td>
+                        <div class="d-flex align-items-center gap-2">
+                          <span class="material-icons-outlined fs-5 text-primary">apps</span>
+                          <p class="mb-0">App Usage</p>
+                        </div>
+                      </td>
+                      <td><span class="badge bg-grd-success rounded-pill">Success</span></td>
+                      <td>
+                        <p class="mb-0 fw-bold">38</p>
+                        <p class="mb-0 text-secondary">1.5s</p>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 5. Device Reliability Score Widget (adapted from Monthly Revenue) -->
+        <div class="col">
+          <div class="card rounded-4">
+            <div class="card-body">
+              <div class="d-flex align-items-start justify-content-between mb-1">
+                <div class="">
+                  <h5 class="mb-0 fw-bold">Device Reliability Score</h5>
+                  <p class="mb-0">Average reliability metrics for device performance</p>
+                </div>
+              </div>
+              <div class="d-flex align-items-center gap-2 mb-2">
+                <h2 class="mb-0">87.3%</h2>
+                <p class="mb-0 fw-medium text-success">34.5%<span class="material-icons-outlined">expand_less</span></p>
+              </div>
+              <div id="chart16" class="mb-3"></div>
+              <div class="d-flex align-items-center gap-3">
+                <div class="d-flex align-items-center gap-1">
+                  <span class="material-icons-outlined fs-6 text-primary">sync</span>
+                  <span class="text-secondary">Sync Rate: 94.4%</span>
+                </div>
+                <div class="d-flex align-items-center gap-1">
+                  <span class="material-icons-outlined fs-6 text-success">verified</span>
+                  <span class="text-secondary">Data Quality: 89.2%</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 6. Usage Anomaly Detection Widget (adapted from Social Leads) -->
+        <div class="col">
+          <div class="card rounded-4">
+            <div class="card-header bg-transparent">
+              <div class="d-flex align-items-center">
+                <div class="">
+                  <h6 class="mb-0 fw-bold">Usage Anomaly Detection</h6>
+                </div>
+                <div class="dropdown ms-auto">
+                  <a href="javascript:;" class="dropdown-toggle-nocaret options dropdown-toggle" data-bs-toggle="dropdown">
+                    <span class="material-icons-outlined fs-5">more_vert</span>
+                  </a>
+                  <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="javascript:;">View Details</a></li>
+                    <li><a class="dropdown-item" href="javascript:;">Configure Thresholds</a></li>
+                    <li><a class="dropdown-item" href="javascript:;">Alert Settings</a></li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="social-leads">
+                <div class="d-flex align-items-center gap-3 border-bottom pb-3 mb-3">
+                  <span class="material-icons-outlined fs-2 text-warning">schedule</span>
+                  <div class="flex-grow-1">
+                    <h6 class="social-lable mb-0">Session Duration</h6>
+                    <p class="mb-2">Sessions 25% longer than usual</p>
+                    <div class="progress" style="height: 5px;">
+                      <div class="progress-bar bg-grd-warning" style="width: 75%"></div>
+                    </div>
+                  </div>
+                  <div class="">
+                    <h4 class="mb-0">75%</h4>
+                    <p class="mb-0 social-lable">7/15</p>
+                  </div>
+                </div>
+                <div class="d-flex align-items-center gap-3 border-bottom pb-3 mb-3">
+                  <span class="material-icons-outlined fs-2 text-success">data_usage</span>
+                  <div class="flex-grow-1">
+                    <h6 class="social-lable mb-0">Data Usage</h6>
+                    <p class="mb-2">Within normal range</p>
+                    <div class="progress" style="height: 5px;">
+                      <div class="progress-bar bg-grd-success" style="width: 45%"></div>
+                    </div>
+                  </div>
+                  <div class="">
+                    <h4 class="mb-0">45%</h4>
+                    <p class="mb-0 social-lable">7/15</p>
+                  </div>
+                </div>
+                <div class="d-flex align-items-center gap-3 border-bottom pb-3 mb-3">
+                  <span class="material-icons-outlined fs-2 text-danger">swap_horiz</span>
+                  <div class="flex-grow-1">
+                    <h6 class="social-lable mb-0">App Switching</h6>
+                    <p class="mb-2">Rapid app switching detected</p>
+                    <div class="progress" style="height: 5px;">
+                      <div class="progress-bar bg-grd-danger" style="width: 85%"></div>
+                    </div>
+                  </div>
+                  <div class="">
+                    <h4 class="mb-0">85%</h4>
+                    <p class="mb-0 social-lable">7/15</p>
+                  </div>
+                </div>
+                <div class="d-flex align-items-center gap-3 border-bottom pb-3 mb-3">
+                  <span class="material-icons-outlined fs-2 text-success">smartphone</span>
+                  <div class="flex-grow-1">
+                    <h6 class="social-lable mb-0">Screen Activity</h6>
+                    <p class="mb-2">Normal screen usage pattern</p>
+                    <div class="progress" style="height: 5px;">
+                      <div class="progress-bar bg-grd-success" style="width: 35%"></div>
+                    </div>
+                  </div>
+                  <div class="">
+                    <h4 class="mb-0">35%</h4>
+                    <p class="mb-0 social-lable">7/15</p>
+                  </div>
+                </div>
+                <div class="d-flex align-items-center gap-3">
+                  <span class="material-icons-outlined fs-2 text-success">sync</span>
+                  <div class="flex-grow-1">
+                    <h6 class="social-lable mb-0">Sync Timing</h6>
+                    <p class="mb-2">Slightly irregular sync timing</p>
+                    <div class="progress" style="height: 5px;">
+                      <div class="progress-bar bg-grd-success" style="width: 58%"></div>
+                    </div>
+                  </div>
+                  <div class="">
+                    <h4 class="mb-0">58%</h4>
+                    <p class="mb-0 social-lable">7/15</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 7. Device Performance Trends Widget (adapted from Visitors Growth) -->
+        <div class="col">
+          <div class="card rounded-4">
+            <div class="card-body">
+              <div class="d-flex align-items-start justify-content-between mb-3">
+                <div class="">
+                  <h6 class="mb-0 fw-bold">Device Performance Trends</h6>
+                </div>
+                <div class="">
+                  <span class="material-icons-outlined">trending_up</span>
+                </div>
+              </div>
+              <div class="d-flex align-items-center gap-2 mb-3">
+                <h2 class="mb-0">82.4%</h2>
+                <p class="mb-0 fw-medium text-success d-flex align-items-center gap-1">+5.7%<span class="material-icons-outlined">trending_up</span></p>
+              </div>
+              <div class="progress mb-3" style="height: 5px;">
+                <div class="progress-bar bg-grd-info" style="width: 82%"></div>
+              </div>
+              <div class="d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center gap-2">
+                  <div class="">
+                    <span class="material-icons-outlined fs-6 text-primary">flash_on</span>
+                  </div>
+                  <div class="">
+                    <p class="mb-0 data-usage-label">Response Time</p>
+                    <h6 class="mb-0">85%</h6>
+                  </div>
+                </div>
+                <div class="d-flex align-items-center gap-2">
+                  <div class="">
+                    <span class="material-icons-outlined fs-6 text-warning">battery_charging_full</span>
+                  </div>
+                  <div class="">
+                    <p class="mb-0 data-usage-label">Battery Efficiency</p>
+                    <h6 class="mb-0">78%</h6>
+                  </div>
+                </div>
+                <div class="d-flex align-items-center gap-2">
+                  <div class="">
+                    <span class="material-icons-outlined fs-6 text-success">memory</span>
+                  </div>
+                  <div class="">
+                    <p class="mb-0 data-usage-label">Memory Usage</p>
+                    <h6 class="mb-0">82%</h6>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 8. Maintenance Indicators Widget (adapted from Campaign Stats) -->
+        <div class="col">
+          <div class="card rounded-4">
+            <div class="card-header bg-transparent">
+              <div class="d-flex align-items-center">
+                <div class="">
+                  <h6 class="mb-0 fw-bold">Maintenance Indicators</h6>
+                </div>
+                <div class="dropdown ms-auto">
+                  <a href="javascript:;" class="dropdown-toggle-nocaret options dropdown-toggle" data-bs-toggle="dropdown">
+                    <span class="material-icons-outlined fs-5">more_vert</span>
+                  </a>
+                  <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="javascript:;">Schedule Maintenance</a></li>
+                    <li><a class="dropdown-item" href="javascript:;">View History</a></li>
+                    <li><a class="dropdown-item" href="javascript:;">Alert Settings</a></li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="campaigns-list">
+                <div class="d-flex align-items-center border-bottom pb-3 mb-3">
+                  <div class="campaigns-icon">
+                    <span class="material-icons-outlined text-warning">storage</span>
+                  </div>
+                  <div class="campaigns-content flex-grow-1 ms-3">
+                    <h6 class="mb-0 campaigns-title">Storage Space</h6>
+                    <p class="mb-2 campaigns-desc">Clear app cache and temporary files</p>
+                    <div class="progress" style="height: 5px;">
+                      <div class="progress-bar bg-warning" style="width: 78%"></div>
+                    </div>
+                  </div>
+                  <div class="campaigns-amount">
+                    <h5 class="mb-0">78%</h5>
+                    <p class="mb-0 campaigns-stats">Medium</p>
+                  </div>
+                </div>
+                <div class="d-flex align-items-center border-bottom pb-3 mb-3">
+                  <div class="campaigns-icon">
+                    <span class="material-icons-outlined text-success">sync_problem</span>
+                  </div>
+                  <div class="campaigns-content flex-grow-1 ms-3">
+                    <h6 class="mb-0 campaigns-title">Sync Failures</h6>
+                    <p class="mb-2 campaigns-desc">Monitor sync patterns</p>
+                    <div class="progress" style="height: 5px;">
+                      <div class="progress-bar bg-success" style="width: 45%"></div>
+                    </div>
+                  </div>
+                  <div class="campaigns-amount">
+                    <h5 class="mb-0">3</h5>
+                    <p class="mb-0 campaigns-stats">Low</p>
+                  </div>
+                </div>
+                <div class="d-flex align-items-center border-bottom pb-3 mb-3">
+                  <div class="campaigns-icon">
+                    <span class="material-icons-outlined text-danger">error_outline</span>
+                  </div>
+                  <div class="campaigns-content flex-grow-1 ms-3">
+                    <h6 class="mb-0 campaigns-title">App Crashes</h6>
+                    <p class="mb-2 campaigns-desc">Update problematic apps or restart device</p>
+                    <div class="progress" style="height: 5px;">
+                      <div class="progress-bar bg-danger" style="width: 92%"></div>
+                    </div>
+                  </div>
+                  <div class="campaigns-amount">
+                    <h5 class="mb-0">8</h5>
+                    <p class="mb-0 campaigns-stats">High</p>
+                  </div>
+                </div>
+                <div class="d-flex align-items-center border-bottom pb-3 mb-3">
+                  <div class="campaigns-icon">
+                    <span class="material-icons-outlined text-success">network_check</span>
+                  </div>
+                  <div class="campaigns-content flex-grow-1 ms-3">
+                    <h6 class="mb-0 campaigns-title">Network Errors</h6>
+                    <p class="mb-2 campaigns-desc">Network performance is stable</p>
+                    <div class="progress" style="height: 5px;">
+                      <div class="progress-bar bg-success" style="width: 25%"></div>
+                    </div>
+                  </div>
+                  <div class="campaigns-amount">
+                    <h5 class="mb-0">2</h5>
+                    <p class="mb-0 campaigns-stats">Low</p>
+                  </div>
+                </div>
+                <div class="d-flex align-items-center border-bottom pb-3 mb-3">
+                  <div class="campaigns-icon">
+                    <span class="material-icons-outlined text-success">battery_alert</span>
+                  </div>
+                  <div class="campaigns-content flex-grow-1 ms-3">
+                    <h6 class="mb-0 campaigns-title">Battery Health</h6>
+                    <p class="mb-2 campaigns-desc">Battery performance is acceptable</p>
+                    <div class="progress" style="height: 5px;">
+                      <div class="progress-bar bg-success" style="width: 35%"></div>
+                    </div>
+                  </div>
+                  <div class="campaigns-amount">
+                    <h5 class="mb-0">82%</h5>
+                    <p class="mb-0 campaigns-stats">Low</p>
+                  </div>
+                </div>
+                <div class="d-flex align-items-center">
+                  <div class="campaigns-icon">
+                    <span class="material-icons-outlined text-success">verified</span>
+                  </div>
+                  <div class="campaigns-content flex-grow-1 ms-3">
+                    <h6 class="mb-0 campaigns-title">Data Quality</h6>
+                    <p class="mb-2 campaigns-desc">Data collection is performing well</p>
+                    <div class="progress" style="height: 5px;">
+                      <div class="progress-bar bg-success" style="width: 15%"></div>
+                    </div>
+                  </div>
+                  <div class="campaigns-amount">
+                    <h5 class="mb-0">94%</h5>
+                    <p class="mb-0 campaigns-stats">Low</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </main>
+  <!--end main wrapper-->
+
+  <!--start overlay-->
+  <div class="overlay btn-toggle"></div>
+  <!--end overlay-->
+
+  <!--start footer-->
+  <footer class="page-footer">
+    <p class="mb-0">Copyright © 2024. All right reserved.</p>
+  </footer>
+  <!--end footer-->
+
+  <!--plugins-->
+  <script src="../assets/js/jquery.min.js"></script>
+  <script src="../assets/plugins/perfect-scrollbar/js/perfect-scrollbar.js"></script>
+  <script src="../assets/plugins/metismenu/metisMenu.min.js"></script>
+  <script src="../assets/plugins/apexchart/apexcharts.min.js"></script>
+  <script src="../assets/plugins/simplebar/js/simplebar.min.js"></script>
+  <script src="../assets/plugins/peity/jquery.peity.min.js"></script>
+  <script src="../assets/plugins/datatable/js/jquery.dataTables.min.js"></script>
+  <script src="../assets/plugins/datatable/js/dataTables.bootstrap5.min.js"></script>
+  <!--bootstrap js-->
+  <script src="../assets/js/bootstrap.bundle.min.js"></script>
+
+  <!--main js-->
+  <script src="../assets/js/main.js"></script>
+
+  <!--per-device analytics custom scripts-->
+  <script>
+    // Network Consumption Profile Chart
+    $(document).ready(function() {
+      var options = {
+        series: [{
+          name: 'Upload (MB)',
+          data: [45, 52, 48, 61, 59, 67, 72, 68, 55, 63, 66, 62, 69, 74, 71]
+        }, {
+          name: 'Download (MB)',
+          data: [380, 420, 390, 450, 440, 485, 520, 495, 460, 480, 490, 475, 505, 530, 510]
+        }],
+        chart: {
+          type: 'area',
+          height: 230,
+          stacked: false,
+          toolbar: {
+            show: false
+          }
+        },
+        stroke: {
+          width: [2, 2],
+          curve: 'smooth'
+        },
+        plotOptions: {
+          bar: {
+            columnWidth: '50%'
+          }
+        },
+        colors: ['#0d6efd', '#dc3545'],
+        fill: {
+          opacity: [0.85, 0.25],
+          gradient: {
+            inverseColors: false,
+            shade: 'light',
+            type: "vertical",
+            opacityFrom: 0.85,
+            opacityTo: 0.55,
+            stops: [0, 100, 100, 100]
+          }
+        },
+        labels: ['Jan 1', 'Jan 2', 'Jan 3', 'Jan 4', 'Jan 5', 'Jan 6', 'Jan 7', 'Jan 8', 'Jan 9', 'Jan 10', 'Jan 11', 'Jan 12', 'Jan 13', 'Jan 14', 'Jan 15'],
+        markers: {
+          size: 0
+        },
+        yaxis: {
+          min: 0
+        },
+        tooltip: {
+          shared: true,
+          intersect: false,
+          y: {
+            formatter: function (y) {
+              if (typeof y !== "undefined") {
+                return y.toFixed(0) + " MB";
+              }
+              return y;
+            }
+          }
+        },
+        legend: {
+          labels: {
+            useSeriesColors: true
+          }
+        }
+      };
+
+      var chart = new ApexCharts(document.querySelector("#chart15"), options);
+      chart.render();
+
+      // Device Reliability Score Chart
+      var reliabilityOptions = {
+        series: [87.3],
+        chart: {
+          height: 120,
+          type: 'radialBar',
+        },
+        plotOptions: {
+          radialBar: {
+            hollow: {
+              size: '70%',
+            },
+            dataLabels: {
+              show: false
+            }
+          },
+        },
+        colors: ['#0d6efd'],
+        labels: ['Reliability'],
+      };
+
+      var reliabilityChart = new ApexCharts(document.querySelector("#chart16"), reliabilityOptions);
+      reliabilityChart.render();
+    });
+
+    // Device selector change handler
+    function onDeviceChange() {
+      const deviceSelect = document.getElementById('deviceSelector');
+      const selectedDevice = deviceSelect.value;
+      
+      if (selectedDevice) {
+        // Here you would typically make an API call to fetch device-specific data
+        console.log('Loading data for device:', selectedDevice);
+        // Simulate loading state
+        document.body.style.cursor = 'wait';
+        setTimeout(() => {
+          document.body.style.cursor = 'default';
+          // Update all widgets with new data
+        }, 1000);
+      }
+    }
+
+    // Refresh data function
+    function refreshData() {
+      const selectedDevice = document.getElementById('deviceSelector').value;
+      if (!selectedDevice) {
+        alert('Please select a device first');
+        return;
+      }
+      
+      // Show loading state
+      document.body.style.cursor = 'wait';
+      console.log('Refreshing data for device:', selectedDevice);
+      
+      // Simulate API call
+      setTimeout(() => {
+        document.body.style.cursor = 'default';
+        // Update widgets with fresh data
+        location.reload(); // For demo purposes
+      }, 1500);
+    }
+
+    // Export data function
+    function exportData() {
+      const selectedDevice = document.getElementById('deviceSelector').value;
+      if (!selectedDevice) {
+        alert('Please select a device first');
+        return;
+      }
+      
+      console.log('Exporting data for device:', selectedDevice);
+      // In a real implementation, this would trigger a download
+      alert('Export functionality would be implemented here');
+    }
+
+    // Add event listener to device selector
+    document.getElementById('deviceSelector').addEventListener('change', onDeviceChange);
+
+    // Auto-refresh data every 30 seconds for timeline
+    setInterval(function() {
+      const selectedDevice = document.getElementById('deviceSelector').value;
+      if (selectedDevice) {
+        // Silently refresh timeline data
+        console.log('Auto-refreshing timeline data');
+      }
+    }, 30000);
+  </script>
+
+</body>
+
+</html>
