@@ -158,51 +158,51 @@ const Beneficiaries: React.FC = () => {
 
   return (
     <PermissionRoute requiredPermissions={['list_beneficiaries']}>
-      <MainLayout>
-        <div className="main-content">
-          {/* Breadcrumb */}
-          <div className="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
-            <div className="breadcrumb-title pe-3">Beneficiary Management</div>
-            <div className="ps-3">
-              <nav aria-label="breadcrumb">
-                <ol className="breadcrumb mb-0 p-0">
-                  <li className="breadcrumb-item">
-                    <a href="/">
-                      <i className="bx bx-home-alt"></i>
-                    </a>
-                  </li>
-                  <li className="breadcrumb-item active" aria-current="page">
-                    Beneficiaries
-                  </li>
-                </ol>
-              </nav>
-            </div>
-            <div className="ms-auto d-flex gap-2">
-              <button
-                type="button"
-                className="btn btn-outline-primary px-4"
-                onClick={() => setShowFilterModal(true)}
-                disabled={loading}
-              >
-                <i className="material-icons-outlined me-1">filter_list</i>
-                Filters
-              </button>
-              {permissions.hasPermission('create_beneficiaries') && (
-                <button
-                  type="button"
-                  className="btn btn-grd-primary px-4"
-                  onClick={() => setShowNewBeneficiaryModal(true)}
-                  disabled={loading}
-                >
-                  + | New Beneficiary
-                </button>
-              )}
-            </div>
+    <MainLayout>
+      <div className="main-content">
+        {/* Breadcrumb */}
+        <div className="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
+          <div className="breadcrumb-title pe-3">Beneficiary Management</div>
+          <div className="ps-3">
+            <nav aria-label="breadcrumb">
+              <ol className="breadcrumb mb-0 p-0">
+                <li className="breadcrumb-item">
+                  <a href="/">
+                    <i className="bx bx-home-alt"></i>
+                  </a>
+                </li>
+                <li className="breadcrumb-item active" aria-current="page">
+                  Beneficiaries
+                </li>
+              </ol>
+            </nav>
           </div>
+          <div className="ms-auto d-flex gap-2">
+            <button
+              type="button"
+              className="btn btn-outline-primary px-4"
+              onClick={() => setShowFilterModal(true)}
+                disabled={loading}
+            >
+              <i className="material-icons-outlined me-1">filter_list</i>
+              Filters
+            </button>
+              {permissions.hasPermission('create_beneficiaries') && (
+            <button
+              type="button"
+              className="btn btn-grd-primary px-4"
+              onClick={() => setShowNewBeneficiaryModal(true)}
+                  disabled={loading}
+            >
+              + | New Beneficiary
+            </button>
+              )}
+          </div>
+        </div>
 
           {/* Page Title and Loading Spinner */}
-          <div className="d-flex justify-content-between align-items-center mb-3">
-            <h6 className="mb-0 text-uppercase">Beneficiaries Management</h6>
+        <div className="d-flex justify-content-between align-items-center mb-3">
+          <h6 className="mb-0 text-uppercase">Beneficiaries Management</h6>
             {loading && (
               <div className="d-flex align-items-center">
                 <div className="spinner-border spinner-border-sm me-2" role="status">
@@ -211,8 +211,8 @@ const Beneficiaries: React.FC = () => {
                 <span className="text-muted">Loading beneficiaries...</span>
               </div>
             )}
-          </div>
-          <hr />
+        </div>
+        <hr />
           {/* Error Alert */}
           {error && (
             <div className="alert alert-danger alert-dismissible fade show" role="alert">
@@ -224,8 +224,8 @@ const Beneficiaries: React.FC = () => {
               ></button>
             </div>
           )}
-          <div className="card">
-            <div className="card-body">
+        <div className="card">
+          <div className="card-body">
               {loading ? (
                 <div className="text-center py-5">
                   <div className="spinner-border text-primary" role="status">
@@ -234,224 +234,224 @@ const Beneficiaries: React.FC = () => {
                   <p className="mt-3 text-muted">Loading beneficiaries from server...</p>
                 </div>
               ) : (
-                <div className="table-responsive">
-                  <table
-                    id="beneficiaries-datatable"
-                    className="table table-striped table-bordered"
-                    style={{ width: "100%" }}
-                  >
-                    <thead>
-                      <tr>
-                        <th>Name</th>
-                        <th>Email</th>
-                        <th>District</th>
-                        <th>Partner</th>
-                        <th>Intervention</th>
-                        <th>Date Enrolled</th>
-                        <th>Assigned Device</th>
-                        <th>Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {memoizedBeneficiaries.map((beneficiary) => (
-                        <tr key={beneficiary.id}>
-                          <td>
-                            <div className="d-flex align-items-center gap-3">
-                              <div
-                                className="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center"
-                                style={{
-                                  width: "40px",
-                                  height: "40px",
-                                  fontSize: "14px",
-                                }}
-                              >
-                                {getInitials(beneficiary.name)}
-                              </div>
-                              <div>
-                                <a
-                                  href="#"
-                                  className="text-decoration-none fw-bold"
-                                  onClick={(e) => {
-                                    e.preventDefault();
-                                    navigate(
-                                      `/beneficiary-management/beneficiaries/${beneficiary.id}`,
-                                    );
-                                  }}
-                                >
-                                  {beneficiary.name}
-                                </a>
-                                <div className="text-muted small">
-                                  {beneficiary.email}
-                                </div>
-                              </div>
+            <div className="table-responsive">
+              <table
+                id="beneficiaries-datatable"
+                className="table table-striped table-bordered"
+                style={{ width: "100%" }}
+              >
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>District</th>
+                    <th>Partner</th>
+                    <th>Intervention</th>
+                    <th>Date Enrolled</th>
+                    <th>Assigned Device</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {memoizedBeneficiaries.map((beneficiary) => (
+                    <tr key={beneficiary.id}>
+                      <td>
+                        <div className="d-flex align-items-center gap-3">
+                          <div
+                            className="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center"
+                            style={{
+                              width: "40px",
+                              height: "40px",
+                              fontSize: "14px",
+                            }}
+                          >
+                            {getInitials(beneficiary.name)}
+                          </div>
+                          <div>
+                            <a
+                              href="#"
+                              className="text-decoration-none fw-bold"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                navigate(
+                                  `/beneficiary-management/beneficiaries/${beneficiary.id}`,
+                                );
+                              }}
+                            >
+                              {beneficiary.name}
+                            </a>
+                            <div className="text-muted small">
+                              {beneficiary.email}
                             </div>
-                          </td>
-                          <td>{beneficiary.email}</td>
-                          <td>{beneficiary.district}</td>
-                          <td>{beneficiary.organization}</td>
-                          <td>{beneficiary.programme}</td>
-                          <td>
+                          </div>
+                        </div>
+                      </td>
+                      <td>{beneficiary.email}</td>
+                      <td>{beneficiary.district}</td>
+                      <td>{beneficiary.organization}</td>
+                      <td>{beneficiary.programme}</td>
+                      <td>
                             {new Date(beneficiary.date_enrolled).toLocaleDateString()}
-                          </td>
-                          <td>
-                            {beneficiary.current_device ? (
-                              <a
-                                href="#"
-                                className="text-decoration-none fw-bold text-primary"
-                                onClick={(e) => {
-                                  e.preventDefault();
+                      </td>
+                      <td>
+                        {beneficiary.current_device ? (
+                          <a
+                            href="#"
+                            className="text-decoration-none fw-bold text-primary"
+                            onClick={(e) => {
+                              e.preventDefault();
                                   // Only navigate if current_device is not null
                                   if (beneficiary.current_device) {
-                                    navigate(
-                                      `/device-management/devices/${beneficiary.current_device.id}`,
-                                    );
+                              navigate(
+                                `/device-management/devices/${beneficiary.current_device.id}`,
+                              );
                                   }
-                                }}
+                            }}
                                 title={
                                   beneficiary.current_device
                                     ? `Device ID: ${beneficiary.current_device.id}`
                                     : undefined
                                 }
-                              >
+                          >
                                 {/* Only show device name if current_device is not null */}
-                                {beneficiary.current_device.device_name}
-                              </a>
-                            ) : (
-                              <span className="text-muted">Unassigned</span>
-                            )}
-                          </td>
-                          <td>
-                            <div className="d-flex gap-1">
-                              <button
-                                className="btn btn-sm p-1"
-                                title="Edit Beneficiary"
-                                style={{
-                                  border: "none",
-                                  background: "transparent",
-                                }}
-                              >
+                            {beneficiary.current_device.device_name}
+                          </a>
+                        ) : (
+                          <span className="text-muted">Unassigned</span>
+                        )}
+                      </td>
+                      <td>
+                        <div className="d-flex gap-1">
+                          <button
+                            className="btn btn-sm p-1"
+                            title="Edit Beneficiary"
+                            style={{
+                              border: "none",
+                              background: "transparent",
+                            }}
+                          >
                                 <i className="material-icons-outlined text-primary">edit</i>
-                              </button>
-                              <button
-                                className="btn btn-sm p-1"
-                                title={
-                                  !beneficiary.is_active
-                                    ? "Activate Beneficiary"
-                                    : "Deactivate Beneficiary"
-                                }
+                          </button>
+                          <button
+                            className="btn btn-sm p-1"
+                            title={
+                              !beneficiary.is_active
+                                ? "Activate Beneficiary"
+                                : "Deactivate Beneficiary"
+                            }
                                 onClick={() => handleActionClick(beneficiary, "disable")}
-                                style={{
-                                  border: "none",
-                                  background: "transparent",
-                                }}
-                              >
-                                <i className="material-icons-outlined text-warning">
+                            style={{
+                              border: "none",
+                              background: "transparent",
+                            }}
+                          >
+                            <i className="material-icons-outlined text-warning">
                                   {!beneficiary.is_active ? "check_circle" : "block"}
-                                </i>
-                              </button>
-                              <button
-                                className="btn btn-sm p-1"
-                                title="Delete Beneficiary"
+                            </i>
+                          </button>
+                          <button
+                            className="btn btn-sm p-1"
+                            title="Delete Beneficiary"
                                 onClick={() => handleActionClick(beneficiary, "delete")}
-                                style={{
-                                  border: "none",
-                                  background: "transparent",
-                                }}
-                              >
+                            style={{
+                              border: "none",
+                              background: "transparent",
+                            }}
+                          >
                                 <i className="material-icons-outlined text-danger">delete</i>
-                              </button>
-                            </div>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                    <tfoot>
-                      <tr>
-                        <th>Name</th>
-                        <th>Email</th>
-                        <th>District</th>
-                        <th>Partner</th>
-                        <th>Intervention</th>
-                        <th>Date Enrolled</th>
-                        <th>Assigned Device</th>
-                        <th>Actions</th>
-                      </tr>
-                    </tfoot>
-                  </table>
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+                <tfoot>
+                  <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>District</th>
+                    <th>Partner</th>
+                    <th>Intervention</th>
+                    <th>Date Enrolled</th>
+                    <th>Assigned Device</th>
+                    <th>Actions</th>
+                  </tr>
+                </tfoot>
+              </table>
                 </div>
               )}
             </div>
           </div>
         </div>
-        {/* Confirmation Modal */}
-        {showModal && (
-          <div
-            className="modal fade show d-block"
-            tabIndex={-1}
-            style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
-            onClick={() => setShowModal(false)}
-          >
-            <div className="modal-dialog">
-              <div
-                className={`card border-top border-3 ${modalAction === "delete" ? "border-danger" : "border-warning"} rounded-0`}
-                onClick={(e) => e.stopPropagation()}
-              >
-                <div className="card-header py-3 px-4">
-                  <h5
-                    className={`mb-0 ${modalAction === "delete" ? "text-danger" : "text-warning"}`}
-                  >
+      {/* Confirmation Modal */}
+      {showModal && (
+        <div
+          className="modal fade show d-block"
+          tabIndex={-1}
+          style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
+          onClick={() => setShowModal(false)}
+        >
+          <div className="modal-dialog">
+            <div
+              className={`card border-top border-3 ${modalAction === "delete" ? "border-danger" : "border-warning"} rounded-0`}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="card-header py-3 px-4">
+                <h5
+                  className={`mb-0 ${modalAction === "delete" ? "text-danger" : "text-warning"}`}
+                >
                     Confirm {modalAction === "delete" ? "Delete" : "Deactivate"} Beneficiary
-                  </h5>
+                </h5>
+                <button
+                  type="button"
+                  className="btn-close"
+                  onClick={() => setShowModal(false)}
+                ></button>
+              </div>
+              <div className="card-body p-4">
+                <p>
+                    Are you sure you want to {modalAction === "delete" ? "delete" : "deactivate"} beneficiary <strong>{targetBeneficiary?.name}</strong>?
+                  {modalAction === "delete" && (
+                    <span className="text-danger d-block mt-2">
+                      This action cannot be undone.
+                    </span>
+                  )}
+                </p>
+                <div className="d-md-flex d-grid align-items-center gap-3 mt-3">
                   <button
                     type="button"
-                    className="btn-close"
+                    className="btn btn-grd-royal px-4 rounded-0"
                     onClick={() => setShowModal(false)}
-                  ></button>
-                </div>
-                <div className="card-body p-4">
-                  <p>
-                    Are you sure you want to {modalAction === "delete" ? "delete" : "deactivate"} beneficiary <strong>{targetBeneficiary?.name}</strong>?
-                    {modalAction === "delete" && (
-                      <span className="text-danger d-block mt-2">
-                        This action cannot be undone.
-                      </span>
-                    )}
-                  </p>
-                  <div className="d-md-flex d-grid align-items-center gap-3 mt-3">
-                    <button
-                      type="button"
-                      className="btn btn-grd-royal px-4 rounded-0"
-                      onClick={() => setShowModal(false)}
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      type="button"
-                      className={`btn ${modalAction === "delete" ? "btn-grd-danger" : "btn-grd-warning"} px-4 rounded-0`}
-                      onClick={handleConfirmAction}
-                    >
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    className={`btn ${modalAction === "delete" ? "btn-grd-danger" : "btn-grd-warning"} px-4 rounded-0`}
+                    onClick={handleConfirmAction}
+                  >
                       {modalAction === "delete" ? "Delete" : "Deactivate"} Beneficiary
-                    </button>
-                  </div>
+                  </button>
                 </div>
               </div>
             </div>
           </div>
-        )}
-        {/* New Beneficiary Modal */}
-        <NewBeneficiaryModal
-          show={showNewBeneficiaryModal}
-          onHide={() => setShowNewBeneficiaryModal(false)}
-        />
-        {/* Filter Modal */}
-        <FilterModal
-          show={showFilterModal}
-          onClose={() => setShowFilterModal(false)}
-          filterOptions={filterOptions}
-          onApplyFilters={handleApplyFilters}
-          title="Beneficiaries"
-        />
-      </MainLayout>
+        </div>
+      )}
+      {/* New Beneficiary Modal */}
+      <NewBeneficiaryModal
+        show={showNewBeneficiaryModal}
+        onHide={() => setShowNewBeneficiaryModal(false)}
+      />
+      {/* Filter Modal */}
+      <FilterModal
+        show={showFilterModal}
+        onClose={() => setShowFilterModal(false)}
+        filterOptions={filterOptions}
+        onApplyFilters={handleApplyFilters}
+        title="Beneficiaries"
+      />
+    </MainLayout>
     </PermissionRoute>
   );
 };

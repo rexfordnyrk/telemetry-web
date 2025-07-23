@@ -211,8 +211,8 @@ export const fetchDeviceDetails = createAsyncThunk(
         throw new Error(errorMessage);
       }
       const data = await response.json();
-      // Return only the details object (data.data)
-      return data.data;
+      // Merge the 'device' object and the rest of the details into a single object
+      return { ...data.data.device, ...data.data };
     } catch (error) {
       return rejectWithValue(error instanceof Error ? error.message : 'Failed to fetch device details');
     }

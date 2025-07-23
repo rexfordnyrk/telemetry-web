@@ -204,146 +204,146 @@ const Devices: React.FC = () => {
                 <p className="mt-3 text-muted">Loading devices from server...</p>
               </div>
             ) : (
-              <div className="table-responsive">
-                <table
-                  id="devices-datatable"
-                  className="table table-striped table-bordered"
-                  style={{ width: "100%" }}
-                >
-                  <thead>
-                    <tr>
-                      <th>Device Name</th>
-                      <th>Android Version</th>
-                      <th>App Version</th>
-                      <th>Partner</th>
-                      <th>Intervention</th>
-                      <th>Active</th>
-                      <th>Date Enrolled</th>
-                      <th>Assigned To</th>
-                      <th>Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {memoizedDevices.map((device) => (
-                      <tr key={device.id}>
-                        <td>
+            <div className="table-responsive">
+              <table
+                id="devices-datatable"
+                className="table table-striped table-bordered"
+                style={{ width: "100%" }}
+              >
+                <thead>
+                  <tr>
+                    <th>Device Name</th>
+                    <th>Android Version</th>
+                    <th>App Version</th>
+                    <th>Partner</th>
+                    <th>Intervention</th>
+                    <th>Active</th>
+                    <th>Date Enrolled</th>
+                    <th>Assigned To</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {memoizedDevices.map((device) => (
+                    <tr key={device.id}>
+                      <td>
+                        <a
+                          href="#"
+                          className="text-decoration-none fw-bold"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            navigate(`/device-management/devices/${device.id}`);
+                          }}
+                        >
+                          {device.device_name}
+                        </a>
+                      </td>
+                      <td>{device.android_version}</td>
+                      <td>{device.app_version}</td>
+                      <td>{device.organization}</td>
+                      <td>{device.programme}</td>
+                      <td>
+                        <span
+                          className={`badge ${device.is_active ? "bg-success" : "bg-danger"}`}
+                        >
+                          {device.is_active ? "Active" : "Inactive"}
+                        </span>
+                      </td>
+                      <td>
+                        {new Date(device.date_enrolled).toLocaleDateString()}
+                      </td>
+                      <td>
+                        {device.current_beneficiary ? (
                           <a
                             href="#"
-                            className="text-decoration-none fw-bold"
+                            className="text-decoration-none fw-bold text-primary"
                             onClick={(e) => {
                               e.preventDefault();
-                              navigate(`/device-management/devices/${device.id}`);
-                            }}
-                          >
-                            {device.device_name}
-                          </a>
-                        </td>
-                        <td>{device.android_version}</td>
-                        <td>{device.app_version}</td>
-                        <td>{device.organization}</td>
-                        <td>{device.programme}</td>
-                        <td>
-                          <span
-                            className={`badge ${device.is_active ? "bg-success" : "bg-danger"}`}
-                          >
-                            {device.is_active ? "Active" : "Inactive"}
-                          </span>
-                        </td>
-                        <td>
-                          {new Date(device.date_enrolled).toLocaleDateString()}
-                        </td>
-                        <td>
-                          {device.current_beneficiary ? (
-                            <a
-                              href="#"
-                              className="text-decoration-none fw-bold text-primary"
-                              onClick={(e) => {
-                                e.preventDefault();
                                 // Only navigate if current_beneficiary is not null
                                 if (device.current_beneficiary) {
-                                  navigate(
-                                    `/beneficiary-management/beneficiaries/${device.current_beneficiary.id}`,
-                                  );
+                              navigate(
+                                `/beneficiary-management/beneficiaries/${device.current_beneficiary.id}`,
+                              );
                                 }
-                              }}
+                            }}
                               title={
                                 device.current_beneficiary
                                   ? `Beneficiary ID: ${device.current_beneficiary.id}`
                                   : undefined
                               }
-                            >
+                          >
                               {/* Only show beneficiary name if current_beneficiary is not null */}
-                              {device.current_beneficiary.name}
-                            </a>
-                          ) : (
-                            <span className="text-muted">Unassigned</span>
-                          )}
-                        </td>
-                        <td>
-                          <div className="d-flex gap-1">
-                            <button
-                              className="btn btn-sm p-1"
-                              title="Edit Device"
-                              onClick={() =>
-                                navigate(
-                                  `/device-management/devices/${device.id}`,
-                                )
-                              }
-                              style={{
-                                border: "none",
-                                background: "transparent",
-                              }}
-                            >
-                              <i className="material-icons-outlined text-primary">
-                                edit
-                              </i>
-                            </button>
-                            <button
-                              className="btn btn-sm p-1"
-                              title="Retire/Activate Device"
-                              onClick={() => handleActionClick(device, "disable")}
-                              style={{
-                                border: "none",
-                                background: "transparent",
-                              }}
-                            >
-                              <i className="material-icons-outlined text-warning">
-                                {!device.is_active ? "check_circle" : "block"}
-                              </i>
-                            </button>
-                            <button
-                              className="btn btn-sm p-1"
-                              title="Delete Device"
-                              onClick={() => handleActionClick(device, "delete")}
-                              style={{
-                                border: "none",
-                                background: "transparent",
-                              }}
-                            >
-                              <i className="material-icons-outlined text-danger">
-                                delete
-                              </i>
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                  <tfoot>
-                    <tr>
-                      <th>Device Name</th>
-                      <th>Android Version</th>
-                      <th>App Version</th>
-                      <th>Partner</th>
-                      <th>Intervention</th>
-                      <th>Active</th>
-                      <th>Date Enrolled</th>
-                      <th>Assigned To</th>
-                      <th>Actions</th>
+                            {device.current_beneficiary.name}
+                          </a>
+                        ) : (
+                          <span className="text-muted">Unassigned</span>
+                        )}
+                      </td>
+                      <td>
+                        <div className="d-flex gap-1">
+                          <button
+                            className="btn btn-sm p-1"
+                            title="Edit Device"
+                            onClick={() =>
+                              navigate(
+                                `/device-management/devices/${device.id}`,
+                              )
+                            }
+                            style={{
+                              border: "none",
+                              background: "transparent",
+                            }}
+                          >
+                            <i className="material-icons-outlined text-primary">
+                              edit
+                            </i>
+                          </button>
+                          <button
+                            className="btn btn-sm p-1"
+                            title="Retire/Activate Device"
+                            onClick={() => handleActionClick(device, "disable")}
+                            style={{
+                              border: "none",
+                              background: "transparent",
+                            }}
+                          >
+                            <i className="material-icons-outlined text-warning">
+                              {!device.is_active ? "check_circle" : "block"}
+                            </i>
+                          </button>
+                          <button
+                            className="btn btn-sm p-1"
+                            title="Delete Device"
+                            onClick={() => handleActionClick(device, "delete")}
+                            style={{
+                              border: "none",
+                              background: "transparent",
+                            }}
+                          >
+                            <i className="material-icons-outlined text-danger">
+                              delete
+                            </i>
+                          </button>
+                        </div>
+                      </td>
                     </tr>
-                  </tfoot>
-                </table>
-              </div>
+                  ))}
+                </tbody>
+                <tfoot>
+                  <tr>
+                    <th>Device Name</th>
+                    <th>Android Version</th>
+                    <th>App Version</th>
+                    <th>Partner</th>
+                    <th>Intervention</th>
+                    <th>Active</th>
+                    <th>Date Enrolled</th>
+                    <th>Assigned To</th>
+                    <th>Actions</th>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
             )}
           </div>
         </div>

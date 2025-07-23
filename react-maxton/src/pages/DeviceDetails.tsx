@@ -22,18 +22,13 @@ const DeviceDetails: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
-  // Get devices and device details from Redux store
-  const devices = useAppSelector((state) => state.devices.devices);
+  // Get device details from Redux store (now contains all summary and tab/table data)
   const deviceDetails = useAppSelector((state) => state.devices.deviceDetails);
   const detailsLoading = useAppSelector((state) => state.devices.detailsLoading);
   const detailsError = useAppSelector((state) => state.devices.detailsError);
 
-  // Find basic device by ID from the store (for fallback)
-  const basicDevice = useMemo(() => devices.find((d) => d.id === id), [devices, id]);
-
-  // Use detailed device data for tab/table content, and basic device for summary info
-  const tabData = deviceDetails;
-  const summaryDevice = basicDevice;
+  // Use deviceDetails for all summary and tab/table data
+  const device = deviceDetails;
 
   // Tab state
   const [activeTab, setActiveTab] = useState("home");
@@ -50,15 +45,15 @@ const DeviceDetails: React.FC = () => {
     };
   }, [dispatch, id]);
 
-  // Initialize DataTables for each tab using tabData
-  useDataTable("app-sessions-datatable", tabData?.app_sessions || []);
-  useDataTable("screen-sessions-datatable", tabData?.screen_sessions || []);
+  // Initialize DataTables for each tab using device
+  useDataTable("app-sessions-datatable", device?.app_sessions || []);
+  useDataTable("screen-sessions-datatable", device?.screen_sessions || []);
   useDataTable(
     "assignment-history-datatable",
-    tabData?.assignment_history || [],
+    device?.assignment_history || [],
   );
-  useDataTable("sync-history-datatable", tabData?.sync_history || []);
-  useDataTable("installed-apps-datatable", tabData?.installed_apps || []);
+  useDataTable("sync-history-datatable", device?.sync_history || []);
+  useDataTable("installed-apps-datatable", device?.installed_apps || []);
 
   // Form state for editing
   const [isEditing, setIsEditing] = useState(false);
@@ -74,22 +69,22 @@ const DeviceDetails: React.FC = () => {
     fingerprint: "",
   });
 
-  // Update form data when summaryDevice changes
+  // Update form data when device changes
   React.useEffect(() => {
-    if (summaryDevice) {
+    if (device) {
       setFormData({
-        device_name: summaryDevice.device_name,
-        android_version: summaryDevice.android_version,
-        app_version: summaryDevice.app_version,
-        organization: summaryDevice.organization,
-        programme: summaryDevice.programme,
-        is_active: summaryDevice.is_active,
-        imei: (summaryDevice as any)?.imei || "",
-        serial_number: (summaryDevice as any)?.serial_number || "",
-        fingerprint: (summaryDevice as any)?.fingerprint || "",
+        device_name: device.device_name,
+        android_version: device.android_version,
+        app_version: device.app_version,
+        organization: device.organization,
+        programme: device.programme,
+        is_active: device.is_active,
+        imei: (device as any)?.imei || "",
+        serial_number: (device as any)?.serial_number || "",
+        fingerprint: (device as any)?.fingerprint || "",
       });
     }
-  }, [summaryDevice]);
+  }, [device]);
 
   // Show loading state while fetching device details
   if (detailsLoading) {
@@ -109,8 +104,19 @@ const DeviceDetails: React.FC = () => {
     );
   }
 
+  // Show not found if no device data available
+  if (!device) {
+    return (
+      <MainLayout>
+        <div className="page-content">
+          <div className="alert alert-danger">Device not found</div>
+        </div>
+      </MainLayout>
+    );
+  }
+
   // Show error state if device details fetch failed
-  if (detailsError && !summaryDevice) {
+  if (detailsError && !device) {
     return (
       <MainLayout>
         <div className="page-content">
@@ -129,8 +135,8 @@ const DeviceDetails: React.FC = () => {
     );
   }
 
-  // Show device not found if no summary device data available
-  if (!summaryDevice) {
+  // Show device not found if no device data available
+  if (!device) {
     return (
       <MainLayout>
         <div className="page-content">
@@ -168,26 +174,26 @@ const DeviceDetails: React.FC = () => {
   };
 
   const handleCancel = () => {
-    if (summaryDevice) {
+    if (device) {
       setFormData({
-        device_name: summaryDevice.device_name,
-        android_version: summaryDevice.android_version,
-        app_version: summaryDevice.app_version,
-        organization: summaryDevice.organization,
-        programme: summaryDevice.programme,
-        is_active: summaryDevice.is_active,
-        imei: (summaryDevice as any)?.imei || "",
-        serial_number: (summaryDevice as any)?.serial_number || "",
-        fingerprint: (summaryDevice as any)?.fingerprint || "",
+        device_name: device.device_name,
+        android_version: device.android_version,
+        app_version: device.app_version,
+        organization: device.organization,
+        programme: device.programme,
+        is_active: device.is_active,
+        imei: (device as any)?.imei || "",
+        serial_number: (device as any)?.serial_number || "",
+        fingerprint: (device as any)?.fingerprint || "",
       });
     }
     setIsEditing(false);
   };
 
   const handleNavigateToBeneficiary = () => {
-    if (summaryDevice?.current_beneficiary) {
+    if (device?.current_beneficiary) {
       navigate(
-        `/beneficiary-management/beneficiaries/${summaryDevice.current_beneficiary.id}`,
+        `/beneficiary-management/beneficiaries/${device.current_beneficiary.id}`,
       );
     }
   };
@@ -249,6 +255,20 @@ const DeviceDetails: React.FC = () => {
                   disabled={!isEditing}
                 />
               </div>
+              {/* MAC Address (read-only) */}
+              <div className="col-md-6">
+                <label htmlFor="mac_address" className="form-label">
+                  MAC Address
+                </label>
+                <input
+                  type="text"
+                  className="form-control"
+                  id="mac_address"
+                  name="mac_address"
+                  value={device.mac_address || ""}
+                  disabled
+                />
+              </div>
 
               <div className="col-md-6">
                 <label htmlFor="android_version" className="form-label">
@@ -267,7 +287,7 @@ const DeviceDetails: React.FC = () => {
 
               <div className="col-md-6">
                 <label htmlFor="app_version" className="form-label">
-                  App Version
+                  Telemetry App Version
                 </label>
                 <input
                   type="text"
@@ -297,7 +317,7 @@ const DeviceDetails: React.FC = () => {
 
               <div className="col-md-6">
                 <label htmlFor="programme" className="form-label">
-                  Intervention Programme
+                  Intervention
                 </label>
                 <input
                   type="text"
@@ -387,7 +407,7 @@ const DeviceDetails: React.FC = () => {
                 <div className="d-flex justify-content-between">
                   <span className="text-muted">Storage:</span>
                   <span className="fw-semibold">
-                    {(summaryDevice as any)?.device_specs?.storage || "N/A"}
+                    {(device as any)?.device_specs?.storage || "N/A"}
                   </span>
                 </div>
               </div>
@@ -395,7 +415,7 @@ const DeviceDetails: React.FC = () => {
                 <div className="d-flex justify-content-between">
                   <span className="text-muted">RAM:</span>
                   <span className="fw-semibold">
-                    {(summaryDevice as any)?.device_specs?.ram || "N/A"}
+                    {(device as any)?.device_specs?.ram || "N/A"}
                   </span>
                 </div>
               </div>
@@ -403,7 +423,7 @@ const DeviceDetails: React.FC = () => {
                 <div className="d-flex justify-content-between">
                   <span className="text-muted">Battery:</span>
                   <span className="fw-semibold">
-                    {(summaryDevice as any)?.device_specs?.battery || "N/A"}
+                    {(device as any)?.device_specs?.battery || "N/A"}
                   </span>
                 </div>
               </div>
@@ -411,7 +431,7 @@ const DeviceDetails: React.FC = () => {
                 <div className="d-flex justify-content-between">
                   <span className="text-muted">Screen Size:</span>
                   <span className="fw-semibold">
-                    {(summaryDevice as any)?.device_specs?.screen_size || "N/A"}
+                    {(device as any)?.device_specs?.screen_size || "N/A"}
                   </span>
                 </div>
               </div>
@@ -443,26 +463,26 @@ const DeviceDetails: React.FC = () => {
                   </tr>
                 </thead>
                 <tbody>
-                   {tabData?.installed_apps?.map((app: any) => (
-                     <tr key={app.id}>
-                       <td>
-                         <div className="d-flex align-items-center gap-3">
+                   {device?.installed_apps?.map((app: any) => (
+                    <tr key={app.id}>
+                      <td>
+                        <div className="d-flex align-items-center gap-3">
                            {/* Show app icon if available */}
                            {app.icon_base64 ? (
                              <img src={app.icon_base64} alt={app.app_name} style={{ width: 32, height: 32, borderRadius: 6, objectFit: 'cover' }} />
                            ) : (
                              <span style={{ fontSize: "24px" }}>{app.app_icon || ""}</span>
                            )}
-                           <div>
-                             <div className="fw-semibold text-decoration-none">
-                               {app.app_name}
-                             </div>
-                             <small className="text-muted">
-                               {app.package_name}
-                             </small>
-                           </div>
-                         </div>
-                       </td>
+                          <div>
+                            <div className="fw-semibold text-decoration-none">
+                              {app.app_name}
+                            </div>
+                            <small className="text-muted">
+                              {app.package_name}
+                            </small>
+                          </div>
+                        </div>
+                      </td>
                        {/* Use version_name if available, fallback to version */}
                        <td>{app.version_name || app.version || "-"}</td>
                        {/* Category is not present in new API, so show built_with or dash */}
@@ -473,8 +493,8 @@ const DeviceDetails: React.FC = () => {
                        <td>{app.created_at ? new Date(app.created_at).toLocaleDateString() : "-"}</td>
                        {/* Use updated_at for last updated */}
                        <td>{app.updated_at ? new Date(app.updated_at).toLocaleDateString() : "-"}</td>
-                     </tr>
-                   ))}
+                    </tr>
+                  ))}
                 </tbody>
                 <tfoot>
                   <tr>
@@ -502,22 +522,22 @@ const DeviceDetails: React.FC = () => {
               <span className="text-muted">Status:</span>
               <span
                 className={`badge ms-2 ${
-                  summaryDevice.is_active ? "bg-success" : "bg-danger"
+                  device.is_active ? "bg-success" : "bg-danger"
                 }`}
               >
-                {summaryDevice.is_active ? "Active" : "Inactive"}
+                {device.is_active ? "Active" : "Inactive"}
               </span>
             </div>
             <div className="mb-3">
               <span className="text-muted">Last Synced:</span>
               <p className="mb-0 mt-1">
-                {summaryDevice && (summaryDevice as any)?.last_synced ? new Date((summaryDevice as any).last_synced).toLocaleString() : "N/A"}
+                {device && (device as any)?.last_synced ? new Date((device as any).last_synced).toLocaleString() : "N/A"}
               </p>
             </div>
             <div className="mb-3">
               <span className="text-muted">Date Enrolled:</span>
               <p className="mb-0 mt-1">
-                {new Date(summaryDevice.date_enrolled).toLocaleDateString()}
+                {new Date(device.date_enrolled).toLocaleDateString()}
               </p>
             </div>
           </div>
@@ -527,7 +547,7 @@ const DeviceDetails: React.FC = () => {
         <div className="card rounded-4 mb-3">
           <div className="card-body">
             <h5 className="mb-3 fw-bold">Assigned Beneficiary</h5>
-            {summaryDevice.current_beneficiary ? (
+            {device.current_beneficiary ? (
               <div>
                 <div className="d-flex align-items-center mb-3">
                   <div
@@ -545,16 +565,16 @@ const DeviceDetails: React.FC = () => {
                       fontWeight: "bold",
                     }}
                   >
-                    {summaryDevice.current_beneficiary.name
+                    {device.current_beneficiary.name
                       .split(" ")
                       .map((n) => n[0])
                       .join("")
                       .toUpperCase()}
                   </div>
                   <div>
-                    <h6 className="mb-0">{summaryDevice.current_beneficiary.name}</h6>
+                    <h6 className="mb-0">{device.current_beneficiary.name}</h6>
                     <p className="text-muted mb-0">
-                      {summaryDevice.current_beneficiary.email}
+                      {device.current_beneficiary.email}
                     </p>
                   </div>
                 </div>
@@ -564,13 +584,13 @@ const DeviceDetails: React.FC = () => {
                   <div className="mb-2">
                     <span className="text-muted">Partner:</span>
                     <p className="mb-0 fw-semibold">
-                      {summaryDevice.current_beneficiary.organization}
+                      {device.current_beneficiary.organization}
                     </p>
                   </div>
                   <div className="mb-2">
                     <span className="text-muted">Intervention:</span>
                     <p className="mb-0 fw-semibold">
-                      {summaryDevice.current_beneficiary.programme}
+                      {device.current_beneficiary.programme}
                     </p>
                   </div>
                 </div>
@@ -864,7 +884,7 @@ const DeviceDetails: React.FC = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {tabData?.app_sessions?.map((session) => (
+                  {device?.app_sessions?.map((session) => (
                     <tr key={session.id}>
                       <td>
                         <div className="d-flex align-items-center gap-3">
@@ -924,7 +944,7 @@ const DeviceDetails: React.FC = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {tabData?.screen_sessions?.map((session) => (
+                  {device?.screen_sessions?.map((session) => (
                     <tr key={session.id}>
                       <td>{formatTimestamp(session.screen_on_time_stamp)}</td>
                       <td>{formatTimestamp(session.screen_off_time_stamp)}</td>
@@ -991,7 +1011,7 @@ const DeviceDetails: React.FC = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {tabData?.assignment_history?.map((assignment) => (
+                  {device?.assignment_history?.map((assignment) => (
                     <tr key={assignment.id}>
                       <td>{assignment.beneficiary.name}</td>
                       <td>
@@ -1059,7 +1079,7 @@ const DeviceDetails: React.FC = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {tabData?.sync_history?.map((sync) => (
+                  {device?.sync_history?.map((sync) => (
                     <tr key={sync.id}>
                       <td>{new Date(sync.created_at).toLocaleString()}</td>
                       <td>
@@ -1145,7 +1165,7 @@ const DeviceDetails: React.FC = () => {
                     <a href="/device-management/devices">Devices</a>
                   </li>
                   <li className="breadcrumb-item active" aria-current="page">
-                    {summaryDevice.device_name}
+                    {device.device_name}
                   </li>
                 </ol>
               </nav>
