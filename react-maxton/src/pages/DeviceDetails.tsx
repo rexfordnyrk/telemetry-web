@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
   Nav,
@@ -12,236 +12,40 @@ import {
   Button,
 } from "react-bootstrap";
 import MainLayout from "../layouts/MainLayout";
-import { useAppDispatch } from "../store/hooks";
+import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { addAlert } from "../store/slices/alertSlice";
 import { useDataTable } from "../hooks/useDataTable";
+import { fetchDeviceDetails, clearDeviceDetails } from "../store/slices/deviceSlice";
 
 const DeviceDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
+  // Get device details from Redux store (now contains all summary and tab/table data)
+  const deviceDetails = useAppSelector((state) => state.devices.deviceDetails);
+  const detailsLoading = useAppSelector((state) => state.devices.detailsLoading);
+  const detailsError = useAppSelector((state) => state.devices.detailsError);
+
+  // Use deviceDetails for all summary and tab/table data
+  const device = deviceDetails;
+
   // Tab state
   const [activeTab, setActiveTab] = useState("home");
 
-  // Sample devices data (would come from store in real app) - memoized to prevent re-renders
-  const devices = useMemo(
-    () => [
-      {
-        id: "8c07e7e2-944f-4fb6-8817-2cf53a5bd952",
-        device_name: "Pixel 7",
-        android_version: "Android 13",
-        app_version: "1.2.3",
-        organization: "Research Institute",
-        programme: "Digital Literacy Study",
-        is_active: true,
-        last_synced: "2025-01-15T14:30:00.000Z",
-        date_enrolled: "2025-01-10T09:00:00.000Z",
-        current_beneficiary: {
-          id: "f854c2a8-12ff-4075-95f6-abf2ad6d61de",
-          name: "John Doe",
-          email: "john.doe@example.com",
-          organization: "Research Institute",
-          programme: "Digital Literacy Study",
-        },
-        device_specs: {
-          storage: "128GB",
-          ram: "8GB",
-          battery: "4355mAh",
-          screen_size: "6.3 inches",
-        },
-        imei: "123456789012345",
-        serial_number: "GXB123456",
-        fingerprint:
-          "google/pixel7/pixel7:13/TQ3A.230705.001/10216780:user/release-keys",
-        installed_apps: [
-          {
-            id: "app_001",
-            package_name: "com.google.android.youtube",
-            app_name: "YouTube",
-            app_icon: "🎥",
-            version: "18.45.43",
-            size: "156.7 MB",
-            install_date: "2024-01-10T09:00:00Z",
-            last_updated: "2024-01-12T14:30:00Z",
-            category: "Entertainment",
-          },
-          {
-            id: "app_002",
-            package_name: "com.whatsapp",
-            app_name: "WhatsApp",
-            app_icon: "💬",
-            version: "2.24.1.78",
-            size: "89.3 MB",
-            install_date: "2024-01-10T09:15:00Z",
-            last_updated: "2024-01-14T10:20:00Z",
-            category: "Communication",
-          },
-          {
-            id: "app_003",
-            package_name: "com.google.android.gms",
-            app_name: "Google Play Services",
-            app_icon: "⚙️",
-            version: "23.49.13",
-            size: "312.4 MB",
-            install_date: "2024-01-10T08:45:00Z",
-            last_updated: "2024-01-15T09:10:00Z",
-            category: "System",
-          },
-          {
-            id: "app_004",
-            package_name: "com.facebook.katana",
-            app_name: "Facebook",
-            app_icon: "📘",
-            version: "442.0.0.39.108",
-            size: "203.8 MB",
-            install_date: "2024-01-11T16:30:00Z",
-            last_updated: "2024-01-13T11:45:00Z",
-            category: "Social",
-          },
-          {
-            id: "app_005",
-            package_name: "com.spotify.music",
-            app_name: "Spotify",
-            app_icon: "🎵",
-            version: "8.8.84.490",
-            size: "78.9 MB",
-            install_date: "2024-01-12T10:15:00Z",
-            last_updated: "2024-01-14T15:20:00Z",
-            category: "Music",
-          },
-        ],
-        sync_history: [
-          {
-            id: "550e8400-e29b-41d4-a716-446655440002",
-            device_id: "8c07e7e2-944f-4fb6-8817-2cf53a5bd952",
-            sync_type: "full_sync",
-            status: "completed",
-            records_synced: 150,
-            sync_duration_ms: 2500,
-            created_at: "2025-01-15T10:30:00Z",
-          },
-          {
-            id: "550e8400-e29b-41d4-a716-446655440003",
-            device_id: "8c07e7e2-944f-4fb6-8817-2cf53a5bd952",
-            sync_type: "incremental",
-            status: "completed",
-            records_synced: 25,
-            sync_duration_ms: 800,
-            created_at: "2025-01-15T09:15:00Z",
-          },
-        ],
-        assignment_history: [
-          {
-            id: "550e8400-e29b-41d4-a716-446655440004",
-            device_id: "8c07e7e2-944f-4fb6-8817-2cf53a5bd952",
-            beneficiary_id: "f854c2a8-12ff-4075-95f6-abf2ad6d61de",
-            assigned_at: "2024-01-10T08:00:00Z",
-            unassigned_at: null,
-            assigned_by: "admin@techcorp.com",
-            notes: "Device assigned for digital literacy study",
-            is_active: true,
-            created_at: "2024-01-10T08:00:00Z",
-            updated_at: "2024-01-10T08:00:00Z",
-            beneficiary: {
-              id: "f854c2a8-12ff-4075-95f6-abf2ad6d61de",
-              name: "John Doe",
-            },
-          },
-          {
-            id: "550e8400-e29b-41d4-a716-446655440005",
-            device_id: "8c07e7e2-944f-4fb6-8817-2cf53a5bd952",
-            beneficiary_id: "550e8400-e29b-41d4-a716-446655440006",
-            assigned_at: "2024-01-05T14:30:00Z",
-            unassigned_at: "2024-01-10T07:45:00Z",
-            assigned_by: "admin@techcorp.com",
-            notes: "Previous assignment for pilot program",
-            is_active: false,
-            created_at: "2024-01-05T14:30:00Z",
-            updated_at: "2024-01-10T07:45:00Z",
-            beneficiary: {
-              id: "550e8400-e29b-41d4-a716-446655440006",
-              name: "Jane Smith",
-            },
-          },
-        ],
-        app_sessions: [
-          {
-            id: "550e8400-e29b-41d4-a716-446655440009",
-            package_name: "com.google.android.youtube",
-            app_name: "YouTube",
-            app_icon: "🎥",
-            foreground_time_stamp: 1705312200000,
-            background_time_stamp: 1705315800000,
-            session_time: 3600000,
-            session_duration: {
-              hours: 1,
-              minutes: 0,
-              formatted: "1h 0m",
-            },
-            start_activity_class: "com.google.android.youtube.HomeActivity",
-            end_activity_class: "com.google.android.youtube.MainActivity",
-            network_usage: {
-              formatted: "45.67 MB",
-            },
-          },
-          {
-            id: "550e8400-e29b-41d4-a716-446655440010",
-            package_name: "com.whatsapp",
-            app_name: "WhatsApp",
-            app_icon: "💬",
-            foreground_time_stamp: 1705308600000,
-            background_time_stamp: 1705312200000,
-            session_time: 3600000,
-            session_duration: {
-              hours: 1,
-              minutes: 0,
-              formatted: "1h 0m",
-            },
-            start_activity_class: "com.whatsapp.Main",
-            end_activity_class: "com.whatsapp.Conversation",
-            network_usage: {
-              formatted: "12.34 MB",
-            },
-          },
-        ],
-        screen_sessions: [
-          {
-            id: "550e8400-e29b-41d4-a716-446655440011",
-            screen_on_time_stamp: 1705312200000,
-            screen_off_time_stamp: 1705315800000,
-            session_duration: {
-              milliseconds: 3600000,
-              hours: 1,
-              minutes: 0,
-              formatted: "1h 0m",
-            },
-            trigger_source: "power_button",
-            created_at: "2024-01-15T10:30:00Z",
-          },
-          {
-            id: "550e8400-e29b-41d4-a716-446655440012",
-            screen_on_time_stamp: 1705308600000,
-            screen_off_time_stamp: 1705312200000,
-            session_duration: {
-              milliseconds: 3600000,
-              hours: 1,
-              minutes: 0,
-              formatted: "1h 0m",
-            },
-            trigger_source: "notification",
-            created_at: "2024-01-15T09:10:00Z",
-          },
-        ],
-      },
-    ],
-    [],
-  );
+  // Fetch device details when component mounts
+  useEffect(() => {
+    if (id) {
+      dispatch(fetchDeviceDetails(id));
+    }
+    
+    // Clean up device details when component unmounts
+    return () => {
+      dispatch(clearDeviceDetails());
+    };
+  }, [dispatch, id]);
 
-  // Find device by ID - memoized to prevent infinite re-renders
-  const device = useMemo(() => devices.find((d) => d.id === id), [devices, id]);
-
-  // Initialize DataTables for each tab
+  // Initialize DataTables for each tab using device
   useDataTable("app-sessions-datatable", device?.app_sessions || []);
   useDataTable("screen-sessions-datatable", device?.screen_sessions || []);
   useDataTable(
@@ -275,13 +79,63 @@ const DeviceDetails: React.FC = () => {
         organization: device.organization,
         programme: device.programme,
         is_active: device.is_active,
-        imei: device.imei || "",
-        serial_number: device.serial_number || "",
-        fingerprint: device.fingerprint || "",
+        imei: (device as any)?.imei || "",
+        serial_number: (device as any)?.serial_number || "",
+        fingerprint: (device as any)?.fingerprint || "",
       });
     }
   }, [device]);
 
+  // Show loading state while fetching device details
+  if (detailsLoading) {
+    return (
+      <MainLayout>
+        <div className="page-content">
+          <div className="d-flex justify-content-center align-items-center" style={{ minHeight: "400px" }}>
+            <div className="text-center">
+              <div className="spinner-border text-primary" role="status">
+                <span className="visually-hidden">Loading...</span>
+              </div>
+              <p className="mt-3">Loading device details...</p>
+            </div>
+          </div>
+        </div>
+      </MainLayout>
+    );
+  }
+
+  // Show not found if no device data available
+  if (!device) {
+    return (
+      <MainLayout>
+        <div className="page-content">
+          <div className="alert alert-danger">Device not found</div>
+        </div>
+      </MainLayout>
+    );
+  }
+
+  // Show error state if device details fetch failed
+  if (detailsError && !device) {
+    return (
+      <MainLayout>
+        <div className="page-content">
+          <div className="alert alert-danger">
+            <h5>Error Loading Device Details</h5>
+            <p>{detailsError}</p>
+            <button 
+              className="btn btn-outline-primary" 
+              onClick={() => id && dispatch(fetchDeviceDetails(id))}
+            >
+              <i className="bx bx-refresh me-2"></i>Retry
+            </button>
+          </div>
+        </div>
+      </MainLayout>
+    );
+  }
+
+  // Show device not found if no device data available
   if (!device) {
     return (
       <MainLayout>
@@ -328,9 +182,9 @@ const DeviceDetails: React.FC = () => {
         organization: device.organization,
         programme: device.programme,
         is_active: device.is_active,
-        imei: device.imei || "",
-        serial_number: device.serial_number || "",
-        fingerprint: device.fingerprint || "",
+        imei: (device as any)?.imei || "",
+        serial_number: (device as any)?.serial_number || "",
+        fingerprint: (device as any)?.fingerprint || "",
       });
     }
     setIsEditing(false);
@@ -401,6 +255,20 @@ const DeviceDetails: React.FC = () => {
                   disabled={!isEditing}
                 />
               </div>
+              {/* MAC Address (read-only) */}
+              <div className="col-md-6">
+                <label htmlFor="mac_address" className="form-label">
+                  MAC Address
+                </label>
+                <input
+                  type="text"
+                  className="form-control"
+                  id="mac_address"
+                  name="mac_address"
+                  value={device.mac_address || ""}
+                  disabled
+                />
+              </div>
 
               <div className="col-md-6">
                 <label htmlFor="android_version" className="form-label">
@@ -419,7 +287,7 @@ const DeviceDetails: React.FC = () => {
 
               <div className="col-md-6">
                 <label htmlFor="app_version" className="form-label">
-                  App Version
+                  Telemetry App Version
                 </label>
                 <input
                   type="text"
@@ -449,7 +317,7 @@ const DeviceDetails: React.FC = () => {
 
               <div className="col-md-6">
                 <label htmlFor="programme" className="form-label">
-                  Intervention Programme
+                  Intervention
                 </label>
                 <input
                   type="text"
@@ -539,7 +407,7 @@ const DeviceDetails: React.FC = () => {
                 <div className="d-flex justify-content-between">
                   <span className="text-muted">Storage:</span>
                   <span className="fw-semibold">
-                    {device.device_specs?.storage || "N/A"}
+                    {(device as any)?.device_specs?.storage || "N/A"}
                   </span>
                 </div>
               </div>
@@ -547,7 +415,7 @@ const DeviceDetails: React.FC = () => {
                 <div className="d-flex justify-content-between">
                   <span className="text-muted">RAM:</span>
                   <span className="fw-semibold">
-                    {device.device_specs?.ram || "N/A"}
+                    {(device as any)?.device_specs?.ram || "N/A"}
                   </span>
                 </div>
               </div>
@@ -555,7 +423,7 @@ const DeviceDetails: React.FC = () => {
                 <div className="d-flex justify-content-between">
                   <span className="text-muted">Battery:</span>
                   <span className="fw-semibold">
-                    {device.device_specs?.battery || "N/A"}
+                    {(device as any)?.device_specs?.battery || "N/A"}
                   </span>
                 </div>
               </div>
@@ -563,7 +431,7 @@ const DeviceDetails: React.FC = () => {
                 <div className="d-flex justify-content-between">
                   <span className="text-muted">Screen Size:</span>
                   <span className="fw-semibold">
-                    {device.device_specs?.screen_size || "N/A"}
+                    {(device as any)?.device_specs?.screen_size || "N/A"}
                   </span>
                 </div>
               </div>
@@ -588,20 +456,23 @@ const DeviceDetails: React.FC = () => {
                   <tr>
                     <th>App Name</th>
                     <th>Version</th>
-                    <th>Category</th>
-                    <th>Size</th>
+                    <th>Monitoring</th>
+                    <th>Uninstalled</th>
                     <th>Install Date</th>
                     <th>Last Updated</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {device.installed_apps?.map((app) => (
+                   {device?.installed_apps?.map((app: any) => (
                     <tr key={app.id}>
                       <td>
                         <div className="d-flex align-items-center gap-3">
-                          <span style={{ fontSize: "24px" }}>
-                            {app.app_icon}
-                          </span>
+                           {/* Show app icon if available */}
+                           {app.icon_base64 ? (
+                             <img src={app.icon_base64} alt={app.app_name} style={{ width: 32, height: 32, borderRadius: 6, objectFit: 'cover' }} />
+                           ) : (
+                             <span style={{ fontSize: "24px" }}>{app.app_icon || ""}</span>
+                           )}
                           <div>
                             <div className="fw-semibold text-decoration-none">
                               {app.app_name}
@@ -612,11 +483,16 @@ const DeviceDetails: React.FC = () => {
                           </div>
                         </div>
                       </td>
-                      <td>{app.version}</td>
-                      <td>{app.category}</td>
-                      <td>{app.size}</td>
-                      <td>{new Date(app.install_date).toLocaleDateString()}</td>
-                      <td>{new Date(app.last_updated).toLocaleDateString()}</td>
+                       {/* Use version_name if available, fallback to version */}
+                       <td>{app.version_name || app.version || "-"}</td>
+                       {/* Show is_selected value for Monitoring */}
+                       <td>{app.is_selected ? "Yes" : "No"}</td>
+                       {/* Show is_uninstalled value for Uninstalled */}
+                       <td>{app.is_uninstalled ? "Yes" : "No"}</td>
+                       {/* Use created_at for install date */}
+                       <td>{app.created_at ? new Date(app.created_at).toLocaleDateString() : "-"}</td>
+                       {/* Use updated_at for last updated */}
+                       <td>{app.updated_at ? new Date(app.updated_at).toLocaleDateString() : "-"}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -624,8 +500,8 @@ const DeviceDetails: React.FC = () => {
                   <tr>
                     <th>App Name</th>
                     <th>Version</th>
-                    <th>Category</th>
-                    <th>Size</th>
+                    <th>Monitoring</th>
+                    <th>Uninstalled</th>
                     <th>Install Date</th>
                     <th>Last Updated</th>
                   </tr>
@@ -655,7 +531,7 @@ const DeviceDetails: React.FC = () => {
             <div className="mb-3">
               <span className="text-muted">Last Synced:</span>
               <p className="mb-0 mt-1">
-                {new Date(device.last_synced).toLocaleString()}
+                {device && (device as any)?.last_synced ? new Date((device as any).last_synced).toLocaleString() : "N/A"}
               </p>
             </div>
             <div className="mb-3">
@@ -1008,13 +884,16 @@ const DeviceDetails: React.FC = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {device.app_sessions?.map((session) => (
+                  {device?.app_sessions?.map((session) => (
                     <tr key={session.id}>
                       <td>
                         <div className="d-flex align-items-center gap-3">
-                          <span style={{ fontSize: "24px" }}>
-                            {session.app_icon}
-                          </span>
+                          {/* Show app icon if available */}
+                          {session.app_icon ? (
+                            <img src={session.app_icon} alt={session.app_name} style={{ width: 32, height: 32, borderRadius: 6, objectFit: 'cover' }} />
+                          ) : (
+                            <span style={{ fontSize: "24px" }}>📱</span>
+                          )}
                           <div>
                             <div className="fw-semibold text-decoration-none">
                               {session.app_name}
@@ -1065,7 +944,7 @@ const DeviceDetails: React.FC = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {device.screen_sessions?.map((session) => (
+                  {device?.screen_sessions?.map((session) => (
                     <tr key={session.id}>
                       <td>{formatTimestamp(session.screen_on_time_stamp)}</td>
                       <td>{formatTimestamp(session.screen_off_time_stamp)}</td>
@@ -1132,7 +1011,7 @@ const DeviceDetails: React.FC = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {device.assignment_history?.map((assignment) => (
+                  {device?.assignment_history?.map((assignment) => (
                     <tr key={assignment.id}>
                       <td>{assignment.beneficiary.name}</td>
                       <td>
@@ -1200,7 +1079,7 @@ const DeviceDetails: React.FC = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {device.sync_history?.map((sync) => (
+                  {device?.sync_history?.map((sync) => (
                     <tr key={sync.id}>
                       <td>{new Date(sync.created_at).toLocaleString()}</td>
                       <td>
@@ -1225,8 +1104,8 @@ const DeviceDetails: React.FC = () => {
                           {sync.status.toUpperCase()}
                         </span>
                       </td>
-                      <td>{sync.records_synced.toLocaleString()}</td>
-                      <td>{(sync.sync_duration_ms / 1000).toFixed(2)}s</td>
+                      <td>{sync.records_synced ? sync.records_synced.toLocaleString() : "0"}</td>
+                      <td>{sync.sync_duration_ms ? (sync.sync_duration_ms / 1000).toFixed(2) + "s" : "-"}</td>
                     </tr>
                   ))}
                 </tbody>

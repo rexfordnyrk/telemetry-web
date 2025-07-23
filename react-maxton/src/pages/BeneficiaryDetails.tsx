@@ -1,67 +1,20 @@
 import React, { useState, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import MainLayout from "../layouts/MainLayout";
-import { useAppDispatch } from "../store/hooks";
+import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { addAlert } from "../store/slices/alertSlice";
+import { usePermissions } from "../hooks/usePermissions";
 
 const BeneficiaryDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
+  const permissions = usePermissions();
 
-  // Sample beneficiaries data (would come from store in real app) - memoized to prevent re-renders
-  const beneficiaries = useMemo(
-    () => [
-      {
-        id: "f854c2a8-12ff-4075-95f6-abf2ad6d61de",
-        name: "John Doe",
-        email: "john.doe@example.com",
-        phone: "+1234567890",
-        organization: "Research Institute",
-        district: "Central District",
-        programme: "Digital Literacy Study",
-        date_enrolled: "2025-05-15T03:06:24.730291Z",
-        is_active: true,
-        current_device: {
-          id: "8c07e7e2-944f-4fb6-8817-2cf53a5bd952",
-          device_name: "Pixel 7",
-          android_version: "Android 13",
-          app_version: "1.2.3",
-        },
-        participation_history: [
-          {
-            date: "2025-01-15",
-            activity: "Survey Completed",
-            status: "Success",
-          },
-          {
-            date: "2025-01-10",
-            activity: "Training Session",
-            status: "Attended",
-          },
-          {
-            date: "2025-01-05",
-            activity: "App Installation",
-            status: "Success",
-          },
-          {
-            date: "2024-12-20",
-            activity: "Initial Onboarding",
-            status: "Completed",
-          },
-        ],
-        performance_metrics: {
-          surveys_completed: 15,
-          training_sessions_attended: 8,
-          avg_app_usage_hours: 2.5,
-          compliance_rate: 92,
-        },
-      },
-    ],
-    [],
-  );
+  // Get beneficiaries from Redux store (populated from API)
+  const beneficiaries = useAppSelector((state) => state.beneficiaries.beneficiaries);
 
-  // Find beneficiary by ID - memoized to prevent infinite re-renders
+  // Find beneficiary by ID from the store
   const beneficiary = useMemo(
     () => beneficiaries.find((b) => b.id === id),
     [beneficiaries, id],
@@ -188,14 +141,14 @@ const BeneficiaryDetails: React.FC = () => {
                     <h5 className="mb-0 fw-bold">Beneficiary Profile</h5>
                   </div>
                   <div>
-                    {!isEditing ? (
+                    {!isEditing && permissions.hasPermission('update_beneficiaries') ? (
                       <button
                         className="btn btn-outline-primary btn-sm"
                         onClick={() => setIsEditing(true)}
                       >
                         <i className="bx bx-edit me-2"></i>Edit Profile
                       </button>
-                    ) : (
+                    ) : isEditing ? (
                       <div className="d-flex gap-2">
                         <button
                           type="submit"
@@ -211,7 +164,7 @@ const BeneficiaryDetails: React.FC = () => {
                           Cancel
                         </button>
                       </div>
-                    )}
+                    ) : null}
                   </div>
                 </div>
 

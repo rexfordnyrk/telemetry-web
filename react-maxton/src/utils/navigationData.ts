@@ -50,12 +50,14 @@ export const navigationData: NavigationItem[] = [
         title: "Users",
         path: "/user-management/users",
         icon: "arrow_right",
+        requiredPermissions: ["list_users"], // Require list_users permission to see this menu item
       },
       {
         id: "roles-permissions",
         title: "Roles & Permissions",
         path: "/user-management/roles-permissions",
         icon: "arrow_right",
+        requiredPermissions: ["list_roles", "list_permissions"], // Require either list_roles or list_permissions
       },
     ],
   },

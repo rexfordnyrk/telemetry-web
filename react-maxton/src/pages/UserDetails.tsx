@@ -4,12 +4,14 @@ import MainLayout from "../layouts/MainLayout";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { updateUser, assignRole, removeRole } from "../store/slices/userSlice";
 import { addAlert } from "../store/slices/alertSlice";
+import { usePermissions } from "../hooks/usePermissions";
 
 const UserDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const dispatch = useAppDispatch();
   const users = useAppSelector((state) => state.users.users);
   const availableRoles = useAppSelector((state) => state.users.availableRoles);
+  const { hasPermission } = usePermissions();
 
   // All hooks must be called at the top level
   const [selectedRole, setSelectedRole] = useState("");
@@ -19,6 +21,9 @@ const UserDetails: React.FC = () => {
     newPassword: "",
     confirmPassword: "",
   });
+
+  // Edit mode state
+  const [isEditing, setIsEditing] = useState(false);
 
   // Find user by ID
   const user = users.find((u) => u.id === id);
@@ -32,7 +37,6 @@ const UserDetails: React.FC = () => {
     email: user?.email || "",
     designation: user?.designation || "",
     organization: user?.organization || "",
-    address: "123 Main Street, Apt 4B\nNew York, NY 10001",
     photo: null as File | null,
   });
 
@@ -51,12 +55,30 @@ const UserDetails: React.FC = () => {
         email: user.email,
         designation: user.designation,
         organization: user.organization,
-        address: "123 Main Street, Apt 4B\nNew York, NY 10001",
         photo: null,
       });
       setPhotoPreview(user.photo || null);
     }
   }, [user]);
+
+  // Check permissions after all hooks are called
+  const canReadUsers = hasPermission('read_users');
+  const canUpdateUsers = hasPermission('update_users');
+  const canViewUserRoles = hasPermission('view_user_roles');
+  const canManageUserRoles = hasPermission('manage_user_roles');
+
+  // If user doesn't have read_users permission, don't show the page
+  if (!canReadUsers) {
+    return (
+      <MainLayout>
+        <div className="page-content">
+          <div className="alert alert-danger">
+            You don't have permission to view user profiles.
+          </div>
+        </div>
+      </MainLayout>
+    );
+  }
 
   if (!user) {
     return (
@@ -130,6 +152,7 @@ const UserDetails: React.FC = () => {
         message: "User profile has been updated successfully.",
       }),
     );
+    setIsEditing(false);
   };
 
   const handleReset = () => {
@@ -141,10 +164,25 @@ const UserDetails: React.FC = () => {
       email: user.email,
       designation: user.designation,
       organization: user.organization,
-      address: "123 Main Street, Apt 4B\nNew York, NY 10001",
       photo: null,
     });
     setPhotoPreview(user.photo || null);
+    setIsEditing(false);
+  };
+
+  const handleCancel = () => {
+    setFormData({
+      first_name: user.first_name,
+      last_name: user.last_name,
+      username: user.username,
+      phone: user.phone,
+      email: user.email,
+      designation: user.designation,
+      organization: user.organization,
+      photo: null,
+    });
+    setPhotoPreview(user.photo || null);
+    setIsEditing(false);
   };
 
   const handleAssignRole = () => {
@@ -206,22 +244,24 @@ const UserDetails: React.FC = () => {
         addAlert({
           type: "danger",
           title: "Password Mismatch",
-          message: "Passwords do not match. Please try again.",
+          message: "New password and confirm password do not match.",
         }),
       );
       return;
     }
+
     if (passwordData.newPassword.length < 6) {
       dispatch(
         addAlert({
           type: "danger",
-          title: "Invalid Password",
+          title: "Password Too Short",
           message: "Password must be at least 6 characters long.",
         }),
       );
       return;
     }
 
+    // TODO: Implement password reset API call
     dispatch(
       addAlert({
         type: "success",
@@ -230,15 +270,19 @@ const UserDetails: React.FC = () => {
       }),
     );
 
-    setPasswordData({ newPassword: "", confirmPassword: "" });
+    setPasswordData({
+      newPassword: "",
+      confirmPassword: "",
+    });
   };
 
   const handleSendResetLink = () => {
+    // TODO: Implement send reset link API call
     dispatch(
       addAlert({
         type: "success",
         title: "Reset Link Sent",
-        message: `Password reset link has been sent to ${user.email}.`,
+        message: "Password reset link has been sent to the user's email.",
       }),
     );
   };
@@ -247,6 +291,13 @@ const UserDetails: React.FC = () => {
     return availableRoles.filter(
       (role) => !user.roles.find((userRole) => userRole.id === role.id),
     );
+  };
+
+  // Generate user initials for avatar
+  const getUserInitials = () => {
+    const firstName = user.first_name || '';
+    const lastName = user.last_name || '';
+    return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase();
   };
 
   return (
@@ -284,13 +335,29 @@ const UserDetails: React.FC = () => {
                 alt=""
               />
               <div className="profile-avatar position-absolute top-100 start-50 translate-middle">
-                <img
-                  src={user.photo || "/assets/images/avatars/01.png"}
-                  className="img-fluid rounded-circle p-1 bg-grd-danger shadow"
-                  width="170"
-                  height="170"
-                  alt=""
-                />
+                {user.photo ? (
+                  <img
+                    src={user.photo}
+                    className="img-fluid rounded-circle p-1 bg-grd-danger shadow"
+                    width="170"
+                    height="170"
+                    alt="User Profile"
+                    style={{ objectFit: 'cover' }}
+                  />
+                ) : (
+                  <div
+                    className="img-fluid rounded-circle p-1 bg-grd-danger shadow d-flex align-items-center justify-content-center"
+                    style={{
+                      width: "170px",
+                      height: "170px",
+                      fontSize: "48px",
+                      fontWeight: "bold",
+                      color: "white"
+                    }}
+                  >
+                    {getUserInitials()}
+                  </div>
+                )}
               </div>
             </div>
             <div className="profile-info pt-5 d-flex align-items-center justify-content-center">
@@ -327,36 +394,34 @@ const UserDetails: React.FC = () => {
                   <div className="">
                     <h5 className="mb-0 fw-bold">Edit Profile</h5>
                   </div>
-                  <div className="dropdown">
-                    <a
-                      href="javascript:;"
-                      className="dropdown-toggle-nocaret options dropdown-toggle"
-                      data-bs-toggle="dropdown"
-                    >
-                      <span className="material-icons-outlined fs-5">
-                        more_vert
-                      </span>
-                    </a>
-                    <ul className="dropdown-menu">
-                      <li>
-                        <a className="dropdown-item" href="javascript:;">
-                          Action
-                        </a>
-                      </li>
-                      <li>
-                        <a className="dropdown-item" href="javascript:;">
-                          Another action
-                        </a>
-                      </li>
-                      <li>
-                        <a className="dropdown-item" href="javascript:;">
-                          Something else here
-                        </a>
-                      </li>
-                    </ul>
+                  <div>
+                    {!isEditing && canUpdateUsers ? (
+                      <button
+                        className="btn btn-outline-primary btn-sm"
+                        onClick={() => setIsEditing(true)}
+                      >
+                        <i className="bx bx-edit me-2"></i>Edit Profile
+                      </button>
+                    ) : isEditing ? (
+                      <div className="d-flex gap-2">
+                        <button
+                          type="submit"
+                          form="user-form"
+                          className="btn btn-primary btn-sm"
+                        >
+                          <i className="bx bx-save me-2"></i>Save
+                        </button>
+                        <button
+                          className="btn btn-outline-secondary btn-sm"
+                          onClick={handleCancel}
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    ) : null}
                   </div>
                 </div>
-                <form className="row g-4" onSubmit={handleSubmit}>
+                <form id="user-form" className="row g-4" onSubmit={handleSubmit}>
                   <div className="col-md-12">
                     <label htmlFor="photo" className="form-label">
                       Profile Photo
@@ -382,8 +447,7 @@ const UserDetails: React.FC = () => {
                             fontSize: "24px",
                           }}
                         >
-                          {user?.first_name?.charAt(0)}
-                          {user?.last_name?.charAt(0)}
+                          {getUserInitials()}
                         </div>
                       )}
                       <div>
@@ -394,6 +458,7 @@ const UserDetails: React.FC = () => {
                           name="photo"
                           accept="image/*"
                           onChange={handlePhotoChange}
+                          disabled={!isEditing}
                         />
                         <small className="text-muted">
                           Upload a profile photo (optional)
@@ -401,6 +466,7 @@ const UserDetails: React.FC = () => {
                       </div>
                     </div>
                   </div>
+
                   <div className="col-md-6">
                     <label htmlFor="first_name" className="form-label">
                       First Name
@@ -413,6 +479,7 @@ const UserDetails: React.FC = () => {
                       placeholder="First Name"
                       value={formData.first_name}
                       onChange={handleInputChange}
+                      disabled={!isEditing}
                     />
                   </div>
                   <div className="col-md-6">
@@ -427,6 +494,7 @@ const UserDetails: React.FC = () => {
                       placeholder="Last Name"
                       value={formData.last_name}
                       onChange={handleInputChange}
+                      disabled={!isEditing}
                     />
                   </div>
                   <div className="col-md-12">
@@ -441,6 +509,7 @@ const UserDetails: React.FC = () => {
                       placeholder="Phone"
                       value={formData.phone}
                       onChange={handleInputChange}
+                      disabled={!isEditing}
                     />
                   </div>
                   <div className="col-md-12">
@@ -454,6 +523,7 @@ const UserDetails: React.FC = () => {
                       name="email"
                       value={formData.email}
                       onChange={handleInputChange}
+                      disabled={!isEditing}
                     />
                   </div>
                   <div className="col-md-12">
@@ -468,6 +538,7 @@ const UserDetails: React.FC = () => {
                       placeholder="Username"
                       value={formData.username}
                       onChange={handleInputChange}
+                      disabled={!isEditing}
                     />
                   </div>
                   <div className="col-md-12">
@@ -482,6 +553,7 @@ const UserDetails: React.FC = () => {
                       placeholder="Designation"
                       value={formData.designation}
                       onChange={handleInputChange}
+                      disabled={!isEditing}
                     />
                   </div>
                   <div className="col-md-12">
@@ -496,39 +568,8 @@ const UserDetails: React.FC = () => {
                       placeholder="Organization"
                       value={formData.organization}
                       onChange={handleInputChange}
+                      disabled={!isEditing}
                     />
-                  </div>
-
-                  <div className="col-md-12">
-                    <label htmlFor="address" className="form-label">
-                      Address
-                    </label>
-                    <textarea
-                      className="form-control"
-                      id="address"
-                      name="address"
-                      placeholder="Address ..."
-                      rows={4}
-                      value={formData.address}
-                      onChange={handleInputChange}
-                    />
-                  </div>
-                  <div className="col-md-12">
-                    <div className="d-md-flex d-grid align-items-center gap-3">
-                      <button
-                        type="submit"
-                        className="btn btn-grd-primary px-4"
-                      >
-                        Update Profile
-                      </button>
-                      <button
-                        type="button"
-                        className="btn btn-grd-royal px-4"
-                        onClick={handleReset}
-                      >
-                        Reset
-                      </button>
-                    </div>
                   </div>
                 </form>
               </div>
@@ -537,194 +578,202 @@ const UserDetails: React.FC = () => {
 
           {/* Right Column */}
           <div className="col-12 col-xl-4">
-            {/* Manage Roles Card */}
-            <div className="card rounded-4 mb-3">
-              <div className="card-body">
-                <div className="d-flex align-items-start justify-content-between mb-3">
-                  <div className="">
-                    <h5 className="mb-0 fw-bold">Manage Roles</h5>
-                  </div>
-                  <div className="dropdown">
-                    <a
-                      href="javascript:;"
-                      className="dropdown-toggle-nocaret options dropdown-toggle"
-                      data-bs-toggle="dropdown"
-                    >
-                      <span className="material-icons-outlined fs-5">
-                        more_vert
-                      </span>
-                    </a>
-                    <ul className="dropdown-menu">
-                      <li>
-                        <a className="dropdown-item" href="javascript:;">
-                          Action
-                        </a>
-                      </li>
-                      <li>
-                        <a className="dropdown-item" href="javascript:;">
-                          Another action
-                        </a>
-                      </li>
-                      <li>
-                        <a className="dropdown-item" href="javascript:;">
-                          Something else here
-                        </a>
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-
-                {/* Current Roles */}
-                <div className="mb-4">
-                  <h6 className="mb-3">Current Roles</h6>
-                  <div className="role-list d-flex flex-wrap gap-2">
-                    {user.roles.map((role) => (
-                      <div
-                        key={role.id}
-                        className="badge bg-primary text-white d-flex align-items-center gap-2 p-2"
-                        style={{ borderRadius: 0, fontSize: "0.875rem" }}
+            {/* Manage Roles Card - Only show if user has view_user_roles permission */}
+            {canViewUserRoles && (
+              <div className="card rounded-4 mb-3">
+                <div className="card-body">
+                  <div className="d-flex align-items-start justify-content-between mb-3">
+                    <div className="">
+                      <h5 className="mb-0 fw-bold">Manage Roles</h5>
+                    </div>
+                    <div className="dropdown">
+                      <a
+                        href="javascript:;"
+                        className="dropdown-toggle-nocaret options dropdown-toggle"
+                        data-bs-toggle="dropdown"
                       >
-                        <span>{role.name}</span>
-                        <button
-                          type="button"
-                          className="btn-close btn-close-white"
-                          style={{ fontSize: "0.75em" }}
-                          onClick={() => handleRemoveRole(role)}
-                          disabled={user.roles.length <= 1}
-                          title={
-                            user.roles.length <= 1
-                              ? "Cannot remove the last role"
-                              : "Remove role"
-                          }
-                        ></button>
-                      </div>
-                    ))}
+                        <span className="material-icons-outlined fs-5">
+                          more_vert
+                        </span>
+                      </a>
+                      <ul className="dropdown-menu">
+                        <li>
+                          <a className="dropdown-item" href="javascript:;">
+                            Action
+                          </a>
+                        </li>
+                        <li>
+                          <a className="dropdown-item" href="javascript:;">
+                            Another action
+                          </a>
+                        </li>
+                        <li>
+                          <a className="dropdown-item" href="javascript:;">
+                            Something else here
+                          </a>
+                        </li>
+                      </ul>
+                    </div>
                   </div>
-                </div>
 
-                {/* Assign Role */}
-                <div>
-                  <h6 className="mb-3">Assign Role</h6>
-                  <div className="d-flex gap-2">
-                    <select
-                      className="form-select"
-                      value={selectedRole}
-                      onChange={(e) => setSelectedRole(e.target.value)}
-                    >
-                      <option value="">Select a role...</option>
-                      {getAvailableRolesForAssignment().map((role) => (
-                        <option key={role.id} value={role.id}>
-                          {role.name} - {role.description}
-                        </option>
+                  {/* Current Roles */}
+                  <div className="mb-4">
+                    <h6 className="mb-3">Current Roles</h6>
+                    <div className="role-list d-flex flex-wrap gap-2">
+                      {user.roles.map((role) => (
+                        <div
+                          key={role.id}
+                          className="badge bg-primary text-white d-flex align-items-center gap-2 p-2"
+                          style={{ borderRadius: 0, fontSize: "0.875rem" }}
+                        >
+                          <span>{role.name}</span>
+                          {canManageUserRoles && (
+                            <button
+                              type="button"
+                              className="btn-close btn-close-white"
+                              style={{ fontSize: "0.75em" }}
+                              onClick={() => handleRemoveRole(role)}
+                              disabled={user.roles.length <= 1}
+                              title={
+                                user.roles.length <= 1
+                                  ? "Cannot remove the last role"
+                                  : "Remove role"
+                              }
+                            ></button>
+                          )}
+                        </div>
                       ))}
-                    </select>
-                    <button
-                      className="btn btn-grd-primary px-4"
-                      onClick={handleAssignRole}
-                      disabled={!selectedRole}
-                    >
-                      Apply
-                    </button>
+                    </div>
                   </div>
+
+                  {/* Assign Role - Only show if user has manage_user_roles permission */}
+                  {canManageUserRoles && (
+                    <div>
+                      <h6 className="mb-3">Assign Role</h6>
+                      <div className="d-flex gap-2">
+                        <select
+                          className="form-select"
+                          value={selectedRole}
+                          onChange={(e) => setSelectedRole(e.target.value)}
+                        >
+                          <option value="">Select a role...</option>
+                          {getAvailableRolesForAssignment().map((role) => (
+                            <option key={role.id} value={role.id}>
+                              {role.name} - {role.description}
+                            </option>
+                          ))}
+                        </select>
+                        <button
+                          className="btn btn-grd-primary px-4"
+                          onClick={handleAssignRole}
+                          disabled={!selectedRole}
+                        >
+                          Apply
+                        </button>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
-            </div>
+            )}
 
             {/* Password Management Card */}
-            <div className="card rounded-4">
-              <div className="card-body">
-                <div className="d-flex align-items-start justify-content-between mb-3">
-                  <div className="">
-                    <h5 className="mb-0 fw-bold">Password Reset</h5>
+            {canUpdateUsers && (
+              <div className="card rounded-4">
+                <div className="card-body">
+                  <div className="d-flex align-items-start justify-content-between mb-3">
+                    <div className="">
+                      <h5 className="mb-0 fw-bold">Password Reset</h5>
+                    </div>
+                    <div className="dropdown">
+                      <a
+                        href="javascript:;"
+                        className="dropdown-toggle-nocaret options dropdown-toggle"
+                        data-bs-toggle="dropdown"
+                      >
+                        <span className="material-icons-outlined fs-5">
+                          more_vert
+                        </span>
+                      </a>
+                      <ul className="dropdown-menu">
+                        <li>
+                          <a className="dropdown-item" href="javascript:;">
+                            Action
+                          </a>
+                        </li>
+                        <li>
+                          <a className="dropdown-item" href="javascript:;">
+                            Another action
+                          </a>
+                        </li>
+                        <li>
+                          <a className="dropdown-item" href="javascript:;">
+                            Something else here
+                          </a>
+                        </li>
+                      </ul>
+                    </div>
                   </div>
-                  <div className="dropdown">
-                    <a
-                      href="javascript:;"
-                      className="dropdown-toggle-nocaret options dropdown-toggle"
-                      data-bs-toggle="dropdown"
+
+                  {/* Password Reset Form */}
+                  <div className="mb-4">
+                    <div className="row g-3">
+                      <div className="col-12">
+                        <label htmlFor="newPassword" className="form-label">
+                          New Password
+                        </label>
+                        <input
+                          type="password"
+                          className="form-control"
+                          id="newPassword"
+                          name="newPassword"
+                          value={passwordData.newPassword}
+                          onChange={handlePasswordChange}
+                          placeholder="Enter new password"
+                          minLength={6}
+                        />
+                      </div>
+                      <div className="col-12">
+                        <label htmlFor="confirmPassword" className="form-label">
+                          Confirm Password
+                        </label>
+                        <input
+                          type="password"
+                          className="form-control"
+                          id="confirmPassword"
+                          name="confirmPassword"
+                          value={passwordData.confirmPassword}
+                          onChange={handlePasswordChange}
+                          placeholder="Confirm new password"
+                          minLength={6}
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="d-grid gap-2">
+                    <button
+                      className="btn btn-grd-warning px-4 d-flex align-items-center justify-content-center gap-2"
+                      onClick={handlePasswordReset}
                     >
-                      <span className="material-icons-outlined fs-5">
-                        more_vert
-                      </span>
-                    </a>
-                    <ul className="dropdown-menu">
-                      <li>
-                        <a className="dropdown-item" href="javascript:;">
-                          Action
-                        </a>
-                      </li>
-                      <li>
-                        <a className="dropdown-item" href="javascript:;">
-                          Another action
-                        </a>
-                      </li>
-                      <li>
-                        <a className="dropdown-item" href="javascript:;">
-                          Something else here
-                        </a>
-                      </li>
-                    </ul>
+                      <i className="material-icons-outlined">lock_reset</i>
+                      Reset Password
+                    </button>
+                    <button
+                      className="btn btn-grd-info px-4 d-flex align-items-center justify-content-center gap-2"
+                      onClick={handleSendResetLink}
+                    >
+                      <i className="material-icons-outlined">send</i>
+                      Send Reset Link
+                    </button>
+                    <small className="text-muted">
+                      Click to reset the user's password or send them a reset link
+                      via email.
+                    </small>
                   </div>
-                </div>
-
-                {/* Password Reset Form */}
-                <div className="mb-4">
-                  <div className="row g-3">
-                    <div className="col-12">
-                      <label htmlFor="newPassword" className="form-label">
-                        New Password
-                      </label>
-                      <input
-                        type="password"
-                        className="form-control"
-                        id="newPassword"
-                        name="newPassword"
-                        value={passwordData.newPassword}
-                        onChange={handlePasswordChange}
-                        placeholder="Enter new password"
-                        minLength={6}
-                      />
-                    </div>
-                    <div className="col-12">
-                      <label htmlFor="confirmPassword" className="form-label">
-                        Confirm Password
-                      </label>
-                      <input
-                        type="password"
-                        className="form-control"
-                        id="confirmPassword"
-                        name="confirmPassword"
-                        value={passwordData.confirmPassword}
-                        onChange={handlePasswordChange}
-                        placeholder="Confirm new password"
-                        minLength={6}
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                <div className="d-grid gap-2">
-                  <button
-                    className="btn btn-grd-warning px-4 d-flex align-items-center justify-content-center gap-2"
-                    onClick={handlePasswordReset}
-                  >
-                    <i className="material-icons-outlined">lock_reset</i>
-                    Reset Password
-                  </button>
-                  <button
-                    className="btn btn-grd-info px-4 d-flex align-items-center justify-content-center gap-2"
-                    onClick={handleSendResetLink}
-                  >
-                    <i className="material-icons-outlined">send</i>
-                    Send Reset Link
-                  </button>
-                  <small className="text-muted">
-                    Click to reset the user's password or send them a reset link
-                    via email.
-                  </small>
                 </div>
               </div>
-            </div>
+            )}
           </div>
         </div>
       </div>

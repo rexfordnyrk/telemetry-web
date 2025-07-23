@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useCallback } from "react";
 
 interface DataTableOptions {
   responsive?: boolean;
@@ -9,127 +9,119 @@ interface DataTableOptions {
   info?: boolean;
   autoWidth?: boolean;
   order?: Array<[number, string]>;
-  columnDefs?: Array<{ orderable: boolean; targets: number | number[] }>;
+  columnDefs?: any[];
+  processing?: boolean;
+  serverSide?: boolean;
+  deferRender?: boolean;
+  dom?: string;
 }
 
 export const useDataTable = (
   tableId: string,
   data: any[],
   options: DataTableOptions = {},
+  shouldInitialize: boolean = true,
 ) => {
   const isInitializedRef = useRef(false);
   const tableInstanceRef = useRef<any>(null);
 
+  // Cleanup function to destroy DataTable instance
+  const destroyDataTable = useCallback(() => {
+    if (tableInstanceRef.current && window.$ && typeof window.$.fn.DataTable === 'function') {
+      try {
+        // Check if the table still exists in DOM before destroying
+        const tableElement = document.getElementById(tableId);
+        if (tableElement) {
+          tableInstanceRef.current.destroy();
+        }
+      } catch (error) {
+        console.warn('Error destroying DataTable:', error);
+      }
+      tableInstanceRef.current = null;
+      isInitializedRef.current = false;
+    }
+  }, [tableId]);
+
   useEffect(() => {
-    // Don't initialize if already done or if jQuery/DataTable isn't available
-    if (isInitializedRef.current || !window.$ || !window.$.fn.DataTable) {
+    // Don't initialize if condition is false, already done, or if jQuery/DataTable isn't available
+    if (!shouldInitialize || isInitializedRef.current || !window.$ || typeof window.$.fn.DataTable !== 'function') {
       return;
     }
 
-    const selector = `#${tableId}`;
+    // Clean up any existing instance before initializing
+    destroyDataTable();
 
-    const initializeDataTable = () => {
+    // Small delay to ensure DOM is ready
+    const timeoutId = setTimeout(() => {
       try {
-        // Double-check the table element exists
+        // Initialize DataTable with DOM-based configuration
+        const $table = window.$(`#${tableId}`);
+        if ($table.length > 0) {
+          const defaultOptions: DataTableOptions = {
+            processing: false,
+            serverSide: false,
+            deferRender: false,
+            ...options,
+          };
+          
+          tableInstanceRef.current = $table.DataTable(defaultOptions);
+          isInitializedRef.current = true;
+        }
+      } catch (error) {
+        console.error('Error initializing DataTable:', error);
+        isInitializedRef.current = false;
+      }
+    }, 100);
+
+    return () => {
+      clearTimeout(timeoutId);
+    };
+  }, [shouldInitialize, options, destroyDataTable]);
+
+  // Reset initialization flag when shouldInitialize changes
+  useEffect(() => {
+    if (!shouldInitialize) {
+      destroyDataTable();
+    } else if (shouldInitialize && !isInitializedRef.current) {
+      // If shouldInitialize becomes true and we're not initialized, 
+      // the main initialization effect will handle it
+      // This is just to ensure we don't have stale state
+    }
+  }, [shouldInitialize, destroyDataTable]);
+
+  // Effect to handle data changes - for React-rendered tables, we don't need to update data
+  // since React handles the rendering and DataTable reads from the DOM
+  useEffect(() => {
+    if (isInitializedRef.current && tableInstanceRef.current && data.length > 0) {
+      try {
+        // Check if table still exists in DOM
         const tableElement = document.getElementById(tableId);
         if (!tableElement) {
-          console.warn(
-            `DataTable: Table element with ID '${tableId}' not found`,
-          );
+          console.warn('Table element not found, destroying DataTable');
+          destroyDataTable();
           return;
         }
 
-        // Destroy any existing DataTable instance
-        if (window.$.fn.DataTable.isDataTable(selector)) {
-          const existingTable = window.$(selector).DataTable();
-          existingTable.destroy();
-          // Clear the table HTML to reset state
-          window.$(selector).empty();
-        }
-
-        // Wait a bit for DOM to settle
-        setTimeout(() => {
-          // Re-check element exists after timeout
-          const tableEl = document.getElementById(tableId);
-          if (!tableEl || isInitializedRef.current) return;
-
-          // Initialize DataTable with default options
-          const defaultOptions: DataTableOptions = {
-            responsive: true,
-            pageLength: 10,
-            lengthChange: true,
-            searching: true,
-            ordering: true,
-            info: true,
-            autoWidth: false,
-            order: [[0, "asc"]],
-            columnDefs: [
-              { orderable: false, targets: -1 }, // Disable ordering on last column (actions)
-            ],
-            ...options,
-          };
-
-          try {
-            tableInstanceRef.current = window
-              .$(selector)
-              .DataTable(defaultOptions);
-            isInitializedRef.current = true;
-            console.log(`DataTable initialized for ${tableId}`);
-          } catch (error) {
-            console.error(
-              `Error initializing DataTable for ${tableId}:`,
-              error,
-            );
-          }
-        }, 150);
+        // For React-rendered tables, just redraw to pick up new DOM content
+        tableInstanceRef.current.draw();
       } catch (error) {
-        console.error(`Error in DataTable setup for ${tableId}:`, error);
-      }
-    };
-
-    // Initialize after a short delay to ensure DOM is ready
-    const timeoutId = setTimeout(initializeDataTable, 100);
-
-    // Cleanup function
-    return () => {
-      clearTimeout(timeoutId);
-
-      if (isInitializedRef.current && window.$ && window.$.fn.DataTable) {
-        try {
-          const selector = `#${tableId}`;
-          if (window.$.fn.DataTable.isDataTable(selector)) {
-            window.$(selector).DataTable().destroy();
-            console.log(`DataTable destroyed for ${tableId}`);
-          }
-        } catch (error) {
-          console.warn(`Error destroying DataTable for ${tableId}:`, error);
-        }
-      }
-
-      isInitializedRef.current = false;
-      tableInstanceRef.current = null;
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // Empty dependency array - only run once to avoid re-initialization
-
-  // Effect to handle data changes (reinitialize if needed)
-  useEffect(() => {
-    if (
-      isInitializedRef.current &&
-      tableInstanceRef.current &&
-      data.length > 0
-    ) {
-      try {
-        // Clear and redraw the table with new data
-        tableInstanceRef.current.clear().draw();
-      } catch (error) {
-        console.warn(`Error updating DataTable data for ${tableId}:`, error);
+        console.warn('Error updating DataTable data:', error);
+        // If there's an error updating, reinitialize the table
+        destroyDataTable();
+        isInitializedRef.current = false;
       }
     }
-  }, [data, tableId]);
+  }, [data, destroyDataTable, tableId]);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      destroyDataTable();
+    };
+  }, [destroyDataTable]);
 
   return {
     isInitialized: isInitializedRef.current,
-    tableInstance: tableInstanceRef.current,
+    destroyDataTable,
   };
 };
