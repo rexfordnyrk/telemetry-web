@@ -456,8 +456,8 @@ const DeviceDetails: React.FC = () => {
                   <tr>
                     <th>App Name</th>
                     <th>Version</th>
-                    <th>Category</th>
-                    <th>Size</th>
+                    <th>Monitoring</th>
+                    <th>Uninstalled</th>
                     <th>Install Date</th>
                     <th>Last Updated</th>
                   </tr>
@@ -485,10 +485,10 @@ const DeviceDetails: React.FC = () => {
                       </td>
                        {/* Use version_name if available, fallback to version */}
                        <td>{app.version_name || app.version || "-"}</td>
-                       {/* Category is not present in new API, so show built_with or dash */}
-                       <td>{app.built_with || app.category || "-"}</td>
-                       {/* Size is not present in new API, so show dash */}
-                       <td>-</td>
+                       {/* Show is_selected value for Monitoring */}
+                       <td>{app.is_selected ? "Yes" : "No"}</td>
+                       {/* Show is_uninstalled value for Uninstalled */}
+                       <td>{app.is_uninstalled ? "Yes" : "No"}</td>
                        {/* Use created_at for install date */}
                        <td>{app.created_at ? new Date(app.created_at).toLocaleDateString() : "-"}</td>
                        {/* Use updated_at for last updated */}
@@ -500,8 +500,8 @@ const DeviceDetails: React.FC = () => {
                   <tr>
                     <th>App Name</th>
                     <th>Version</th>
-                    <th>Category</th>
-                    <th>Size</th>
+                    <th>Monitoring</th>
+                    <th>Uninstalled</th>
                     <th>Install Date</th>
                     <th>Last Updated</th>
                   </tr>
