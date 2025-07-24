@@ -808,7 +808,7 @@ const Overview: React.FC = () => {
                 <div className="card-lable bg-success bg-opacity-10">
                   <p className="text-success mb-0">+12.3%</p>
                 </div>
-                <p className="mb-0 font-13">activity in last 5 minutes</p>
+                <p className="mb-0 font-12">activity in last 5 minutes</p>
               </div>
             </Card.Body>
           </Card>
