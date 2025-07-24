@@ -1,9 +1,9 @@
 /* Overview page widget aspect ratio and layout fixes */
 
-/* Ensure chart containers maintain proper heights */
+/* Ensure chart containers maintain proper heights - reduced to match original */
 .chart-container2 {
-  min-height: 105px;
-  max-height: 105px;
+  min-height: 90px;
+  max-height: 90px;
 }
 
 /* Font size classes for consistency with original */
