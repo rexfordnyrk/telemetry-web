@@ -259,7 +259,7 @@ const Overview: React.FC = () => {
       },
     ],
     chart: {
-      height: 105,
+      height: 90,
       type: "bar" as const,
       sparkline: {
         enabled: true,
