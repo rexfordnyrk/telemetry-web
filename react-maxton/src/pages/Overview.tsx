@@ -937,7 +937,7 @@ const Overview: React.FC = () => {
                   options={networkActivityChart}
                   series={networkActivityChart.series}
                   type="line"
-                  height={180}
+                  height={140}
                 />
               </div>
               <div className="d-flex align-items-center gap-3 mt-4">
