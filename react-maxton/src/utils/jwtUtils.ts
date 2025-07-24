@@ -51,26 +51,41 @@ export interface JWTClaims {
  */
 export const decodeJWT = (token: string): JWTClaims | null => {
   try {
+    // Handle demo token
+    if (token.startsWith('demo.')) {
+      return {
+        user_id: "demo-user",
+        username: "demo@example.com",
+        email: "demo@example.com",
+        first_name: "Demo",
+        last_name: "User",
+        roles: ["admin"],
+        permissions: ["all"],
+        exp: 9999999999, // Far future expiration
+        iat: 1600000000
+      };
+    }
+
     // Split the token into its three parts
     const parts = token.split('.');
-    
+
     if (parts.length !== 3) {
       console.error('Invalid JWT token format: expected 3 parts');
       return null;
     }
-    
+
     // Decode the payload (second part)
     const payload = parts[1];
-    
+
     // Add padding if needed for base64 decoding
     const paddedPayload = payload + '='.repeat((4 - payload.length % 4) % 4);
-    
+
     // Decode from base64
     const decodedPayload = atob(paddedPayload);
-    
+
     // Parse the JSON claims
     const claims = JSON.parse(decodedPayload);
-    
+
     return claims;
   } catch (error) {
     console.error('Error decoding JWT token:', error);
@@ -167,4 +182,4 @@ export const logJWTClaims = (token: string, label: string = 'JWT Claims') => {
   }
   
   console.groupEnd();
-}; 
+};
