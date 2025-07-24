@@ -330,7 +330,7 @@ const Overview: React.FC = () => {
       },
     ],
     chart: {
-      height: 180,
+      height: 140,
       type: "line" as const,
       sparkline: {
         enabled: true,
