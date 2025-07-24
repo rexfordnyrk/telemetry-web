@@ -30,6 +30,7 @@ import PublicRoute from "./components/PublicRoute";
 
 // Page components
 import Dashboard from "./pages/Dashboard";
+import Overview from "./pages/Overview";
 import EcommerceDashboard from "./pages/EcommerceDashboard";
 import WidgetsData from "./pages/WidgetsData";
 import BasicLogin from "./pages/BasicLogin";
