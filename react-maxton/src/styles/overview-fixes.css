@@ -30,9 +30,9 @@
   border-radius: 3px;
 }
 
-/* Card body padding consistency */
+/* Card body padding consistency - reduced to match original */
 .card-body {
-  padding: 1.5rem !important;
+  padding: 1.25rem !important;
 }
 
 /* Ensure proper alignment of metric cards */
