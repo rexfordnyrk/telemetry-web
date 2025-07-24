@@ -199,7 +199,17 @@ function App() {
                     </ProtectedRoute>
                   }
                 />
-                
+
+                {/* Overview dashboard */}
+                <Route
+                  path="/dashboard/overview"
+                  element={
+                    <ProtectedRoute>
+                      <Overview />
+                    </ProtectedRoute>
+                  }
+                />
+
                 {/* E-commerce dashboard */}
                 <Route
                   path="/dashboard/ecommerce"
