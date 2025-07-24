@@ -203,7 +203,7 @@ const Overview: React.FC = () => {
   const geographicDistributionChart = {
     series: [27.5, 25.1, 19.8, 16.6, 10.9],
     chart: {
-      height: 290,
+      height: 250,
       type: "pie" as const,
     },
     legend: {
@@ -258,7 +258,7 @@ const Overview: React.FC = () => {
       },
     ],
     chart: {
-      height: 120,
+      height: 105,
       type: "bar" as const,
       sparkline: {
         enabled: true,
@@ -329,7 +329,7 @@ const Overview: React.FC = () => {
       },
     ],
     chart: {
-      height: 210,
+      height: 180,
       type: "line" as const,
       sparkline: {
         enabled: true,
