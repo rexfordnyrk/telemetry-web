@@ -851,7 +851,7 @@ const Overview: React.FC = () => {
                     options={geographicDistributionChart}
                     series={geographicDistributionChart.series}
                     type="pie"
-                    height={250}
+                    height={200}
                   />
                 </div>
                 <div className="d-flex flex-column gap-3">
