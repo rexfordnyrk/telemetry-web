@@ -57,7 +57,7 @@ const AuthInitializer: React.FC<AuthInitializerProps> = ({ children }) => {
     // Check if there's a stored authentication token in localStorage
     const storedToken = localStorage.getItem('auth_token'); // Legacy check
     const storedAuthState = localStorage.getItem('auth_state'); // New approach
-    
+
     if (storedAuthState) {
       try {
         const authData = JSON.parse(storedAuthState);
@@ -73,7 +73,7 @@ const AuthInitializer: React.FC<AuthInitializerProps> = ({ children }) => {
         console.error('Failed to parse stored auth state:', error);
       }
     }
-    
+
     // Legacy fallback - check for stored token
     if (storedToken) {
       // Check if token is expired first
@@ -82,18 +82,18 @@ const AuthInitializer: React.FC<AuthInitializerProps> = ({ children }) => {
         dispatch(clearAuth());
         return;
       }
-      
+
       // Extract user information from JWT claims
       const claims = decodeJWT(storedToken);
       if (claims) {
         // Set token and user info in Redux store
         dispatch(setToken(storedToken));
-        
+
         // Log JWT claims for debugging
         console.log('=== APP STARTUP - STORED TOKEN (LEGACY) ===');
         console.log('Stored Token:', storedToken);
         logJWTClaims(storedToken, 'Stored JWT Claims');
-        
+
         // Log extracted user info
         const userInfo = {
           id: claims.user_id || claims.sub || '',
@@ -120,9 +120,14 @@ const AuthInitializer: React.FC<AuthInitializerProps> = ({ children }) => {
         dispatch(clearAuth());
       }
     } else {
-      // If no stored token, clear any stale authentication state
-      // This ensures we start with a clean authentication state
-      dispatch(clearAuth());
+      // DEMO MODE: Create a demo JWT token for development
+      // This allows viewing the dashboard without actual authentication
+      const demoToken = 'demo.eyJ1c2VyX2lkIjoiZGVtby11c2VyIiwidXNlcm5hbWUiOiJkZW1vQGV4YW1wbGUuY29tIiwiZW1haWwiOiJkZW1vQGV4YW1wbGUuY29tIiwiZmlyc3RfbmFtZSI6IkRlbW8iLCJsYXN0X25hbWUiOiJVc2VyIiwicm9sZXMiOlsiYWRtaW4iXSwicGVybWlzc2lvbnMiOlsiYWxsIl0sImV4cCI6OTk5OTk5OTk5OSwiaWF0IjoxNjAwMDAwMDAwfQ.demo';
+
+      console.log('=== DEMO MODE ACTIVATED ===');
+      console.log('Using demo authentication for development');
+      dispatch(setToken(demoToken));
+      console.log('=== END DEMO MODE SETUP ===');
     }
   }, [dispatch, initialized]); // Re-run if dispatch or initialized changes
 
@@ -159,4 +164,4 @@ const AuthInitializer: React.FC<AuthInitializerProps> = ({ children }) => {
   return <>{children}</>;
 };
 
-export default AuthInitializer; 
+export default AuthInitializer;
