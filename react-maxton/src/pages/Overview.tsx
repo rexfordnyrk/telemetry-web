@@ -2,6 +2,7 @@ import React from "react";
 import { Card, Row, Col, Dropdown } from "react-bootstrap";
 import SafeApexChart from "../components/SafeApexChart";
 import MainLayout from "../layouts/MainLayout";
+import "../styles/overview-fixes.css";
 
 const Overview: React.FC = () => {
   // 1. Total Active Devices - Area Chart
