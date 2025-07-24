@@ -588,10 +588,10 @@ const Overview: React.FC = () => {
                       <p className="mb-3">Active in Last 7 Days</p>
                       <div className="progress mb-0" style={{ height: "5px" }}>
                         <div
-                          className="progress-bar bg-grd-info"
+                          className="progress-bar bg-grd-danger"
                           role="progressbar"
-                          style={{ width: "85%" }}
-                          aria-valuenow={85}
+                          style={{ width: "60%" }}
+                          aria-valuenow={60}
                           aria-valuemin={0}
                           aria-valuemax={100}
                         ></div>
@@ -741,7 +741,7 @@ const Overview: React.FC = () => {
                 </div>
               </div>
               <p className="mb-0">New Enrollments This Month</p>
-              <div>
+              <div className="chart-container2">
                 <SafeApexChart
                   options={newEnrollmentsChart}
                   series={newEnrollmentsChart.series}
@@ -768,12 +768,12 @@ const Overview: React.FC = () => {
               <div>
                 <h4 className="mb-0">96.2%</h4>
                 <p className="mb-3">Sync Success Rate</p>
-                <div>
+                <div className="chart-container2">
                   <SafeApexChart
                     options={syncSuccessRateChart}
                     series={syncSuccessRateChart.series}
                     type="bar"
-                    height={120}
+                    height={105}
                   />
                 </div>
               </div>
@@ -798,8 +798,8 @@ const Overview: React.FC = () => {
                 <div
                   className="progress-bar bg-grd-danger"
                   role="progressbar"
-                  style={{ width: "30%" }}
-                  aria-valuenow={30}
+                  style={{ width: "60%" }}
+                  aria-valuenow={60}
                   aria-valuemin={0}
                   aria-valuemax={100}
                 ></div>
@@ -850,7 +850,7 @@ const Overview: React.FC = () => {
                     options={geographicDistributionChart}
                     series={geographicDistributionChart.series}
                     type="pie"
-                    height={290}
+                    height={250}
                   />
                 </div>
                 <div className="d-flex flex-column gap-3">
@@ -931,12 +931,12 @@ const Overview: React.FC = () => {
         <Col xl={6} xxl={4} className="d-flex align-items-stretch">
           <Card className="w-100 rounded-4">
             <Card.Body>
-              <div>
+              <div className="chart-container">
                 <SafeApexChart
                   options={networkActivityChart}
                   series={networkActivityChart.series}
                   type="line"
-                  height={210}
+                  height={180}
                 />
               </div>
               <div className="d-flex align-items-center gap-3 mt-4">
@@ -991,48 +991,7 @@ const Overview: React.FC = () => {
         </Col>
       </Row>
 
-      <Row>
-        {/* Live Sync Status */}
-        <Col xl={6} xxl={4} className="d-flex align-items-stretch">
-          <Card className="w-100 rounded-4">
-            <Card.Body>
-              <div className="d-flex align-items-start justify-content-between mb-3">
-                <div>
-                  <h5 className="mb-0">Live Sync Status</h5>
-                </div>
-                <Dropdown>
-                  <Dropdown.Toggle
-                    variant="link"
-                    className="dropdown-toggle-nocaret options"
-                  >
-                    <span className="material-icons-outlined fs-5">
-                      more_vert
-                    </span>
-                  </Dropdown.Toggle>
-                  <Dropdown.Menu>
-                    <Dropdown.Item>Action</Dropdown.Item>
-                    <Dropdown.Item>Another action</Dropdown.Item>
-                    <Dropdown.Item>Something else here</Dropdown.Item>
-                  </Dropdown.Menu>
-                </Dropdown>
-              </div>
-              <div className="chart-container mb-2">
-                <SafeApexChart
-                  options={liveSyncStatusChart}
-                  series={liveSyncStatusChart.series}
-                  type="radialBar"
-                  height={200}
-                />
-              </div>
-              <div className="text-center">
-                <h3>15 syncs</h3>
-                <p className="mb-3">Real-time synchronization monitoring across all active devices</p>
-                <button className="btn btn-grd btn-grd-info rounded-5 px-4">View Sync Details</button>
-              </div>
-            </Card.Body>
-          </Card>
-        </Col>
-      </Row>
+undefined
     </MainLayout>
   );
 };
