@@ -44,6 +44,7 @@ import DeviceDetails from "./pages/DeviceDetails";
 import Beneficiaries from "./pages/Beneficiaries";
 import BeneficiaryDetails from "./pages/BeneficiaryDetails";
 import NotFound from "./pages/NotFound";
+import MainComponents from "./pages/MainComponents";
 
 // Utility components
 import ErrorBoundary from "./components/ErrorBoundary";
