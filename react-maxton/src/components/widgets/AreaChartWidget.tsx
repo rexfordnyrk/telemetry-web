@@ -167,7 +167,7 @@ const AreaChartWidget: React.FC<AreaChartWidgetProps> = ({
             <div id={chartId}></div>
           </div>
           <div className="text-center">
-            <p className="mb-0 font-12">
+            <p className="mb-0">
               <span className={`me-1 ${changeDirection === "up" ? "text-success" : "text-danger"}`}>
                 {changePercentage}
               </span>
