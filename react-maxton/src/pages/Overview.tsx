@@ -604,7 +604,7 @@ const Overview: React.FC = () => {
                   <div className="welcome-back-img pt-4">
                     <img
                       src="/assets/images/gallery/welcome-back-3.png"
-                      height="180"
+                      height="140"
                       alt=""
                     />
                   </div>
@@ -615,7 +615,7 @@ const Overview: React.FC = () => {
         </Col>
 
         {/* Total Active Devices */}
-        <Col xl={6} xxl={2} className="d-flex align-items-stretch">
+        <Col xl={2} className="d-flex align-items-stretch">
           <Card className="w-100 rounded-4">
             <Card.Body>
               <div className="d-flex align-items-start justify-content-between mb-1">
@@ -657,7 +657,7 @@ const Overview: React.FC = () => {
         </Col>
 
         {/* Total Beneficiaries */}
-        <Col xl={6} xxl={2} className="d-flex align-items-stretch">
+        <Col xl={2} className="d-flex align-items-stretch">
           <Card className="w-100 rounded-4">
             <Card.Body>
               <div className="d-flex align-items-start justify-content-between mb-3">
@@ -701,7 +701,7 @@ const Overview: React.FC = () => {
 
       <Row>
         {/* Device Assignment Rate */}
-        <Col xl={6} xxl={3} className="d-flex align-items-stretch">
+        <Col xl={2} className="d-flex align-items-stretch">
           <Card className="w-100 rounded-4">
             <Card.Body>
               <div className="d-flex align-items-center gap-3 mb-2">
@@ -728,7 +728,7 @@ const Overview: React.FC = () => {
         </Col>
 
         {/* New Enrollments This Month */}
-        <Col xl={6} xxl={3} className="d-flex align-items-stretch">
+        <Col xl={2} className="d-flex align-items-stretch">
           <Card className="w-100 rounded-4">
             <Card.Body>
               <div className="d-flex align-items-center gap-3 mb-2">
@@ -755,7 +755,7 @@ const Overview: React.FC = () => {
         </Col>
 
         {/* Sync Success Rate */}
-        <Col xl={6} xxl={3} className="d-flex align-items-stretch">
+        <Col xl={2} className="d-flex align-items-stretch">
           <Card className="w-100 rounded-4">
             <Card.Body>
               <div className="mb-3 d-flex align-items-center justify-content-between">
@@ -783,7 +783,7 @@ const Overview: React.FC = () => {
         </Col>
 
         {/* Currently Active Devices */}
-        <Col xl={6} xxl={3} className="d-flex align-items-stretch">
+        <Col xl={2} className="d-flex align-items-stretch">
           <Card className="w-100 rounded-4">
             <Card.Body>
               <div className="d-flex align-items-center justify-content-between mb-3">
