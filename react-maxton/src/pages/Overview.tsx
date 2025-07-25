@@ -321,7 +321,7 @@ const Overview: React.FC = () => {
     },
   };
 
-  // 10. Network Activity Live - Line Chart
+  // 10. Network Activity Live - Area Chart
   const networkActivityChart = {
     series: [
       {
@@ -331,7 +331,7 @@ const Overview: React.FC = () => {
     ],
     chart: {
       height: 140,
-      type: "line" as const,
+      type: "area" as const,
       sparkline: {
         enabled: true,
       },
@@ -344,7 +344,7 @@ const Overview: React.FC = () => {
     },
     stroke: {
       width: 3,
-      curve: "smooth" as const,
+      curve: "straight" as const,
     },
     fill: {
       type: "gradient",
