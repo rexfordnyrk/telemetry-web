@@ -46,13 +46,12 @@
   margin: 0;
 }
 
-/* Ensure consistent height for all small metric cards - reduced */
-.col-xxl-2 .card-body,
-.col-xxl-3 .card-body {
+/* Ensure consistent height for all small metric cards - reduced to match original */
+.col-xl-2 .card-body {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  min-height: 160px;
+  min-height: 140px;
 }
 
 /* Responsive adjustments for the main overview card */
