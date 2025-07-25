@@ -157,11 +157,7 @@ const WidgetsDataComponents: React.FC = () => {
           <RadialChartWidget
             title="Total Users"
             value="97.4K"
-            subtitle={
-              <>
-                <span className="text-success me-1">12.5%</span> from last month
-              </>
-            }
+            subtitle="12.5% from last month"
             chartId="chart8"
             colors={["#98ec2d"]}
             gradientColors={["#005bea"]}
