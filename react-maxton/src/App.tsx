@@ -46,6 +46,7 @@ import BeneficiaryDetails from "./pages/BeneficiaryDetails";
 import NotFound from "./pages/NotFound";
 import MainComponents from "./pages/MainComponents";
 import EcommerceComponents from "./pages/EcommerceComponents";
+import Overview from "./pages/Overview";
 
 // Utility components
 import ErrorBoundary from "./components/ErrorBoundary";
