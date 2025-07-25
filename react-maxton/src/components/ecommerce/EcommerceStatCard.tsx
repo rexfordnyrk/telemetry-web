@@ -158,9 +158,7 @@ const EcommerceStatCard: React.FC<EcommerceStatCardProps> = ({ data }) => {
         <div>
           <h4 className="mb-0">{statData.value}</h4>
           <p className="mb-3">{statData.title}</p>
-          <div className="chart-container">
-            <div id={statData.chartId}></div>
-          </div>
+          <div id={statData.chartId}></div>
         </div>
       </Card.Body>
     </Card>
