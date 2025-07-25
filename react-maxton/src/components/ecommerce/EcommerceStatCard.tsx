@@ -40,6 +40,12 @@ const EcommerceStatCard: React.FC<EcommerceStatCardProps> = ({ data }) => {
     const initChart = () => {
       try {
         if (typeof window !== "undefined" && (window as any).ApexCharts) {
+          // Clear existing chart if any
+          const existingChart = document.querySelector(`#${statData.chartId} .apexcharts-canvas`);
+          if (existingChart) {
+            existingChart.parentElement?.removeChild(existingChart);
+          }
+
           const chartOptions = {
             series: [
               {
@@ -111,10 +117,7 @@ const EcommerceStatCard: React.FC<EcommerceStatCardProps> = ({ data }) => {
 
           const chartElement = document.querySelector(`#${statData.chartId}`);
           if (chartElement) {
-            const chart = new (window as any).ApexCharts(chartElement, chartOptions);
-            chart.render();
-          } else {
-            console.warn(`Chart element with ID ${statData.chartId} not found`);
+            new (window as any).ApexCharts(chartElement, chartOptions).render();
           }
         }
       } catch (error) {
@@ -122,9 +125,9 @@ const EcommerceStatCard: React.FC<EcommerceStatCardProps> = ({ data }) => {
       }
     };
 
-    const timer = setTimeout(initChart, 500);
+    const timer = setTimeout(initChart, 100);
     return () => clearTimeout(timer);
-  }, [statData.chartId, statData.chartData, statData.colors, statData.gradientColors, statData.chartType]);
+  }, [statData]);
 
   return (
     <Card className="rounded-4 w-100">
