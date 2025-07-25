@@ -32,7 +32,12 @@
 
 /* Card body padding consistency - reduced to match original */
 .card-body {
-  padding: 1.25rem !important;
+  padding: 1rem !important;
+}
+
+/* Smaller widgets need even less padding */
+.col-xl-2 .card-body {
+  padding: 0.75rem !important;
 }
 
 /* Ensure proper alignment of metric cards */
