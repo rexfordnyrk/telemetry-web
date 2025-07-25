@@ -15,6 +15,36 @@
   font-size: 13px !important;
 }
 
+.font-11 {
+  font-size: 11px !important;
+}
+
+/* Smaller text elements in compact widgets */
+.col-xl-2 h6 {
+  font-size: 1rem !important;
+}
+
+.col-xl-2 p {
+  font-size: 0.75rem !important;
+}
+
+.col-xl-2 .material-icons-outlined {
+  font-size: 1rem !important;
+}
+
+/* Reduce margins in small widgets */
+.col-xl-2 .mb-1 {
+  margin-bottom: 0.25rem !important;
+}
+
+.col-xl-2 .mb-2 {
+  margin-bottom: 0.5rem !important;
+}
+
+.col-xl-2 .mb-3 {
+  margin-bottom: 0.75rem !important;
+}
+
 /* Pie chart legend positioning */
 .piechart-legend {
   position: absolute;
