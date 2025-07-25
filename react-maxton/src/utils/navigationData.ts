@@ -13,6 +13,12 @@ export const navigationData: NavigationItem[] = [
         icon: "arrow_right",
       },
       {
+        id: "dashboard-overview",
+        title: "Overview",
+        path: "/dashboard/overview",
+        icon: "arrow_right",
+      },
+      {
         id: "dashboard-ecommerce",
         title: "eCommerce",
         path: "/dashboard/ecommerce",
