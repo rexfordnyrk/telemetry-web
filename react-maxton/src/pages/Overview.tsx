@@ -747,7 +747,7 @@ const Overview: React.FC = () => {
                   options={newEnrollmentsChart}
                   series={newEnrollmentsChart.series}
                   type="area"
-                  height={90}
+                  height={65}
                 />
               </div>
             </Card.Body>
