@@ -129,30 +129,51 @@ const AreaChartWidget: React.FC<AreaChartWidgetProps> = ({
     <div className="col">
       <div className="card rounded-4">
         <div className="card-body">
-          <div className="d-flex align-items-center gap-3 mb-2">
-            <div className="">
-              <h3 className="mb-0">{value}</h3>
+          <div className="d-flex align-items-start justify-content-between mb-3">
+            <div>
+              <h5 className="mb-0">{value}</h5>
+              <p className="mb-0">{title}</p>
             </div>
-            <div className="">
-              <p className={`dash-lable d-flex align-items-center gap-1 rounded mb-0 ${
-                changeDirection === "up" 
-                  ? "bg-success text-success" 
-                  : "bg-danger text-danger"
-                } bg-opacity-10`}>
-                <span className="material-icons-outlined fs-6">
-                  {changeDirection === "up" ? "arrow_upward" : "arrow_downward"}
+            <div className="dropdown">
+              <a
+                href="javascript:;"
+                className="dropdown-toggle-nocaret options dropdown-toggle"
+                data-bs-toggle="dropdown"
+              >
+                <span className="material-icons-outlined fs-5">
+                  more_vert
                 </span>
-                {changePercentage}
-              </p>
+              </a>
+              <ul className="dropdown-menu">
+                <li>
+                  <a className="dropdown-item" href="javascript:;">
+                    Action
+                  </a>
+                </li>
+                <li>
+                  <a className="dropdown-item" href="javascript:;">
+                    Another action
+                  </a>
+                </li>
+                <li>
+                  <a className="dropdown-item" href="javascript:;">
+                    Something else here
+                  </a>
+                </li>
+              </ul>
             </div>
           </div>
-          <p className="mb-0">{title}</p>
-          <div id={chartId}></div>
-          {subtitle && (
-            <div className="text-center">
-              <p className="mb-0 font-12">{subtitle}</p>
-            </div>
-          )}
+          <div className="chart-container2">
+            <div id={chartId}></div>
+          </div>
+          <div className="text-center">
+            <p className="mb-0 font-12">
+              <span className={`me-1 ${changeDirection === "up" ? "text-success" : "text-danger"}`}>
+                {changePercentage}
+              </span>
+              {subtitle}
+            </p>
+          </div>
         </div>
       </div>
     </div>
