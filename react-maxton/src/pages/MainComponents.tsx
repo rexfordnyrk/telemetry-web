@@ -100,6 +100,7 @@ const MainComponents: React.FC = () => {
             changePercentage="12.5%"
             changeDirection="up"
             chartId="area-chart-1"
+            subtitle="from last month"
             data={[4, 10, 25, 12, 25, 18, 40, 22, 7]}
             colors={["#02c27a"]}
             gradientColors={["#0866ff"]}
