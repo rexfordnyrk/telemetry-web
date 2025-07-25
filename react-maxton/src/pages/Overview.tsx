@@ -774,7 +774,7 @@ const Overview: React.FC = () => {
                     options={syncSuccessRateChart}
                     series={syncSuccessRateChart.series}
                     type="bar"
-                    height={90}
+                    height={65}
                   />
                 </div>
               </div>
