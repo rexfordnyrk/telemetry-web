@@ -35,15 +35,14 @@ const defaultEcommerceStatData: EcommerceStatData = {
 
 const EcommerceStatCard: React.FC<EcommerceStatCardProps> = ({ data }) => {
   const statData = data || defaultEcommerceStatData;
+  const chartRef = useRef<any>(null);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const initChart = () => {
       try {
         if (typeof window !== "undefined" && (window as any).ApexCharts) {
-          // Clear existing chart if any
-          const existingChart = document.querySelector(`#${statData.chartId} .apexcharts-canvas`);
-          if (existingChart) {
-            existingChart.parentElement?.removeChild(existingChart);
+          if (chartRef.current) {
+            chartRef.current.destroy();
           }
 
           const chartOptions = {
@@ -117,7 +116,11 @@ const EcommerceStatCard: React.FC<EcommerceStatCardProps> = ({ data }) => {
 
           const chartElement = document.querySelector(`#${statData.chartId}`);
           if (chartElement) {
-            new (window as any).ApexCharts(chartElement, chartOptions).render();
+            chartRef.current = new (window as any).ApexCharts(
+              chartElement,
+              chartOptions,
+            );
+            chartRef.current.render();
           }
         }
       } catch (error) {
@@ -126,8 +129,13 @@ const EcommerceStatCard: React.FC<EcommerceStatCardProps> = ({ data }) => {
     };
 
     const timer = setTimeout(initChart, 100);
-    return () => clearTimeout(timer);
-  }, [statData]);
+    return () => {
+      clearTimeout(timer);
+      if (chartRef.current) {
+        chartRef.current.destroy();
+      }
+    };
+  }, [statData.title, statData.chartData, statData.colors, statData.gradientColors, statData.chartType, statData.chartId]);
 
   return (
     <Card className="rounded-4 w-100">
