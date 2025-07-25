@@ -35,16 +35,11 @@ const defaultEcommerceStatData: EcommerceStatData = {
 
 const EcommerceStatCard: React.FC<EcommerceStatCardProps> = ({ data }) => {
   const statData = data || defaultEcommerceStatData;
-  const chartRef = useRef<any>(null);
 
   useEffect(() => {
     const initChart = () => {
       try {
         if (typeof window !== "undefined" && (window as any).ApexCharts) {
-          if (chartRef.current) {
-            chartRef.current.destroy();
-          }
-
           const chartOptions = {
             series: [
               {
@@ -116,11 +111,7 @@ const EcommerceStatCard: React.FC<EcommerceStatCardProps> = ({ data }) => {
 
           const chartElement = document.querySelector(`#${statData.chartId}`);
           if (chartElement) {
-            chartRef.current = new (window as any).ApexCharts(
-              chartElement,
-              chartOptions,
-            );
-            chartRef.current.render();
+            new (window as any).ApexCharts(chartElement, chartOptions).render();
           }
         }
       } catch (error) {
@@ -128,14 +119,9 @@ const EcommerceStatCard: React.FC<EcommerceStatCardProps> = ({ data }) => {
       }
     };
 
-    const timer = setTimeout(initChart, 100);
-    return () => {
-      clearTimeout(timer);
-      if (chartRef.current) {
-        chartRef.current.destroy();
-      }
-    };
-  }, [statData.title, statData.chartData, statData.colors, statData.gradientColors, statData.chartType, statData.chartId]);
+    const timer = setTimeout(initChart, 500);
+    return () => clearTimeout(timer);
+  }, []);
 
   return (
     <Card className="rounded-4 w-100">
