@@ -6,6 +6,7 @@ interface AreaChartWidgetProps {
   changePercentage: string;
   changeDirection: "up" | "down";
   chartId: string;
+  subtitle?: string;
   data?: number[];
   categories?: string[];
   colors?: string[];
