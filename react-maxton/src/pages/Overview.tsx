@@ -200,12 +200,12 @@ const Overview: React.FC = () => {
     },
   };
 
-  // 5. Geographic Distribution - Pie Chart
+  // 5. Geographic Distribution - Donut Chart
   const geographicDistributionChart = {
     series: [27.5, 25.1, 19.8, 16.6, 10.9],
     chart: {
-      height: 200,
-      type: "pie" as const,
+      height: 180,
+      type: "donut" as const,
     },
     legend: {
       position: "bottom" as const,
@@ -230,7 +230,7 @@ const Overview: React.FC = () => {
     plotOptions: {
       pie: {
         donut: {
-          size: "75%",
+          size: "80%",
         },
       },
     },
@@ -620,8 +620,8 @@ const Overview: React.FC = () => {
             <Card.Body>
               <div className="d-flex align-items-start justify-content-between mb-1">
                 <div>
-                  <h5 className="mb-0">247</h5>
-                  <p className="mb-0">Active Devices</p>
+                  <h6 className="mb-0">247</h6>
+                  <p className="mb-0 font-12">Active Devices</p>
                 </div>
                 <Dropdown>
                   <Dropdown.Toggle
@@ -662,8 +662,8 @@ const Overview: React.FC = () => {
             <Card.Body>
               <div className="d-flex align-items-start justify-content-between mb-3">
                 <div>
-                  <h5 className="mb-0">189</h5>
-                  <p className="mb-0">Total Beneficiaries</p>
+                  <h6 className="mb-0">189</h6>
+                  <p className="mb-0 font-12">Total Beneficiaries</p>
                 </div>
                 <Dropdown>
                   <Dropdown.Toggle
@@ -706,7 +706,7 @@ const Overview: React.FC = () => {
             <Card.Body>
               <div className="d-flex align-items-center gap-3 mb-2">
                 <div>
-                  <h2 className="mb-0">87.4%</h2>
+                  <h5 className="mb-0">87.4%</h5>
                 </div>
                 <div>
                   <p className="dash-lable d-flex align-items-center gap-1 rounded mb-0 bg-success text-success bg-opacity-10">
@@ -733,7 +733,7 @@ const Overview: React.FC = () => {
             <Card.Body>
               <div className="d-flex align-items-center gap-3 mb-2">
                 <div>
-                  <h3 className="mb-0">42</h3>
+                  <h5 className="mb-0">42</h5>
                 </div>
                 <div>
                   <p className="dash-lable d-flex align-items-center gap-1 rounded mb-0 bg-danger text-danger bg-opacity-10">
@@ -767,8 +767,8 @@ const Overview: React.FC = () => {
                 </div>
               </div>
               <div>
-                <h4 className="mb-0">96.2%</h4>
-                <p className="mb-3">Sync Success Rate</p>
+                <h6 className="mb-0">96.2%</h6>
+                <p className="mb-2 font-12">Sync Success Rate</p>
                 <div className="chart-container2">
                   <SafeApexChart
                     options={syncSuccessRateChart}
@@ -788,8 +788,8 @@ const Overview: React.FC = () => {
             <Card.Body>
               <div className="d-flex align-items-center justify-content-between mb-3">
                 <div>
-                  <p className="mb-1">Currently Active Devices</p>
-                  <h3 className="mb-0">67</h3>
+                  <p className="mb-1 font-12">Currently Active Devices</p>
+                  <h5 className="mb-0">67</h5>
                 </div>
                 <div className="wh-42 d-flex align-items-center justify-content-center rounded-circle bg-grd-danger">
                   <span className="material-icons-outlined fs-5 text-white">devices</span>
@@ -824,7 +824,7 @@ const Overview: React.FC = () => {
               <div className="d-flex flex-column gap-3">
                 <div className="d-flex align-items-start justify-content-between">
                   <div>
-                    <h5 className="mb-0">Geographic Distribution</h5>
+                    <h6 className="mb-0">Geographic Distribution</h6>
                   </div>
                   <Dropdown>
                     <Dropdown.Toggle
@@ -844,8 +844,8 @@ const Overview: React.FC = () => {
                 </div>
                 <div className="position-relative">
                   <div className="piechart-legend">
-                    <h2 className="mb-1">5</h2>
-                    <h6 className="mb-0">Districts</h6>
+                    <h4 className="mb-1">5</h4>
+                    <small className="mb-0">Districts</small>
                   </div>
                   <SafeApexChart
                     options={geographicDistributionChart}
