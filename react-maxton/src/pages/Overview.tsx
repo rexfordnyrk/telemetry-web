@@ -850,8 +850,8 @@ const Overview: React.FC = () => {
                   <SafeApexChart
                     options={geographicDistributionChart}
                     series={geographicDistributionChart.series}
-                    type="pie"
-                    height={200}
+                    type="donut"
+                    height={160}
                   />
                 </div>
                 <div className="d-flex flex-column gap-3">
