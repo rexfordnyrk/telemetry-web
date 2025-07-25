@@ -204,7 +204,7 @@ const Overview: React.FC = () => {
   const geographicDistributionChart = {
     series: [27.5, 25.1, 19.8, 16.6, 10.9],
     chart: {
-      height: 180,
+      height: 160,
       type: "donut" as const,
     },
     legend: {
