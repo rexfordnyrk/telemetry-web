@@ -241,6 +241,16 @@ function App() {
                     </ProtectedRoute>
                   }
                 />
+
+                {/* eCommerce components page */}
+                <Route
+                  path="/widgets/ecommerce-components"
+                  element={
+                    <ProtectedRoute>
+                      <EcommerceComponents />
+                    </ProtectedRoute>
+                  }
+                />
                 
                 {/* ===== USER MANAGEMENT ROUTES ===== */}
                 
