@@ -26,6 +26,7 @@ const AreaChartWidget: React.FC<AreaChartWidgetProps> = ({
   changePercentage,
   changeDirection,
   chartId,
+  subtitle,
   data = defaultProps.data!,
   categories = defaultProps.categories!,
   colors = defaultProps.colors!,
