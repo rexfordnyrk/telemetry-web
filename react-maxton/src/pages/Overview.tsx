@@ -936,7 +936,7 @@ const Overview: React.FC = () => {
                 <SafeApexChart
                   options={networkActivityChart}
                   series={networkActivityChart.series}
-                  type="line"
+                  type="area"
                   height={140}
                 />
               </div>
