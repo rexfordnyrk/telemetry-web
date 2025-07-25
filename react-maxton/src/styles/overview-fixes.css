@@ -2,8 +2,14 @@
 
 /* Ensure chart containers maintain proper heights - reduced to match original */
 .chart-container2 {
-  min-height: 90px;
-  max-height: 90px;
+  min-height: 75px;
+  max-height: 75px;
+}
+
+/* Even smaller for compact widgets */
+.col-xl-2 .chart-container2 {
+  min-height: 65px;
+  max-height: 65px;
 }
 
 /* Font size classes for consistency with original */
