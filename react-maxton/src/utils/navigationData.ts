@@ -31,6 +31,12 @@ export const navigationData: NavigationItem[] = [
         path: "/widgets/data",
         icon: "arrow_right",
       },
+      {
+        id: "widgets-data-components",
+        title: "Data Components",
+        path: "/widgets/data-components",
+        icon: "arrow_right",
+      },
     ],
   },
 
