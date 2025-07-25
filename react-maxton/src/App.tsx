@@ -211,13 +211,23 @@ function App() {
                 />
                 
                 {/* Widgets data page */}
-                <Route 
-                  path="/widgets/data" 
+                <Route
+                  path="/widgets/data"
                   element={
                     <ProtectedRoute>
                       <WidgetsData />
                     </ProtectedRoute>
-                  } 
+                  }
+                />
+
+                {/* Widgets data components page */}
+                <Route
+                  path="/widgets/data-components"
+                  element={
+                    <ProtectedRoute>
+                      <WidgetsDataComponents />
+                    </ProtectedRoute>
+                  }
                 />
                 
                 {/* ===== USER MANAGEMENT ROUTES ===== */}
