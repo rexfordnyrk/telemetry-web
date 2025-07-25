@@ -148,6 +148,11 @@ const AreaChartWidget: React.FC<AreaChartWidgetProps> = ({
           </div>
           <p className="mb-0">{title}</p>
           <div id={chartId}></div>
+          {subtitle && (
+            <div className="text-center">
+              <p className="mb-0 font-12">{subtitle}</p>
+            </div>
+          )}
         </div>
       </div>
     </div>
