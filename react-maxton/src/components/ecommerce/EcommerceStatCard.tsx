@@ -111,7 +111,10 @@ const EcommerceStatCard: React.FC<EcommerceStatCardProps> = ({ data }) => {
 
           const chartElement = document.querySelector(`#${statData.chartId}`);
           if (chartElement) {
-            new (window as any).ApexCharts(chartElement, chartOptions).render();
+            const chart = new (window as any).ApexCharts(chartElement, chartOptions);
+            chart.render();
+          } else {
+            console.warn(`Chart element with ID ${statData.chartId} not found`);
           }
         }
       } catch (error) {
