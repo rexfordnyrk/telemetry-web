@@ -644,7 +644,7 @@ const Overview: React.FC = () => {
                   options={totalActiveDevicesChart}
                   series={totalActiveDevicesChart.series}
                   type="area"
-                  height={90}
+                  height={65}
                 />
               </div>
               <div className="text-center">
