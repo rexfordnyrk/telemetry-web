@@ -43,6 +43,12 @@ export const navigationData: NavigationItem[] = [
         path: "/widgets/main-components",
         icon: "arrow_right",
       },
+      {
+        id: "widgets-ecommerce-components",
+        title: "eCommerce Components",
+        path: "/widgets/ecommerce-components",
+        icon: "arrow_right",
+      },
     ],
   },
 
