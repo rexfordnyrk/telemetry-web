@@ -127,11 +127,7 @@ const WidgetsDataComponents: React.FC = () => {
           <BarChartWidget
             title="Total Users"
             value="97.4K"
-            subtitle={
-              <>
-                <span className="text-success me-1">12.5%</span> from last month
-              </>
-            }
+            subtitle="12.5% from last month"
             chartId="chart4"
           />
           <RadialChartWidget
