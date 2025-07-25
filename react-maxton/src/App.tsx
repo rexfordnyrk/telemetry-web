@@ -230,6 +230,16 @@ function App() {
                     </ProtectedRoute>
                   }
                 />
+
+                {/* Main components page */}
+                <Route
+                  path="/widgets/main-components"
+                  element={
+                    <ProtectedRoute>
+                      <MainComponents />
+                    </ProtectedRoute>
+                  }
+                />
                 
                 {/* ===== USER MANAGEMENT ROUTES ===== */}
                 
