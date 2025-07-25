@@ -686,7 +686,7 @@ const Overview: React.FC = () => {
                   options={totalBeneficiariesChart}
                   series={totalBeneficiariesChart.series}
                   type="line"
-                  height={90}
+                  height={65}
                 />
               </div>
               <div className="text-center">
