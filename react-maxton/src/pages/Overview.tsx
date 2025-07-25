@@ -148,7 +148,7 @@ const Overview: React.FC = () => {
       },
     ],
     chart: {
-      height: 90,
+      height: 65,
       type: "area" as const,
       sparkline: {
         enabled: true,
