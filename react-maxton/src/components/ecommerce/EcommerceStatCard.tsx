@@ -122,9 +122,9 @@ const EcommerceStatCard: React.FC<EcommerceStatCardProps> = ({ data }) => {
       }
     };
 
-    const timer = setTimeout(initChart, 100);
+    const timer = setTimeout(initChart, 500);
     return () => clearTimeout(timer);
-  }, [statData]);
+  }, [statData.chartId, statData.chartData, statData.colors, statData.gradientColors, statData.chartType]);
 
   return (
     <Card className="rounded-4 w-100">
