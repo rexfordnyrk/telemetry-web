@@ -32,6 +32,7 @@ import PublicRoute from "./components/PublicRoute";
 import Dashboard from "./pages/Dashboard";
 import EcommerceDashboard from "./pages/EcommerceDashboard";
 import WidgetsData from "./pages/WidgetsData";
+import WidgetsDataComponents from "./pages/WidgetsDataComponents";
 import BasicLogin from "./pages/BasicLogin";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
