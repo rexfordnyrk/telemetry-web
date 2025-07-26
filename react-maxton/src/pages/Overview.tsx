@@ -94,17 +94,17 @@ const Overview: React.FC = () => {
 
         <Col xl={6} xxl={2} className="d-flex align-items-stretch">
           <IconAreaChartWidget
-            title="Most Used App"
-            value="WhatsApp"
-            changePercentage="24.5%"
+            title="Avg Active Screentime"
+            value="4.2 hrs"
+            changePercentage="15.3%"
             changeDirection="up"
-            chartId="most-used-app-chart"
-            subtitle="usage increase"
-            data={[15, 25, 30, 20, 35, 40, 28, 45, 38]}
-            colors={["#25d366"]}
-            gradientColors={["#128c7e"]}
-            iconImage="/assets/images/county/02.png"
-            iconBgClass="bg-success bg-opacity-10 text-success"
+            chartId="avg-screentime-chart"
+            subtitle="daily average"
+            data={[3, 5, 4, 6, 4, 5, 6, 4, 5]}
+            colors={["#ffd700"]}
+            gradientColors={["#ff8c00"]}
+            icon="schedule"
+            iconBgClass="bg-warning bg-opacity-10 text-warning"
             showDropdown={false}
           />
         </Col>
@@ -120,7 +120,7 @@ const Overview: React.FC = () => {
             data={[12, 18, 22, 15, 28, 35, 30, 40, 32]}
             colors={["#6f42c1"]}
             gradientColors={["#e83e8c"]}
-            iconImage="/assets/images/avatars/01.png"
+            icon="network_check"
             iconBgClass="bg-info bg-opacity-10 text-info"
             showDropdown={false}
           />
@@ -142,16 +142,19 @@ const Overview: React.FC = () => {
         </Col>
 
         <Col xl={6} xxl={2} className="d-flex align-items-stretch">
-          <AreaChartWidget
-            title="Total Users"
-            value="97.4K"
-            changePercentage="12.5%"
+          <IconAreaChartWidget
+            title="Most Used App"
+            value="WhatsApp"
+            changePercentage="24.5%"
             changeDirection="up"
-            chartId="area-chart-1"
-            subtitle="from last month"
-            data={[4, 10, 25, 12, 25, 18, 40, 22, 7]}
-            colors={["#02c27a"]}
-            gradientColors={["#0866ff"]}
+            chartId="most-used-app-chart"
+            subtitle="increase in the last month"
+            data={[15, 25, 30, 20, 35, 40, 28, 45, 38]}
+            colors={["#25d366"]}
+            gradientColors={["#128c7e"]}
+            iconImage="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEyLjAxMSAyQzE3LjUwNiAyIDIxLjk5NiA2LjQ4IDIxLjk5NiAxMkMyMS45OTYgMTcuNTIgMTcuNTA2IDIyIDEyLjAxMSAyMkMxMC4xMDEgMjIgOC4zMjUgMjEuNDM1IDYuNzg5IDIwLjQ4NEwyIDIyTDMuNTE4IDE3LjQ2QzIuNTEzIDE1Ljg1NyAyIDEzLjk5NyAyIDEyQzIgNi40OCA2LjQ5IDIgMTIuMDExIDJaTTguMzUgNy4zQzguMjMgNy4zIDcuODggNy4zNSA3LjQzIDcuNzI0QzYuOTggOC4wOTkgNi4wMSA5LjAzMSA2LjAxIDEwLjE0NUM2LjAxIDExLjI2IDYuODg2IDEyLjk3IDYuODg2IDEyLjk3QzYuODg2IDEyLjk3IDEwLjU1NiAxOC40MjIgMTcuMzYgMTguNDIyQzE3LjM2IDE4LjQyMiAxNy45MDggMTYuNTA0IDE4LjAzNCAxNS44NzdDMTguMDYgMTUuNzA5IDE4LjAyIDE1LjAzMiAxNy44IDEyLjk3QzE3LjggMTIuOTcgMTQuNjUgMTQuMTE3IDEyLjg5IDE0LjExN0MxMi44OSAxNC4xMTcgMTEuMzM1IDEyLjI2IDExLjMzNSAxMi4yNkwxMS4zNDQgMTEuODQyTDExLjM0NyAxMS42OTdDMTEuMzQ3IDExLjE0NSAxMS43MzggMTAuNjM5IDEyLjI2IDEwLjE3NkMxMi42MDYgOS44NTggMTMuMDcgOS41NTUgMTMuNzQyIDkuNTU1QzE0LjQxNCA5LjU1NSAxNC44NTggOS42NTggMTQuODU4IDkuNjU4TDE0Ljg2IDEwLjMwOUwxNC44NjEgMTEuNDEzQzE0Ljg2MSAxMS40MTMgMTYuMjM2IDExLjQwNSAxNi4zMzUgMTEuMTcyQzE2LjQzNSAxMC45MzkgMTYuMjYzIDEwLjE0NiAxNi4yNjMgMTAuMTQ2QzE2LjI2MyAxMC4xNDYgMTYuNTQyIDkuMDA2IDE2LjE5IDguMjk4QzE1LjgzOCA3LjU5IDEzLjU4OSA3LjI5OCAxMy41ODkgNy4yOThTMTIuNjUzIDcuMjk4IDEyLjY1MyA3LjI5OEwxMi41MjcgNy4yOThDMTEuODkgNy4yOTggMTEuMjM1IDcuMjk4IDExLjIzNSA3LjI5OFM5LjE3MiA3LjI4OSA4LjQ5IDcuMjk4QzguMzYxIDcuMyA4LjM1IDcuMyA4LjM1IDcuM1oiIGZpbGw9IiMyNUQ0NjYiLz4KPC9zdmc+Cg=="
+            iconBgClass="bg-success bg-opacity-10 text-success"
+            showDropdown={false}
           />
         </Col>
 
