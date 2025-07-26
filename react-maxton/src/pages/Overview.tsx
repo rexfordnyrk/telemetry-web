@@ -165,7 +165,58 @@ const Overview: React.FC = () => {
 
         {/* Row 2: Monthly Revenue + Device Type + Nested Section (Total Clicks, Total Views, Total Accounts) */}
         <Col xl={6} xxl={4} className="d-flex align-items-stretch">
-          <MonthlyRevenueWidget />
+          <SocialRevenueWidget
+            data={{
+              title: "Top 5 Used Apps",
+              totalRevenue: "654 hrs",
+              totalChange: "+15%",
+              totalChangeDirection: "up",
+              subtitle: "total Usage this month",
+              platforms: [
+                {
+                  name: "WhatsApp",
+                  category: "Communication",
+                  icon: "/assets/images/apps/17.png",
+                  revenue: "145 hrs",
+                  change: "+28.5%",
+                  changeDirection: "up",
+                },
+                {
+                  name: "Facebook",
+                  category: "Social Media",
+                  icon: "/assets/images/apps/03.png",
+                  revenue: "132 hrs",
+                  change: "-14.5%",
+                  changeDirection: "down",
+                },
+                {
+                  name: "Instagram",
+                  category: "Social Media",
+                  icon: "/assets/images/apps/19.png",
+                  revenue: "118 hrs",
+                  change: "+28.5%",
+                  changeDirection: "up",
+                },
+                {
+                  name: "YouTube",
+                  category: "Entertainment",
+                  icon: "/assets/images/apps/20.png",
+                  revenue: "134 hrs",
+                  change: "-43.5%",
+                  changeDirection: "down",
+                },
+                {
+                  name: "TikTok",
+                  category: "Entertainment",
+                  icon: "/assets/images/apps/twitter-circle.png",
+                  revenue: "125 hrs",
+                  change: "+24.7%",
+                  changeDirection: "up",
+                },
+              ],
+            }}
+            showDropdown={false}
+          />
         </Col>
 
         <Col xl={6} xxl={4} className="d-flex align-items-stretch">
