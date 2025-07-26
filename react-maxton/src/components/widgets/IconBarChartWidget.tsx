@@ -53,7 +53,7 @@ const IconBarChartWidget: React.FC<IconBarChartWidgetProps> = ({
               },
             ],
             chart: {
-              height: 105,
+              height: 120,
               type: "bar",
               sparkline: {
                 enabled: true,
@@ -66,7 +66,9 @@ const IconBarChartWidget: React.FC<IconBarChartWidgetProps> = ({
               enabled: false,
             },
             stroke: {
-              width: 0,
+              width: 1,
+              curve: "smooth",
+              color: ["transparent"],
             },
             fill: {
               type: "gradient",
@@ -75,8 +77,6 @@ const IconBarChartWidget: React.FC<IconBarChartWidgetProps> = ({
                 gradientToColors: gradientColors,
                 shadeIntensity: 1,
                 type: "vertical",
-                opacityFrom: 0.5,
-                opacityTo: 0.0,
               },
             },
             colors: colors,
@@ -86,7 +86,7 @@ const IconBarChartWidget: React.FC<IconBarChartWidgetProps> = ({
                 borderRadius: 4,
                 borderRadiusApplication: "around",
                 borderRadiusWhenStacked: "last",
-                columnWidth: "55%",
+                columnWidth: "45%",
               },
             },
             tooltip: {
