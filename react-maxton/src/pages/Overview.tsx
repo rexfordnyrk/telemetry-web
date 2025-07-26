@@ -105,6 +105,7 @@ const Overview: React.FC = () => {
             gradientColors={["#128c7e"]}
             icon="apps"
             iconBgClass="bg-success bg-opacity-10 text-success"
+            showDropdown={false}
           />
         </Col>
 
@@ -121,6 +122,7 @@ const Overview: React.FC = () => {
             gradientColors={["#e83e8c"]}
             icon="network_check"
             iconBgClass="bg-info bg-opacity-10 text-info"
+            showDropdown={false}
           />
         </Col>
 
