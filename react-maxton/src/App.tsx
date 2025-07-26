@@ -32,6 +32,7 @@ import PublicRoute from "./components/PublicRoute";
 import Dashboard from "./pages/Dashboard";
 import EcommerceDashboard from "./pages/EcommerceDashboard";
 import WidgetsData from "./pages/WidgetsData";
+import WidgetsDataComponents from "./pages/WidgetsDataComponents";
 import BasicLogin from "./pages/BasicLogin";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
@@ -43,6 +44,9 @@ import DeviceDetails from "./pages/DeviceDetails";
 import Beneficiaries from "./pages/Beneficiaries";
 import BeneficiaryDetails from "./pages/BeneficiaryDetails";
 import NotFound from "./pages/NotFound";
+import MainComponents from "./pages/MainComponents";
+import EcommerceComponents from "./pages/EcommerceComponents";
+import Overview from "./pages/Overview";
 
 // Utility components
 import ErrorBoundary from "./components/ErrorBoundary";
@@ -199,6 +203,16 @@ function App() {
                   }
                 />
                 
+                {/* Overview dashboard */}
+                <Route
+                  path="/dashboard/overview"
+                  element={
+                    <ProtectedRoute>
+                      <Overview />
+                    </ProtectedRoute>
+                  }
+                />
+
                 {/* E-commerce dashboard */}
                 <Route
                   path="/dashboard/ecommerce"
@@ -210,13 +224,43 @@ function App() {
                 />
                 
                 {/* Widgets data page */}
-                <Route 
-                  path="/widgets/data" 
+                <Route
+                  path="/widgets/data"
                   element={
                     <ProtectedRoute>
                       <WidgetsData />
                     </ProtectedRoute>
-                  } 
+                  }
+                />
+
+                {/* Widgets data components page */}
+                <Route
+                  path="/widgets/data-components"
+                  element={
+                    <ProtectedRoute>
+                      <WidgetsDataComponents />
+                    </ProtectedRoute>
+                  }
+                />
+
+                {/* Main components page */}
+                <Route
+                  path="/widgets/main-components"
+                  element={
+                    <ProtectedRoute>
+                      <MainComponents />
+                    </ProtectedRoute>
+                  }
+                />
+
+                {/* eCommerce components page */}
+                <Route
+                  path="/widgets/ecommerce-components"
+                  element={
+                    <ProtectedRoute>
+                      <EcommerceComponents />
+                    </ProtectedRoute>
+                  }
                 />
                 
                 {/* ===== USER MANAGEMENT ROUTES ===== */}

@@ -13,6 +13,12 @@ export const navigationData: NavigationItem[] = [
         icon: "arrow_right",
       },
       {
+        id: "dashboard-overview",
+        title: "Overview",
+        path: "/dashboard/overview",
+        icon: "arrow_right",
+      },
+      {
         id: "dashboard-ecommerce",
         title: "eCommerce",
         path: "/dashboard/ecommerce",
@@ -29,6 +35,24 @@ export const navigationData: NavigationItem[] = [
         id: "widgets-data",
         title: "Data",
         path: "/widgets/data",
+        icon: "arrow_right",
+      },
+      {
+        id: "widgets-data-components",
+        title: "Data Components",
+        path: "/widgets/data-components",
+        icon: "arrow_right",
+      },
+      {
+        id: "widgets-main-components",
+        title: "Main Components",
+        path: "/widgets/main-components",
+        icon: "arrow_right",
+      },
+      {
+        id: "widgets-ecommerce-components",
+        title: "eCommerce Components",
+        path: "/widgets/ecommerce-components",
         icon: "arrow_right",
       },
     ],
