@@ -92,17 +92,17 @@ const SocialRevenueWidget: React.FC<SocialRevenueWidgetProps> = ({
               <Dropdown.Toggle
                 variant="link"
                 className="dropdown-toggle-nocaret options"
-                as="a"
-                href="javascript:;"
+                as="button"
+                style={{ border: "none", background: "none" }}
               >
                 <span className="material-icons-outlined fs-5">
                   more_vert
                 </span>
               </Dropdown.Toggle>
               <Dropdown.Menu>
-                <Dropdown.Item href="javascript:;">Action</Dropdown.Item>
-                <Dropdown.Item href="javascript:;">Another action</Dropdown.Item>
-                <Dropdown.Item href="javascript:;">Something else here</Dropdown.Item>
+                <Dropdown.Item onClick={() => console.log('Action')}>Action</Dropdown.Item>
+                <Dropdown.Item onClick={() => console.log('Another action')}>Another action</Dropdown.Item>
+                <Dropdown.Item onClick={() => console.log('Something else here')}>Something else here</Dropdown.Item>
               </Dropdown.Menu>
             </Dropdown>
           )}
