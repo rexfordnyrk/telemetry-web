@@ -2,6 +2,7 @@ export { default as AreaChartWidget } from './AreaChartWidget';
 export { default as IconAreaChartWidget } from './IconAreaChartWidget';
 export { default as BarChartWidget } from './BarChartWidget';
 export { default as RadialChartWidget } from './RadialChartWidget';
+export { default as IconRadialChartWidget } from './IconRadialChartWidget';
 export { default as LineChartWidget } from './LineChartWidget';
 export { default as DonutChartWidget } from './DonutChartWidget';
 export { default as MultiSeriesBarChart } from './MultiSeriesBarChart';
