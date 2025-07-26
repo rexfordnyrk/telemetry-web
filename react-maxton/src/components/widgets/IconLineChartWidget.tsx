@@ -129,21 +129,21 @@ const IconLineChartWidget: React.FC<IconLineChartWidgetProps> = ({
   }, [title, data, colors, gradientColors, chartId]);
 
   return (
-    <div className="col">
-      <div className="card rounded-4">
+    <div className="col d-flex">
+      <div className="card rounded-4 w-100">
         <div className="card-body">
-          <div className="d-flex align-items-start justify-content-between mb-3">
-            <div>
+          <div className="d-flex align-items-start justify-content-between mb-1">
+            <div className="">
               <h5 className="mb-0">{value}</h5>
-              <p className="mb-0" style={{ fontSize: "12px" }}>{title}</p>
+              <p className="mb-0">{title}</p>
             </div>
             {iconImage ? (
-              <img 
-                src={iconImage} 
-                alt={title} 
+              <img
+                src={iconImage}
+                alt={title}
                 className="rounded"
-                width="32" 
-                height="32" 
+                width="32"
+                height="32"
                 style={{ objectFit: "cover" }}
               />
             ) : (
