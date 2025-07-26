@@ -225,7 +225,7 @@ const Overview: React.FC = () => {
         <Col xl={6} xxl={4} className="d-flex align-items-stretch">
           <DeviceTypeWidget
             data={{
-              title: "Active Apps vs Background Network Usage",
+              title: "App vs Background Usage",
               centerTitle: "Total Data Usage",
               centerValue: "656.8 GB",
               series: [68, 32],
