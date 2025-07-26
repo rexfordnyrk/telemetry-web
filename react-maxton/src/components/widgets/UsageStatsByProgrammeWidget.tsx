@@ -185,58 +185,67 @@ const UsageStatsByProgrammeWidget: React.FC<UsageStatsByProgrammeWidgetProps> = 
   return (
     <Card className="w-100 rounded-4">
       <Card.Body>
-        <div className="d-flex align-items-start justify-content-between mb-3">
-          <div>
-            <h5 className="mb-0">{usageData.title}</h5>
+        <div className="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-2">
+          <h5 className="mb-0">{usageData.title}</h5>
+
+          <div className="d-flex align-items-center gap-2">
+            {/* Filter Controls */}
+            <Form.Select
+              size="sm"
+              value={selectedProgramme}
+              onChange={(e) => setSelectedProgramme(e.target.value)}
+              style={{ width: "160px" }}
+            >
+              <option>All Programmes</option>
+              <option>Digital Literacy</option>
+              <option>Skills Training</option>
+              <option>Financial Education</option>
+              <option>Health Awareness</option>
+              <option>Youth Development</option>
+            </Form.Select>
+
+            <Form.Select
+              size="sm"
+              value={selectedDatapoint}
+              onChange={(e) => setSelectedDatapoint(e.target.value)}
+              style={{ width: "140px" }}
+            >
+              <option>All Datapoints</option>
+              <option>App Sessions</option>
+              <option>Network Usage</option>
+              <option>Screentime</option>
+            </Form.Select>
+
+            <button
+              className="btn btn-primary btn-sm px-3"
+              onClick={() => {
+                // Apply filters logic here
+                console.log('Applying filters:', selectedProgramme, selectedDatapoint);
+              }}
+            >
+              Apply
+            </button>
+
+            {showDropdown && (
+              <Dropdown>
+                <Dropdown.Toggle
+                  variant="link"
+                  className="dropdown-toggle-nocaret options"
+                  as="a"
+                  href="javascript:;"
+                >
+                  <span className="material-icons-outlined fs-5">
+                    more_vert
+                  </span>
+                </Dropdown.Toggle>
+                <Dropdown.Menu>
+                  <Dropdown.Item href="javascript:;">Export Data</Dropdown.Item>
+                  <Dropdown.Item href="javascript:;">View Details</Dropdown.Item>
+                  <Dropdown.Item href="javascript:;">Settings</Dropdown.Item>
+                </Dropdown.Menu>
+              </Dropdown>
+            )}
           </div>
-          {showDropdown && (
-            <Dropdown>
-              <Dropdown.Toggle
-                variant="link"
-                className="dropdown-toggle-nocaret options"
-                as="a"
-                href="javascript:;"
-              >
-                <span className="material-icons-outlined fs-5">
-                  more_vert
-                </span>
-              </Dropdown.Toggle>
-              <Dropdown.Menu>
-                <Dropdown.Item href="javascript:;">Export Data</Dropdown.Item>
-                <Dropdown.Item href="javascript:;">View Details</Dropdown.Item>
-                <Dropdown.Item href="javascript:;">Settings</Dropdown.Item>
-              </Dropdown.Menu>
-            </Dropdown>
-          )}
-        </div>
-        
-        {/* Filter Controls */}
-        <div className="d-flex gap-3 mb-3">
-          <Form.Select
-            size="sm"
-            value={selectedProgramme}
-            onChange={(e) => setSelectedProgramme(e.target.value)}
-            style={{ maxWidth: "200px" }}
-          >
-            <option>All Programmes</option>
-            <option>Digital Literacy</option>
-            <option>Skills Training</option>
-            <option>Financial Education</option>
-            <option>Health Awareness</option>
-            <option>Youth Development</option>
-          </Form.Select>
-          
-          <Form.Select
-            size="sm"
-            value={selectedDatapoint}
-            onChange={(e) => setSelectedDatapoint(e.target.value)}
-            style={{ maxWidth: "200px" }}
-          >
-            <option>All Datapoints</option>
-            <option>App Sessions</option>
-            <option>Network Usage</option>
-            <option>Screentime</option>
-          </Form.Select>
         </div>
 
         <div id={usageData.chartId}></div>
