@@ -21,6 +21,7 @@ import {
 import {
   RadialChartWidget,
   AreaChartWidget,
+  IconAreaChartWidget,
   BarChartWidget,
   LineChartWidget,
 } from "../components/widgets";
