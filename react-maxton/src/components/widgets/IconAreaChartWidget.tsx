@@ -40,6 +40,7 @@ const IconAreaChartWidget: React.FC<IconAreaChartWidgetProps> = ({
   icon,
   iconImage,
   iconBgClass = defaultProps.iconBgClass!,
+  showDropdown = defaultProps.showDropdown!,
 }) => {
   const chartRef = useRef<any>(null);
 
