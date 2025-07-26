@@ -1,4 +1,4 @@
-export { default as WelcomeCard } from './WelcomeCard';
+export { default as WelcomeCard, ConfigurableWelcomeCard } from './WelcomeCard';
 export { default as MonthlyRevenueWidget } from './MonthlyRevenueWidget';
 export { default as DeviceTypeWidget } from './DeviceTypeWidget';
 export { default as CampaignStatsWidget } from './CampaignStatsWidget';
