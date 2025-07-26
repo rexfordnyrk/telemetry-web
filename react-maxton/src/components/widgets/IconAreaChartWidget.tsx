@@ -14,6 +14,7 @@ interface IconAreaChartWidgetProps {
   icon?: string;
   iconImage?: string;
   iconBgClass?: string;
+  showDropdown?: boolean;
 }
 
 const defaultProps: Partial<IconAreaChartWidgetProps> = {
