@@ -15,6 +15,19 @@ interface WelcomeCardProps {
   data?: WelcomeData;
 }
 
+interface ConfigurableWelcomeCardProps {
+  userName: string;
+  userAvatar: string;
+  primaryValue: string;
+  secondaryValue: string;
+  primaryLabel: string;
+  secondaryLabel: string;
+  primaryProgress: number;
+  secondaryProgress: number;
+  showWelcomeImage?: boolean;
+  welcomeImage?: string;
+}
+
 const defaultWelcomeData: WelcomeData = {
   userName: "Jhon Anderson",
   userAvatar: "/assets/images/avatars/01.png",
