@@ -23,6 +23,7 @@ const defaultProps: Partial<IconAreaChartWidgetProps> = {
   colors: ["#02c27a"],
   gradientColors: ["#0866ff"],
   iconBgClass: "bg-primary bg-opacity-10 text-primary",
+  showDropdown: true,
 };
 
 const IconAreaChartWidget: React.FC<IconAreaChartWidgetProps> = ({
