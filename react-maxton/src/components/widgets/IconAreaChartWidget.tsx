@@ -140,26 +140,24 @@ const IconAreaChartWidget: React.FC<IconAreaChartWidgetProps> = ({
       <div className="card rounded-4">
         <div className="card-body">
           <div className="d-flex align-items-start justify-content-between mb-3">
-            <div className="d-flex align-items-center gap-2">
-              <div>
-                <h5 className="mb-0">{value}</h5>
-                <p className="mb-0" style={{ fontSize: "12px" }}>{title}</p>
-              </div>
-              <div className={`d-flex align-items-center justify-content-center rounded-circle ${iconBgClass}`} style={{ width: "32px", height: "32px", minWidth: "32px" }}>
-                {iconImage ? (
-                  <img
-                    src={iconImage}
-                    alt={title}
-                    className="rounded-circle"
-                    width="18"
-                    height="18"
-                  />
-                ) : (
-                  <span className="material-icons-outlined" style={{ fontSize: "18px" }}>
-                    {icon || "apps"}
-                  </span>
-                )}
-              </div>
+            <div>
+              <h5 className="mb-0">{value}</h5>
+              <p className="mb-0" style={{ fontSize: "12px" }}>{title}</p>
+            </div>
+            <div className={`d-flex align-items-center justify-content-center rounded-circle ${iconBgClass}`} style={{ width: "32px", height: "32px", minWidth: "32px" }}>
+              {iconImage ? (
+                <img
+                  src={iconImage}
+                  alt={title}
+                  className="rounded-circle"
+                  width="18"
+                  height="18"
+                />
+              ) : (
+                <span className="material-icons-outlined" style={{ fontSize: "18px" }}>
+                  {icon || "apps"}
+                </span>
+              )}
             </div>
             {showDropdown && (
               <div className="dropdown">
