@@ -109,7 +109,7 @@ const Overview: React.FC = () => {
           />
         </Col>
 
-        {/* Row 2: Active Devices Card */}
+        {/* Row 2: Active Devices Card & Most Used App */}
         <ConfigurableWelcomeCard
           userName="John Anderson"
           userAvatar="/assets/images/avatars/01.png"
@@ -121,6 +121,22 @@ const Overview: React.FC = () => {
           secondaryProgress={89}
           showWelcomeImage={false}
         />
+
+        <Col xl={6} xxl={4} className="d-flex align-items-stretch">
+          <IconAreaChartWidget
+            title="Most Used App"
+            value="WhatsApp"
+            changePercentage="24.5%"
+            changeDirection="up"
+            chartId="most-used-app-chart"
+            subtitle="usage increase"
+            data={[15, 25, 30, 20, 35, 40, 28, 45, 38]}
+            colors={["#25d366"]}
+            gradientColors={["#128c7e"]}
+            icon="apps"
+            iconBgClass="bg-success bg-opacity-10 text-success"
+          />
+        </Col>
 
         {/* Row 3: Monthly Revenue + Device Type + Nested Section (Total Clicks, Total Views, Total Accounts) */}
         <Col xl={6} xxl={4} className="d-flex align-items-stretch">
