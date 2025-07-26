@@ -92,7 +92,7 @@ const Overview: React.FC = () => {
           showWelcomeImage={false}
         />
 
-        <Col xl={6} xxl={4} className="d-flex align-items-stretch">
+        <Col xl={6} xxl={2} className="d-flex align-items-stretch">
           <IconAreaChartWidget
             title="Most Used App"
             value="WhatsApp"
@@ -109,6 +109,22 @@ const Overview: React.FC = () => {
         </Col>
 
         <Col xl={6} xxl={2} className="d-flex align-items-stretch">
+          <IconAreaChartWidget
+            title="Avg Net Usage"
+            value="25.6 GB"
+            changePercentage="18.2%"
+            changeDirection="up"
+            chartId="avg-net-usage-chart"
+            subtitle="data consumed"
+            data={[12, 18, 22, 15, 28, 35, 30, 40, 32]}
+            colors={["#6f42c1"]}
+            gradientColors={["#e83e8c"]}
+            icon="network_check"
+            iconBgClass="bg-info bg-opacity-10 text-info"
+          />
+        </Col>
+
+        <Col xl={6} xxl={2} className="d-flex align-items-stretch">
           <IconRadialChartWidget
             title="Active Users"
             value="42.5K"
@@ -119,6 +135,7 @@ const Overview: React.FC = () => {
             gradientColors={["#ffd200"]}
             icon="people"
             iconBgClass="bg-warning bg-opacity-10 text-warning"
+            showDropdown={false}
           />
         </Col>
 
