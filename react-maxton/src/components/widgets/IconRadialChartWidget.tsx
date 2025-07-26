@@ -164,21 +164,22 @@ const IconRadialChartWidget: React.FC<IconRadialChartWidgetProps> = ({
               <h5 className="mb-0">{value}</h5>
               <p className="mb-0" style={{ fontSize: "12px" }}>{title}</p>
             </div>
-            <div className={`d-flex align-items-center justify-content-center rounded-circle ${iconBgClass}`} style={{ width: "32px", height: "32px", minWidth: "32px" }}>
-              {iconImage ? (
-                <img
-                  src={iconImage}
-                  alt={title}
-                  className="rounded-circle"
-                  width="18"
-                  height="18"
-                />
-              ) : (
+            {iconImage ? (
+              <img
+                src={iconImage}
+                alt={title}
+                className="rounded"
+                width="32"
+                height="32"
+                style={{ objectFit: "cover" }}
+              />
+            ) : (
+              <div className={`d-flex align-items-center justify-content-center rounded-circle ${iconBgClass}`} style={{ width: "32px", height: "32px", minWidth: "32px" }}>
                 <span className="material-icons-outlined" style={{ fontSize: "18px" }}>
                   {icon || "people"}
                 </span>
-              )}
-            </div>
+              </div>
+            )}
             {showDropdown && (
               <div className="dropdown">
                 <a
