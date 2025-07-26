@@ -124,11 +124,8 @@ export const ConfigurableWelcomeCard: React.FC<ConfigurableWelcomeCardProps> = (
   showWelcomeImage = true,
   welcomeImage = "/assets/images/gallery/welcome-back-3.png"
 }) => {
-  const cardColClass = showWelcomeImage ? "col-xxl-6" : "col-xxl-4";
-
   return (
-    <div className={cardColClass}>
-      <Card className="w-100 overflow-hidden rounded-4">
+    <Card className="w-100 overflow-hidden rounded-4">
         <Card.Body className="position-relative p-4">
           <Row>
             <Col xs={12} sm={showWelcomeImage ? 7 : 12}>
@@ -197,7 +194,6 @@ export const ConfigurableWelcomeCard: React.FC<ConfigurableWelcomeCardProps> = (
           </Row>
         </Card.Body>
       </Card>
-    </div>
   );
 };
 
