@@ -15,9 +15,9 @@ interface IconBarChartWidgetProps {
 }
 
 const defaultProps: Partial<IconBarChartWidgetProps> = {
-  data: [4, 10, 12, 17, 25, 30, 40, 55, 68],
-  colors: ["#ff6a00"],
-  gradientColors: ["#7928ca"],
+  data: [8, 10, 25, 18, 38, 24, 20, 16, 7],
+  colors: ["#98ec2d"],
+  gradientColors: ["#17ad37"],
   iconBgClass: "bg-primary bg-opacity-10 text-primary",
   showDropdown: true,
 };
