@@ -231,17 +231,17 @@ const UsageStatsByProgrammeWidget: React.FC<UsageStatsByProgrammeWidgetProps> = 
                 <Dropdown.Toggle
                   variant="link"
                   className="dropdown-toggle-nocaret options"
-                  as="a"
-                  href="javascript:;"
+                  as="button"
+                  style={{ border: "none", background: "none" }}
                 >
                   <span className="material-icons-outlined fs-5">
                     more_vert
                   </span>
                 </Dropdown.Toggle>
                 <Dropdown.Menu>
-                  <Dropdown.Item href="javascript:;">Export Data</Dropdown.Item>
-                  <Dropdown.Item href="javascript:;">View Details</Dropdown.Item>
-                  <Dropdown.Item href="javascript:;">Settings</Dropdown.Item>
+                  <Dropdown.Item onClick={() => console.log('Export Data')}>Export Data</Dropdown.Item>
+                  <Dropdown.Item onClick={() => console.log('View Details')}>View Details</Dropdown.Item>
+                  <Dropdown.Item onClick={() => console.log('Settings')}>Settings</Dropdown.Item>
                 </Dropdown.Menu>
               </Dropdown>
             )}
