@@ -152,7 +152,7 @@ const Overview: React.FC = () => {
           <IconRadialChartWidget
             title="App Sessions Synced"
             value="42.5K"
-            subtitle="24K increase in app activity from last month"
+            subtitle="24K increase in monthly app activity"
             chartId="radial-chart-1"
             series={[68]}
             colors={["#ee0979"]}
