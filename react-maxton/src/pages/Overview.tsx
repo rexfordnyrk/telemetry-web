@@ -96,12 +96,12 @@ const Overview: React.FC = () => {
 
         <Col xl={6} xxl={2} className="d-flex align-items-stretch">
           <IconAreaChartWidget
-            title="Avg Active Screentime"
+            title="Avg Screentime"
             value="4.2 hrs"
             changePercentage="15.3%"
             changeDirection="up"
             chartId="avg-screentime-chart"
-            subtitle="daily average"
+            subtitle="rise from the last month"
             data={[3, 5, 4, 6, 4, 5, 6, 4, 5]}
             colors={["#ffd700"]}
             gradientColors={["#ff8c00"]}
@@ -129,21 +129,6 @@ const Overview: React.FC = () => {
         </Col>
 
         <Col xl={6} xxl={2} className="d-flex align-items-stretch">
-          <IconRadialChartWidget
-            title="Active Users"
-            value="42.5K"
-            subtitle="24K users increased from last month"
-            chartId="radial-chart-1"
-            series={[78]}
-            colors={["#ee0979"]}
-            gradientColors={["#ffd200"]}
-            iconImage="/assets/images/logo-icon.png"
-            iconBgClass="bg-warning bg-opacity-10 text-warning"
-            showDropdown={false}
-          />
-        </Col>
-
-        <Col xl={6} xxl={2} className="d-flex align-items-stretch">
           <IconAreaChartWidget
             title="Most Used App"
             value="WhatsApp"
@@ -156,6 +141,21 @@ const Overview: React.FC = () => {
             gradientColors={["#128c7e"]}
             iconImage="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEyLjAxMSAyQzE3LjUwNiAyIDIxLjk5NiA2LjQ4IDIxLjk5NiAxMkMyMS45OTYgMTcuNTIgMTcuNTA2IDIyIDEyLjAxMSAyMkMxMC4xMDEgMjIgOC4zMjUgMjEuNDM1IDYuNzg5IDIwLjQ4NEwyIDIyTDMuNTE4IDE3LjQ2QzIuNTEzIDE1Ljg1NyAyIDEzLjk5NyAyIDEyQzIgNi40OCA2LjQ5IDIgMTIuMDExIDJaTTguMzUgNy4zQzguMjMgNy4zIDcuODggNy4zNSA3LjQzIDcuNzI0QzYuOTggOC4wOTkgNi4wMSA5LjAzMSA2LjAxIDEwLjE0NUM2LjAxIDExLjI2IDYuODg2IDEyLjk3IDYuODg2IDEyLjk3QzYuODg2IDEyLjk3IDEwLjU1NiAxOC40MjIgMTcuMzYgMTguNDIyQzE3LjM2IDE4LjQyMiAxNy45MDggMTYuNTA0IDE4LjAzNCAxNS44NzdDMTguMDYgMTUuNzA5IDE4LjAyIDE1LjAzMiAxNy44IDEyLjk3QzE3LjggMTIuOTcgMTQuNjUgMTQuMTE3IDEyLjg5IDE0LjExN0MxMi44OSAxNC4xMTcgMTEuMzM1IDEyLjI2IDExLjMzNSAxMi4yNkwxMS4zNDQgMTEuODQyTDExLjM0NyAxMS42OTdDMTEuMzQ3IDExLjE0NSAxMS43MzggMTAuNjM5IDEyLjI2IDEwLjE3NkMxMi42MDYgOS44NTggMTMuMDcgOS41NTUgMTMuNzQyIDkuNTU1QzE0LjQxNCA5LjU1NSAxNC44NTggOS42NTggMTQuODU4IDkuNjU4TDE0Ljg2IDEwLjMwOUwxNC44NjEgMTEuNDEzQzE0Ljg2MSAxMS40MTMgMTYuMjM2IDExLjQwNSAxNi4zMzUgMTEuMTcyQzE2LjQzNSAxMC45MzkgMTYuMjYzIDEwLjE0NiAxNi4yNjMgMTAuMTQ2QzE2LjI2MyAxMC4xNDYgMTYuNTQyIDkuMDA2IDE2LjE5IDguMjk4QzE1LjgzOCA3LjU5IDEzLjU4OSA3LjI5OCAxMy41ODkgNy4yOThTMTIuNjUzIDcuMjk4IDEyLjY1MyA3LjI5OEwxMi41MjcgNy4yOThDMTEuODkgNy4yOTggMTEuMjM1IDcuMjk4IDExLjIzNSA3LjI5OFM5LjE3MiA3LjI4OSA4LjQ5IDcuMjk4QzguMzYxIDcuMyA4LjM1IDcuMyA4LjM1IDcuM1oiIGZpbGw9IiMyNUQ0NjYiLz4KPC9zdmc+Cg=="
             iconBgClass="bg-success bg-opacity-10 text-success"
+            showDropdown={false}
+          />
+        </Col>
+
+        <Col xl={6} xxl={2} className="d-flex align-items-stretch">
+          <IconRadialChartWidget
+            title="App Sessions Synced"
+            value="42.5K"
+            subtitle="24K increase in app activity from last month"
+            chartId="radial-chart-1"
+            series={[68]}
+            colors={["#ee0979"]}
+            gradientColors={["#ffd200"]}
+            iconImage="/assets/images/logo-icon.png"
+            iconBgClass="bg-warning bg-opacity-10 text-warning"
             showDropdown={false}
           />
         </Col>
