@@ -20,6 +20,7 @@ import {
 // Import existing widget components
 import {
   RadialChartWidget,
+  IconRadialChartWidget,
   AreaChartWidget,
   IconAreaChartWidget,
   BarChartWidget,
