@@ -6,6 +6,7 @@ import SafeApexChart from "../components/SafeApexChart";
 // Import dashboard components
 import {
   WelcomeCard,
+  ConfigurableWelcomeCard,
   MonthlyRevenueWidget,
   DeviceTypeWidget,
   CampaignStatsWidget,
