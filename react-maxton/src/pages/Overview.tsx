@@ -455,56 +455,7 @@ const Overview: React.FC = () => {
 
         {/* Row 5: Usage Stats by Programme */}
         <Col lg={12} className="d-flex align-items-stretch">
-          <SalesViewsWidget
-            data={{
-              title: "Usage Stats by Programme",
-              series: [
-                {
-                  name: "App Sessions",
-                  data: [45, 30, 55, 40, 35, 50, 65, 40, 55]
-                },
-                {
-                  name: "Network Usage (GB)",
-                  data: [25, 20, 35, 25, 20, 30, 40, 25, 35]
-                },
-                {
-                  name: "Screentime (Hours)",
-                  data: [15, 25, 20, 30, 25, 35, 30, 35, 25]
-                }
-              ],
-              categories: ["Prog A", "Prog B", "Prog C", "Prog D", "Prog E", "Prog F", "Prog G", "Prog H", "Prog I"],
-              colors: ["#0d6efd", "#198754", "#ffc107"],
-              gradientColors: ["#6610f2", "#20c997", "#fd7e14"],
-              chartId: "usage-stats-chart",
-              peityData: [
-                {
-                  value: "7/10",
-                  color: "#0d6efd",
-                  label: "App Sessions",
-                  amount: "2,847",
-                  percentage: "18.5%",
-                  amountUnit: "sessions"
-                },
-                {
-                  value: "6/10",
-                  color: "#198754",
-                  label: "Network Usage",
-                  amount: "145.8 GB",
-                  percentage: "12.3%",
-                  amountUnit: "data consumed"
-                },
-                {
-                  value: "8/10",
-                  color: "#ffc107",
-                  label: "Screentime",
-                  amount: "486 hrs",
-                  percentage: "24.7%",
-                  amountUnit: "active hours"
-                }
-              ]
-            }}
-            showDropdown={true}
-          />
+          <UsageStatsByProgrammeWidget showDropdown={true} />
         </Col>
       </Row>
     </MainLayout>
