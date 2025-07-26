@@ -159,7 +159,7 @@ const IconRadialChartWidget: React.FC<IconRadialChartWidgetProps> = ({
     <div className="col d-flex">
       <div className="card rounded-4 w-100">
         <div className="card-body">
-          <div className="d-flex align-items-start justify-content-between mb-1">
+          <div className="d-flex align-items-start justify-content-between mb-3">
             <div>
               <h5 className="mb-0">{value}</h5>
               <p className="mb-0" style={{ fontSize: "12px" }}>{title}</p>
