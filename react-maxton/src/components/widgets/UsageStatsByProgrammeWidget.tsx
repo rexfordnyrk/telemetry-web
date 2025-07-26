@@ -46,7 +46,7 @@ const defaultUsageData: UsageStatsByProgrammeData = {
       data: [15, 25, 20, 30, 25, 35, 30, 35, 25]
     }
   ],
-  categories: ["Prog A", "Prog B", "Prog C", "Prog D", "Prog E", "Prog F", "Prog G", "Prog H", "Prog I"],
+  categories: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep"],
   colors: ["#0d6efd", "#198754", "#ffc107"],
   gradientColors: ["#6610f2", "#20c997", "#fd7e14"],
   chartId: "usage-stats-chart",
