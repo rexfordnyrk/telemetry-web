@@ -263,7 +263,7 @@ const Overview: React.FC = () => {
           />
         </Col>
 
-        {/* Row 3: Campaign Stats + Visitors Growth + Social Leads */}
+        {/* Row 4: Campaign Stats + Visitors Growth + Social Leads */}
         <Col xl={6} xxl={4} className="d-flex align-items-stretch">
           <CampaignStatsWidget />
         </Col>
