@@ -103,7 +103,7 @@ const Overview: React.FC = () => {
             data={[15, 25, 30, 20, 35, 40, 28, 45, 38]}
             colors={["#25d366"]}
             gradientColors={["#128c7e"]}
-            icon="apps"
+            iconImage="/assets/images/county/02.png"
             iconBgClass="bg-success bg-opacity-10 text-success"
             showDropdown={false}
           />
@@ -120,7 +120,7 @@ const Overview: React.FC = () => {
             data={[12, 18, 22, 15, 28, 35, 30, 40, 32]}
             colors={["#6f42c1"]}
             gradientColors={["#e83e8c"]}
-            icon="network_check"
+            iconImage="/assets/images/avatars/01.png"
             iconBgClass="bg-info bg-opacity-10 text-info"
             showDropdown={false}
           />
@@ -135,7 +135,7 @@ const Overview: React.FC = () => {
             series={[78]}
             colors={["#ee0979"]}
             gradientColors={["#ffd200"]}
-            icon="people"
+            iconImage="/assets/images/logo-icon.png"
             iconBgClass="bg-warning bg-opacity-10 text-warning"
             showDropdown={false}
           />
