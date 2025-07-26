@@ -28,6 +28,7 @@ import {
   IconAreaChartWidget,
   BarChartWidget,
   LineChartWidget,
+  UsageStatsByProgrammeWidget,
 } from "../components/widgets";
 
 const Overview: React.FC = () => {
