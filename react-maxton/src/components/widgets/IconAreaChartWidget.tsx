@@ -161,34 +161,36 @@ const IconAreaChartWidget: React.FC<IconAreaChartWidgetProps> = ({
                 <p className="mb-0">{title}</p>
               </div>
             </div>
-            <div className="dropdown">
-              <a
-                href="javascript:;"
-                className="dropdown-toggle-nocaret options dropdown-toggle"
-                data-bs-toggle="dropdown"
-              >
-                <span className="material-icons-outlined fs-5">
-                  more_vert
-                </span>
-              </a>
-              <ul className="dropdown-menu">
-                <li>
-                  <a className="dropdown-item" href="javascript:;">
-                    Action
-                  </a>
-                </li>
-                <li>
-                  <a className="dropdown-item" href="javascript:;">
-                    Another action
-                  </a>
-                </li>
-                <li>
-                  <a className="dropdown-item" href="javascript:;">
-                    Something else here
-                  </a>
-                </li>
-              </ul>
-            </div>
+            {showDropdown && (
+              <div className="dropdown">
+                <a
+                  href="javascript:;"
+                  className="dropdown-toggle-nocaret options dropdown-toggle"
+                  data-bs-toggle="dropdown"
+                >
+                  <span className="material-icons-outlined fs-5">
+                    more_vert
+                  </span>
+                </a>
+                <ul className="dropdown-menu">
+                  <li>
+                    <a className="dropdown-item" href="javascript:;">
+                      Action
+                    </a>
+                  </li>
+                  <li>
+                    <a className="dropdown-item" href="javascript:;">
+                      Another action
+                    </a>
+                  </li>
+                  <li>
+                    <a className="dropdown-item" href="javascript:;">
+                      Something else here
+                    </a>
+                  </li>
+                </ul>
+              </div>
+            )}
           </div>
           <div className="chart-container2">
             <div id={chartId}></div>
