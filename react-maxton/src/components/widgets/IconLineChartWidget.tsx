@@ -67,7 +67,7 @@ const IconLineChartWidget: React.FC<IconLineChartWidgetProps> = ({
             },
             stroke: {
               width: 3,
-              curve: "smooth",
+              curve: "straight",
             },
             fill: {
               type: "gradient",
@@ -76,8 +76,9 @@ const IconLineChartWidget: React.FC<IconLineChartWidgetProps> = ({
                 gradientToColors: gradientColors,
                 shadeIntensity: 1,
                 type: "vertical",
-                opacityFrom: 0.5,
-                opacityTo: 0.0,
+                opacityFrom: 1,
+                opacityTo: 1,
+                stops: [0, 100, 100, 100],
               },
             },
             colors: colors,
@@ -99,6 +100,10 @@ const IconLineChartWidget: React.FC<IconLineChartWidgetProps> = ({
               marker: {
                 show: false,
               },
+            },
+            markers: {
+              show: false,
+              size: 5,
             },
             xaxis: {
               categories: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
