@@ -27,7 +27,9 @@ import {
   AreaChartWidget,
   IconAreaChartWidget,
   BarChartWidget,
+  IconBarChartWidget,
   LineChartWidget,
+  IconLineChartWidget,
   UsageStatsByProgrammeWidget,
 } from "../components/widgets";
 
