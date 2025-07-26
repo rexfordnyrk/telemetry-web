@@ -182,30 +182,31 @@ const IconRadialChartWidget: React.FC<IconRadialChartWidgetProps> = ({
             )}
             {showDropdown && (
               <div className="dropdown">
-                <a
-                  href="javascript:;"
-                  className="dropdown-toggle-nocaret options dropdown-toggle"
+                <button
+                  type="button"
+                  className="btn btn-link dropdown-toggle-nocaret options dropdown-toggle"
                   data-bs-toggle="dropdown"
+                  style={{ border: "none", background: "none", padding: "0" }}
                 >
                   <span className="material-icons-outlined fs-5">
                     more_vert
                   </span>
-                </a>
+                </button>
                 <ul className="dropdown-menu">
                   <li>
-                    <a className="dropdown-item" href="javascript:;">
+                    <button className="dropdown-item" type="button" onClick={() => console.log('Action')}>
                       Action
-                    </a>
+                    </button>
                   </li>
                   <li>
-                    <a className="dropdown-item" href="javascript:;">
+                    <button className="dropdown-item" type="button" onClick={() => console.log('Another action')}>
                       Another action
-                    </a>
+                    </button>
                   </li>
                   <li>
-                    <a className="dropdown-item" href="javascript:;">
+                    <button className="dropdown-item" type="button" onClick={() => console.log('Something else here')}>
                       Something else here
-                    </a>
+                    </button>
                   </li>
                 </ul>
               </div>
