@@ -79,18 +79,20 @@ const Overview: React.FC = () => {
       </div>
 
       <Row>
-        {/* Row 1: Active Devices Card + Most Used App + Active Users + Total Users */}
-        <ConfigurableWelcomeCard
-          userName="John Anderson"
-          userAvatar="/assets/images/avatars/01.png"
-          primaryValue="1,234"
-          secondaryValue="89.2%"
-          primaryLabel="Active Devices"
-          secondaryLabel="Sync Success Rate"
-          primaryProgress={85}
-          secondaryProgress={89}
-          showWelcomeImage={false}
-        />
+        {/* Row 1: Active Devices Card + Screentime + Net Usage + Active Users + Most Used App */}
+        <Col xxl={4} className="d-flex align-items-stretch">
+          <ConfigurableWelcomeCard
+            userName="John Anderson"
+            userAvatar="/assets/images/avatars/01.png"
+            primaryValue="1,234"
+            secondaryValue="89.2%"
+            primaryLabel="Active Devices"
+            secondaryLabel="Sync Success Rate"
+            primaryProgress={85}
+            secondaryProgress={89}
+            showWelcomeImage={false}
+          />
+        </Col>
 
         <Col xl={6} xxl={2} className="d-flex align-items-stretch">
           <IconAreaChartWidget
