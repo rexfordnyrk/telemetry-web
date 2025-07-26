@@ -5,6 +5,7 @@ export { default as IconBarChartWidget } from './IconBarChartWidget';
 export { default as RadialChartWidget } from './RadialChartWidget';
 export { default as IconRadialChartWidget } from './IconRadialChartWidget';
 export { default as LineChartWidget } from './LineChartWidget';
+export { default as IconLineChartWidget } from './IconLineChartWidget';
 export { default as DonutChartWidget } from './DonutChartWidget';
 export { default as MultiSeriesBarChart } from './MultiSeriesBarChart';
 export { default as ProgressWidget } from './ProgressWidget';
