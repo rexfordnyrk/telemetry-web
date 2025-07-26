@@ -108,40 +108,16 @@ const Overview: React.FC = () => {
           />
         </Col>
 
-        {/* Row 2: Configurable Welcome Cards */}
+        {/* Row 2: Active Devices Card */}
         <ConfigurableWelcomeCard
           userName="John Anderson"
           userAvatar="/assets/images/avatars/01.png"
           primaryValue="1,234"
           secondaryValue="89.2%"
           primaryLabel="Active Devices"
-          secondaryLabel="Uptime Rate"
+          secondaryLabel="Sync Success Rate"
           primaryProgress={85}
           secondaryProgress={89}
-          showWelcomeImage={false}
-        />
-
-        <ConfigurableWelcomeCard
-          userName="John Anderson"
-          userAvatar="/assets/images/avatars/01.png"
-          primaryValue="456"
-          secondaryValue="92.5%"
-          primaryLabel="Connected Users"
-          secondaryLabel="Satisfaction Rate"
-          primaryProgress={76}
-          secondaryProgress={92}
-          showWelcomeImage={false}
-        />
-
-        <ConfigurableWelcomeCard
-          userName="John Anderson"
-          userAvatar="/assets/images/avatars/01.png"
-          primaryValue="78.9GB"
-          secondaryValue="45.2%"
-          primaryLabel="Data Usage"
-          secondaryLabel="Efficiency Rate"
-          primaryProgress={68}
-          secondaryProgress={45}
           showWelcomeImage={false}
         />
 
