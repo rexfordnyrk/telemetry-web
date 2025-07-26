@@ -276,7 +276,7 @@ const Overview: React.FC = () => {
           <SocialLeadsWidget />
         </Col>
 
-        {/* Row 4: New Users + Recent Orders */}
+        {/* Row 5: New Users + Recent Orders */}
         <Col xl={6} xxl={4} className="d-flex align-items-stretch">
           <NewUsersWidget />
         </Col>
