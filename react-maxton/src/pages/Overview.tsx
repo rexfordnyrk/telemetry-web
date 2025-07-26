@@ -18,7 +18,7 @@ import {
 } from "../components/dashboard";
 
 // Import ecommerce components
-import { SocialRevenueWidget } from "../components/ecommerce";
+import { SocialRevenueWidget, SalesViewsWidget } from "../components/ecommerce";
 
 // Import existing widget components
 import {
