@@ -254,12 +254,10 @@ const Overview: React.FC = () => {
         <Col xxl={4}>
           <Row>
             <Col md={6} className="d-flex align-items-stretch">
-              <IconAreaChartWidget
+              <IconBarChartWidget
                 title="Most Visited App"
                 value="82.7K"
-                changePercentage="12.5%"
-                changeDirection="up"
-                subtitle="from last month"
+                subtitle="12.5% from last month"
                 chartId="bar-chart-1"
                 data={[4, 10, 12, 17, 25, 30, 40, 55, 68]}
                 colors={["#ff6a00"]}
@@ -270,12 +268,10 @@ const Overview: React.FC = () => {
               />
             </Col>
             <Col sm={6} className="d-flex align-items-stretch">
-              <IconAreaChartWidget
+              <IconLineChartWidget
                 title="Top Data Consumer"
                 value="68.4K"
-                changePercentage="35%"
-                changeDirection="up"
-                subtitle="users increased from last month"
+                subtitle="35K users increased from last month"
                 chartId="line-chart-1"
                 data={[4, 25, 14, 34, 10, 39]}
                 colors={["#ee0979"]}
