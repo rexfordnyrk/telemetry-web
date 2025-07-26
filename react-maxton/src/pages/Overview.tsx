@@ -79,13 +79,37 @@ const Overview: React.FC = () => {
       </div>
 
       <Row>
-        {/* Row 1: Welcome Card + Active Users + Total Users */}
-        <Col xxl={8} className="d-flex align-items-stretch">
-          <WelcomeCard />
+        {/* Row 1: Active Devices Card + Most Used App + Active Users + Total Users */}
+        <ConfigurableWelcomeCard
+          userName="John Anderson"
+          userAvatar="/assets/images/avatars/01.png"
+          primaryValue="1,234"
+          secondaryValue="89.2%"
+          primaryLabel="Active Devices"
+          secondaryLabel="Sync Success Rate"
+          primaryProgress={85}
+          secondaryProgress={89}
+          showWelcomeImage={false}
+        />
+
+        <Col xl={6} xxl={4} className="d-flex align-items-stretch">
+          <IconAreaChartWidget
+            title="Most Used App"
+            value="WhatsApp"
+            changePercentage="24.5%"
+            changeDirection="up"
+            chartId="most-used-app-chart"
+            subtitle="usage increase"
+            data={[15, 25, 30, 20, 35, 40, 28, 45, 38]}
+            colors={["#25d366"]}
+            gradientColors={["#128c7e"]}
+            icon="apps"
+            iconBgClass="bg-success bg-opacity-10 text-success"
+          />
         </Col>
 
         <Col xl={6} xxl={2} className="d-flex align-items-stretch">
-          <RadialChartWidget
+          <IconRadialChartWidget
             title="Active Users"
             value="42.5K"
             subtitle="24K users increased from last month"
@@ -93,6 +117,8 @@ const Overview: React.FC = () => {
             series={[78]}
             colors={["#ee0979"]}
             gradientColors={["#ffd200"]}
+            icon="people"
+            iconBgClass="bg-warning bg-opacity-10 text-warning"
           />
         </Col>
 
