@@ -327,62 +327,57 @@ const UsageStatsByProgrammeWidget: React.FC<UsageStatsByProgrammeWidgetProps> = 
   return (
     <Card className="w-100 rounded-4">
       <Card.Body>
-        <div className="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-3">
+        <div className="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-2">
           <h5 className="mb-0">{usageData.title}</h5>
 
-          <div className="d-flex align-items-center gap-3">
+          <div className="d-flex align-items-center gap-2">
             {/* Programme Selection */}
-            <div className="d-flex flex-column">
-              <label className="form-label mb-1 small">Programmes</label>
-              <div className="d-flex flex-wrap gap-2">
-                <Form.Check
-                  type="checkbox"
-                  label="All"
-                  checked={selectedProgrammes.includes("all")}
-                  onChange={(e) => handleProgrammeChange("all", e.target.checked)}
-                  className="small"
-                />
-                {availableProgrammes.map(programme => (
-                  <Form.Check
-                    key={programme.id}
-                    type="checkbox"
-                    label={programme.name}
-                    checked={selectedProgrammes.includes(programme.id)}
-                    onChange={(e) => handleProgrammeChange(programme.id, e.target.checked)}
-                    className="small"
-                    disabled={selectedProgrammes.includes("all")}
-                  />
-                ))}
-              </div>
-            </div>
+            <Form.Select
+              size="sm"
+              value={selectedProgrammeOption}
+              onChange={(e) => handleProgrammeChange(e.target.value)}
+              style={{ width: "180px" }}
+            >
+              <option value="all">All Programmes</option>
+              {availableProgrammes.map(programme => (
+                <option key={programme.id} value={programme.id}>
+                  {programme.name}
+                </option>
+              ))}
+            </Form.Select>
 
             {/* DataPoint Selection */}
-            <div className="d-flex flex-column">
-              <label className="form-label mb-1 small">
-                Data Points
-                {isMultipleProgrammes && <span className="text-muted">(Single selection)</span>}
-                {!isMultipleProgrammes && <span className="text-muted">(Multi selection)</span>}
-              </label>
-              <div className="d-flex flex-wrap gap-2">
-                {availableDataPoints.map(dataPoint => (
-                  <Form.Check
-                    key={dataPoint.id}
-                    type={isMultipleProgrammes ? "radio" : "checkbox"}
-                    name={isMultipleProgrammes ? "datapoint" : undefined}
-                    label={dataPoint.name}
-                    checked={selectedDataPoints.includes(dataPoint.id)}
-                    onChange={(e) => handleDataPointChange(dataPoint.id, e.target.checked)}
-                    className="small"
-                  />
-                ))}
-              </div>
-            </div>
+            <Form.Select
+              size="sm"
+              value={selectedDataPointOption}
+              onChange={(e) => handleDataPointChange(e.target.value)}
+              style={{ width: "160px" }}
+            >
+              {isMultipleProgrammes ? (
+                // Multiple programmes - single datapoint only
+                availableDataPoints.map(dataPoint => (
+                  <option key={dataPoint.id} value={dataPoint.id}>
+                    {dataPoint.name}
+                  </option>
+                ))
+              ) : (
+                // Single programme - allow multiple datapoints option
+                <>
+                  <option value="multiple">All Data Points</option>
+                  {availableDataPoints.map(dataPoint => (
+                    <option key={dataPoint.id} value={dataPoint.id}>
+                      {dataPoint.name}
+                    </option>
+                  ))}
+                </>
+              )}
+            </Form.Select>
 
             <Button
               variant="primary"
               size="sm"
               onClick={applyFilters}
-              className="align-self-end"
+              className="px-3"
             >
               Apply
             </Button>
