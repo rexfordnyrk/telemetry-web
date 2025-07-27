@@ -168,10 +168,10 @@ const UsageStatsByProgrammeWidget: React.FC<UsageStatsByProgrammeWidgetProps> = 
   const updateChartData = () => {
     // Mock data update based on selection
     // This will be replaced with actual API call
-    let newSeries = [];
-    let newPeityData = [];
-    let newColors = [];
-    let newGradientColors = [];
+    const newSeries: { name: string; data: number[] }[] = [];
+    const newPeityData: PeityData[] = [];
+    const newColors: string[] = [];
+    const newGradientColors: string[] = [];
 
     if (isMultipleProgrammes) {
       // Show single datapoint across multiple programmes
@@ -180,7 +180,7 @@ const UsageStatsByProgrammeWidget: React.FC<UsageStatsByProgrammeWidgetProps> = 
         ? availableProgrammes
         : availableProgrammes.filter(p => selectedProgrammes.includes(p.id));
 
-      programmesToShow.forEach((programme, index) => {
+      programmesToShow.forEach((programme) => {
         newSeries.push({
           name: programme.name,
           data: [Math.random() * 100, Math.random() * 100, Math.random() * 100, Math.random() * 100, Math.random() * 100, Math.random() * 100, Math.random() * 100, Math.random() * 100, Math.random() * 100]
@@ -198,8 +198,7 @@ const UsageStatsByProgrammeWidget: React.FC<UsageStatsByProgrammeWidgetProps> = 
       });
     } else {
       // Show multiple datapoints for single programme
-      const programme = availableProgrammes.find(p => p.id === selectedProgrammes[0]);
-      selectedDataPoints.forEach((dataPointId, index) => {
+      selectedDataPoints.forEach((dataPointId) => {
         const dataPoint = availableDataPoints.find(dp => dp.id === dataPointId);
         if (dataPoint) {
           newSeries.push({
