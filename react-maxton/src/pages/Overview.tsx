@@ -32,6 +32,7 @@ import {
   IconLineChartWidget,
   UsageStatsByProgrammeWidget,
   BeneficiaryActivityWidget,
+  DataConsumerAppsWidget,
 } from "../components/widgets";
 
 const Overview: React.FC = () => {
