@@ -219,13 +219,6 @@ const BeneficiaryActivityWidget: React.FC<BeneficiaryActivityWidgetProps> = ({
                       <p className="mb-0 small text-muted">{activity.lastSyncedTime}</p>
                     </div>
                   </td>
-                  <td>
-                    <div className={`card-lable ${activity.statusClass} bg-opacity-10`}>
-                      <p className={`${activity.statusClass.split(' ')[1]} mb-0 small`}>
-                        {activity.status}
-                      </p>
-                    </div>
-                  </td>
                 </tr>
               ))}
             </tbody>
