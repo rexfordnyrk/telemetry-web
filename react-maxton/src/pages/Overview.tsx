@@ -257,7 +257,7 @@ const Overview: React.FC = () => {
               <IconBarChartWidget
                 title="Most Visited App"
                 value="82.7K"
-                subtitle="12.5% from last month"
+                subtitle="WhatsApp had 12.5% more monthly visits"
                 chartId="bar-chart-1"
                 data={[4, 10, 12, 17, 25, 30, 40, 55, 68]}
                 colors={["#ff6a00"]}
@@ -270,8 +270,8 @@ const Overview: React.FC = () => {
             <Col sm={6} className="d-flex align-items-stretch">
               <IconLineChartWidget
                 title="Top Data Consumer"
-                value="68.4K"
-                subtitle="35K users increased from last month"
+                value="68.4 GB"
+                subtitle="Instagram used 35% more data this month"
                 chartId="line-chart-1"
                 data={[4, 25, 14, 34, 10, 39]}
                 colors={["#ee0979"]}
@@ -285,8 +285,8 @@ const Overview: React.FC = () => {
           <StatCard
             data={{
               title: "Highest Participant Screentime",
-              value: "85,247",
-              subtitle: "minutes recorded",
+              value: "124.5 hrs",
+              subtitle: "Sarah M. recorded highest usage this month",
               changePercentage: "23.7%",
               changeDirection: "down",
               chartComponent: (
