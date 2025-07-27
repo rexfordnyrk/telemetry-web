@@ -449,10 +449,7 @@ const Overview: React.FC = () => {
           />
         </Col>
 
-        {/* Row 5: Usage Stats by Programme */}
-        <Col lg={12} className="d-flex align-items-stretch">
-          <UsageStatsByProgrammeWidget showDropdown={true} />
-        </Col>
+
       </Row>
     </MainLayout>
   );
