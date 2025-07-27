@@ -299,7 +299,7 @@ const UsageStatsByProgrammeWidget: React.FC<UsageStatsByProgrammeWidgetProps> = 
 
           <div className="d-flex align-items-center gap-2">
             {/* Programme Selection */}
-            <div className="position-relative">
+            <div className="position-relative" ref={dropdownRef}>
               <Button
                 variant="outline-secondary"
                 size="sm"
