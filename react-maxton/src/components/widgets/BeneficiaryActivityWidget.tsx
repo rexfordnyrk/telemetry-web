@@ -158,7 +158,6 @@ const BeneficiaryActivityWidget: React.FC<BeneficiaryActivityWidgetProps> = ({
                 <th>Most Visited</th>
                 <th>Data Usage</th>
                 <th>Last Synced</th>
-                <th>Status</th>
               </tr>
             </thead>
             <tbody>
