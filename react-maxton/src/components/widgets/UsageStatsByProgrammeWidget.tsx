@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Card, Dropdown, Form } from "react-bootstrap";
+import React, { useState, useEffect } from "react";
+import { Card, Form, Button } from "react-bootstrap";
 
 declare const $: any;
 
@@ -10,6 +10,18 @@ interface PeityData {
   amount: string;
   percentage: string;
   amountUnit: string;
+}
+
+interface Programme {
+  id: string;
+  name: string;
+  color: string;
+}
+
+interface DataPoint {
+  id: string;
+  name: string;
+  color: string;
 }
 
 interface UsageStatsByProgrammeData {
