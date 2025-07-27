@@ -168,8 +168,8 @@ const Overview: React.FC = () => {
           />
         </Col>
 
-        {/* Row 2: Beneficiary Activity Overview */}
-        <Col lg={12} className="d-flex align-items-stretch">
+        {/* Row 2: Beneficiary Activity Overview + Nested Widgets */}
+        <Col xxl={8} lg={12} className="d-flex align-items-stretch">
           <BeneficiaryActivityWidget showDropdown={true} />
         </Col>
 
