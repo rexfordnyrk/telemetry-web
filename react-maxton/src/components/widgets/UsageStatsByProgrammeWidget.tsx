@@ -328,66 +328,65 @@ const UsageStatsByProgrammeWidget: React.FC<UsageStatsByProgrammeWidgetProps> = 
   return (
     <Card className="w-100 rounded-4">
       <Card.Body>
-        <div className="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-2">
+        <div className="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-3">
           <h5 className="mb-0">{usageData.title}</h5>
 
-          <div className="d-flex align-items-center gap-2">
-            {/* Filter Controls */}
-            <Form.Select
-              size="sm"
-              value={selectedProgramme}
-              onChange={(e) => setSelectedProgramme(e.target.value)}
-              style={{ width: "160px" }}
-            >
-              <option>All Programmes</option>
-              <option>Digital Literacy</option>
-              <option>Skills Training</option>
-              <option>Financial Education</option>
-              <option>Health Awareness</option>
-              <option>Youth Development</option>
-            </Form.Select>
+          <div className="d-flex align-items-center gap-3">
+            {/* Programme Selection */}
+            <div className="d-flex flex-column">
+              <label className="form-label mb-1 small">Programmes</label>
+              <div className="d-flex flex-wrap gap-2">
+                <Form.Check
+                  type="checkbox"
+                  label="All"
+                  checked={selectedProgrammes.includes("all")}
+                  onChange={(e) => handleProgrammeChange("all", e.target.checked)}
+                  className="small"
+                />
+                {availableProgrammes.map(programme => (
+                  <Form.Check
+                    key={programme.id}
+                    type="checkbox"
+                    label={programme.name}
+                    checked={selectedProgrammes.includes(programme.id)}
+                    onChange={(e) => handleProgrammeChange(programme.id, e.target.checked)}
+                    className="small"
+                    disabled={selectedProgrammes.includes("all")}
+                  />
+                ))}
+              </div>
+            </div>
 
-            <Form.Select
-              size="sm"
-              value={selectedDatapoint}
-              onChange={(e) => setSelectedDatapoint(e.target.value)}
-              style={{ width: "140px" }}
-            >
-              <option>All Datapoints</option>
-              <option>App Sessions</option>
-              <option>Network Usage</option>
-              <option>Screentime</option>
-            </Form.Select>
+            {/* DataPoint Selection */}
+            <div className="d-flex flex-column">
+              <label className="form-label mb-1 small">
+                Data Points
+                {isMultipleProgrammes && <span className="text-muted">(Single selection)</span>}
+                {!isMultipleProgrammes && <span className="text-muted">(Multi selection)</span>}
+              </label>
+              <div className="d-flex flex-wrap gap-2">
+                {availableDataPoints.map(dataPoint => (
+                  <Form.Check
+                    key={dataPoint.id}
+                    type={isMultipleProgrammes ? "radio" : "checkbox"}
+                    name={isMultipleProgrammes ? "datapoint" : undefined}
+                    label={dataPoint.name}
+                    checked={selectedDataPoints.includes(dataPoint.id)}
+                    onChange={(e) => handleDataPointChange(dataPoint.id, e.target.checked)}
+                    className="small"
+                  />
+                ))}
+              </div>
+            </div>
 
-            <button
-              className="btn btn-primary btn-sm px-3"
-              onClick={() => {
-                // Apply filters logic here
-                console.log('Applying filters:', selectedProgramme, selectedDatapoint);
-              }}
+            <Button
+              variant="primary"
+              size="sm"
+              onClick={applyFilters}
+              className="align-self-end"
             >
               Apply
-            </button>
-
-            {showDropdown && (
-              <Dropdown>
-                <Dropdown.Toggle
-                  variant="link"
-                  className="dropdown-toggle-nocaret options"
-                  as="button"
-                  style={{ border: "none", background: "none" }}
-                >
-                  <span className="material-icons-outlined fs-5">
-                    more_vert
-                  </span>
-                </Dropdown.Toggle>
-                <Dropdown.Menu>
-                  <Dropdown.Item onClick={() => console.log('Export Data')}>Export Data</Dropdown.Item>
-                  <Dropdown.Item onClick={() => console.log('View Details')}>View Details</Dropdown.Item>
-                  <Dropdown.Item onClick={() => console.log('Settings')}>Settings</Dropdown.Item>
-                </Dropdown.Menu>
-              </Dropdown>
-            )}
+            </Button>
           </div>
         </div>
 
