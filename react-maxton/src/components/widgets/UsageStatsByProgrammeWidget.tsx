@@ -42,50 +42,56 @@ interface UsageStatsByProgrammeWidgetProps {
   showDropdown?: boolean;
 }
 
+const availableProgrammes: Programme[] = [
+  { id: "digital-literacy", name: "Digital Literacy", color: "#0d6efd" },
+  { id: "skills-training", name: "Skills Training", color: "#198754" },
+  { id: "financial-education", name: "Financial Education", color: "#ffc107" },
+  { id: "health-awareness", name: "Health Awareness", color: "#dc3545" },
+  { id: "youth-development", name: "Youth Development", color: "#6f42c1" },
+];
+
+const availableDataPoints: DataPoint[] = [
+  { id: "app-sessions", name: "App Sessions", color: "#0d6efd" },
+  { id: "network-usage", name: "Network Usage (GB)", color: "#198754" },
+  { id: "screentime", name: "Screentime (Hours)", color: "#ffc107" },
+];
+
 const defaultUsageData: UsageStatsByProgrammeData = {
   title: "Usage Stats by Programme",
   series: [
     {
       name: "App Sessions",
       data: [45, 30, 55, 40, 35, 50, 65, 40, 55]
-    },
-    {
-      name: "Network Usage (GB)",
-      data: [25, 20, 35, 25, 20, 30, 40, 25, 35]
-    },
-    {
-      name: "Screentime (Hours)",
-      data: [15, 25, 20, 30, 25, 35, 30, 35, 25]
     }
   ],
   categories: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep"],
-  colors: ["#0d6efd", "#198754", "#ffc107"],
-  gradientColors: ["#6610f2", "#20c997", "#fd7e14"],
+  colors: ["#0d6efd"],
+  gradientColors: ["#6610f2"],
   chartId: "usage-stats-chart",
   peityData: [
     {
       value: "7/10",
       color: "#0d6efd",
-      label: "App Sessions",
+      label: "Digital Literacy",
       amount: "2,847",
       percentage: "18.5%",
       amountUnit: "sessions"
     },
     {
-      value: "6/10", 
+      value: "6/10",
       color: "#198754",
-      label: "Network Usage",
-      amount: "145.8 GB",
+      label: "Skills Training",
+      amount: "1,856",
       percentage: "12.3%",
-      amountUnit: "data consumed"
+      amountUnit: "sessions"
     },
     {
       value: "8/10",
-      color: "#ffc107", 
-      label: "Screentime",
-      amount: "486 hrs",
+      color: "#ffc107",
+      label: "Financial Education",
+      amount: "3,124",
       percentage: "24.7%",
-      amountUnit: "active hours"
+      amountUnit: "sessions"
     }
   ]
 };
