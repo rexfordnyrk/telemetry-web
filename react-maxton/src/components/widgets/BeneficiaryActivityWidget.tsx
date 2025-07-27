@@ -14,8 +14,6 @@ interface BeneficiaryActivity {
   dataUsageAppIcon: string;
   lastSyncedDate: string;
   lastSyncedTime: string;
-  status: string;
-  statusClass: string;
 }
 
 interface BeneficiaryActivityData {
