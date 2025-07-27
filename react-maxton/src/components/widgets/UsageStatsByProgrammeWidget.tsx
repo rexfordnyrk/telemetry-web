@@ -104,6 +104,7 @@ const UsageStatsByProgrammeWidget: React.FC<UsageStatsByProgrammeWidgetProps> = 
   const [selectedProgrammes, setSelectedProgrammes] = useState<string[]>([]);
   const [selectedDataPoint, setSelectedDataPoint] = useState<string>("app-sessions");
   const [showProgrammeDropdown, setShowProgrammeDropdown] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   // Handle programme selection changes (toggle behavior)
   const handleProgrammeToggle = (programmeId: string) => {
