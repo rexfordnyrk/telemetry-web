@@ -322,7 +322,7 @@ const UsageStatsByProgrammeWidget: React.FC<UsageStatsByProgrammeWidgetProps> = 
 
     const timer = setTimeout(initChart, 100);
     return () => clearTimeout(timer);
-  }, [usageData, selectedProgrammes, selectedDataPoints]);
+  }, [usageData]); // Removed dependency on selection changes to prevent auto-rebuild
 
   return (
     <Card className="w-100 rounded-4">
