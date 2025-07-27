@@ -12,3 +12,4 @@ export { default as ProgressWidget } from './ProgressWidget';
 export { default as StatCardWidget } from './StatCardWidget';
 export { default as UsageStatsByProgrammeWidget } from './UsageStatsByProgrammeWidget';
 export { default as BeneficiaryActivityWidget } from './BeneficiaryActivityWidget';
+export { default as DataConsumerAppsWidget } from './DataConsumerAppsWidget';
