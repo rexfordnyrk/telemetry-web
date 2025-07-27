@@ -367,7 +367,7 @@ const Overview: React.FC = () => {
           />
         </Col>
 
-        {/* Row 3: Campaign Stats + Visitors Growth + Social Leads */}
+        {/* Row 3: Device Sync Stats + Beneficiary Activity Overview */}
         <Col xl={6} xxl={4} className="d-flex align-items-stretch">
           <CampaignStatsWidget
             data={{
@@ -435,21 +435,17 @@ const Overview: React.FC = () => {
           />
         </Col>
 
-        <Col xl={6} xxl={4} className="d-flex align-items-stretch">
+        <Col xxl={8} lg={12} className="d-flex align-items-stretch">
+          <BeneficiaryActivityWidget showDropdown={true} />
+        </Col>
+
+        {/* Row 4: Visitors Growth + Social Leads */}
+        <Col xl={6} xxl={6} className="d-flex align-items-stretch">
           <VisitorsGrowthWidget />
         </Col>
 
-        <Col xl={6} xxl={4} className="d-flex align-items-stretch">
+        <Col xl={6} xxl={6} className="d-flex align-items-stretch">
           <SocialLeadsWidget />
-        </Col>
-
-        {/* Row 4: New Users + Recent Orders */}
-        <Col xl={6} xxl={4} className="d-flex align-items-stretch">
-          <NewUsersWidget />
-        </Col>
-
-        <Col lg={12} xxl={8} className="d-flex align-items-stretch">
-          <RecentOrdersWidget />
         </Col>
 
         {/* Row 5: Usage Stats by Programme */}
