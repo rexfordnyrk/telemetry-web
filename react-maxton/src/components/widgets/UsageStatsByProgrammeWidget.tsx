@@ -101,60 +101,24 @@ const UsageStatsByProgrammeWidget: React.FC<UsageStatsByProgrammeWidgetProps> = 
   showDropdown = false, // Removed dropdown menu as requested
 }) => {
   const [usageData, setUsageData] = useState(data || defaultUsageData);
-  const [selectedProgrammes, setSelectedProgrammes] = useState<string[]>(["all"]);
-  const [selectedDataPoints, setSelectedDataPoints] = useState<string[]>(["app-sessions"]);
+  const [selectedProgrammeOption, setSelectedProgrammeOption] = useState<string>("all");
+  const [selectedDataPointOption, setSelectedDataPointOption] = useState<string>("app-sessions");
   const [isMultipleProgrammes, setIsMultipleProgrammes] = useState(true);
 
   // Handle programme selection changes
-  const handleProgrammeChange = (programmeId: string, checked: boolean) => {
-    if (programmeId === "all") {
-      if (checked) {
-        setSelectedProgrammes(["all"]);
-        setIsMultipleProgrammes(true);
-        setSelectedDataPoints(["app-sessions"]); // Reset to single datapoint
-      } else {
-        setSelectedProgrammes([]);
-      }
+  const handleProgrammeChange = (value: string) => {
+    setSelectedProgrammeOption(value);
+    if (value === "all" || value === "multiple") {
+      setIsMultipleProgrammes(true);
+      setSelectedDataPointOption("app-sessions"); // Reset to single datapoint when multiple programmes
     } else {
-      let newSelection = selectedProgrammes.filter(id => id !== "all");
-      if (checked) {
-        newSelection = [...newSelection, programmeId];
-      } else {
-        newSelection = newSelection.filter(id => id !== programmeId);
-      }
-
-      if (newSelection.length === 0) {
-        setSelectedProgrammes(["all"]);
-        setIsMultipleProgrammes(true);
-      } else if (newSelection.length === 1) {
-        setSelectedProgrammes(newSelection);
-        setIsMultipleProgrammes(false);
-      } else {
-        setSelectedProgrammes(newSelection);
-        setIsMultipleProgrammes(true);
-        setSelectedDataPoints(["app-sessions"]); // Reset to single datapoint
-      }
+      setIsMultipleProgrammes(false);
     }
   };
 
   // Handle datapoint selection changes
-  const handleDataPointChange = (dataPointId: string, checked: boolean) => {
-    if (!isMultipleProgrammes) {
-      // Single programme selected - allow multiple datapoints
-      if (checked) {
-        setSelectedDataPoints([...selectedDataPoints, dataPointId]);
-      } else {
-        const newSelection = selectedDataPoints.filter(id => id !== dataPointId);
-        if (newSelection.length === 0) {
-          setSelectedDataPoints(["app-sessions"]); // Always have at least one
-        } else {
-          setSelectedDataPoints(newSelection);
-        }
-      }
-    } else {
-      // Multiple programmes selected - only single datapoint allowed
-      setSelectedDataPoints([dataPointId]);
-    }
+  const handleDataPointChange = (value: string) => {
+    setSelectedDataPointOption(value);
   };
 
   // Apply filters and update chart
