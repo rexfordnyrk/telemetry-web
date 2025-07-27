@@ -199,6 +199,12 @@ const UsageStatsByProgrammeWidget: React.FC<UsageStatsByProgrammeWidgetProps> = 
     const initChart = () => {
       try {
         if (typeof window !== "undefined" && (window as any).ApexCharts) {
+          // Destroy existing chart first
+          const chartElement = document.querySelector(`#${usageData.chartId}`) as HTMLElement;
+          if (chartElement) {
+            chartElement.innerHTML = '';
+          }
+
           const chartOptions = {
             series: usageData.series,
             chart: {
@@ -272,7 +278,6 @@ const UsageStatsByProgrammeWidget: React.FC<UsageStatsByProgrammeWidgetProps> = 
             },
           };
 
-          const chartElement = document.querySelector(`#${usageData.chartId}`);
           if (chartElement) {
             new (window as any).ApexCharts(chartElement, chartOptions).render();
           }
@@ -289,7 +294,7 @@ const UsageStatsByProgrammeWidget: React.FC<UsageStatsByProgrammeWidgetProps> = 
 
     const timer = setTimeout(initChart, 100);
     return () => clearTimeout(timer);
-  }, [usageData]); // Removed dependency on selection changes to prevent auto-rebuild
+  }, [usageData]);
 
   return (
     <Card className="w-100 rounded-4">
@@ -382,33 +387,67 @@ const UsageStatsByProgrammeWidget: React.FC<UsageStatsByProgrammeWidgetProps> = 
         </div>
 
         <div id={usageData.chartId}></div>
-        <div className="d-flex flex-column flex-lg-row align-items-start justify-content-around border p-3 rounded-4 mt-3 gap-3">
-          {usageData.peityData.map((item, index) => (
-            <React.Fragment key={index}>
-              <div className="d-flex align-items-center gap-4">
-                <div>
-                  <p className="mb-0 data-attributes">
-                    <span 
-                      data-peity={`{ "fill": ["${item.color}", "rgb(255 255 255 / 12%)"], "innerRadius": 32, "radius": 40 }`}
-                    >
-                      {item.value}
-                    </span>
-                  </p>
+        <div className="border p-3 rounded-4 mt-3">
+          {usageData.peityData.length <= 3 ? (
+            // Original layout for 3 or fewer items
+            <div className="d-flex flex-column flex-lg-row align-items-start justify-content-around gap-3">
+              {usageData.peityData.map((item, index) => (
+                <React.Fragment key={index}>
+                  <div className="d-flex align-items-center gap-4">
+                    <div>
+                      <p className="mb-0 data-attributes">
+                        <span
+                          data-peity={`{ "fill": ["${item.color}", "rgb(255 255 255 / 12%)"], "innerRadius": 32, "radius": 40 }`}
+                        >
+                          {item.value}
+                        </span>
+                      </p>
+                    </div>
+                    <div>
+                      <p className="mb-1 fs-6 fw-bold">{item.label}</p>
+                      <h2 className="mb-0">{item.amount}</h2>
+                      <p className="mb-0">
+                        <span className="text-success me-2 fw-medium">
+                          {item.percentage}
+                        </span>
+                        <span>{item.amountUnit}</span>
+                      </p>
+                    </div>
+                  </div>
+                  {index < usageData.peityData.length - 1 && <div className="vr"></div>}
+                </React.Fragment>
+              ))}
+            </div>
+          ) : (
+            // Compact grid layout for more than 3 items
+            <div className="row g-3">
+              {usageData.peityData.map((item, index) => (
+                <div key={index} className="col-md-6 col-lg-4">
+                  <div className="d-flex align-items-center gap-3">
+                    <div>
+                      <p className="mb-0 data-attributes">
+                        <span
+                          data-peity={`{ "fill": ["${item.color}", "rgb(255 255 255 / 12%)"], "innerRadius": 20, "radius": 28 }`}
+                        >
+                          {item.value}
+                        </span>
+                      </p>
+                    </div>
+                    <div>
+                      <p className="mb-1 fs-6 fw-bold text-truncate" style={{maxWidth: "120px"}}>{item.label}</p>
+                      <h5 className="mb-0">{item.amount}</h5>
+                      <p className="mb-0 small">
+                        <span className="text-success me-2 fw-medium">
+                          {item.percentage}
+                        </span>
+                        <span>{item.amountUnit}</span>
+                      </p>
+                    </div>
+                  </div>
                 </div>
-                <div>
-                  <p className="mb-1 fs-6 fw-bold">{item.label}</p>
-                  <h2 className="mb-0">{item.amount}</h2>
-                  <p className="mb-0">
-                    <span className="text-success me-2 fw-medium">
-                      {item.percentage}
-                    </span>
-                    <span>{item.amountUnit}</span>
-                  </p>
-                </div>
-              </div>
-              {index < usageData.peityData.length - 1 && <div className="vr"></div>}
-            </React.Fragment>
-          ))}
+              ))}
+            </div>
+          )}
         </div>
       </Card.Body>
     </Card>
