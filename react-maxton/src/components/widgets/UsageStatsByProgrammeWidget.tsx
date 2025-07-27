@@ -101,29 +101,36 @@ const UsageStatsByProgrammeWidget: React.FC<UsageStatsByProgrammeWidgetProps> = 
   showDropdown = false, // Removed dropdown menu as requested
 }) => {
   const [usageData, setUsageData] = useState(data || defaultUsageData);
-  const [selectedProgrammeOption, setSelectedProgrammeOption] = useState<string>("all");
-  const [selectedDataPointOption, setSelectedDataPointOption] = useState<string>("app-sessions");
-  const [isMultipleProgrammes, setIsMultipleProgrammes] = useState(true);
+  const [selectedProgrammes, setSelectedProgrammes] = useState<string[]>([]);
+  const [selectedDataPoint, setSelectedDataPoint] = useState<string>("app-sessions");
+  const [showProgrammeDropdown, setShowProgrammeDropdown] = useState(false);
 
-  // Handle programme selection changes
-  const handleProgrammeChange = (value: string) => {
-    setSelectedProgrammeOption(value);
-    if (value === "all" || value === "multiple") {
-      setIsMultipleProgrammes(true);
-      setSelectedDataPointOption("app-sessions"); // Reset to single datapoint when multiple programmes
-    } else {
-      setIsMultipleProgrammes(false);
+  // Handle programme selection changes (toggle behavior)
+  const handleProgrammeToggle = (programmeId: string) => {
+    if (programmeId === "all") {
+      setSelectedProgrammes([]);
+      return;
     }
+
+    setSelectedProgrammes(prev => {
+      if (prev.includes(programmeId)) {
+        // Deselect if already selected
+        return prev.filter(id => id !== programmeId);
+      } else {
+        // Select if not selected
+        return [...prev, programmeId];
+      }
+    });
   };
 
   // Handle datapoint selection changes
   const handleDataPointChange = (value: string) => {
-    setSelectedDataPointOption(value);
+    setSelectedDataPoint(value);
   };
 
   // Apply filters and update chart
   const applyFilters = () => {
-    console.log('Applying filters:', { programme: selectedProgrammeOption, dataPoint: selectedDataPointOption });
+    console.log('Applying filters:', { programmes: selectedProgrammes, dataPoint: selectedDataPoint });
     // TODO: Make API call and update chart data
     // For now, we'll update with mock data
     updateChartData();
@@ -137,87 +144,32 @@ const UsageStatsByProgrammeWidget: React.FC<UsageStatsByProgrammeWidgetProps> = 
     const newColors: string[] = [];
     const newGradientColors: string[] = [];
 
-    if (isMultipleProgrammes) {
-      // Show single datapoint across multiple programmes
-      const dataPoint = availableDataPoints.find(dp => dp.id === selectedDataPointOption);
-      const programmesToShow = selectedProgrammeOption === "all"
-        ? availableProgrammes
-        : availableProgrammes;
+    const dataPoint = availableDataPoints.find(dp => dp.id === selectedDataPoint);
+    const programmesToShow = selectedProgrammes.length > 0
+      ? availableProgrammes.filter(p => selectedProgrammes.includes(p.id))
+      : availableProgrammes;
 
-      programmesToShow.forEach((programme) => {
-        const randomData = Array.from({length: 9}, () => Number((Math.random() * 100).toFixed(2)));
-        newSeries.push({
-          name: programme.name,
-          data: randomData
-        });
-        newColors.push(programme.color);
-        newGradientColors.push(programme.color);
-
-        const amount = (Math.random() * 5000).toFixed(2);
-        const percentage = (Math.random() * 30).toFixed(2);
-
-        newPeityData.push({
-          value: `${Math.floor(Math.random() * 10)}/10`,
-          color: programme.color,
-          label: programme.name,
-          amount: amount,
-          percentage: `${percentage}%`,
-          amountUnit: dataPoint?.name.includes("GB") ? "GB" : dataPoint?.name.includes("Hours") ? "hrs" : "sessions"
-        });
+    programmesToShow.forEach((programme) => {
+      const randomData = Array.from({length: 9}, () => Number((Math.random() * 100).toFixed(2)));
+      newSeries.push({
+        name: programme.name,
+        data: randomData
       });
-    } else {
-      // Show multiple datapoints for single programme
-      const programme = availableProgrammes.find(p => p.id === selectedProgrammeOption);
+      newColors.push(programme.color);
+      newGradientColors.push(programme.color);
 
-      if (selectedDataPointOption === "multiple") {
-        // Show all datapoints for single programme
-        availableDataPoints.forEach((dataPoint) => {
-          const randomData = Array.from({length: 9}, () => Number((Math.random() * 100).toFixed(2)));
-          newSeries.push({
-            name: dataPoint.name,
-            data: randomData
-          });
-          newColors.push(dataPoint.color);
-          newGradientColors.push(dataPoint.color);
+      const amount = (Math.random() * 5000).toFixed(2);
+      const percentage = (Math.random() * 30).toFixed(2);
 
-          const amount = (Math.random() * 5000).toFixed(2);
-          const percentage = (Math.random() * 30).toFixed(2);
-
-          newPeityData.push({
-            value: `${Math.floor(Math.random() * 10)}/10`,
-            color: dataPoint.color,
-            label: dataPoint.name,
-            amount: amount,
-            percentage: `${percentage}%`,
-            amountUnit: dataPoint.name.includes("GB") ? "GB" : dataPoint.name.includes("Hours") ? "hrs" : "sessions"
-          });
-        });
-      } else {
-        // Show single datapoint for single programme
-        const dataPoint = availableDataPoints.find(dp => dp.id === selectedDataPointOption);
-        if (dataPoint) {
-          const randomData = Array.from({length: 9}, () => Number((Math.random() * 100).toFixed(2)));
-          newSeries.push({
-            name: `${programme?.name} - ${dataPoint.name}`,
-            data: randomData
-          });
-          newColors.push(dataPoint.color);
-          newGradientColors.push(dataPoint.color);
-
-          const amount = (Math.random() * 5000).toFixed(2);
-          const percentage = (Math.random() * 30).toFixed(2);
-
-          newPeityData.push({
-            value: `${Math.floor(Math.random() * 10)}/10`,
-            color: dataPoint.color,
-            label: dataPoint.name,
-            amount: amount,
-            percentage: `${percentage}%`,
-            amountUnit: dataPoint.name.includes("GB") ? "GB" : dataPoint.name.includes("Hours") ? "hrs" : "sessions"
-          });
-        }
-      }
-    }
+      newPeityData.push({
+        value: `${Math.floor(Math.random() * 10)}/10`,
+        color: programme.color,
+        label: programme.name,
+        amount: amount,
+        percentage: `${percentage}%`,
+        amountUnit: dataPoint?.name.includes("GB") ? "GB" : dataPoint?.name.includes("Hours") ? "hrs" : "sessions"
+      });
+    });
 
     setUsageData({
       ...usageData,
@@ -332,51 +284,81 @@ const UsageStatsByProgrammeWidget: React.FC<UsageStatsByProgrammeWidgetProps> = 
 
           <div className="d-flex align-items-center gap-2">
             {/* Programme Selection */}
-            <Form.Select
-              size="sm"
-              value={selectedProgrammeOption}
-              onChange={(e) => handleProgrammeChange(e.target.value)}
-              style={{ width: "180px" }}
-            >
-              <option value="all">All Programmes</option>
-              {availableProgrammes.map(programme => (
-                <option key={programme.id} value={programme.id}>
-                  {programme.name}
-                </option>
-              ))}
-            </Form.Select>
+            <div className="position-relative">
+              <Button
+                variant="outline-secondary"
+                size="sm"
+                onClick={() => setShowProgrammeDropdown(!showProgrammeDropdown)}
+                style={{ width: "180px" }}
+                className="text-start d-flex justify-content-between align-items-center"
+              >
+                <span>
+                  {selectedProgrammes.length === 0
+                    ? "All Programmes"
+                    : selectedProgrammes.length === 1
+                      ? availableProgrammes.find(p => p.id === selectedProgrammes[0])?.name
+                      : `${selectedProgrammes.length} Selected`
+                  }
+                </span>
+                <i className="bx bx-chevron-down"></i>
+              </Button>
+
+              {showProgrammeDropdown && (
+                <div
+                  className="dropdown-menu show position-absolute w-100 mt-1"
+                  style={{ zIndex: 1050, maxHeight: "200px", overflowY: "auto" }}
+                >
+                  <button
+                    className="dropdown-item"
+                    type="button"
+                    onClick={() => {
+                      handleProgrammeToggle("all");
+                      setShowProgrammeDropdown(false);
+                    }}
+                  >
+                    All Programmes
+                  </button>
+                  <div className="dropdown-divider"></div>
+                  {availableProgrammes.map(programme => (
+                    <button
+                      key={programme.id}
+                      className={`dropdown-item d-flex justify-content-between align-items-center ${
+                        selectedProgrammes.includes(programme.id) ? 'active' : ''
+                      }`}
+                      type="button"
+                      onClick={() => handleProgrammeToggle(programme.id)}
+                    >
+                      <span>{programme.name}</span>
+                      {selectedProgrammes.includes(programme.id) && (
+                        <i className="bx bx-check text-success"></i>
+                      )}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
 
             {/* DataPoint Selection */}
             <Form.Select
               size="sm"
-              value={selectedDataPointOption}
+              value={selectedDataPoint}
               onChange={(e) => handleDataPointChange(e.target.value)}
               style={{ width: "160px" }}
             >
-              {isMultipleProgrammes ? (
-                // Multiple programmes - single datapoint only
-                availableDataPoints.map(dataPoint => (
-                  <option key={dataPoint.id} value={dataPoint.id}>
-                    {dataPoint.name}
-                  </option>
-                ))
-              ) : (
-                // Single programme - allow multiple datapoints option
-                <>
-                  <option value="multiple">All Data Points</option>
-                  {availableDataPoints.map(dataPoint => (
-                    <option key={dataPoint.id} value={dataPoint.id}>
-                      {dataPoint.name}
-                    </option>
-                  ))}
-                </>
-              )}
+              {availableDataPoints.map(dataPoint => (
+                <option key={dataPoint.id} value={dataPoint.id}>
+                  {dataPoint.name}
+                </option>
+              ))}
             </Form.Select>
 
             <Button
               variant="primary"
               size="sm"
-              onClick={applyFilters}
+              onClick={() => {
+                applyFilters();
+                setShowProgrammeDropdown(false);
+              }}
               className="px-3"
             >
               Apply
