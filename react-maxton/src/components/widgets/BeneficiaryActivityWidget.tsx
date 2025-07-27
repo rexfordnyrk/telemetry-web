@@ -42,8 +42,6 @@ const defaultBeneficiaryData: BeneficiaryActivityData = {
       dataUsageAppIcon: "/assets/images/apps/20.png",
       lastSyncedDate: "10 Jan, 2024",
       lastSyncedTime: "2:30 PM",
-      status: "Active",
-      statusClass: "bg-success text-success",
     },
     {
       participant: "Michael Johnson",
@@ -58,8 +56,6 @@ const defaultBeneficiaryData: BeneficiaryActivityData = {
       dataUsageAppIcon: "/assets/images/apps/twitter-circle.png",
       lastSyncedDate: "10 Jan, 2024",
       lastSyncedTime: "1:45 PM",
-      status: "Active",
-      statusClass: "bg-success text-success",
     },
     {
       participant: "Emily Davis",
@@ -74,8 +70,6 @@ const defaultBeneficiaryData: BeneficiaryActivityData = {
       dataUsageAppIcon: "/assets/images/apps/19.png",
       lastSyncedDate: "10 Jan, 2024",
       lastSyncedTime: "12:15 PM",
-      status: "Inactive",
-      statusClass: "bg-warning text-warning",
     },
     {
       participant: "David Wilson",
@@ -90,8 +84,6 @@ const defaultBeneficiaryData: BeneficiaryActivityData = {
       dataUsageAppIcon: "/assets/images/apps/20.png",
       lastSyncedDate: "09 Jan, 2024",
       lastSyncedTime: "11:30 AM",
-      status: "Active",
-      statusClass: "bg-success text-success",
     },
     {
       participant: "Lisa Anderson",
@@ -106,8 +98,20 @@ const defaultBeneficiaryData: BeneficiaryActivityData = {
       dataUsageAppIcon: "/assets/images/apps/17.png",
       lastSyncedDate: "09 Jan, 2024",
       lastSyncedTime: "9:45 AM",
-      status: "Active",
-      statusClass: "bg-success text-success",
+    },
+    {
+      participant: "James Thompson",
+      mostUsedApp: "WhatsApp",
+      mostUsedAppScreentime: "4.7 hrs",
+      mostUsedAppIcon: "/assets/images/apps/17.png",
+      mostVisitedApp: "Instagram",
+      mostVisitedCount: "198 visits",
+      mostVisitedAppIcon: "/assets/images/apps/19.png",
+      dataUsageApp: "Facebook",
+      dataUsageAmount: "2.9 GB",
+      dataUsageAppIcon: "/assets/images/apps/03.png",
+      lastSyncedDate: "09 Jan, 2024",
+      lastSyncedTime: "8:20 AM",
     },
   ],
 };
