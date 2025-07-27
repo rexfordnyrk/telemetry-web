@@ -123,7 +123,7 @@ const UsageStatsByProgrammeWidget: React.FC<UsageStatsByProgrammeWidgetProps> = 
 
   // Apply filters and update chart
   const applyFilters = () => {
-    console.log('Applying filters:', { programmes: selectedProgrammes, dataPoints: selectedDataPoints });
+    console.log('Applying filters:', { programme: selectedProgrammeOption, dataPoint: selectedDataPointOption });
     // TODO: Make API call and update chart data
     // For now, we'll update with mock data
     updateChartData();
@@ -139,48 +139,84 @@ const UsageStatsByProgrammeWidget: React.FC<UsageStatsByProgrammeWidgetProps> = 
 
     if (isMultipleProgrammes) {
       // Show single datapoint across multiple programmes
-      const dataPoint = availableDataPoints.find(dp => dp.id === selectedDataPoints[0]);
-      const programmesToShow = selectedProgrammes.includes("all")
+      const dataPoint = availableDataPoints.find(dp => dp.id === selectedDataPointOption);
+      const programmesToShow = selectedProgrammeOption === "all"
         ? availableProgrammes
-        : availableProgrammes.filter(p => selectedProgrammes.includes(p.id));
+        : availableProgrammes;
 
       programmesToShow.forEach((programme) => {
+        const randomData = Array.from({length: 9}, () => Number((Math.random() * 100).toFixed(2)));
         newSeries.push({
           name: programme.name,
-          data: [Math.random() * 100, Math.random() * 100, Math.random() * 100, Math.random() * 100, Math.random() * 100, Math.random() * 100, Math.random() * 100, Math.random() * 100, Math.random() * 100]
+          data: randomData
         });
         newColors.push(programme.color);
         newGradientColors.push(programme.color);
+
+        const amount = (Math.random() * 5000).toFixed(2);
+        const percentage = (Math.random() * 30).toFixed(2);
+
         newPeityData.push({
           value: `${Math.floor(Math.random() * 10)}/10`,
           color: programme.color,
           label: programme.name,
-          amount: Math.floor(Math.random() * 5000).toString(),
-          percentage: `${Math.floor(Math.random() * 30)}%`,
+          amount: amount,
+          percentage: `${percentage}%`,
           amountUnit: dataPoint?.name.includes("GB") ? "GB" : dataPoint?.name.includes("Hours") ? "hrs" : "sessions"
         });
       });
     } else {
       // Show multiple datapoints for single programme
-      selectedDataPoints.forEach((dataPointId) => {
-        const dataPoint = availableDataPoints.find(dp => dp.id === dataPointId);
-        if (dataPoint) {
+      const programme = availableProgrammes.find(p => p.id === selectedProgrammeOption);
+
+      if (selectedDataPointOption === "multiple") {
+        // Show all datapoints for single programme
+        availableDataPoints.forEach((dataPoint) => {
+          const randomData = Array.from({length: 9}, () => Number((Math.random() * 100).toFixed(2)));
           newSeries.push({
             name: dataPoint.name,
-            data: [Math.random() * 100, Math.random() * 100, Math.random() * 100, Math.random() * 100, Math.random() * 100, Math.random() * 100, Math.random() * 100, Math.random() * 100, Math.random() * 100]
+            data: randomData
           });
           newColors.push(dataPoint.color);
           newGradientColors.push(dataPoint.color);
+
+          const amount = (Math.random() * 5000).toFixed(2);
+          const percentage = (Math.random() * 30).toFixed(2);
+
           newPeityData.push({
             value: `${Math.floor(Math.random() * 10)}/10`,
             color: dataPoint.color,
             label: dataPoint.name,
-            amount: Math.floor(Math.random() * 5000).toString(),
-            percentage: `${Math.floor(Math.random() * 30)}%`,
+            amount: amount,
+            percentage: `${percentage}%`,
+            amountUnit: dataPoint.name.includes("GB") ? "GB" : dataPoint.name.includes("Hours") ? "hrs" : "sessions"
+          });
+        });
+      } else {
+        // Show single datapoint for single programme
+        const dataPoint = availableDataPoints.find(dp => dp.id === selectedDataPointOption);
+        if (dataPoint) {
+          const randomData = Array.from({length: 9}, () => Number((Math.random() * 100).toFixed(2)));
+          newSeries.push({
+            name: `${programme?.name} - ${dataPoint.name}`,
+            data: randomData
+          });
+          newColors.push(dataPoint.color);
+          newGradientColors.push(dataPoint.color);
+
+          const amount = (Math.random() * 5000).toFixed(2);
+          const percentage = (Math.random() * 30).toFixed(2);
+
+          newPeityData.push({
+            value: `${Math.floor(Math.random() * 10)}/10`,
+            color: dataPoint.color,
+            label: dataPoint.name,
+            amount: amount,
+            percentage: `${percentage}%`,
             amountUnit: dataPoint.name.includes("GB") ? "GB" : dataPoint.name.includes("Hours") ? "hrs" : "sessions"
           });
         }
-      });
+      }
     }
 
     setUsageData({
