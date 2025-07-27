@@ -288,7 +288,100 @@ const Overview: React.FC = () => {
           />
         </Col>
 
-        {/* Row 3: Device Sync Stats + Beneficiary Activity Overview */}
+        {/* Row 3: App vs Background Usage + Usage Stats by Programme */}
+        <Col xl={6} xxl={4} className="d-flex align-items-stretch">
+          <DeviceTypeWidget
+            data={{
+              title: "App vs Background Usage",
+              centerTitle: "Total Data Usage",
+              centerValue: "656.8 GB",
+              series: [68, 32],
+              labels: ["Active Apps", "Background Usage"],
+              colors: ["#3494e6", "#ff6a00"],
+              gradientColors: ["#ec6ead", "#ee0979"],
+              devices: [
+                {
+                  name: "Active Apps",
+                  icon: "apps",
+                  percentage: "68%",
+                  iconColor: "text-primary",
+                },
+                {
+                  name: "Background Usage",
+                  icon: "cloud_sync",
+                  percentage: "32%",
+                  iconColor: "text-warning",
+                },
+              ],
+            }}
+            showDropdown={false}
+          />
+        </Col>
+
+        <Col xxl={8} lg={12} className="d-flex align-items-stretch">
+          <UsageStatsByProgrammeWidget showDropdown={true} />
+        </Col>
+
+        {/* Row 4: Top 5 Used Apps + Top 5 Data Consumers + Device Sync Stats */}
+        <Col xl={6} xxl={4} className="d-flex align-items-stretch">
+          <SocialRevenueWidget
+            data={{
+              title: "Top 5 Used Apps",
+              totalRevenue: "654 hrs",
+              totalChange: "+15%",
+              totalChangeDirection: "up",
+              subtitle: "total Usage this month",
+              platforms: [
+                {
+                  name: "WhatsApp",
+                  category: "Communication",
+                  icon: "/assets/images/apps/17.png",
+                  revenue: "145 hrs",
+                  change: "+28.5%",
+                  changeDirection: "up",
+                },
+                {
+                  name: "Facebook",
+                  category: "Social Media",
+                  icon: "/assets/images/apps/03.png",
+                  revenue: "132 hrs",
+                  change: "-14.5%",
+                  changeDirection: "down",
+                },
+                {
+                  name: "Instagram",
+                  category: "Social Media",
+                  icon: "/assets/images/apps/19.png",
+                  revenue: "118 hrs",
+                  change: "+28.5%",
+                  changeDirection: "up",
+                },
+                {
+                  name: "YouTube",
+                  category: "Entertainment",
+                  icon: "/assets/images/apps/20.png",
+                  revenue: "134 hrs",
+                  change: "-43.5%",
+                  changeDirection: "down",
+                },
+                {
+                  name: "TikTok",
+                  category: "Entertainment",
+                  icon: "/assets/images/apps/twitter-circle.png",
+                  revenue: "125 hrs",
+                  change: "+24.7%",
+                  changeDirection: "up",
+                },
+              ],
+            }}
+            showDropdown={false}
+          />
+        </Col>
+
+        <Col xl={6} xxl={4} className="d-flex align-items-stretch">
+          <DataConsumerAppsWidget showDropdown={false} />
+        </Col>
+
         <Col xl={6} xxl={4} className="d-flex align-items-stretch">
           <CampaignStatsWidget
             data={{
@@ -354,19 +447,6 @@ const Overview: React.FC = () => {
             }}
             showDropdown={false}
           />
-        </Col>
-
-        <Col xxl={8} lg={12} className="d-flex align-items-stretch">
-          <BeneficiaryActivityWidget showDropdown={true} />
-        </Col>
-
-        {/* Row 4: Visitors Growth + Social Leads */}
-        <Col xl={6} xxl={6} className="d-flex align-items-stretch">
-          <VisitorsGrowthWidget />
-        </Col>
-
-        <Col xl={6} xxl={6} className="d-flex align-items-stretch">
-          <SocialLeadsWidget />
         </Col>
 
         {/* Row 5: Usage Stats by Programme */}
