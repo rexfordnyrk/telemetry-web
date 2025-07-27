@@ -56,33 +56,7 @@ const Overview: React.FC = () => {
           </nav>
         </div>
         <div className="ms-auto">
-          <div className="btn-group">
-            <button type="button" className="btn btn-outline-primary">
-              Settings
-            </button>
-            <button
-              type="button"
-              className="btn btn-outline-primary split-bg-primary dropdown-toggle dropdown-toggle-split"
-              data-bs-toggle="dropdown"
-            >
-              <span className="visually-hidden">Toggle Dropdown</span>
-            </button>
-            <div className="dropdown-menu dropdown-menu-right dropdown-menu-lg-end">
-              <a className="dropdown-item" href="#">
-                Action
-              </a>
-              <a className="dropdown-item" href="#">
-                Another action
-              </a>
-              <a className="dropdown-item" href="#">
-                Something else here
-              </a>
-              <div className="dropdown-divider"></div>
-              <a className="dropdown-item" href="#">
-                Separated link
-              </a>
-            </div>
-          </div>
+          <FilterControls />
         </div>
       </div>
 
