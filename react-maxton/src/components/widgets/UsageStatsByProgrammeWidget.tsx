@@ -104,6 +104,7 @@ const UsageStatsByProgrammeWidget: React.FC<UsageStatsByProgrammeWidgetProps> = 
   const [selectedProgrammes, setSelectedProgrammes] = useState<string[]>([]);
   const [selectedDataPoint, setSelectedDataPoint] = useState<string>("app-sessions");
   const [showProgrammeDropdown, setShowProgrammeDropdown] = useState(false);
+  const [isInitialized, setIsInitialized] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   // Handle programme selection changes (toggle behavior)
@@ -181,6 +182,15 @@ const UsageStatsByProgrammeWidget: React.FC<UsageStatsByProgrammeWidgetProps> = 
     });
   };
 
+  // Initialize with default data on component mount
+  useEffect(() => {
+    if (!isInitialized) {
+      // Set initial data to show all programmes by default
+      updateChartData();
+      setIsInitialized(true);
+    }
+  }, []);
+
   // Handle click outside to close dropdown
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -205,87 +215,93 @@ const UsageStatsByProgrammeWidget: React.FC<UsageStatsByProgrammeWidgetProps> = 
             chartElement.innerHTML = '';
           }
 
-          const chartOptions = {
-            series: usageData.series,
-            chart: {
-              foreColor: "#9ba7b2",
-              height: 235,
-              type: "bar" as const,
-              toolbar: {
-                show: false,
-              },
-              sparkline: {
-                enabled: false,
-              },
-              zoom: {
-                enabled: false,
-              },
-            },
-            dataLabels: {
-              enabled: false,
-            },
-            stroke: {
-              width: 4,
-              curve: "smooth" as const,
-              colors: ["transparent"],
-            },
-            fill: {
-              type: "gradient",
-              gradient: {
-                shade: "dark",
-                gradientToColors: usageData.gradientColors,
-                shadeIntensity: 1,
-                type: "vertical",
-                stops: [0, 100, 100, 100],
-              },
-            },
-            colors: usageData.colors,
-            plotOptions: {
-              bar: {
-                horizontal: false,
-                borderRadius: 4,
-                borderRadiusApplication: "around",
-                borderRadiusWhenStacked: "last",
-                columnWidth: "55%",
-              },
-            },
-            grid: {
-              show: false,
-              borderColor: "rgba(0, 0, 0, 0.15)",
-              strokeDashArray: 4,
-            },
-            tooltip: {
-              theme: "dark",
-              fixed: {
-                enabled: true,
-              },
-              x: {
-                show: true,
-              },
-              y: {
-                title: {
-                  formatter: function () {
-                    return "";
-                  },
+          // Small delay to ensure DOM is ready
+          setTimeout(() => {
+            const chartOptions = {
+              series: usageData.series,
+              chart: {
+                foreColor: "#9ba7b2",
+                height: 235,
+                type: "bar" as const,
+                toolbar: {
+                  show: false,
+                },
+                sparkline: {
+                  enabled: false,
+                },
+                zoom: {
+                  enabled: false,
                 },
               },
-              marker: {
-                show: false,
+              dataLabels: {
+                enabled: false,
               },
-            },
-            xaxis: {
-              categories: usageData.categories,
-            },
-          };
+              stroke: {
+                width: 4,
+                curve: "smooth" as const,
+                colors: ["transparent"],
+              },
+              fill: {
+                type: "gradient",
+                gradient: {
+                  shade: "dark",
+                  gradientToColors: usageData.gradientColors,
+                  shadeIntensity: 1,
+                  type: "vertical",
+                  stops: [0, 100, 100, 100],
+                },
+              },
+              colors: usageData.colors,
+              plotOptions: {
+                bar: {
+                  horizontal: false,
+                  borderRadius: 4,
+                  borderRadiusApplication: "around",
+                  borderRadiusWhenStacked: "last",
+                  columnWidth: "55%",
+                },
+              },
+              grid: {
+                show: false,
+                borderColor: "rgba(0, 0, 0, 0.15)",
+                strokeDashArray: 4,
+              },
+              tooltip: {
+                theme: "dark",
+                fixed: {
+                  enabled: true,
+                },
+                x: {
+                  show: true,
+                },
+                y: {
+                  title: {
+                    formatter: function () {
+                      return "";
+                    },
+                  },
+                },
+                marker: {
+                  show: false,
+                },
+              },
+              xaxis: {
+                categories: usageData.categories,
+              },
+            };
 
-          if (chartElement) {
-            new (window as any).ApexCharts(chartElement, chartOptions).render();
-          }
+            if (chartElement) {
+              new (window as any).ApexCharts(chartElement, chartOptions).render();
+            }
+          }, 50);
         }
 
         // Initialize Peity charts if available
         if (typeof $ !== "undefined" && $.fn.peity) {
-          $("[data-peity]").peity("donut");
+          // Small delay for Peity charts too
+          setTimeout(() => {
+            $("[data-peity]").peity("donut");
+          }, 150);
         }
       } catch (error) {
         console.warn("Chart initialization error:", error);
