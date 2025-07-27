@@ -3,6 +3,56 @@ import { Row, Col, Dropdown, Form } from "react-bootstrap";
 import MainLayout from "../layouts/MainLayout";
 import SafeApexChart from "../components/SafeApexChart";
 
+// Filter Controls Component
+const FilterControls: React.FC = () => {
+  const [selectedPeriod, setSelectedPeriod] = useState("Today");
+  const [selectedProgramme, setSelectedProgramme] = useState("All Programmes");
+
+  const handleApplyFilters = () => {
+    console.log('Applying filters:', { period: selectedPeriod, programme: selectedProgramme });
+    // TODO: Make API call with filter options
+    // This will be implemented when API endpoint is provided
+  };
+
+  return (
+    <div className="d-flex gap-2">
+      <Form.Select
+        size="sm"
+        value={selectedPeriod}
+        onChange={(e) => setSelectedPeriod(e.target.value)}
+        style={{ width: "120px" }}
+      >
+        <option>Today</option>
+        <option>Last Week</option>
+        <option>Last Month</option>
+        <option>Last Year</option>
+      </Form.Select>
+
+      <Form.Select
+        size="sm"
+        value={selectedProgramme}
+        onChange={(e) => setSelectedProgramme(e.target.value)}
+        style={{ width: "160px" }}
+      >
+        <option>All Programmes</option>
+        <option>Digital Literacy</option>
+        <option>Skills Training</option>
+        <option>Financial Education</option>
+        <option>Health Awareness</option>
+        <option>Youth Development</option>
+      </Form.Select>
+
+      <button
+        className="btn btn-primary btn-sm px-3"
+        onClick={handleApplyFilters}
+      >
+        <i className="material-icons-outlined me-1" style={{ fontSize: "16px" }}>filter_alt</i>
+        Filter
+      </button>
+    </div>
+  );
+};
+
 // Import dashboard components
 import {
   WelcomeCard,
