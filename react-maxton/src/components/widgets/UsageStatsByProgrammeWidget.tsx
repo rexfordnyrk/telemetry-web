@@ -98,13 +98,138 @@ const defaultUsageData: UsageStatsByProgrammeData = {
 
 const UsageStatsByProgrammeWidget: React.FC<UsageStatsByProgrammeWidgetProps> = ({
   data,
-  showDropdown = true,
+  showDropdown = false, // Removed dropdown menu as requested
 }) => {
-  const usageData = data || defaultUsageData;
-  const [selectedProgramme, setSelectedProgramme] = useState("All Programmes");
-  const [selectedDatapoint, setSelectedDatapoint] = useState("All Datapoints");
+  const [usageData, setUsageData] = useState(data || defaultUsageData);
+  const [selectedProgrammes, setSelectedProgrammes] = useState<string[]>(["all"]);
+  const [selectedDataPoints, setSelectedDataPoints] = useState<string[]>(["app-sessions"]);
+  const [isMultipleProgrammes, setIsMultipleProgrammes] = useState(true);
 
-  React.useEffect(() => {
+  // Handle programme selection changes
+  const handleProgrammeChange = (programmeId: string, checked: boolean) => {
+    if (programmeId === "all") {
+      if (checked) {
+        setSelectedProgrammes(["all"]);
+        setIsMultipleProgrammes(true);
+        setSelectedDataPoints(["app-sessions"]); // Reset to single datapoint
+      } else {
+        setSelectedProgrammes([]);
+      }
+    } else {
+      let newSelection = selectedProgrammes.filter(id => id !== "all");
+      if (checked) {
+        newSelection = [...newSelection, programmeId];
+      } else {
+        newSelection = newSelection.filter(id => id !== programmeId);
+      }
+
+      if (newSelection.length === 0) {
+        setSelectedProgrammes(["all"]);
+        setIsMultipleProgrammes(true);
+      } else if (newSelection.length === 1) {
+        setSelectedProgrammes(newSelection);
+        setIsMultipleProgrammes(false);
+      } else {
+        setSelectedProgrammes(newSelection);
+        setIsMultipleProgrammes(true);
+        setSelectedDataPoints(["app-sessions"]); // Reset to single datapoint
+      }
+    }
+  };
+
+  // Handle datapoint selection changes
+  const handleDataPointChange = (dataPointId: string, checked: boolean) => {
+    if (!isMultipleProgrammes) {
+      // Single programme selected - allow multiple datapoints
+      if (checked) {
+        setSelectedDataPoints([...selectedDataPoints, dataPointId]);
+      } else {
+        const newSelection = selectedDataPoints.filter(id => id !== dataPointId);
+        if (newSelection.length === 0) {
+          setSelectedDataPoints(["app-sessions"]); // Always have at least one
+        } else {
+          setSelectedDataPoints(newSelection);
+        }
+      }
+    } else {
+      // Multiple programmes selected - only single datapoint allowed
+      setSelectedDataPoints([dataPointId]);
+    }
+  };
+
+  // Apply filters and update chart
+  const applyFilters = () => {
+    console.log('Applying filters:', { programmes: selectedProgrammes, dataPoints: selectedDataPoints });
+    // TODO: Make API call and update chart data
+    // For now, we'll update with mock data
+    updateChartData();
+  };
+
+  const updateChartData = () => {
+    // Mock data update based on selection
+    // This will be replaced with actual API call
+    let newSeries = [];
+    let newPeityData = [];
+    let newColors = [];
+    let newGradientColors = [];
+
+    if (isMultipleProgrammes) {
+      // Show single datapoint across multiple programmes
+      const dataPoint = availableDataPoints.find(dp => dp.id === selectedDataPoints[0]);
+      const programmesToShow = selectedProgrammes.includes("all")
+        ? availableProgrammes
+        : availableProgrammes.filter(p => selectedProgrammes.includes(p.id));
+
+      programmesToShow.forEach((programme, index) => {
+        newSeries.push({
+          name: programme.name,
+          data: [Math.random() * 100, Math.random() * 100, Math.random() * 100, Math.random() * 100, Math.random() * 100, Math.random() * 100, Math.random() * 100, Math.random() * 100, Math.random() * 100]
+        });
+        newColors.push(programme.color);
+        newGradientColors.push(programme.color);
+        newPeityData.push({
+          value: `${Math.floor(Math.random() * 10)}/10`,
+          color: programme.color,
+          label: programme.name,
+          amount: Math.floor(Math.random() * 5000).toString(),
+          percentage: `${Math.floor(Math.random() * 30)}%`,
+          amountUnit: dataPoint?.name.includes("GB") ? "GB" : dataPoint?.name.includes("Hours") ? "hrs" : "sessions"
+        });
+      });
+    } else {
+      // Show multiple datapoints for single programme
+      const programme = availableProgrammes.find(p => p.id === selectedProgrammes[0]);
+      selectedDataPoints.forEach((dataPointId, index) => {
+        const dataPoint = availableDataPoints.find(dp => dp.id === dataPointId);
+        if (dataPoint) {
+          newSeries.push({
+            name: dataPoint.name,
+            data: [Math.random() * 100, Math.random() * 100, Math.random() * 100, Math.random() * 100, Math.random() * 100, Math.random() * 100, Math.random() * 100, Math.random() * 100, Math.random() * 100]
+          });
+          newColors.push(dataPoint.color);
+          newGradientColors.push(dataPoint.color);
+          newPeityData.push({
+            value: `${Math.floor(Math.random() * 10)}/10`,
+            color: dataPoint.color,
+            label: dataPoint.name,
+            amount: Math.floor(Math.random() * 5000).toString(),
+            percentage: `${Math.floor(Math.random() * 30)}%`,
+            amountUnit: dataPoint.name.includes("GB") ? "GB" : dataPoint.name.includes("Hours") ? "hrs" : "sessions"
+          });
+        }
+      });
+    }
+
+    setUsageData({
+      ...usageData,
+      series: newSeries,
+      colors: newColors,
+      gradientColors: newGradientColors,
+      peityData: newPeityData
+    });
+  };
+
+  useEffect(() => {
     const initChart = () => {
       try {
         if (typeof window !== "undefined" && (window as any).ApexCharts) {
