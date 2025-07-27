@@ -168,9 +168,9 @@ const Overview: React.FC = () => {
           />
         </Col>
 
-        {/* Row 2: Beneficiary Activity Overview + Nested Widgets */}
+        {/* Row 2: Usage Stats by Programme + Nested Widgets */}
         <Col xxl={8} lg={12} className="d-flex align-items-stretch">
-          <BeneficiaryActivityWidget showDropdown={true} />
+          <UsageStatsByProgrammeWidget showDropdown={true} />
         </Col>
 
         <Col xxl={4}>
@@ -288,41 +288,7 @@ const Overview: React.FC = () => {
           />
         </Col>
 
-        {/* Row 3: App vs Background Usage + Usage Stats by Programme */}
-        <Col xl={6} xxl={4} className="d-flex align-items-stretch">
-          <DeviceTypeWidget
-            data={{
-              title: "App vs Background Usage",
-              centerTitle: "Total Data Usage",
-              centerValue: "656.8 GB",
-              series: [68, 32],
-              labels: ["Active Apps", "Background Usage"],
-              colors: ["#3494e6", "#ff6a00"],
-              gradientColors: ["#ec6ead", "#ee0979"],
-              devices: [
-                {
-                  name: "Active Apps",
-                  icon: "apps",
-                  percentage: "68%",
-                  iconColor: "text-primary",
-                },
-                {
-                  name: "Background Usage",
-                  icon: "cloud_sync",
-                  percentage: "32%",
-                  iconColor: "text-warning",
-                },
-              ],
-            }}
-            showDropdown={false}
-          />
-        </Col>
-
-        <Col xxl={8} lg={12} className="d-flex align-items-stretch">
-          <UsageStatsByProgrammeWidget showDropdown={true} />
-        </Col>
-
-        {/* Row 4: Top 5 Used Apps + Top 5 Data Consumers + Device Sync Stats */}
+        {/* Row 3: Top 5 Used Apps + Top 5 Data Consumers + Device Sync Stats */}
         <Col xl={6} xxl={4} className="d-flex align-items-stretch">
           <SocialRevenueWidget
             data={{
