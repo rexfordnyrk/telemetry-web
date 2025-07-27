@@ -135,7 +135,17 @@ const UsageStatsByProgrammeWidget: React.FC<UsageStatsByProgrammeWidgetProps> = 
     console.log('Applying filters:', { programmes: selectedProgrammes, dataPoint: selectedDataPoint });
     // TODO: Make API call and update chart data
     // For now, we'll update with mock data
-    updateChartData();
+
+    // Force a complete re-render by clearing the chart first
+    const chartElement = document.querySelector(`#${usageData.chartId}`) as HTMLElement;
+    if (chartElement) {
+      chartElement.innerHTML = '';
+    }
+
+    // Update data after a small delay to ensure chart is cleared
+    setTimeout(() => {
+      updateChartData();
+    }, 50);
   };
 
   const updateChartData = () => {
@@ -209,106 +219,120 @@ const UsageStatsByProgrammeWidget: React.FC<UsageStatsByProgrammeWidgetProps> = 
     const initChart = () => {
       try {
         if (typeof window !== "undefined" && (window as any).ApexCharts) {
-          // Destroy existing chart first
           const chartElement = document.querySelector(`#${usageData.chartId}`) as HTMLElement;
-          if (chartElement) {
-            chartElement.innerHTML = '';
-          }
+          if (!chartElement) return;
 
-          // Small delay to ensure DOM is ready
-          setTimeout(() => {
-            const chartOptions = {
-              series: usageData.series,
-              chart: {
-                foreColor: "#9ba7b2",
-                height: 235,
-                type: "bar" as const,
-                toolbar: {
-                  show: false,
-                },
-                sparkline: {
-                  enabled: false,
-                },
-                zoom: {
-                  enabled: false,
-                },
+          // Clear any existing chart
+          chartElement.innerHTML = '';
+
+          const chartOptions = {
+            series: usageData.series,
+            chart: {
+              foreColor: "#9ba7b2",
+              height: 235,
+              type: "bar" as const,
+              toolbar: {
+                show: false,
               },
-              dataLabels: {
+              sparkline: {
                 enabled: false,
               },
-              stroke: {
-                width: 4,
-                curve: "smooth" as const,
-                colors: ["transparent"],
+              zoom: {
+                enabled: false,
               },
-              fill: {
-                type: "gradient",
-                gradient: {
-                  shade: "dark",
-                  gradientToColors: usageData.gradientColors,
-                  shadeIntensity: 1,
-                  type: "vertical",
-                  stops: [0, 100, 100, 100],
-                },
+              animations: {
+                enabled: true,
+                easing: 'easeinout',
+                speed: 300,
               },
-              colors: usageData.colors,
-              plotOptions: {
-                bar: {
-                  horizontal: false,
-                  borderRadius: 4,
-                  borderRadiusApplication: "around",
-                  borderRadiusWhenStacked: "last",
-                  columnWidth: "55%",
-                },
+            },
+            dataLabels: {
+              enabled: false,
+            },
+            stroke: {
+              width: 4,
+              curve: "smooth" as const,
+              colors: ["transparent"],
+            },
+            fill: {
+              type: "gradient",
+              gradient: {
+                shade: "dark",
+                gradientToColors: usageData.gradientColors,
+                shadeIntensity: 1,
+                type: "vertical",
+                stops: [0, 100, 100, 100],
               },
-              grid: {
-                show: false,
-                borderColor: "rgba(0, 0, 0, 0.15)",
-                strokeDashArray: 4,
+            },
+            colors: usageData.colors,
+            plotOptions: {
+              bar: {
+                horizontal: false,
+                borderRadius: 4,
+                borderRadiusApplication: "around",
+                borderRadiusWhenStacked: "last",
+                columnWidth: "55%",
+                distributed: false,
               },
-              tooltip: {
-                theme: "dark",
-                fixed: {
-                  enabled: true,
-                },
-                x: {
-                  show: true,
-                },
-                y: {
-                  title: {
-                    formatter: function () {
-                      return "";
-                    },
+            },
+            grid: {
+              show: false,
+              borderColor: "rgba(0, 0, 0, 0.15)",
+              strokeDashArray: 4,
+            },
+            tooltip: {
+              theme: "dark",
+              fixed: {
+                enabled: true,
+              },
+              x: {
+                show: true,
+              },
+              y: {
+                title: {
+                  formatter: function () {
+                    return "";
                   },
                 },
-                marker: {
-                  show: false,
-                },
               },
-              xaxis: {
-                categories: usageData.categories,
+              marker: {
+                show: false,
               },
-            };
+            },
+            xaxis: {
+              categories: usageData.categories,
+            },
+            legend: {
+              show: true,
+              position: 'top',
+              horizontalAlign: 'left',
+              fontSize: '12px',
+              markers: {
+                width: 8,
+                height: 8,
+                radius: 2,
+              },
+            },
+          };
 
-            if (chartElement) {
-              new (window as any).ApexCharts(chartElement, chartOptions).render();
-            }
-          }, 50);
+          // Create new chart
+          const chart = new (window as any).ApexCharts(chartElement, chartOptions);
+          chart.render();
         }
 
         // Initialize Peity charts if available
         if (typeof $ !== "undefined" && $.fn.peity) {
-          // Small delay for Peity charts too
           setTimeout(() => {
             $("[data-peity]").peity("donut");
-          }, 150);
+          }, 100);
         }
       } catch (error) {
         console.warn("Chart initialization error:", error);
       }
     };
 
-    const timer = setTimeout(initChart, 100);
+    // Use a longer delay to ensure proper rendering
+    const timer = setTimeout(initChart, 200);
     return () => clearTimeout(timer);
   }, [usageData]);
 
