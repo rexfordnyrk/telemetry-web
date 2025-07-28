@@ -150,7 +150,7 @@ const Overview: React.FC = () => {
             changePercentage="18.2%"
             changeDirection="up"
             chartId="avg-net-usage-chart"
-            subtitle="data consumed"
+            subtitle="more data consumed monthly"
             data={[12, 18, 22, 15, 28, 35, 30, 40, 32]}
             colors={["#6f42c1"]}
             gradientColors={["#e83e8c"]}
