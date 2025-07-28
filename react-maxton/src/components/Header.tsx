@@ -19,15 +19,10 @@ const Header: React.FC<HeaderProps> = ({
   notifications = [],
 }) => {
   const { setSidebarToggled } = useLayout();
-  const [searchActive, setSearchActive] = useState(false);
   const [showCart, setShowCart] = useState(false);
 
   const handleToggleSidebar = () => {
     setSidebarToggled((prev: boolean) => !prev);
-  };
-
-  const toggleSearch = () => {
-    setSearchActive(!searchActive);
   };
 
   return (
