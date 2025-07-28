@@ -183,19 +183,29 @@ function App() {
                 {/* These routes require authentication */}
                 {/* They automatically redirect unauthenticated users to login */}
                 
-                {/* Dashboard - Main dashboard page */}
+                {/* Dashboard - Main dashboard page (Overview) */}
                 <Route 
                   path="/" 
                   element={
                     <ProtectedRoute>
-                      <Dashboard />
+                      <Overview />
                     </ProtectedRoute>
                   } 
                 />
                 
-                {/* Dashboard with explicit path */}
+                {/* Dashboard with explicit path (Overview) */}
                 <Route
                   path="/dashboard"
+                  element={
+                    <ProtectedRoute>
+                      <Overview />
+                    </ProtectedRoute>
+                  }
+                />
+                
+                {/* Analysis dashboard */}
+                <Route
+                  path="/dashboard/analysis"
                   element={
                     <ProtectedRoute>
                       <Dashboard />
