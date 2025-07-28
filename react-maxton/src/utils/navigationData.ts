@@ -7,15 +7,15 @@ export const navigationData: NavigationItem[] = [
     icon: "home",
     children: [
       {
-        id: "dashboard-analysis",
-        title: "Analysis",
-        path: "/",
+        id: "dashboard-overview",
+        title: "Overview",
+        path: "/dashboard",
         icon: "arrow_right",
       },
       {
-        id: "dashboard-overview",
-        title: "Overview",
-        path: "/dashboard/overview",
+        id: "dashboard-analysis",
+        title: "Analysis",
+        path: "/dashboard/analysis",
         icon: "arrow_right",
       },
       {
