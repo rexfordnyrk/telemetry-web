@@ -138,8 +138,9 @@ const Overview: React.FC = () => {
         {/* Row 1: Active Devices Card + Screentime + Net Usage + Active Users + Most Used App */}
         <Col xxl={4} className="d-flex align-items-stretch">
           <ConfigurableWelcomeCard
-            userName="John Anderson"
-            userAvatar="/assets/images/avatars/01.png"
+            userName={displayName}
+            userAvatar={userAvatar}
+            userInitials={userInitials}
             primaryValue="1,234"
             secondaryValue="89.2%"
             primaryLabel="Active Devices"
