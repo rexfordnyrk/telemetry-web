@@ -1,7 +1,29 @@
 import React, { useState } from "react";
-import { Row, Col, Dropdown, Form } from "react-bootstrap";
+import { Row, Col, Form } from "react-bootstrap";
 import MainLayout from "../layouts/MainLayout";
 import SafeApexChart from "../components/SafeApexChart";
+
+// Import dashboard components
+import {
+  ConfigurableWelcomeCard,
+  DeviceTypeWidget,
+  CampaignStatsWidget,
+  StatCard,
+} from "../components/dashboard";
+
+// Import ecommerce components
+import { SocialRevenueWidget } from "../components/ecommerce";
+
+// Import existing widget components
+import {
+  IconRadialChartWidget,
+  IconAreaChartWidget,
+  IconBarChartWidget,
+  IconLineChartWidget,
+  UsageStatsByProgrammeWidget,
+  BeneficiaryActivityWidget,
+  DataConsumerAppsWidget,
+} from "../components/widgets";
 
 // Filter Controls Component
 const FilterControls: React.FC = () => {
@@ -53,37 +75,7 @@ const FilterControls: React.FC = () => {
   );
 };
 
-// Import dashboard components
-import {
-  WelcomeCard,
-  ConfigurableWelcomeCard,
-  MonthlyRevenueWidget,
-  DeviceTypeWidget,
-  CampaignStatsWidget,
-  SocialLeadsWidget,
-  NewUsersWidget,
-  RecentOrdersWidget,
-  VisitorsGrowthWidget,
-  StatCard,
-} from "../components/dashboard";
 
-// Import ecommerce components
-import { SocialRevenueWidget, SalesViewsWidget } from "../components/ecommerce";
-
-// Import existing widget components
-import {
-  RadialChartWidget,
-  IconRadialChartWidget,
-  AreaChartWidget,
-  IconAreaChartWidget,
-  BarChartWidget,
-  IconBarChartWidget,
-  LineChartWidget,
-  IconLineChartWidget,
-  UsageStatsByProgrammeWidget,
-  BeneficiaryActivityWidget,
-  DataConsumerAppsWidget,
-} from "../components/widgets";
 
 const Overview: React.FC = () => {
   return (
@@ -167,12 +159,7 @@ const Overview: React.FC = () => {
             changePercentage="24.5%"
             changeDirection="up"
             chartId="most-used-app-chart"
-            subtitle={
-              <>
-                WhatsApp monthly usage increased by{" "}
-                <span className="text-success fw-medium">24.5%</span>
-              </>
-            }
+            subtitle="WhatsApp monthly usage increased by 24.5%"
             data={[15, 25, 30, 20, 35, 40, 28, 45, 38]}
             colors={["#25d366"]}
             gradientColors={["#128c7e"]}
