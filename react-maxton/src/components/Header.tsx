@@ -70,32 +70,8 @@ const Header: React.FC<HeaderProps> = ({
                 <span className="ms-2">English</span>
               </Dropdown.Item>
               <Dropdown.Item className="d-flex align-items-center py-2">
-                <img src="/assets/images/county/02.png" width="20" alt="" />
-                <span className="ms-2">Catalan</span>
-              </Dropdown.Item>
-              <Dropdown.Item className="d-flex align-items-center py-2">
                 <img src="/assets/images/county/03.png" width="20" alt="" />
                 <span className="ms-2">French</span>
-              </Dropdown.Item>
-              <Dropdown.Item className="d-flex align-items-center py-2">
-                <img src="/assets/images/county/04.png" width="20" alt="" />
-                <span className="ms-2">Belize</span>
-              </Dropdown.Item>
-              <Dropdown.Item className="d-flex align-items-center py-2">
-                <img src="/assets/images/county/05.png" width="20" alt="" />
-                <span className="ms-2">Colombia</span>
-              </Dropdown.Item>
-              <Dropdown.Item className="d-flex align-items-center py-2">
-                <img src="/assets/images/county/06.png" width="20" alt="" />
-                <span className="ms-2">Spanish</span>
-              </Dropdown.Item>
-              <Dropdown.Item className="d-flex align-items-center py-2">
-                <img src="/assets/images/county/07.png" width="20" alt="" />
-                <span className="ms-2">Georgian</span>
-              </Dropdown.Item>
-              <Dropdown.Item className="d-flex align-items-center py-2">
-                <img src="/assets/images/county/08.png" width="20" alt="" />
-                <span className="ms-2">Hindi</span>
               </Dropdown.Item>
             </Dropdown.Menu>
           </Dropdown>
