@@ -1,29 +1,66 @@
 import React, { useState } from "react";
 import { Dropdown, Nav, Navbar, Offcanvas } from "react-bootstrap";
+import { useSelector, useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { useLayout } from "../context/LayoutContext";
 import { User, Notification } from "../types";
+import { RootState, AppDispatch } from "../store";
+import { logoutUser } from "../store/slices/authSlice";
 
 interface HeaderProps {
-  user?: User;
   notifications?: Notification[];
 }
 
 const Header: React.FC<HeaderProps> = ({
-  user = {
-    id: "1",
-    name: "Jhon Anderson",
-    email: "jhon@example.com",
-    avatar: "/assets/images/avatars/01.png",
-    role: "Admin",
-  },
   notifications = [],
 }) => {
   const { setSidebarToggled } = useLayout();
   const [showCart, setShowCart] = useState(false);
+  const dispatch = useDispatch<AppDispatch>();
+  const navigate = useNavigate();
+  const { user } = useSelector((state: RootState) => state.auth);
 
   const handleToggleSidebar = () => {
     setSidebarToggled((prev: boolean) => !prev);
   };
+
+  const handleLogout = async () => {
+    try {
+      await dispatch(logoutUser()).unwrap();
+      navigate('/login');
+    } catch (error) {
+      console.error('Logout failed:', error);
+      navigate('/login');
+    }
+  };
+
+  // Generate user initials if no avatar
+  const getUserInitials = (firstName?: string, lastName?: string, username?: string) => {
+    if (firstName && lastName) {
+      return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase();
+    }
+    if (username) {
+      return username.substring(0, 2).toUpperCase();
+    }
+    return 'U';
+  };
+
+  // Fallback user data
+  const currentUser = user || {
+    id: "1",
+    username: "Rexford Nyarko",
+    email: "user@example.com",
+    firstName: "Rexford",
+    lastName: "Nyarko",
+    fullName: "Rexford Nyarko",
+    photo: "",
+    roles: [],
+    permissions: []
+  };
+
+  const userInitials = getUserInitials(currentUser.firstName, currentUser.lastName, currentUser.username);
+  const displayName = currentUser.fullName || currentUser.username || "User";
+  const userAvatar = currentUser.photo;
 
   return (
     <header className="top-header">
@@ -263,25 +300,37 @@ const Header: React.FC<HeaderProps> = ({
               className="dropdown-toggle-nocaret"
               id="user-dropdown"
             >
-              <img
-                src={user.avatar}
-                className="rounded-circle p-1 border"
-                width="45"
-                height="45"
-                alt="User"
-              />
+              {userAvatar ? (
+                <img
+                  src={userAvatar}
+                  className="rounded-circle p-1 border"
+                  width="45"
+                  height="45"
+                  alt="User"
+                />
+              ) : (
+                <div className="user-avatar-initials d-flex align-items-center justify-content-center rounded-circle p-1 border bg-primary text-white" style={{ width: '45px', height: '45px', fontSize: '16px', fontWeight: 'bold' }}>
+                  {userInitials}
+                </div>
+              )}
             </Dropdown.Toggle>
             <Dropdown.Menu className="dropdown-user shadow dropdown-menu-end">
               <Dropdown.Item className="gap-2 py-2">
                 <div className="text-center">
-                  <img
-                    src={user.avatar}
-                    className="rounded-circle p-1 shadow mb-3"
-                    width="90"
-                    height="90"
-                    alt=""
-                  />
-                  <h5 className="user-name mb-0 fw-bold">Hello, {user.name}</h5>
+                  {userAvatar ? (
+                    <img
+                      src={userAvatar}
+                      className="rounded-circle p-1 shadow mb-3"
+                      width="90"
+                      height="90"
+                      alt=""
+                    />
+                  ) : (
+                    <div className="user-avatar-initials d-flex align-items-center justify-content-center rounded-circle p-1 shadow mb-3 bg-primary text-white mx-auto" style={{ width: '90px', height: '90px', fontSize: '32px', fontWeight: 'bold' }}>
+                      {userInitials}
+                    </div>
+                  )}
+                  <h5 className="user-name mb-0 fw-bold">Hello, {displayName}</h5>
                 </div>
               </Dropdown.Item>
               <Dropdown.Divider />
@@ -289,21 +338,11 @@ const Header: React.FC<HeaderProps> = ({
                 <i className="material-icons-outlined">person_outline</i>Profile
               </Dropdown.Item>
               <Dropdown.Item className="d-flex align-items-center gap-2 py-2">
-                <i className="material-icons-outlined">local_bar</i>Setting
-              </Dropdown.Item>
-              <Dropdown.Item className="d-flex align-items-center gap-2 py-2">
-                <i className="material-icons-outlined">dashboard</i>Dashboard
-              </Dropdown.Item>
-              <Dropdown.Item className="d-flex align-items-center gap-2 py-2">
-                <i className="material-icons-outlined">account_balance</i>
-                Earning
-              </Dropdown.Item>
-              <Dropdown.Item className="d-flex align-items-center gap-2 py-2">
                 <i className="material-icons-outlined">cloud_download</i>
                 Downloads
               </Dropdown.Item>
               <Dropdown.Divider />
-              <Dropdown.Item className="d-flex align-items-center gap-2 py-2">
+              <Dropdown.Item className="d-flex align-items-center gap-2 py-2" onClick={handleLogout}>
                 <i className="material-icons-outlined">power_settings_new</i>
                 Logout
               </Dropdown.Item>
