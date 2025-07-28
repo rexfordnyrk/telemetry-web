@@ -31,26 +31,101 @@ import {
 const FilterControls: React.FC = () => {
   const [selectedPeriod, setSelectedPeriod] = useState("Today");
   const [selectedProgramme, setSelectedProgramme] = useState("All Programmes");
+  const [startDateTime, setStartDateTime] = useState("");
+  const [endDateTime, setEndDateTime] = useState("");
+  const [showCustomDatePickers, setShowCustomDatePickers] = useState(false);
+
+  const handlePeriodChange = (value: string) => {
+    setSelectedPeriod(value);
+    setShowCustomDatePickers(value === "Custom");
+    if (value !== "Custom") {
+      setStartDateTime("");
+      setEndDateTime("");
+    }
+  };
+
+  const convertToEpochMilliseconds = (dateTimeString: string): number => {
+    return new Date(dateTimeString).getTime();
+  };
+
+  const formatCustomDateRange = (): string => {
+    if (startDateTime && endDateTime) {
+      const startDate = new Date(startDateTime);
+      const endDate = new Date(endDateTime);
+      const formatOptions: Intl.DateTimeFormatOptions = {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      };
+      return `${startDate.toLocaleDateString('en-US', formatOptions)} - ${endDate.toLocaleDateString('en-US', formatOptions)}`;
+    }
+    return "Custom";
+  };
 
   const handleApplyFilters = () => {
-    console.log('Applying filters:', { period: selectedPeriod, programme: selectedProgramme });
+    let periodValue = selectedPeriod;
+
+    if (selectedPeriod === "Custom" && startDateTime && endDateTime) {
+      const startEpoch = convertToEpochMilliseconds(startDateTime);
+      const endEpoch = convertToEpochMilliseconds(endDateTime);
+      periodValue = `${startEpoch}:${endEpoch}`;
+    }
+
+    console.log('Applying filters:', {
+      period: periodValue,
+      programme: selectedProgramme,
+      customRange: selectedPeriod === "Custom" ? formatCustomDateRange() : null
+    });
     // TODO: Make API call with filter options
     // This will be implemented when API endpoint is provided
   };
 
   return (
-    <div className="d-flex gap-2">
+    <div className="d-flex gap-2 align-items-center flex-wrap">
       <Form.Select
         size="sm"
         value={selectedPeriod}
-        onChange={(e) => setSelectedPeriod(e.target.value)}
+        onChange={(e) => handlePeriodChange(e.target.value)}
         style={{ width: "120px" }}
       >
         <option>Today</option>
         <option>Last Week</option>
         <option>Last Month</option>
         <option>Last Year</option>
+        <option>Custom</option>
       </Form.Select>
+
+      {showCustomDatePickers && (
+        <>
+          <div className="d-flex align-items-center gap-1">
+            <label className="form-label mb-0 small text-muted">From:</label>
+            <input
+              type="datetime-local"
+              className="form-control form-control-sm"
+              value={startDateTime}
+              onChange={(e) => setStartDateTime(e.target.value)}
+              style={{ width: "180px" }}
+            />
+          </div>
+          <div className="d-flex align-items-center gap-1">
+            <label className="form-label mb-0 small text-muted">To:</label>
+            <input
+              type="datetime-local"
+              className="form-control form-control-sm"
+              value={endDateTime}
+              onChange={(e) => setEndDateTime(e.target.value)}
+              style={{ width: "180px" }}
+            />
+          </div>
+          {startDateTime && endDateTime && (
+            <div className="small text-muted bg-light px-2 py-1 rounded">
+              {formatCustomDateRange()}
+            </div>
+          )}
+        </>
+      )}
 
       <Form.Select
         size="sm"
@@ -69,6 +144,7 @@ const FilterControls: React.FC = () => {
       <button
         className="btn btn-primary btn-sm px-3"
         onClick={handleApplyFilters}
+        disabled={showCustomDatePickers && (!startDateTime || !endDateTime)}
       >
         <i className="material-icons-outlined me-1" style={{ fontSize: "16px" }}>filter_alt</i>
         Filter
