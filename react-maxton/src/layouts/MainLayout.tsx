@@ -1,9 +1,11 @@
 import React from "react";
+import { useSelector } from "react-redux";
 import Header from "../components/Header";
 import Sidebar from "../components/Sidebar";
 import ThemeCustomizer from "../components/ThemeCustomizer";
 import ErrorBoundary from "../components/ErrorBoundary";
 import { ComponentProps } from "../types";
+import { RootState } from "../store";
 
 interface MainLayoutProps extends ComponentProps {
   title?: string;
