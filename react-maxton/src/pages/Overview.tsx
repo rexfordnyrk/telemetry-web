@@ -34,14 +34,34 @@ const FilterControls: React.FC = () => {
   const [startDateTime, setStartDateTime] = useState("");
   const [endDateTime, setEndDateTime] = useState("");
   const [showCustomDatePickers, setShowCustomDatePickers] = useState(false);
+  const [showDateInputs, setShowDateInputs] = useState(true);
 
   const handlePeriodChange = (value: string) => {
     setSelectedPeriod(value);
     setShowCustomDatePickers(value === "Custom");
+    setShowDateInputs(true); // Always show inputs when period changes
     if (value !== "Custom") {
       setStartDateTime("");
       setEndDateTime("");
     }
+  };
+
+  const handleDateChange = (type: 'start' | 'end', value: string) => {
+    if (type === 'start') {
+      setStartDateTime(value);
+    } else {
+      setEndDateTime(value);
+    }
+
+    // Check if both dates are filled to hide inputs and show preview
+    const otherDate = type === 'start' ? endDateTime : startDateTime;
+    if (value && otherDate) {
+      setShowDateInputs(false);
+    }
+  };
+
+  const handlePreviewClick = () => {
+    setShowDateInputs(true);
   };
 
   const convertToEpochMilliseconds = (dateTimeString: string): number => {
