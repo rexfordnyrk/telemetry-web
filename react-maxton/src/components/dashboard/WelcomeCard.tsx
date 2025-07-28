@@ -132,13 +132,19 @@ export const ConfigurableWelcomeCard: React.FC<ConfigurableWelcomeCardProps> = (
           <Row>
             <Col xs={12} sm={showWelcomeImage ? 7 : 12}>
               <div className="d-flex align-items-center gap-3 mb-5">
-                <img
-                  src={userAvatar}
-                  className="rounded-circle bg-grd-info p-1"
-                  width="60"
-                  height="60"
-                  alt="user"
-                />
+                {userAvatar ? (
+                  <img
+                    src={userAvatar}
+                    className="rounded-circle bg-grd-info p-1"
+                    width="60"
+                    height="60"
+                    alt="user"
+                  />
+                ) : (
+                  <div className="d-flex align-items-center justify-content-center rounded-circle bg-primary text-white" style={{ width: '60px', height: '60px', minWidth: '60px', minHeight: '60px', fontSize: '22px', fontWeight: 'bold', aspectRatio: '1' }}>
+                    {userInitials}
+                  </div>
+                )}
                 <div>
                   <p className="mb-0 fw-semibold">Welcome back</p>
                   <h4 className="fw-semibold mb-0 fs-4">{userName}!</h4>
