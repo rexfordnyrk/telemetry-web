@@ -17,7 +17,8 @@ interface WelcomeCardProps {
 
 interface ConfigurableWelcomeCardProps {
   userName: string;
-  userAvatar: string;
+  userAvatar?: string;
+  userInitials?: string;
   primaryValue: string;
   secondaryValue: string;
   primaryLabel: string;
