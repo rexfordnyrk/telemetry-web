@@ -116,6 +116,7 @@ const WelcomeCard: React.FC<WelcomeCardProps> = ({ data }) => {
 export const ConfigurableWelcomeCard: React.FC<ConfigurableWelcomeCardProps> = ({
   userName,
   userAvatar,
+  userInitials = "U",
   primaryValue,
   secondaryValue,
   primaryLabel,
