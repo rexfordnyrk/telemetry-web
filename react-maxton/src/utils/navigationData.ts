@@ -137,5 +137,73 @@ export const navigationData: NavigationItem[] = [
     ],
   },
 
-
+  {
+    id: "authentication",
+    title: "Authentication",
+    icon: "lock",
+    children: [
+      {
+        id: "auth-basic",
+        title: "Basic",
+        icon: "arrow_right",
+        children: [
+          {
+            id: "auth-basic-login",
+            title: "Login",
+            path: "/auth/basic/login",
+            icon: "arrow_right",
+          },
+          {
+            id: "auth-basic-register",
+            title: "Register",
+            path: "/auth/basic/register",
+            icon: "arrow_right",
+          },
+          {
+            id: "auth-basic-forgot-password",
+            title: "Forgot Password",
+            path: "/auth/basic/forgot-password",
+            icon: "arrow_right",
+          },
+          {
+            id: "auth-basic-reset-password",
+            title: "Reset Password",
+            path: "/auth/basic/reset-password",
+            icon: "arrow_right",
+          },
+        ],
+      },
+      {
+        id: "auth-cover",
+        title: "Cover",
+        icon: "arrow_right",
+        children: [
+          {
+            id: "auth-cover-login",
+            title: "Login",
+            path: "/auth/cover/login",
+            icon: "arrow_right",
+          },
+          {
+            id: "auth-cover-register",
+            title: "Register",
+            path: "/auth/cover/register",
+            icon: "arrow_right",
+          },
+          {
+            id: "auth-cover-forgot-password",
+            title: "Forgot Password",
+            path: "/auth/cover/forgot-password",
+            icon: "arrow_right",
+          },
+          {
+            id: "auth-cover-reset-password",
+            title: "Reset Password",
+            path: "/auth/cover/reset-password",
+            icon: "arrow_right",
+          },
+        ],
+      },
+    ],
+  },
 ];
