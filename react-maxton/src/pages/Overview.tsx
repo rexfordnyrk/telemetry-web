@@ -167,7 +167,12 @@ const Overview: React.FC = () => {
             changePercentage="24.5%"
             changeDirection="up"
             chartId="most-used-app-chart"
-            subtitle="WhatsApp increased monthly usage"
+            subtitle={
+              <>
+                WhatsApp monthly usage increased by{" "}
+                <span className="text-success fw-medium">24.5%</span>
+              </>
+            }
             data={[15, 25, 30, 20, 35, 40, 28, 45, 38]}
             colors={["#25d366"]}
             gradientColors={["#128c7e"]}
