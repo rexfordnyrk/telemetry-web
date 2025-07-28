@@ -12,6 +12,8 @@ interface MainLayoutProps extends ComponentProps {
 }
 
 const MainLayout: React.FC<MainLayoutProps> = ({ children, title }) => {
+  const { user } = useSelector((state: RootState) => state.auth);
+
   return (
     <div className="app-root">
       <ErrorBoundary>
