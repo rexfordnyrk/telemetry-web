@@ -156,7 +156,7 @@ const IconRadialChartWidget: React.FC<IconRadialChartWidgetProps> = ({
   }, [title, series, colors, gradientColors, height, startAngle, endAngle, chartId]);
 
   return (
-    <div className="col d-flex">
+    <div className="d-flex w-100">
       <div className="card rounded-4 w-100">
         <div className="card-body">
           <div className="d-flex align-items-start justify-content-between mb-3">
