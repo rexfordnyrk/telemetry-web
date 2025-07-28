@@ -45,68 +45,8 @@ const Header: React.FC<HeaderProps> = ({
           </a>
         </div>
 
-        <div className="search-bar flex-grow-1">
-          <div className="position-relative">
-            <input
-              className="form-control rounded-5 px-5 search-control d-lg-block d-none"
-              type="text"
-              placeholder="Search"
-              onClick={toggleSearch}
-            />
-            <span className="material-icons-outlined position-absolute d-lg-block d-none ms-3 translate-middle-y start-0 top-50">
-              search
-            </span>
-            <span
-              className="material-icons-outlined position-absolute me-3 translate-middle-y end-0 top-50 search-close"
-              onClick={toggleSearch}
-              style={{ display: searchActive ? "block" : "none" }}
-            >
-              close
-            </span>
-
-            {searchActive && (
-              <div className="search-popup p-3 d-block">
-                <div className="card rounded-4 overflow-hidden">
-                  <div className="card-header d-lg-none">
-                    <div className="position-relative">
-                      <input
-                        className="form-control rounded-5 px-5 mobile-search-control"
-                        type="text"
-                        placeholder="Search"
-                      />
-                      <span className="material-icons-outlined position-absolute ms-3 translate-middle-y start-0 top-50">
-                        search
-                      </span>
-                      <span
-                        className="material-icons-outlined position-absolute me-3 translate-middle-y end-0 top-50 mobile-search-close"
-                        onClick={toggleSearch}
-                      >
-                        close
-                      </span>
-                    </div>
-                  </div>
-                  <div className="card-body search-content">
-                    <p className="search-title">Recent Searches</p>
-                    <div className="d-flex align-items-start flex-wrap gap-2 kewords-wrapper">
-                      <a href="#" className="kewords">
-                        <span>Angular Template</span>
-                        <i className="material-icons-outlined fs-6">search</i>
-                      </a>
-                      <a href="#" className="kewords">
-                        <span>Dashboard</span>
-                        <i className="material-icons-outlined fs-6">search</i>
-                      </a>
-                      <a href="#" className="kewords">
-                        <span>Admin Template</span>
-                        <i className="material-icons-outlined fs-6">search</i>
-                      </a>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
+        {/* Removed search bar */}
+        <div className="flex-grow-1"></div>
 
         <Nav className="gap-1 nav-right-links align-items-center">
           <Nav.Item className="d-lg-none mobile-search-btn">
