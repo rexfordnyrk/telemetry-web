@@ -199,7 +199,7 @@ const IconAreaChartWidget: React.FC<IconAreaChartWidgetProps> = ({
             <p className="mb-0">
               {title === "Most Used App" ? (
                 <>
-                  {subtitle} <span className="text-success">{changePercentage}</span>
+                  {subtitle} <span className="text-success">{changePercentage}</span> more monthly usage
                 </>
               ) : (
                 <>
