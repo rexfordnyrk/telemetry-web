@@ -276,7 +276,7 @@ const Header: React.FC<HeaderProps> = ({
                 alt="User"
               />
             </Dropdown.Toggle>
-            <Dropdown.Menu className="dropdown-user shadow">
+            <Dropdown.Menu className="dropdown-user shadow dropdown-menu-end">
               <Dropdown.Item className="gap-2 py-2">
                 <div className="text-center">
                   <img
