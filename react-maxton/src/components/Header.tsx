@@ -259,20 +259,7 @@ const Header: React.FC<HeaderProps> = ({
             </Dropdown.Menu>
           </Dropdown>
 
-          {/* Cart */}
-          <Nav.Item className="d-md-flex d-none">
-            <Nav.Link
-              href="#"
-              className="position-relative"
-              onClick={(e) => {
-                e.preventDefault();
-                setShowCart(true);
-              }}
-            >
-              <i className="material-icons-outlined">shopping_cart</i>
-              <span className="badge-notify">8</span>
-            </Nav.Link>
-          </Nav.Item>
+          {/* Removed Cart */}
 
           {/* User Profile */}
           <Dropdown as={Nav.Item}>
