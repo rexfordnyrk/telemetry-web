@@ -80,6 +80,36 @@ const FilterControls: React.FC = () => {
 
 
 const Overview: React.FC = () => {
+  const { user } = useSelector((state: RootState) => state.auth);
+
+  // Generate user initials if no avatar
+  const getUserInitials = (firstName?: string, lastName?: string, username?: string) => {
+    if (firstName && lastName) {
+      return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase();
+    }
+    if (username) {
+      return username.substring(0, 2).toUpperCase();
+    }
+    return 'U';
+  };
+
+  // Fallback user data
+  const currentUser = user || {
+    id: "1",
+    username: "Rexford Nyarko",
+    email: "user@example.com",
+    firstName: "Rexford",
+    lastName: "Nyarko",
+    fullName: "Rexford Nyarko",
+    photo: "",
+    roles: [],
+    permissions: []
+  };
+
+  const userInitials = getUserInitials(currentUser.firstName, currentUser.lastName, currentUser.username);
+  const displayName = currentUser.fullName || currentUser.username || "User";
+  const userAvatar = currentUser.photo;
+
   return (
     <MainLayout>
       {/* Breadcrumb */}
