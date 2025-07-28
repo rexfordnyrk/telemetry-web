@@ -1,0 +1,526 @@
+{
+  "dashboardData": {
+    "globalFilters": {
+      "selectedPeriod": "Last Month",
+      "selectedProgramme": "All Programmes",
+      "availablePeriods": [
+        "Today",
+        "Last Week", 
+        "Last Month",
+        "Last Year"
+      ],
+      "availableProgrammes": [
+        "All Programmes",
+        "Digital Literacy",
+        "Skills Training", 
+        "Financial Education",
+        "Health Awareness",
+        "Youth Development"
+      ]
+    },
+    
+    "widgets": {
+      "configurableWelcomeCard": {
+        "userName": "John Anderson",
+        "userAvatar": "/assets/images/avatars/01.png",
+        "primaryValue": "1,234",
+        "secondaryValue": "89.2%",
+        "primaryLabel": "Active Devices",
+        "secondaryLabel": "Sync Success Rate",
+        "primaryProgress": 85,
+        "secondaryProgress": 89,
+        "showWelcomeImage": false
+      },
+
+      "avgScreentime": {
+        "title": "Avg Screentime",
+        "value": "4.2 hrs",
+        "changePercentage": "15.3%",
+        "changeDirection": "up",
+        "chartId": "avg-screentime-chart",
+        "subtitle": "rise from the last month",
+        "data": [3, 5, 4, 6, 4, 5, 6, 4, 5],
+        "colors": ["#ffd700"],
+        "gradientColors": ["#ff8c00"],
+        "icon": "schedule",
+        "iconBgClass": "bg-warning bg-opacity-10 text-warning",
+        "showDropdown": false
+      },
+
+      "avgNetUsage": {
+        "title": "Avg Net Usage",
+        "value": "25.6 GB",
+        "changePercentage": "18.2%",
+        "changeDirection": "up",
+        "chartId": "avg-net-usage-chart",
+        "subtitle": "more data consumed monthly",
+        "data": [12, 18, 22, 15, 28, 35, 30, 40, 32],
+        "colors": ["#6f42c1"],
+        "gradientColors": ["#e83e8c"],
+        "icon": "network_check",
+        "iconBgClass": "bg-info bg-opacity-10 text-info",
+        "showDropdown": false
+      },
+
+      "mostUsedApp": {
+        "title": "Most Used App",
+        "value": "59 hrs",
+        "changePercentage": "24.5%",
+        "changeDirection": "up",
+        "chartId": "most-used-app-chart",
+        "subtitle": "WhatsApp monthly usage increased by 24.5%",
+        "data": [15, 25, 30, 20, 35, 40, 28, 45, 38],
+        "colors": ["#25d366"],
+        "gradientColors": ["#128c7e"],
+        "iconImage": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEyLjAxMSAyQzE3LjUwNiAyIDIxLjk5NiA2LjQ4IDIxLjk5NiAxMkMyMS45OTYgMTcuNTIgMTcuNTA2IDIyIDEyLjAxMSAyMkMxMC4xMDEgMjIgOC4zMjUgMjEuNDM1IDYuNzg5IDIwLjQ4NEwyIDIyTDMuNTE4IDE3LjQ2QzIuNTEzIDE1Ljg1NyAyIDEzLjk5NyAyIDEyQzIgNi40OCA2LjQ5IDIgMTIuMDExIDJaTTguMzUgNy4zQzguMjMgNy4zIDcuODggNy4zNSA3LjQzIDcuNzI0QzYuOTggOC4wOTkgNi4wMSA5LjAzMSA2LjAxIDEwLjE0NUM2LjAxIDExLjI2IDYuODg2IDEyLjk3IDYuODg2IDEyLjk3QzYuODg2IDEyLjk3IDEwLjU1NiAxOC40MjIgMTcuMzYgMTguNDIyQzE3LjM2IDE4LjQyMiAxNy45MDggMTYuNTA0IDE4LjAzNCAxNS44NzdDMTguMDYgMTUuNzA5IDE4LjAyIDE1LjAzMiAxNy44IDEyLjk3QzE3LjggMTIuOTcgMTQuNjUgMTQuMTE3IDEyLjg5IDE0LjExN0MxMi44OSAxNC4xMTcgMTEuMzM1IDEyLjI2IDExLjMzNSAxMi4yNkwxMS4zNDQgMTEuODQyTDExLjM0NyAxMS42OTdDMTEuMzQ3IDExLjE0NSAxMS43MzggMTAuNjM5IDEyLjI2IDEwLjE3NkMxMi42MDYgOS44NTggMTMuMDcgOS41NTUgMTMuNzQyIDkuNTU1QzE0LjQxNCA5LjU1NSAxNC44NTggOS42NTggMTQuODU4IDkuNjU4TDE0Ljg2IDEwLjMwOUwxNC44NjEgMTEuNDEzQzE0Ljg2MSAxMS40MTMgMTYuMjM2IDExLjQwNSAxNi4zMzUgMTEuMTcyQzE2LjQzNSAxMC45MzkgMTYuMjYzIDEwLjE0NiAxNi4yNjMgMTAuMTQ2QzE2LjI2MyAxMC4xNDYgMTYuNTQyIDkuMDA2IDE2LjE5IDguMjk4QzE1LjgzOCA3LjU5IDEzLjU4OSA3LjI5OCAxMy41ODkgNy4yOThTMTIuNjUzIDcuMjk4IDEyLjY1MyA3LjI5OEwxMi41MjcgNy4yOThDMTEuODkgNy4yOTggMTEuMjM1IDcuMjk4IDExLjIzNSA3LjI5OFM5LjE3MiA7LjI4OSA4LjQ5IDcuMjk4QzguMzYxIDcuMyA4LjM1IDcuMyA4LjM1IDcuM1oiIGZpbGw9IiMyNUQ0NjYiLz4KPC9zdmc+Cg==",
+        "iconBgClass": "bg-success bg-opacity-10 text-success",
+        "showDropdown": false
+      },
+
+      "appSessionsSynced": {
+        "title": "App Sessions Synced",
+        "value": "42.5K",
+        "subtitle": "24K increase in monthly app activity",
+        "chartId": "radial-chart-1",
+        "series": [68],
+        "colors": ["#ee0979"],
+        "gradientColors": ["#ffd200"],
+        "iconImage": "/assets/images/logo-icon.png",
+        "iconBgClass": "bg-warning bg-opacity-10 text-warning",
+        "showDropdown": false
+      },
+
+      "usageStatsByProgramme": {
+        "title": "Usage Stats by Programme",
+        "series": [
+          {
+            "name": "Digital Literacy",
+            "data": [45, 30, 55, 40, 35, 50, 65, 40, 55]
+          },
+          {
+            "name": "Skills Training", 
+            "data": [35, 40, 45, 50, 30, 45, 55, 35, 45]
+          },
+          {
+            "name": "Financial Education",
+            "data": [25, 35, 40, 30, 40, 35, 45, 30, 35]
+          }
+        ],
+        "categories": ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep"],
+        "colors": ["#0d6efd", "#198754", "#ffc107"],
+        "gradientColors": ["#6610f2", "#20c997", "#fd7e14"],
+        "chartId": "usage-stats-chart",
+        "peityData": [
+          {
+            "value": "7/10",
+            "color": "#0d6efd",
+            "label": "Digital Literacy",
+            "amount": "2,847.50",
+            "percentage": "18.50%",
+            "amountUnit": "sessions"
+          },
+          {
+            "value": "6/10",
+            "color": "#198754",
+            "label": "Skills Training",
+            "amount": "1,856.25",
+            "percentage": "12.30%",
+            "amountUnit": "sessions"
+          },
+          {
+            "value": "8/10",
+            "color": "#ffc107",
+            "label": "Financial Education",
+            "amount": "3,124.75",
+            "percentage": "24.70%",
+            "amountUnit": "sessions"
+          }
+        ],
+        "availableProgrammes": [
+          {
+            "id": "digital-literacy",
+            "name": "Digital Literacy",
+            "color": "#0d6efd"
+          },
+          {
+            "id": "skills-training",
+            "name": "Skills Training",
+            "color": "#198754"
+          },
+          {
+            "id": "financial-education",
+            "name": "Financial Education",
+            "color": "#ffc107"
+          },
+          {
+            "id": "health-awareness",
+            "name": "Health Awareness",
+            "color": "#dc3545"
+          },
+          {
+            "id": "youth-development",
+            "name": "Youth Development",
+            "color": "#6f42c1"
+          }
+        ],
+        "availableDataPoints": [
+          {
+            "id": "app-sessions",
+            "name": "App Sessions",
+            "color": "#0d6efd"
+          },
+          {
+            "id": "network-usage",
+            "name": "Network Usage (GB)",
+            "color": "#198754"
+          },
+          {
+            "id": "screentime",
+            "name": "Screentime (Hours)",
+            "color": "#ffc107"
+          }
+        ],
+        "showDropdown": true
+      },
+
+      "mostVisitedApp": {
+        "title": "Most Visited App",
+        "value": "82.7K",
+        "subtitle": "WhatsApp had 12.5% more monthly visits",
+        "chartId": "bar-chart-1",
+        "data": [4, 10, 12, 17, 25, 30, 40, 55, 68],
+        "colors": ["#ff6a00"],
+        "gradientColors": ["#7928ca"],
+        "icon": "open_in_browser",
+        "iconBgClass": "bg-warning bg-opacity-10 text-warning",
+        "showDropdown": false
+      },
+
+      "topDataConsumer": {
+        "title": "Top Data Consumer",
+        "value": "68.4 GB",
+        "subtitle": "Instagram used 35% more data this month",
+        "chartId": "line-chart-1",
+        "data": [4, 25, 14, 34, 10, 39],
+        "colors": ["#ee0979"],
+        "gradientColors": ["#00f2fe"],
+        "icon": "data_usage",
+        "iconBgClass": "bg-danger bg-opacity-10 text-danger",
+        "showDropdown": false
+      },
+
+      "highestParticipantScreentime": {
+        "title": "Highest Participant Screentime",
+        "value": "124.5 hrs",
+        "subtitle": "Sarah M. recorded highest usage this month",
+        "changePercentage": "23.7%",
+        "changeDirection": "down",
+        "chartData": [4, 10, 25, 12, 25, 18, 40, 22, 7],
+        "chartColors": ["#ffc107"],
+        "chartGradientColors": ["#fc185a"],
+        "categories": ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep"]
+      },
+
+      "top5UsedApps": {
+        "title": "Top 5 Used Apps",
+        "totalRevenue": "654 hrs",
+        "totalChange": "+15%",
+        "totalChangeDirection": "up",
+        "subtitle": "total Usage this month",
+        "platforms": [
+          {
+            "name": "WhatsApp",
+            "category": "Communication",
+            "icon": "/assets/images/apps/17.png",
+            "revenue": "145 hrs",
+            "change": "+28.5%",
+            "changeDirection": "up"
+          },
+          {
+            "name": "Facebook",
+            "category": "Social Media",
+            "icon": "/assets/images/apps/03.png",
+            "revenue": "132 hrs",
+            "change": "-14.5%",
+            "changeDirection": "down"
+          },
+          {
+            "name": "Instagram",
+            "category": "Social Media",
+            "icon": "/assets/images/apps/19.png",
+            "revenue": "118 hrs",
+            "change": "+28.5%",
+            "changeDirection": "up"
+          },
+          {
+            "name": "YouTube",
+            "category": "Entertainment",
+            "icon": "/assets/images/apps/20.png",
+            "revenue": "134 hrs",
+            "change": "-43.5%",
+            "changeDirection": "down"
+          },
+          {
+            "name": "TikTok",
+            "category": "Entertainment",
+            "icon": "/assets/images/apps/twitter-circle.png",
+            "revenue": "125 hrs",
+            "change": "+24.7%",
+            "changeDirection": "up"
+          }
+        ],
+        "showDropdown": false
+      },
+
+      "top5DataConsumerApps": {
+        "title": "Top 5 Data Consumer Apps",
+        "totalDataUsage": "89.2 GB",
+        "totalChange": "+22%",
+        "totalChangeDirection": "up",
+        "subtitle": "total Data consumed this month",
+        "apps": [
+          {
+            "name": "YouTube",
+            "category": "Entertainment",
+            "icon": "/assets/images/apps/20.png",
+            "dataUsage": "28.5 GB",
+            "change": "+31.2%",
+            "changeDirection": "up"
+          },
+          {
+            "name": "Instagram",
+            "category": "Social Media",
+            "icon": "/assets/images/apps/19.png",
+            "dataUsage": "22.1 GB",
+            "change": "+18.5%",
+            "changeDirection": "up"
+          },
+          {
+            "name": "TikTok",
+            "category": "Entertainment",
+            "icon": "/assets/images/apps/twitter-circle.png",
+            "dataUsage": "15.8 GB",
+            "change": "-12.3%",
+            "changeDirection": "down"
+          },
+          {
+            "name": "Netflix",
+            "category": "Entertainment",
+            "icon": "/assets/images/apps/netflix.png",
+            "dataUsage": "12.4 GB",
+            "change": "+45.7%",
+            "changeDirection": "up"
+          },
+          {
+            "name": "Spotify",
+            "category": "Music & Audio",
+            "icon": "/assets/images/apps/spotify.png",
+            "dataUsage": "10.4 GB",
+            "change": "+23.1%",
+            "changeDirection": "up"
+          }
+        ],
+        "showDropdown": false
+      },
+
+      "deviceSyncStats": {
+        "title": "Device Sync Stats",
+        "stats": [
+          {
+            "title": "Installed Apps",
+            "value": "124",
+            "percentage": "18%",
+            "icon": "apps",
+            "bgClass": "bg-grd-primary",
+            "textClass": "text-success"
+          },
+          {
+            "title": "App Sessions",
+            "value": "3,245",
+            "percentage": "25%",
+            "icon": "play_circle",
+            "bgClass": "bg-grd-success",
+            "textClass": "text-success"
+          },
+          {
+            "title": "Network Usage",
+            "value": "656 GB",
+            "percentage": "12%",
+            "icon": "network_check",
+            "bgClass": "bg-grd-branding",
+            "textClass": "text-success"
+          },
+          {
+            "title": "Screen Sessions",
+            "value": "1,856",
+            "percentage": "8%",
+            "icon": "screen_rotation",
+            "bgClass": "bg-grd-warning",
+            "textClass": "text-danger"
+          },
+          {
+            "title": "Usage Events",
+            "value": "12,340",
+            "percentage": "15%",
+            "icon": "event",
+            "bgClass": "bg-grd-info",
+            "textClass": "text-success"
+          },
+          {
+            "title": "Avg Sync Time",
+            "value": "2.4s",
+            "percentage": "5%",
+            "icon": "sync",
+            "bgClass": "bg-grd-danger",
+            "textClass": "text-danger"
+          },
+          {
+            "title": "Failed Syncs",
+            "value": "23",
+            "percentage": "2%",
+            "icon": "sync_problem",
+            "bgClass": "bg-grd-royal",
+            "textClass": "text-danger"
+          }
+        ],
+        "showDropdown": false
+      },
+
+      "appVsBackgroundUsage": {
+        "title": "App vs Background Usage",
+        "centerTitle": "Total Data Usage",
+        "centerValue": "656.8 GB",
+        "series": [68, 32],
+        "labels": ["Active Apps", "Background Usage"],
+        "colors": ["#3494e6", "#ff6a00"],
+        "gradientColors": ["#ec6ead", "#ee0979"],
+        "devices": [
+          {
+            "name": "Active Apps",
+            "icon": "apps",
+            "percentage": "68%",
+            "iconColor": "text-primary"
+          },
+          {
+            "name": "Background Usage",
+            "icon": "cloud_sync",
+            "percentage": "32%",
+            "iconColor": "text-warning"
+          }
+        ],
+        "showDropdown": false
+      },
+
+      "beneficiaryActivity": {
+        "title": "Beneficiary Activity Overview",
+        "activities": [
+          {
+            "participant": "Sarah Martinez",
+            "mostUsedApp": "WhatsApp",
+            "mostUsedAppScreentime": "4.2 hrs",
+            "mostUsedAppIcon": "/assets/images/apps/17.png",
+            "mostVisitedApp": "Instagram",
+            "mostVisitedCount": "156 visits",
+            "mostVisitedAppIcon": "/assets/images/apps/19.png",
+            "dataUsageApp": "YouTube",
+            "dataUsageAmount": "2.8 GB",
+            "dataUsageAppIcon": "/assets/images/apps/20.png",
+            "lastSyncedDate": "10 Jan, 2024",
+            "lastSyncedTime": "2:30 PM"
+          },
+          {
+            "participant": "Michael Johnson",
+            "mostUsedApp": "Facebook",
+            "mostUsedAppScreentime": "3.8 hrs",
+            "mostUsedAppIcon": "/assets/images/apps/03.png",
+            "mostVisitedApp": "WhatsApp",
+            "mostVisitedCount": "142 visits",
+            "mostVisitedAppIcon": "/assets/images/apps/17.png",
+            "dataUsageApp": "Instagram",
+            "dataUsageAmount": "2.1 GB",
+            "dataUsageAppIcon": "/assets/images/apps/19.png",
+            "lastSyncedDate": "09 Jan, 2024",
+            "lastSyncedTime": "11:45 AM"
+          },
+          {
+            "participant": "Emily Rodriguez",
+            "mostUsedApp": "Instagram",
+            "mostUsedAppScreentime": "5.1 hrs",
+            "mostUsedAppIcon": "/assets/images/apps/19.png",
+            "mostVisitedApp": "TikTok",
+            "mostVisitedCount": "203 visits",
+            "mostVisitedAppIcon": "/assets/images/apps/twitter-circle.png",
+            "dataUsageApp": "Netflix",
+            "dataUsageAmount": "3.4 GB",
+            "dataUsageAppIcon": "/assets/images/apps/netflix.png",
+            "lastSyncedDate": "10 Jan, 2024",
+            "lastSyncedTime": "4:15 PM"
+          },
+          {
+            "participant": "David Thompson",
+            "mostUsedApp": "YouTube",
+            "mostUsedAppScreentime": "6.3 hrs",
+            "mostUsedAppIcon": "/assets/images/apps/20.png",
+            "mostVisitedApp": "Facebook",
+            "mostVisitedCount": "89 visits",
+            "mostVisitedAppIcon": "/assets/images/apps/03.png",
+            "dataUsageApp": "YouTube",
+            "dataUsageAmount": "4.7 GB",
+            "dataUsageAppIcon": "/assets/images/apps/20.png",
+            "lastSyncedDate": "09 Jan, 2024",
+            "lastSyncedTime": "7:20 PM"
+          },
+          {
+            "participant": "Lisa Chen",
+            "mostUsedApp": "TikTok",
+            "mostUsedAppScreentime": "4.9 hrs",
+            "mostUsedAppIcon": "/assets/images/apps/twitter-circle.png",
+            "mostVisitedApp": "Instagram",
+            "mostVisitedCount": "178 visits",
+            "mostVisitedAppIcon": "/assets/images/apps/19.png",
+            "dataUsageApp": "TikTok",
+            "dataUsageAmount": "2.9 GB",
+            "dataUsageAppIcon": "/assets/images/apps/twitter-circle.png",
+            "lastSyncedDate": "10 Jan, 2024",
+            "lastSyncedTime": "1:10 PM"
+          },
+          {
+            "participant": "James Wilson",
+            "mostUsedApp": "WhatsApp",
+            "mostUsedAppScreentime": "3.2 hrs",
+            "mostUsedAppIcon": "/assets/images/apps/17.png",
+            "mostVisitedApp": "YouTube",
+            "mostVisitedCount": "67 visits",
+            "mostVisitedAppIcon": "/assets/images/apps/20.png",
+            "dataUsageApp": "Spotify",
+            "dataUsageAmount": "1.8 GB",
+            "dataUsageAppIcon": "/assets/images/apps/spotify.png",
+            "lastSyncedDate": "09 Jan, 2024",
+            "lastSyncedTime": "9:35 AM"
+          }
+        ],
+        "showDropdown": true
+      }
+    }
+  },
+
+  "apiEndpoints": {
+    "primary": "GET /api/dashboard/overview",
+    "filterUpdate": "POST /api/dashboard/overview/filter",
+    "usageStatsByProgramme": "GET /api/dashboard/overview/usage-stats-by-programme",
+    "beneficiaryActivity": "GET /api/dashboard/overview/beneficiary-activity"
+  },
+
+  "queryParameters": {
+    "period": {
+      "type": "string",
+      "options": ["today", "last_week", "last_month", "last_year"],
+      "default": "today"
+    },
+    "programme": {
+      "type": "string", 
+      "options": ["all", "digital-literacy", "skills-training", "financial-education", "health-awareness", "youth-development"],
+      "default": "all"
+    }
+  }
+}
