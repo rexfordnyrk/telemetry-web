@@ -197,10 +197,18 @@ const IconAreaChartWidget: React.FC<IconAreaChartWidgetProps> = ({
           </div>
           <div className="text-center">
             <p className="mb-0">
-              <span className={`me-1 ${changeDirection === "up" ? "text-success" : "text-danger"}`}>
-                {changePercentage}
-              </span>
-              {subtitle}
+              {title === "Most Used App" ? (
+                <>
+                  {subtitle} <span className="text-success">{changePercentage}</span>
+                </>
+              ) : (
+                <>
+                  <span className={`me-1 ${changeDirection === "up" ? "text-success" : "text-danger"}`}>
+                    {changePercentage}
+                  </span>
+                  {subtitle}
+                </>
+              )}
             </p>
           </div>
         </div>
