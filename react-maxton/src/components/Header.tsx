@@ -309,7 +309,7 @@ const Header: React.FC<HeaderProps> = ({
                   alt="User"
                 />
               ) : (
-                <div className="user-avatar-initials d-flex align-items-center justify-content-center rounded-circle p-1 border bg-primary text-white" style={{ width: '45px', height: '45px', fontSize: '16px', fontWeight: 'bold' }}>
+                <div className="user-avatar-initials d-flex align-items-center justify-content-center rounded-circle p-1 border bg-primary text-white" style={{ width: '45px', height: '45px', minWidth: '45px', minHeight: '45px', fontSize: '16px', fontWeight: 'bold', aspectRatio: '1' }}>
                   {userInitials}
                 </div>
               )}
