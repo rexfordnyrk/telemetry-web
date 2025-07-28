@@ -49,17 +49,7 @@ const Header: React.FC<HeaderProps> = ({
         <div className="flex-grow-1"></div>
 
         <Nav className="gap-1 nav-right-links align-items-center">
-          <Nav.Item className="d-lg-none mobile-search-btn">
-            <Nav.Link
-              href="#"
-              onClick={(e) => {
-                e.preventDefault();
-                toggleSearch();
-              }}
-            >
-              <i className="material-icons-outlined">search</i>
-            </Nav.Link>
-          </Nav.Item>
+          {/* Removed mobile search button */}
 
           {/* Language Dropdown */}
           <Dropdown as={Nav.Item}>
