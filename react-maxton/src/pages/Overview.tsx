@@ -134,7 +134,7 @@ const Overview: React.FC = () => {
         </div>
       </div>
 
-      <Row>
+      <Row className="g-3">
         {/* Row 1: Active Devices Card + Screentime + Net Usage + Active Users + Most Used App */}
         <Col xxl={4} className="d-flex align-items-stretch">
           <ConfigurableWelcomeCard
