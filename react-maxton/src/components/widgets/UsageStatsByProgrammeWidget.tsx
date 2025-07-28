@@ -199,7 +199,7 @@ const UsageStatsByProgrammeWidget: React.FC<UsageStatsByProgrammeWidgetProps> = 
       updateChartData();
       setIsInitialized(true);
     }
-  }, []);
+  }, [isInitialized, updateChartData]);
 
   // Handle click outside to close dropdown
   useEffect(() => {
