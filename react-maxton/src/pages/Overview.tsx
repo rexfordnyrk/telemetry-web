@@ -223,7 +223,7 @@ const Overview: React.FC = () => {
         </Col>
 
         <Col xxl={4}>
-          <Row>
+          <Row className="g-3 mb-3">
             <Col md={6} className="d-flex align-items-stretch">
               <IconBarChartWidget
                 title="Most Visited App"
@@ -238,7 +238,7 @@ const Overview: React.FC = () => {
                 showDropdown={false}
               />
             </Col>
-            <Col sm={6} className="d-flex align-items-stretch">
+            <Col md={6} className="d-flex align-items-stretch">
               <IconLineChartWidget
                 title="Top Data Consumer"
                 value="68.4 GB"
