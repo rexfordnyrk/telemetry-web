@@ -326,7 +326,7 @@ const Header: React.FC<HeaderProps> = ({
                       alt=""
                     />
                   ) : (
-                    <div className="user-avatar-initials d-flex align-items-center justify-content-center rounded-circle p-1 shadow mb-3 bg-primary text-white mx-auto" style={{ width: '90px', height: '90px', fontSize: '32px', fontWeight: 'bold' }}>
+                    <div className="user-avatar-initials d-flex align-items-center justify-content-center rounded-circle p-1 shadow mb-3 bg-primary text-white mx-auto" style={{ width: '90px', height: '90px', minWidth: '90px', minHeight: '90px', fontSize: '32px', fontWeight: 'bold', aspectRatio: '1' }}>
                       {userInitials}
                     </div>
                   )}
