@@ -136,7 +136,7 @@ const IconAreaChartWidget: React.FC<IconAreaChartWidgetProps> = ({
   }, [title, data, categories, colors, gradientColors, chartId]);
 
   return (
-    <div className="col">
+    <div className="w-100">
       <div className="card rounded-4">
         <div className="card-body">
           <div className="d-flex align-items-start justify-content-between mb-3">
