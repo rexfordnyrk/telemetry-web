@@ -173,37 +173,7 @@ export const navigationData: NavigationItem[] = [
           },
         ],
       },
-      {
-        id: "auth-cover",
-        title: "Cover",
-        icon: "arrow_right",
-        children: [
-          {
-            id: "auth-cover-login",
-            title: "Login",
-            path: "/auth/cover/login",
-            icon: "arrow_right",
-          },
-          {
-            id: "auth-cover-register",
-            title: "Register",
-            path: "/auth/cover/register",
-            icon: "arrow_right",
-          },
-          {
-            id: "auth-cover-forgot-password",
-            title: "Forgot Password",
-            path: "/auth/cover/forgot-password",
-            icon: "arrow_right",
-          },
-          {
-            id: "auth-cover-reset-password",
-            title: "Reset Password",
-            path: "/auth/cover/reset-password",
-            icon: "arrow_right",
-          },
-        ],
-      },
+
     ],
   },
 ];
