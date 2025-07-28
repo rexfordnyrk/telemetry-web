@@ -6,7 +6,7 @@ interface IconAreaChartWidgetProps {
   changePercentage: string;
   changeDirection: "up" | "down";
   chartId: string;
-  subtitle?: string;
+  subtitle?: string | React.ReactNode;
   data?: number[];
   categories?: string[];
   colors?: string[];
