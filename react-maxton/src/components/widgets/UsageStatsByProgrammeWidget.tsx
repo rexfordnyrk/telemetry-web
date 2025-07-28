@@ -148,7 +148,7 @@ const UsageStatsByProgrammeWidget: React.FC<UsageStatsByProgrammeWidgetProps> = 
     }, 50);
   };
 
-  const updateChartData = () => {
+  const updateChartData = useCallback(() => {
     // Mock data update based on selection
     // This will be replaced with actual API call
     const newSeries: { name: string; data: number[] }[] = [];
@@ -190,7 +190,7 @@ const UsageStatsByProgrammeWidget: React.FC<UsageStatsByProgrammeWidgetProps> = 
       gradientColors: newGradientColors,
       peityData: newPeityData
     });
-  };
+  }, [selectedDataPoint, selectedProgrammes, usageData]);
 
   // Initialize with default data on component mount
   useEffect(() => {
