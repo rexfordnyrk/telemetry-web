@@ -119,28 +119,37 @@ const FilterControls: React.FC = () => {
 
       {showCustomDatePickers && (
         <>
-          <div className="d-flex align-items-center gap-1">
-            <label className="form-label mb-0 small text-muted">From:</label>
-            <input
-              type="datetime-local"
-              className="form-control form-control-sm"
-              value={startDateTime}
-              onChange={(e) => setStartDateTime(e.target.value)}
-              style={{ width: "180px" }}
-            />
-          </div>
-          <div className="d-flex align-items-center gap-1">
-            <label className="form-label mb-0 small text-muted">To:</label>
-            <input
-              type="datetime-local"
-              className="form-control form-control-sm"
-              value={endDateTime}
-              onChange={(e) => setEndDateTime(e.target.value)}
-              style={{ width: "180px" }}
-            />
-          </div>
-          {startDateTime && endDateTime && (
-            <div className="small text-muted bg-light px-2 py-1 rounded">
+          {showDateInputs ? (
+            <>
+              <div className="d-flex align-items-center gap-1">
+                <label className="form-label mb-0 small text-muted">From:</label>
+                <input
+                  type="datetime-local"
+                  className="form-control form-control-sm"
+                  value={startDateTime}
+                  onChange={(e) => handleDateChange('start', e.target.value)}
+                  style={{ width: "180px" }}
+                />
+              </div>
+              <div className="d-flex align-items-center gap-1">
+                <label className="form-label mb-0 small text-muted">To:</label>
+                <input
+                  type="datetime-local"
+                  className="form-control form-control-sm"
+                  value={endDateTime}
+                  onChange={(e) => handleDateChange('end', e.target.value)}
+                  style={{ width: "180px" }}
+                />
+              </div>
+            </>
+          ) : (
+            <div
+              className="btn btn-outline-secondary btn-sm d-flex align-items-center gap-1 px-3"
+              onClick={handlePreviewClick}
+              style={{ cursor: "pointer", fontSize: "12px" }}
+              title="Click to edit date range"
+            >
+              <i className="material-icons-outlined" style={{ fontSize: "16px" }}>edit_calendar</i>
               {formatCustomDateRange()}
             </div>
           )}
