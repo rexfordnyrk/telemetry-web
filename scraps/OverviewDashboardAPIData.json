@@ -21,8 +21,6 @@
     
     "widgets": {
       "configurableWelcomeCard": {
-        "userName": "John Anderson",
-        "userAvatar": "/assets/images/avatars/01.png",
         "primaryValue": "1,234",
         "secondaryValue": "89.2%",
         "primaryLabel": "Active Devices",
