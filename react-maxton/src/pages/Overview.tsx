@@ -4,7 +4,7 @@ import { useSelector } from "react-redux";
 import MainLayout from "../layouts/MainLayout";
 import SafeApexChart from "../components/SafeApexChart";
 import { RootState } from "../store";
-import { analyticsAPI } from "../services/apiService";
+import { buildApiUrl, getAuthHeaders } from "../config/api";
 import { OverviewDashboardApiResponse, DashboardWidgets } from "../types/dashboard";
 
 // Import dashboard components
