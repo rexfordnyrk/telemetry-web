@@ -350,18 +350,23 @@ const Overview: React.FC = () => {
       <Row className="g-3">
         {/* Row 1: Active Devices Card + Screentime + Net Usage + Active Users + Most Used App */}
         <Col xxl={4} className="d-flex align-items-stretch">
-          <ConfigurableWelcomeCard
-            userName={displayName}
-            userAvatar={userAvatar}
-            userInitials={userInitials}
-            primaryValue="1,234"
-            secondaryValue="89.2%"
-            primaryLabel="Active Devices"
-            secondaryLabel="Sync Success Rate"
-            primaryProgress={85}
-            secondaryProgress={89}
-            showWelcomeImage={false}
-          />
+          {(() => {
+            const welcomeCardData = getWidgetData('configurableWelcomeCard', fallbackData.configurableWelcomeCard);
+            return (
+              <ConfigurableWelcomeCard
+                userName={displayName}
+                userAvatar={userAvatar}
+                userInitials={userInitials}
+                primaryValue={welcomeCardData.primaryValue}
+                secondaryValue={welcomeCardData.secondaryValue}
+                primaryLabel={welcomeCardData.primaryLabel}
+                secondaryLabel={welcomeCardData.secondaryLabel}
+                primaryProgress={welcomeCardData.primaryProgress}
+                secondaryProgress={welcomeCardData.secondaryProgress}
+                showWelcomeImage={welcomeCardData.showWelcomeImage}
+              />
+            );
+          })()}
         </Col>
 
         <Col xl={6} xxl={2} className="d-flex align-items-stretch">
