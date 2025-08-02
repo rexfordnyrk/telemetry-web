@@ -389,7 +389,17 @@ const Overview: React.FC = () => {
           <i className="bx bx-error-circle me-2"></i>
           <strong>Data Loading Warning:</strong> {error}
           <br />
-          <small className="text-muted">Displaying fallback data. The dashboard will automatically retry loading the latest data.</small>
+          <small className="text-muted">Displaying fallback data. You can try refreshing the data below.</small>
+          <div className="mt-2">
+            <button
+              className="btn btn-sm btn-outline-warning"
+              onClick={retryFetchData}
+              disabled={isLoading}
+            >
+              <i className="bx bx-refresh me-1"></i>
+              Retry Loading Data
+            </button>
+          </div>
         </div>
       )}
 
