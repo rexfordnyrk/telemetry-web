@@ -347,6 +347,26 @@ const Overview: React.FC = () => {
         </div>
       </div>
 
+      {/* Loading State */}
+      {isLoading && (
+        <div className="text-center py-5">
+          <div className="spinner-border text-primary" role="status">
+            <span className="visually-hidden">Loading...</span>
+          </div>
+          <p className="mt-2 text-muted">Loading dashboard data...</p>
+        </div>
+      )}
+
+      {/* Error State */}
+      {error && !isLoading && (
+        <div className="alert alert-warning alert-dismissible fade show" role="alert">
+          <i className="bx bx-error-circle me-2"></i>
+          <strong>Data Loading Warning:</strong> {error}
+          <br />
+          <small className="text-muted">Displaying fallback data. The dashboard will automatically retry loading the latest data.</small>
+        </div>
+      )}
+
       <Row className="g-3">
         {/* Row 1: Active Devices Card + Screentime + Net Usage + Active Users + Most Used App */}
         <Col xxl={4} className="d-flex align-items-stretch">
