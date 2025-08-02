@@ -303,6 +303,7 @@ const Overview: React.FC = () => {
 
         const data: OverviewDashboardApiResponse = await response.json();
         setDashboardData(data.data.widgets);
+        setGlobalFilters(data.data.globalFilters);
       } catch (err) {
         console.error('Failed to fetch dashboard data:', err);
         setError(err instanceof Error ? err.message : 'Failed to load dashboard data');
