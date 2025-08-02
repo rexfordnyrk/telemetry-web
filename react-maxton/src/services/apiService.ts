@@ -417,8 +417,9 @@ export const devicesAPI = {
  * These methods handle data analytics and reporting
  */
 export const analyticsAPI = {
+  getOverviewDashboard: () => ApiService.get(API_CONFIG.ENDPOINTS.ANALYTICS.OVERVIEW),
   getAggregateAnalytics: (period: string) => ApiService.get(API_CONFIG.ENDPOINTS.ANALYTICS.AGGREGATE(period)),
   getDeviceStats: (period: string) => ApiService.get(API_CONFIG.ENDPOINTS.ANALYTICS.DEVICE_STATS(period)),
   getDeviceUsage: (deviceId: string, period: string) => ApiService.get(API_CONFIG.ENDPOINTS.ANALYTICS.DEVICE_USAGE(deviceId, period)),
   getBeneficiaryUsage: (beneficiaryId: string, period: string) => ApiService.get(API_CONFIG.ENDPOINTS.ANALYTICS.BENEFICIARY_USAGE(beneficiaryId, period)),
-}; 
+};
