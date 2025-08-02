@@ -42,7 +42,9 @@ interface FilterControlsProps {
 // Filter Controls Component
 const FilterControls: React.FC<FilterControlsProps> = ({
   token,
+  globalFilters,
   setDashboardData,
+  setGlobalFilters,
   setIsLoading,
   setError
 }) => {
