@@ -53,6 +53,7 @@ export const API_CONFIG = {
     
     // Analytics endpoints for data visualization
     ANALYTICS: {
+      OVERVIEW: '/api/v1/analytics/dashboard/overview',                                  // Get overview dashboard data
       AGGREGATE: (period: string) => `/api/v1/analytics/aggregate/${period}`,           // Get aggregate analytics
       DEVICE_STATS: (period: string) => `/api/v1/analytics/device-stats/${period}`,     // Get device statistics
       DEVICE_USAGE: (deviceId: string, period: string) => `/api/v1/analytics/device/${deviceId}/usage/${period}`,     // Get specific device usage
@@ -104,4 +105,4 @@ export const getAuthHeaders = (token?: string): HeadersInit => {
   }
   
   return headers;
-}; 
+};
