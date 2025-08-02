@@ -417,12 +417,12 @@ const Overview: React.FC = () => {
 
         <Col xl={6} xxl={2} className="d-flex align-items-stretch">
           <IconAreaChartWidget
-            title="Most Used App"
-            value="59 hrs"
-            changePercentage="24.5%"
-            changeDirection="up"
-            chartId="most-used-app-chart"
-            subtitle="WhatsApp gained"
+            title={getWidgetData('mostUsedApp', fallbackData.mostUsedApp).title}
+            value={getWidgetData('mostUsedApp', fallbackData.mostUsedApp).value}
+            changePercentage={getWidgetData('mostUsedApp', fallbackData.mostUsedApp).changePercentage}
+            changeDirection={getWidgetData('mostUsedApp', fallbackData.mostUsedApp).changeDirection}
+            chartId={getWidgetData('mostUsedApp', fallbackData.mostUsedApp).chartId}
+            subtitle={getWidgetData('mostUsedApp', fallbackData.mostUsedApp).subtitle}
             data={[15, 25, 30, 20, 35, 40, 28, 45, 38]}
             colors={["#25d366"]}
             gradientColors={["#128c7e"]}
