@@ -454,7 +454,12 @@ const Overview: React.FC = () => {
               {isLoading ? 'Loading...' : dashboardData && !error ? 'Live Data' : 'Fallback Data'}
             </span>
           </div>
-          <FilterControls />
+          <FilterControls
+            token={token}
+            setDashboardData={setDashboardData}
+            setIsLoading={setIsLoading}
+            setError={setError}
+          />
         </div>
       </div>
 
