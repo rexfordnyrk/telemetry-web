@@ -187,7 +187,7 @@ const FilterControls: React.FC = () => {
 
 
 const Overview: React.FC = () => {
-  const { user } = useSelector((state: RootState) => state.auth);
+  const { user, token } = useSelector((state: RootState) => state.auth);
 
   // Dashboard data state
   const [dashboardData, setDashboardData] = useState<DashboardWidgets | null>(null);
