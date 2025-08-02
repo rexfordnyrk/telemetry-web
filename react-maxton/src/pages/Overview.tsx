@@ -200,8 +200,25 @@ const Overview: React.FC = () => {
       try {
         setIsLoading(true);
         setError(null);
-        const response: OverviewDashboardApiResponse = await analyticsAPI.getOverviewDashboard();
-        setDashboardData(response.data.widgets);
+
+        // Check if we have authentication token
+        if (!token) {
+          throw new Error('No authentication token available');
+        }
+
+        // Make authenticated API request
+        const url = buildApiUrl('/api/v1/analytics/dashboard/overview');
+        const response = await fetch(url, {
+          method: 'GET',
+          headers: getAuthHeaders(token),
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+
+        const data: OverviewDashboardApiResponse = await response.json();
+        setDashboardData(data.data.widgets);
       } catch (err) {
         console.error('Failed to fetch dashboard data:', err);
         setError(err instanceof Error ? err.message : 'Failed to load dashboard data');
@@ -211,8 +228,14 @@ const Overview: React.FC = () => {
       }
     };
 
-    fetchDashboardData();
-  }, []);
+    // Only fetch if we have a token
+    if (token) {
+      fetchDashboardData();
+    } else {
+      setError('Authentication required');
+      setIsLoading(false);
+    }
+  }, [token]);
 
   // Retry function for manual retry
   const retryFetchData = () => {
