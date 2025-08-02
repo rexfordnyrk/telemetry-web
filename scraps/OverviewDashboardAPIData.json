@@ -500,25 +500,5 @@
         "showDropdown": true
       }
     }
-  },
-
-  "apiEndpoints": {
-    "primary": "GET /api/dashboard/overview",
-    "filterUpdate": "POST /api/dashboard/overview/filter",
-    "usageStatsByProgramme": "GET /api/dashboard/overview/usage-stats-by-programme",
-    "beneficiaryActivity": "GET /api/dashboard/overview/beneficiary-activity"
-  },
-
-  "queryParameters": {
-    "period": {
-      "type": "string",
-      "options": ["today", "last_week", "last_month", "last_year"],
-      "default": "today"
-    },
-    "programme": {
-      "type": "string", 
-      "options": ["all", "digital-literacy", "skills-training", "financial-education", "health-awareness", "youth-development"],
-      "default": "all"
-    }
   }
 }
