@@ -214,6 +214,25 @@ const Overview: React.FC = () => {
     fetchDashboardData();
   }, []);
 
+  // Retry function for manual retry
+  const retryFetchData = () => {
+    const fetchDashboardData = async () => {
+      try {
+        setIsLoading(true);
+        setError(null);
+        const response: OverviewDashboardApiResponse = await analyticsAPI.getOverviewDashboard();
+        setDashboardData(response.data.widgets);
+      } catch (err) {
+        console.error('Failed to fetch dashboard data:', err);
+        setError(err instanceof Error ? err.message : 'Failed to load dashboard data');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchDashboardData();
+  };
+
   // Generate user initials if no avatar
   const getUserInitials = (firstName?: string, lastName?: string, username?: string) => {
     if (firstName && lastName) {
