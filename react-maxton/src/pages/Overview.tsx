@@ -434,16 +434,16 @@ const Overview: React.FC = () => {
 
         <Col xl={6} xxl={2} className="d-flex align-items-stretch">
           <IconRadialChartWidget
-            title="App Sessions Synced"
-            value="42.5K"
-            subtitle="24K increase in monthly app activity"
-            chartId="radial-chart-1"
-            series={[68]}
-            colors={["#ee0979"]}
-            gradientColors={["#ffd200"]}
-            iconImage="/assets/images/logo-icon.png"
-            iconBgClass="bg-warning bg-opacity-10 text-warning"
-            showDropdown={false}
+            title={getWidgetData('appSessionsSynced', fallbackData.appSessionsSynced).title}
+            value={getWidgetData('appSessionsSynced', fallbackData.appSessionsSynced).value}
+            subtitle={getWidgetData('appSessionsSynced', fallbackData.appSessionsSynced).subtitle}
+            chartId={getWidgetData('appSessionsSynced', fallbackData.appSessionsSynced).chartId}
+            series={getWidgetData('appSessionsSynced', fallbackData.appSessionsSynced).series}
+            colors={getWidgetData('appSessionsSynced', fallbackData.appSessionsSynced).colors}
+            gradientColors={getWidgetData('appSessionsSynced', fallbackData.appSessionsSynced).gradientColors}
+            iconImage={getWidgetData('appSessionsSynced', fallbackData.appSessionsSynced).iconImage}
+            iconBgClass={getWidgetData('appSessionsSynced', fallbackData.appSessionsSynced).iconBgClass}
+            showDropdown={getWidgetData('appSessionsSynced', fallbackData.appSessionsSynced).showDropdown}
           />
         </Col>
 
