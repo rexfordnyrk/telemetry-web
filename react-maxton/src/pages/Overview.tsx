@@ -230,6 +230,7 @@ const Overview: React.FC = () => {
 
   // Dashboard data state
   const [dashboardData, setDashboardData] = useState<DashboardWidgets | null>(null);
+  const [globalFilters, setGlobalFilters] = useState<any>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
