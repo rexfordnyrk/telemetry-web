@@ -370,20 +370,26 @@ const Overview: React.FC = () => {
         </Col>
 
         <Col xl={6} xxl={2} className="d-flex align-items-stretch">
-          <IconAreaChartWidget
-            title="Avg Screentime"
-            value="4.2 hrs"
-            changePercentage="15.3%"
-            changeDirection="up"
-            chartId="avg-screentime-chart"
-            subtitle="rise from the last month"
-            data={[3, 5, 4, 6, 4, 5, 6, 4, 5]}
-            colors={["#ffd700"]}
-            gradientColors={["#ff8c00"]}
-            icon="schedule"
-            iconBgClass="bg-warning bg-opacity-10 text-warning"
-            showDropdown={false}
-          />
+          {(() => {
+            const screentimeData = getWidgetData('avgScreentime', fallbackData.avgScreentime);
+            return (
+              <IconAreaChartWidget
+                title={screentimeData.title}
+                value={screentimeData.value}
+                changePercentage={screentimeData.changePercentage}
+                changeDirection={screentimeData.changeDirection}
+                chartId={screentimeData.chartId}
+                subtitle={screentimeData.subtitle}
+                data={screentimeData.data}
+                colors={screentimeData.colors}
+                gradientColors={screentimeData.gradientColors}
+                icon={screentimeData.icon}
+                iconImage={screentimeData.iconImage}
+                iconBgClass={screentimeData.iconBgClass}
+                showDropdown={screentimeData.showDropdown}
+              />
+            );
+          })()}
         </Col>
 
         <Col xl={6} xxl={2} className="d-flex align-items-stretch">
