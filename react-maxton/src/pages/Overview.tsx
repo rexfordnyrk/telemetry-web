@@ -164,10 +164,16 @@ const FilterControls: React.FC<FilterControlsProps> = ({
         onChange={(e) => handlePeriodChange(e.target.value)}
         style={{ width: "120px" }}
       >
-        <option>Today</option>
-        <option>Last Week</option>
-        <option>Last Month</option>
-        <option>Last Year</option>
+        {globalFilters?.availablePeriods?.map((period: string) => (
+          <option key={period} value={period}>{period}</option>
+        )) || (
+          <>
+            <option>Today</option>
+            <option>Last Week</option>
+            <option>Last Month</option>
+            <option>Last Year</option>
+          </>
+        )}
         <option>Custom</option>
       </Form.Select>
 
