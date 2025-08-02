@@ -5,7 +5,7 @@ import MainLayout from "../layouts/MainLayout";
 import SafeApexChart from "../components/SafeApexChart";
 import { RootState } from "../store";
 import { buildApiUrl, getAuthHeaders } from "../config/api";
-import { OverviewDashboardApiResponse, DashboardWidgets } from "../types/dashboard";
+import { OverviewDashboardApiResponse, DashboardWidgets, GlobalFilters } from "../types/dashboard";
 
 // Import dashboard components
 import {
