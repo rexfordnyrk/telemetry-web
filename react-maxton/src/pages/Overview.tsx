@@ -484,7 +484,9 @@ const Overview: React.FC = () => {
           </div>
           <FilterControls
             token={token}
+            globalFilters={globalFilters}
             setDashboardData={setDashboardData}
+            setGlobalFilters={setGlobalFilters}
             setIsLoading={setIsLoading}
             setError={setError}
           />
