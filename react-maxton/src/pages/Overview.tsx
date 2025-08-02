@@ -48,8 +48,8 @@ const FilterControls: React.FC<FilterControlsProps> = ({
   setIsLoading,
   setError
 }) => {
-  const [selectedPeriod, setSelectedPeriod] = useState("Today");
-  const [selectedProgramme, setSelectedProgramme] = useState("All Programmes");
+  const [selectedPeriod, setSelectedPeriod] = useState(globalFilters?.selectedPeriod || "Today");
+  const [selectedProgramme, setSelectedProgramme] = useState(globalFilters?.selectedProgramme || "All Programmes");
   const [startDateTime, setStartDateTime] = useState("");
   const [endDateTime, setEndDateTime] = useState("");
   const [showCustomDatePickers, setShowCustomDatePickers] = useState(false);
