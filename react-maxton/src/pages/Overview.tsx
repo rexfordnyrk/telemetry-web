@@ -135,6 +135,7 @@ const FilterControls: React.FC<FilterControlsProps> = ({
 
       const data: OverviewDashboardApiResponse = await response.json();
       setDashboardData(data.data.widgets);
+      setGlobalFilters(data.data.globalFilters);
     } catch (err) {
       console.error('Failed to fetch filtered dashboard data:', err);
       setError(err instanceof Error ? err.message : 'Failed to load filtered dashboard data');
