@@ -393,20 +393,26 @@ const Overview: React.FC = () => {
         </Col>
 
         <Col xl={6} xxl={2} className="d-flex align-items-stretch">
-          <IconAreaChartWidget
-            title="Avg Net Usage"
-            value="25.6 GB"
-            changePercentage="18.2%"
-            changeDirection="up"
-            chartId="avg-net-usage-chart"
-            subtitle="more data consumed monthly"
-            data={[12, 18, 22, 15, 28, 35, 30, 40, 32]}
-            colors={["#6f42c1"]}
-            gradientColors={["#e83e8c"]}
-            icon="network_check"
-            iconBgClass="bg-info bg-opacity-10 text-info"
-            showDropdown={false}
-          />
+          {(() => {
+            const netUsageData = getWidgetData('avgNetUsage', fallbackData.avgNetUsage);
+            return (
+              <IconAreaChartWidget
+                title={netUsageData.title}
+                value={netUsageData.value}
+                changePercentage={netUsageData.changePercentage}
+                changeDirection={netUsageData.changeDirection}
+                chartId={netUsageData.chartId}
+                subtitle={netUsageData.subtitle}
+                data={netUsageData.data}
+                colors={netUsageData.colors}
+                gradientColors={netUsageData.gradientColors}
+                icon={netUsageData.icon}
+                iconImage={netUsageData.iconImage}
+                iconBgClass={netUsageData.iconBgClass}
+                showDropdown={netUsageData.showDropdown}
+              />
+            );
+          })()}
         </Col>
 
         <Col xl={6} xxl={2} className="d-flex align-items-stretch">
