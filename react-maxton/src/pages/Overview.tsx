@@ -99,7 +99,7 @@ const FilterControls: React.FC<FilterControlsProps> = ({
     return "Custom";
   };
 
-  const handleApplyFilters = () => {
+  const handleApplyFilters = async () => {
     let periodValue = selectedPeriod;
 
     if (selectedPeriod === "Custom" && startDateTime && endDateTime) {
@@ -108,13 +108,39 @@ const FilterControls: React.FC<FilterControlsProps> = ({
       periodValue = `${startEpoch}:${endEpoch}`;
     }
 
-    console.log('Applying filters:', {
-      period: periodValue,
-      programme: selectedProgramme,
-      customRange: selectedPeriod === "Custom" ? formatCustomDateRange() : null
-    });
-    // TODO: Make API call with filter options
-    // This will be implemented when API endpoint is provided
+    try {
+      setIsLoading(true);
+      setError(null);
+
+      // Check if we have authentication token
+      if (!token) {
+        throw new Error('No authentication token available');
+      }
+
+      // Build URL with query parameters
+      const url = buildApiUrl('/api/v1/analytics/dashboard/overview');
+      const urlWithParams = new URL(url);
+      urlWithParams.searchParams.append('period', periodValue);
+      urlWithParams.searchParams.append('programme', selectedProgramme);
+
+      // Make authenticated API request with filters
+      const response = await fetch(urlWithParams.toString(), {
+        method: 'GET',
+        headers: getAuthHeaders(token),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+
+      const data: OverviewDashboardApiResponse = await response.json();
+      setDashboardData(data.data.widgets);
+    } catch (err) {
+      console.error('Failed to fetch filtered dashboard data:', err);
+      setError(err instanceof Error ? err.message : 'Failed to load filtered dashboard data');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
