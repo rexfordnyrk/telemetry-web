@@ -29,8 +29,21 @@ import {
   DataConsumerAppsWidget,
 } from "../components/widgets";
 
+// Filter Controls Component Props
+interface FilterControlsProps {
+  token: string | null;
+  setDashboardData: React.Dispatch<React.SetStateAction<DashboardWidgets | null>>;
+  setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
+  setError: React.Dispatch<React.SetStateAction<string | null>>;
+}
+
 // Filter Controls Component
-const FilterControls: React.FC = () => {
+const FilterControls: React.FC<FilterControlsProps> = ({
+  token,
+  setDashboardData,
+  setIsLoading,
+  setError
+}) => {
   const [selectedPeriod, setSelectedPeriod] = useState("Today");
   const [selectedProgramme, setSelectedProgramme] = useState("All Programmes");
   const [startDateTime, setStartDateTime] = useState("");
