@@ -55,6 +55,14 @@ const FilterControls: React.FC<FilterControlsProps> = ({
   const [showCustomDatePickers, setShowCustomDatePickers] = useState(false);
   const [showDateInputs, setShowDateInputs] = useState(true);
 
+  // Update local filter states when globalFilters from API changes
+  useEffect(() => {
+    if (globalFilters) {
+      setSelectedPeriod(globalFilters.selectedPeriod || "Today");
+      setSelectedProgramme(globalFilters.selectedProgramme || "All Programmes");
+    }
+  }, [globalFilters]);
+
   const handlePeriodChange = (value: string) => {
     setSelectedPeriod(value);
     setShowCustomDatePickers(value === "Custom");
