@@ -32,9 +32,9 @@ import {
 // Filter Controls Component Props
 interface FilterControlsProps {
   token: string | null;
-  globalFilters: any;
+  globalFilters: GlobalFilters | null;
   setDashboardData: React.Dispatch<React.SetStateAction<DashboardWidgets | null>>;
-  setGlobalFilters: React.Dispatch<React.SetStateAction<any>>;
+  setGlobalFilters: React.Dispatch<React.SetStateAction<GlobalFilters | null>>;
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
   setError: React.Dispatch<React.SetStateAction<string | null>>;
 }
