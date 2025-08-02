@@ -189,6 +189,31 @@ const FilterControls: React.FC = () => {
 const Overview: React.FC = () => {
   const { user } = useSelector((state: RootState) => state.auth);
 
+  // Dashboard data state
+  const [dashboardData, setDashboardData] = useState<DashboardWidgets | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Fetch dashboard data on component mount
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      try {
+        setIsLoading(true);
+        setError(null);
+        const response: OverviewDashboardApiResponse = await analyticsAPI.getOverviewDashboard();
+        setDashboardData(response.data.widgets);
+      } catch (err) {
+        console.error('Failed to fetch dashboard data:', err);
+        setError(err instanceof Error ? err.message : 'Failed to load dashboard data');
+        // Keep dashboardData as null to use fallback data
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchDashboardData();
+  }, []);
+
   // Generate user initials if no avatar
   const getUserInitials = (firstName?: string, lastName?: string, username?: string) => {
     if (firstName && lastName) {
