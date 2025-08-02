@@ -342,7 +342,14 @@ const Overview: React.FC = () => {
             </ol>
           </nav>
         </div>
-        <div className="ms-auto">
+        <div className="ms-auto d-flex align-items-center gap-3">
+          {/* Data Source Indicator */}
+          <div className="d-flex align-items-center">
+            <span className={`badge ${dashboardData && !error ? 'bg-success' : 'bg-warning'} me-2`}>
+              <i className={`bx ${dashboardData && !error ? 'bx-check-circle' : 'bx-info-circle'} me-1`}></i>
+              {isLoading ? 'Loading...' : dashboardData && !error ? 'Live Data' : 'Fallback Data'}
+            </span>
+          </div>
           <FilterControls />
         </div>
       </div>
