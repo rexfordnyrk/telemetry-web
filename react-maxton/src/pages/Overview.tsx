@@ -222,12 +222,18 @@ const FilterControls: React.FC<FilterControlsProps> = ({
         onChange={(e) => setSelectedProgramme(e.target.value)}
         style={{ width: "160px" }}
       >
-        <option>All Programmes</option>
-        <option>Digital Literacy</option>
-        <option>Skills Training</option>
-        <option>Financial Education</option>
-        <option>Health Awareness</option>
-        <option>Youth Development</option>
+        {globalFilters?.availableProgrammes?.map((programme: string) => (
+          <option key={programme} value={programme}>{programme}</option>
+        )) || (
+          <>
+            <option>All Programmes</option>
+            <option>Digital Literacy</option>
+            <option>Skills Training</option>
+            <option>Financial Education</option>
+            <option>Health Awareness</option>
+            <option>Youth Development</option>
+          </>
+        )}
       </Form.Select>
 
       <button
