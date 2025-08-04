@@ -623,7 +623,7 @@ const Overview: React.FC = () => {
             series={getWidgetData('appSessionsSynced', fallbackData.appSessionsSynced).series}
             colors={getWidgetData('appSessionsSynced', fallbackData.appSessionsSynced).colors}
             gradientColors={getWidgetData('appSessionsSynced', fallbackData.appSessionsSynced).gradientColors}
-            iconImage={getWidgetData('appSessionsSynced', fallbackData.appSessionsSynced).iconImage}
+            icon="sync"
             iconBgClass={getWidgetData('appSessionsSynced', fallbackData.appSessionsSynced).iconBgClass}
             showDropdown={getWidgetData('appSessionsSynced', fallbackData.appSessionsSynced).showDropdown}
           />
