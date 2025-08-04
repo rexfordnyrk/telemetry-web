@@ -948,7 +948,7 @@ const DeviceDetails: React.FC = () => {
                     <tr key={session.id}>
                       <td>{formatTimestamp(session.screen_on_time_stamp)}</td>
                       <td>{formatTimestamp(session.screen_off_time_stamp)}</td>
-                      <td>{session.session_duration.formatted}</td>
+                      <td>{session.session_duration?.formatted || "N/A"}</td>
                       <td>
                         <span
                           className={`dash-lable mb-0 bg-${
