@@ -906,8 +906,8 @@ const DeviceDetails: React.FC = () => {
                       </td>
                       <td>{formatTimestamp(session.foreground_time_stamp)}</td>
                       <td>{formatTimestamp(session.background_time_stamp)}</td>
-                      <td>{session.session_duration.formatted}</td>
-                      <td>{session.network_usage.formatted}</td>
+                      <td>{session.session_duration?.formatted || "N/A"}</td>
+                      <td>{session.network_usage?.formatted || "N/A"}</td>
                     </tr>
                   ))}
                 </tbody>
