@@ -174,7 +174,10 @@ const FilterControls: React.FC<FilterControlsProps> = ({
             <option>Last Year</option>
           </>
         )}
-        <option>Custom</option>
+        {/* Add Custom option only if not already in API options */}
+        {!globalFilters?.availablePeriods?.includes("Custom") && (
+          <option>Custom</option>
+        )}
       </Form.Select>
 
       {showCustomDatePickers && (
