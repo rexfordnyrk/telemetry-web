@@ -458,6 +458,317 @@ const Overview: React.FC = () => {
       iconImage: "/assets/images/logo-icon.png",
       iconBgClass: "bg-warning bg-opacity-10 text-warning",
       showDropdown: false
+    },
+    mostVisitedApp: {
+      title: "Most Visited App",
+      value: "82.7K",
+      subtitle: "WhatsApp had 12.5% more monthly visits",
+      chartId: "bar-chart-1",
+      data: [4, 10, 12, 17, 25, 30, 40, 55, 68],
+      colors: ["#ff6a00"],
+      gradientColors: ["#7928ca"],
+      icon: "open_in_browser",
+      iconBgClass: "bg-warning bg-opacity-10 text-warning",
+      showDropdown: false
+    },
+    topDataConsumer: {
+      title: "Top Data Consumer",
+      value: "68.4 GB",
+      subtitle: "Instagram used 35% more data this month",
+      chartId: "line-chart-1",
+      data: [4, 25, 14, 34, 10, 39],
+      colors: ["#ee0979"],
+      gradientColors: ["#00f2fe"],
+      icon: "data_usage",
+      iconBgClass: "bg-danger bg-opacity-10 text-danger",
+      showDropdown: false
+    },
+    highestParticipantScreentime: {
+      title: "Highest Participant Screentime",
+      value: "124.5 hrs",
+      subtitle: "Sarah M. recorded highest usage this month",
+      changePercentage: "23.7%",
+      changeDirection: "down" as const,
+      chartData: [4, 10, 25, 12, 25, 18, 40, 22, 7],
+      chartColors: ["#ffc107"],
+      chartGradientColors: ["#fc185a"],
+      categories: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep"]
+    },
+    top5UsedApps: {
+      title: "Top 5 Used Apps",
+      totalRevenue: "654 hrs",
+      totalChange: "+15%",
+      totalChangeDirection: "up" as const,
+      subtitle: "total Usage this month",
+      platforms: [
+        {
+          name: "WhatsApp",
+          category: "Communication",
+          icon: "/assets/images/apps/17.png",
+          revenue: "145 hrs",
+          change: "+28.5%",
+          changeDirection: "up" as const
+        },
+        {
+          name: "Facebook",
+          category: "Social Media",
+          icon: "/assets/images/apps/03.png",
+          revenue: "132 hrs",
+          change: "-14.5%",
+          changeDirection: "down" as const
+        },
+        {
+          name: "Instagram",
+          category: "Social Media",
+          icon: "/assets/images/apps/19.png",
+          revenue: "118 hrs",
+          change: "+28.5%",
+          changeDirection: "up" as const
+        },
+        {
+          name: "YouTube",
+          category: "Entertainment",
+          icon: "/assets/images/apps/20.png",
+          revenue: "134 hrs",
+          change: "-43.5%",
+          changeDirection: "down" as const
+        },
+        {
+          name: "TikTok",
+          category: "Entertainment",
+          icon: "/assets/images/apps/twitter-circle.png",
+          revenue: "125 hrs",
+          change: "+24.7%",
+          changeDirection: "up" as const
+        }
+      ],
+      showDropdown: false
+    },
+    top5DataConsumerApps: {
+      title: "Top 5 Data Consumer Apps",
+      totalDataUsage: "89.2 GB",
+      totalChange: "+22%",
+      totalChangeDirection: "up" as const,
+      subtitle: "total Data consumed this month",
+      apps: [
+        {
+          name: "YouTube",
+          category: "Entertainment",
+          icon: "/assets/images/apps/20.png",
+          dataUsage: "28.5 GB",
+          change: "+31.2%",
+          changeDirection: "up" as const
+        },
+        {
+          name: "Instagram",
+          category: "Social Media",
+          icon: "/assets/images/apps/19.png",
+          dataUsage: "22.1 GB",
+          change: "+18.5%",
+          changeDirection: "up" as const
+        },
+        {
+          name: "TikTok",
+          category: "Entertainment",
+          icon: "/assets/images/apps/twitter-circle.png",
+          dataUsage: "15.8 GB",
+          change: "-12.3%",
+          changeDirection: "down" as const
+        },
+        {
+          name: "Netflix",
+          category: "Entertainment",
+          icon: "/assets/images/apps/netflix.png",
+          dataUsage: "12.4 GB",
+          change: "+45.7%",
+          changeDirection: "up" as const
+        },
+        {
+          name: "Spotify",
+          category: "Music & Audio",
+          icon: "/assets/images/apps/spotify.png",
+          dataUsage: "10.4 GB",
+          change: "+23.1%",
+          changeDirection: "up" as const
+        }
+      ],
+      showDropdown: false
+    },
+    deviceSyncStats: {
+      title: "Device Sync Stats",
+      stats: [
+        {
+          title: "Installed Apps",
+          value: "124",
+          percentage: "18%",
+          icon: "apps",
+          bgClass: "bg-grd-primary",
+          textClass: "text-success"
+        },
+        {
+          title: "App Sessions",
+          value: "3,245",
+          percentage: "25%",
+          icon: "play_circle",
+          bgClass: "bg-grd-success",
+          textClass: "text-success"
+        },
+        {
+          title: "Network Usage",
+          value: "656 GB",
+          percentage: "12%",
+          icon: "network_check",
+          bgClass: "bg-grd-branding",
+          textClass: "text-success"
+        },
+        {
+          title: "Screen Sessions",
+          value: "1,856",
+          percentage: "8%",
+          icon: "screen_rotation",
+          bgClass: "bg-grd-warning",
+          textClass: "text-danger"
+        },
+        {
+          title: "Usage Events",
+          value: "12,340",
+          percentage: "15%",
+          icon: "event",
+          bgClass: "bg-grd-info",
+          textClass: "text-success"
+        },
+        {
+          title: "Avg Sync Time",
+          value: "2.4s",
+          percentage: "5%",
+          icon: "sync",
+          bgClass: "bg-grd-danger",
+          textClass: "text-danger"
+        },
+        {
+          title: "Failed Syncs",
+          value: "23",
+          percentage: "2%",
+          icon: "sync_problem",
+          bgClass: "bg-grd-royal",
+          textClass: "text-danger"
+        }
+      ],
+      showDropdown: false
+    },
+    appVsBackgroundUsage: {
+      title: "App vs Background Usage",
+      centerTitle: "Total Data Usage",
+      centerValue: "656.8 GB",
+      series: [68, 32],
+      labels: ["Active Apps", "Background Usage"],
+      colors: ["#3494e6", "#ff6a00"],
+      gradientColors: ["#ec6ead", "#ee0979"],
+      devices: [
+        {
+          name: "Active Apps",
+          icon: "apps",
+          percentage: "68%",
+          iconColor: "text-primary"
+        },
+        {
+          name: "Background Usage",
+          icon: "cloud_sync",
+          percentage: "32%",
+          iconColor: "text-warning"
+        }
+      ],
+      showDropdown: false
+    },
+    beneficiaryActivity: {
+      title: "Beneficiary Activity Overview",
+      activities: [
+        {
+          participant: "Sarah Martinez",
+          mostUsedApp: "WhatsApp",
+          mostUsedAppScreentime: "4.2 hrs",
+          mostUsedAppIcon: "/assets/images/apps/17.png",
+          mostVisitedApp: "Instagram",
+          mostVisitedCount: "156 visits",
+          mostVisitedAppIcon: "/assets/images/apps/19.png",
+          dataUsageApp: "YouTube",
+          dataUsageAmount: "2.8 GB",
+          dataUsageAppIcon: "/assets/images/apps/20.png",
+          lastSyncedDate: "10 Jan, 2024",
+          lastSyncedTime: "2:30 PM"
+        },
+        {
+          participant: "Michael Johnson",
+          mostUsedApp: "Facebook",
+          mostUsedAppScreentime: "3.8 hrs",
+          mostUsedAppIcon: "/assets/images/apps/03.png",
+          mostVisitedApp: "WhatsApp",
+          mostVisitedCount: "142 visits",
+          mostVisitedAppIcon: "/assets/images/apps/17.png",
+          dataUsageApp: "Instagram",
+          dataUsageAmount: "2.1 GB",
+          dataUsageAppIcon: "/assets/images/apps/19.png",
+          lastSyncedDate: "09 Jan, 2024",
+          lastSyncedTime: "11:45 AM"
+        },
+        {
+          participant: "Emily Rodriguez",
+          mostUsedApp: "Instagram",
+          mostUsedAppScreentime: "5.1 hrs",
+          mostUsedAppIcon: "/assets/images/apps/19.png",
+          mostVisitedApp: "TikTok",
+          mostVisitedCount: "203 visits",
+          mostVisitedAppIcon: "/assets/images/apps/twitter-circle.png",
+          dataUsageApp: "Netflix",
+          dataUsageAmount: "3.4 GB",
+          dataUsageAppIcon: "/assets/images/apps/netflix.png",
+          lastSyncedDate: "10 Jan, 2024",
+          lastSyncedTime: "4:15 PM"
+        },
+        {
+          participant: "David Thompson",
+          mostUsedApp: "YouTube",
+          mostUsedAppScreentime: "6.3 hrs",
+          mostUsedAppIcon: "/assets/images/apps/20.png",
+          mostVisitedApp: "Facebook",
+          mostVisitedCount: "89 visits",
+          mostVisitedAppIcon: "/assets/images/apps/03.png",
+          dataUsageApp: "YouTube",
+          dataUsageAmount: "4.7 GB",
+          dataUsageAppIcon: "/assets/images/apps/20.png",
+          lastSyncedDate: "09 Jan, 2024",
+          lastSyncedTime: "7:20 PM"
+        },
+        {
+          participant: "Lisa Chen",
+          mostUsedApp: "TikTok",
+          mostUsedAppScreentime: "4.9 hrs",
+          mostUsedAppIcon: "/assets/images/apps/twitter-circle.png",
+          mostVisitedApp: "Instagram",
+          mostVisitedCount: "178 visits",
+          mostVisitedAppIcon: "/assets/images/apps/19.png",
+          dataUsageApp: "TikTok",
+          dataUsageAmount: "2.9 GB",
+          dataUsageAppIcon: "/assets/images/apps/twitter-circle.png",
+          lastSyncedDate: "10 Jan, 2024",
+          lastSyncedTime: "1:10 PM"
+        },
+        {
+          participant: "James Wilson",
+          mostUsedApp: "WhatsApp",
+          mostUsedAppScreentime: "3.2 hrs",
+          mostUsedAppIcon: "/assets/images/apps/17.png",
+          mostVisitedApp: "YouTube",
+          mostVisitedCount: "67 visits",
+          mostVisitedAppIcon: "/assets/images/apps/20.png",
+          dataUsageApp: "Spotify",
+          dataUsageAmount: "1.8 GB",
+          dataUsageAppIcon: "/assets/images/apps/spotify.png",
+          lastSyncedDate: "09 Jan, 2024",
+          lastSyncedTime: "9:35 AM"
+        }
+      ],
+      showDropdown: true
     }
   };
 
