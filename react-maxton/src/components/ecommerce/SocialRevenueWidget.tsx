@@ -121,7 +121,7 @@ const SocialRevenueWidget: React.FC<SocialRevenueWidgetProps> = ({
         </div>
         <div className="table-responsive">
           <div className="d-flex flex-column gap-4">
-            {revenueData.platforms.map((platform, index) => (
+            {revenueData.platforms?.map((platform, index) => (
               <div key={index} className="d-flex align-items-center gap-3">
                 <div className="social-icon d-flex align-items-center gap-3 flex-grow-1">
                   <img
