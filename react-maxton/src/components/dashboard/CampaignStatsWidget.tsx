@@ -114,7 +114,7 @@ const CampaignStatsWidget: React.FC<CampaignStatsWidgetProps> = ({
           )}
         </div>
         <ul className="list-group list-group-flush">
-          {campaignData.stats.map((stat, index) => (
+          {campaignData.stats?.map((stat, index) => (
             <li
               key={index}
               className="list-group-item px-0 bg-transparent"
