@@ -987,88 +987,91 @@ const Overview: React.FC = () => {
               })()}
             </Col>
           </Row>
-          <StatCard
-            data={{
-              title: "Highest Participant Screentime",
-              value: "124.5 hrs",
-              subtitle: "Sarah M. recorded highest usage this month",
-              changePercentage: "23.7%",
-              changeDirection: "down",
-              chartComponent: (
-                <SafeApexChart
-                  options={{
-                    series: [
-                      {
-                        name: "Total Accounts",
-                        data: [4, 10, 25, 12, 25, 18, 40, 22, 7],
-                      },
-                    ],
-                    chart: {
-                      height: 105,
-                      type: "area",
-                      sparkline: {
-                        enabled: true,
-                      },
-                      zoom: {
-                        enabled: false,
-                      },
-                    },
-                    dataLabels: {
-                      enabled: false,
-                    },
-                    stroke: {
-                      width: 3,
-                      curve: "smooth",
-                    },
-                    fill: {
-                      type: "gradient",
-                      gradient: {
-                        shade: "dark",
-                        gradientToColors: ["#fc185a"],
-                        shadeIntensity: 1,
-                        type: "vertical",
-                        opacityFrom: 0.8,
-                        opacityTo: 0.2,
-                      },
-                    },
-                    colors: ["#ffc107"],
-                    tooltip: {
-                      theme: "dark",
-                      fixed: {
-                        enabled: false,
-                      },
-                      x: {
-                        show: false,
-                      },
-                      y: {
-                        title: {
-                          formatter: function () {
-                            return "";
+          {(() => {
+            const highestParticipantData = getWidgetData('highestParticipantScreentime', fallbackData.highestParticipantScreentime);
+            return (
+              <StatCard
+                data={{
+                  title: highestParticipantData.title,
+                  value: highestParticipantData.value,
+                  subtitle: highestParticipantData.subtitle,
+                  changePercentage: highestParticipantData.changePercentage,
+                  changeDirection: highestParticipantData.changeDirection,
+                  chartComponent: (
+                    <SafeApexChart
+                      options={{
+                        series: [
+                          {
+                            name: "Total Accounts",
+                            data: highestParticipantData.chartData,
+                          },
+                        ],
+                        chart: {
+                          height: 105,
+                          type: "area",
+                          sparkline: {
+                            enabled: true,
+                          },
+                          zoom: {
+                            enabled: false,
                           },
                         },
-                      },
-                      marker: {
-                        show: false,
-                      },
-                    },
-                    xaxis: {
-                      categories: [
-                        "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep",
-                      ],
-                    },
-                  }}
-                  series={[
-                    {
-                      name: "Total Accounts",
-                      data: [4, 10, 25, 12, 25, 18, 40, 22, 7],
-                    },
-                  ]}
-                  type="area"
-                  height={105}
-                />
-              ),
-            }}
-          />
+                        dataLabels: {
+                          enabled: false,
+                        },
+                        stroke: {
+                          width: 3,
+                          curve: "smooth",
+                        },
+                        fill: {
+                          type: "gradient",
+                          gradient: {
+                            shade: "dark",
+                            gradientToColors: highestParticipantData.chartGradientColors,
+                            shadeIntensity: 1,
+                            type: "vertical",
+                            opacityFrom: 0.8,
+                            opacityTo: 0.2,
+                          },
+                        },
+                        colors: highestParticipantData.chartColors,
+                        tooltip: {
+                          theme: "dark",
+                          fixed: {
+                            enabled: false,
+                          },
+                          x: {
+                            show: false,
+                          },
+                          y: {
+                            title: {
+                              formatter: function () {
+                                return "";
+                              },
+                            },
+                          },
+                          marker: {
+                            show: false,
+                          },
+                        },
+                        xaxis: {
+                          categories: highestParticipantData.categories,
+                        },
+                      }}
+                      series={[
+                        {
+                          name: "Total Accounts",
+                          data: highestParticipantData.chartData,
+                        },
+                      ]}
+                      type="area"
+                      height={105}
+                    />
+                  ),
+                }}
+              />
+            );
+          })()}
         </Col>
 
         {/* Row 3: Top 5 Used Apps + Top 5 Data Consumers + Device Sync Stats */}
