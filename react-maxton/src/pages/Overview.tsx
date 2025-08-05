@@ -1107,70 +1107,18 @@ const Overview: React.FC = () => {
         </Col>
 
         <Col xl={6} xxl={4} className="d-flex align-items-stretch">
-          <CampaignStatsWidget
-            data={{
-              title: "Device Sync Stats",
-              stats: [
-                {
-                  title: "Installed Apps",
-                  value: "124",
-                  percentage: "18%",
-                  icon: "apps",
-                  bgClass: "bg-grd-primary",
-                  textClass: "text-success",
-                },
-                {
-                  title: "App Sessions",
-                  value: "3,245",
-                  percentage: "25%",
-                  icon: "play_circle",
-                  bgClass: "bg-grd-success",
-                  textClass: "text-success",
-                },
-                {
-                  title: "Network Usage",
-                  value: "656 GB",
-                  percentage: "12%",
-                  icon: "network_check",
-                  bgClass: "bg-grd-branding",
-                  textClass: "text-success",
-                },
-                {
-                  title: "Screen Sessions",
-                  value: "1,856",
-                  percentage: "8%",
-                  icon: "screen_rotation",
-                  bgClass: "bg-grd-warning",
-                  textClass: "text-danger",
-                },
-                {
-                  title: "Usage Events",
-                  value: "12,340",
-                  percentage: "15%",
-                  icon: "event",
-                  bgClass: "bg-grd-info",
-                  textClass: "text-success",
-                },
-                {
-                  title: "Avg Sync Time",
-                  value: "2.4s",
-                  percentage: "5%",
-                  icon: "sync",
-                  bgClass: "bg-grd-danger",
-                  textClass: "text-danger",
-                },
-                {
-                  title: "Failed Syncs",
-                  value: "23",
-                  percentage: "2%",
-                  icon: "sync_problem",
-                  bgClass: "bg-grd-royal",
-                  textClass: "text-danger",
-                },
-              ],
-            }}
-            showDropdown={false}
-          />
+          {(() => {
+            const deviceSyncStatsData = getWidgetData('deviceSyncStats', fallbackData.deviceSyncStats);
+            return (
+              <CampaignStatsWidget
+                data={{
+                  title: deviceSyncStatsData.title,
+                  stats: deviceSyncStatsData.stats,
+                }}
+                showDropdown={deviceSyncStatsData.showDropdown}
+              />
+            );
+          })()}
         </Col>
 
         {/* Row 4: App vs Background Usage + Beneficiary Activity Overview */}
