@@ -1095,7 +1095,15 @@ const Overview: React.FC = () => {
         </Col>
 
         <Col xl={6} xxl={4} className="d-flex align-items-stretch">
-          <DataConsumerAppsWidget showDropdown={false} />
+          {(() => {
+            const top5DataConsumerData = getWidgetData('top5DataConsumerApps', fallbackData.top5DataConsumerApps);
+            return (
+              <DataConsumerAppsWidget
+                data={top5DataConsumerData}
+                showDropdown={top5DataConsumerData.showDropdown}
+              />
+            );
+          })()}
         </Col>
 
         <Col xl={6} xxl={4} className="d-flex align-items-stretch">
