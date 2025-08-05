@@ -146,7 +146,7 @@ const DeviceTypeWidget: React.FC<DeviceTypeWidgetProps> = ({
             />
           </div>
           <div className="d-flex flex-column gap-3">
-            {deviceData.devices.map((device, index) => (
+            {deviceData.devices?.map((device, index) => (
               <div key={index} className="d-flex align-items-center justify-content-between">
                 <p className="mb-0 d-flex align-items-center gap-2 w-25">
                   <span className={`material-icons-outlined fs-6 ${device.iconColor}`}>
