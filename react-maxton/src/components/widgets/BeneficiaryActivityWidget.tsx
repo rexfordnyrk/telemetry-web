@@ -161,7 +161,7 @@ const BeneficiaryActivityWidget: React.FC<BeneficiaryActivityWidgetProps> = ({
               </tr>
             </thead>
             <tbody>
-              {activityData.activities.map((activity, index) => (
+              {activityData.activities?.map((activity, index) => (
                 <tr key={index}>
                   <td>
                     <div>
