@@ -121,7 +121,7 @@ const DataConsumerAppsWidget: React.FC<DataConsumerAppsWidgetProps> = ({
         </div>
         <div className="table-responsive">
           <div className="d-flex flex-column gap-4">
-            {dataConsumerData.apps.map((app, index) => (
+            {dataConsumerData.apps?.map((app, index) => (
               <div key={index} className="d-flex align-items-center gap-3">
                 <div className="social-icon d-flex align-items-center gap-3 flex-grow-1">
                   <img
