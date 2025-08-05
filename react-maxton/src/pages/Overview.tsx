@@ -1144,7 +1144,15 @@ const Overview: React.FC = () => {
         </Col>
 
         <Col xxl={8} lg={12} className="d-flex align-items-stretch">
-          <BeneficiaryActivityWidget showDropdown={true} />
+          {(() => {
+            const beneficiaryActivityData = getWidgetData('beneficiaryActivity', fallbackData.beneficiaryActivity);
+            return (
+              <BeneficiaryActivityWidget
+                data={beneficiaryActivityData}
+                showDropdown={beneficiaryActivityData.showDropdown}
+              />
+            );
+          })()}
         </Col>
 
 
