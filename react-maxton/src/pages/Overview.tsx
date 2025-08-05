@@ -1076,58 +1076,22 @@ const Overview: React.FC = () => {
 
         {/* Row 3: Top 5 Used Apps + Top 5 Data Consumers + Device Sync Stats */}
         <Col xl={6} xxl={4} className="d-flex align-items-stretch">
-          <SocialRevenueWidget
-            data={{
-              title: "Top 5 Used Apps",
-              totalRevenue: "654 hrs",
-              totalChange: "+15%",
-              totalChangeDirection: "up",
-              subtitle: "total Usage this month",
-              platforms: [
-                {
-                  name: "WhatsApp",
-                  category: "Communication",
-                  icon: "/assets/images/apps/17.png",
-                  revenue: "145 hrs",
-                  change: "+28.5%",
-                  changeDirection: "up",
-                },
-                {
-                  name: "Facebook",
-                  category: "Social Media",
-                  icon: "/assets/images/apps/03.png",
-                  revenue: "132 hrs",
-                  change: "-14.5%",
-                  changeDirection: "down",
-                },
-                {
-                  name: "Instagram",
-                  category: "Social Media",
-                  icon: "/assets/images/apps/19.png",
-                  revenue: "118 hrs",
-                  change: "+28.5%",
-                  changeDirection: "up",
-                },
-                {
-                  name: "YouTube",
-                  category: "Entertainment",
-                  icon: "/assets/images/apps/20.png",
-                  revenue: "134 hrs",
-                  change: "-43.5%",
-                  changeDirection: "down",
-                },
-                {
-                  name: "TikTok",
-                  category: "Entertainment",
-                  icon: "/assets/images/apps/twitter-circle.png",
-                  revenue: "125 hrs",
-                  change: "+24.7%",
-                  changeDirection: "up",
-                },
-              ],
-            }}
-            showDropdown={false}
-          />
+          {(() => {
+            const top5UsedAppsData = getWidgetData('top5UsedApps', fallbackData.top5UsedApps);
+            return (
+              <SocialRevenueWidget
+                data={{
+                  title: top5UsedAppsData.title,
+                  totalRevenue: top5UsedAppsData.totalRevenue,
+                  totalChange: top5UsedAppsData.totalChange,
+                  totalChangeDirection: top5UsedAppsData.totalChangeDirection,
+                  subtitle: top5UsedAppsData.subtitle,
+                  platforms: top5UsedAppsData.platforms,
+                }}
+                showDropdown={top5UsedAppsData.showDropdown}
+              />
+            );
+          })()}
         </Col>
 
         <Col xl={6} xxl={4} className="d-flex align-items-stretch">
