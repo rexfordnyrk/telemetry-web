@@ -968,18 +968,23 @@ const Overview: React.FC = () => {
               })()}
             </Col>
             <Col md={6} className="d-flex align-items-stretch">
-              <IconLineChartWidget
-                title="Top Data Consumer"
-                value="68.4 GB"
-                subtitle="Instagram used 35% more data this month"
-                chartId="line-chart-1"
-                data={[4, 25, 14, 34, 10, 39]}
-                colors={["#ee0979"]}
-                gradientColors={["#00f2fe"]}
-                icon="data_usage"
-                iconBgClass="bg-danger bg-opacity-10 text-danger"
-                showDropdown={false}
-              />
+              {(() => {
+                const topDataConsumerData = getWidgetData('topDataConsumer', fallbackData.topDataConsumer);
+                return (
+                  <IconLineChartWidget
+                    title={topDataConsumerData.title}
+                    value={topDataConsumerData.value}
+                    subtitle={topDataConsumerData.subtitle}
+                    chartId={topDataConsumerData.chartId}
+                    data={topDataConsumerData.data}
+                    colors={topDataConsumerData.colors}
+                    gradientColors={topDataConsumerData.gradientColors}
+                    icon={topDataConsumerData.icon}
+                    iconBgClass={topDataConsumerData.iconBgClass}
+                    showDropdown={topDataConsumerData.showDropdown}
+                  />
+                );
+              })()}
             </Col>
           </Row>
           <StatCard
