@@ -1123,32 +1123,24 @@ const Overview: React.FC = () => {
 
         {/* Row 4: App vs Background Usage + Beneficiary Activity Overview */}
         <Col xl={6} xxl={4} className="d-flex align-items-stretch">
-          <DeviceTypeWidget
-            data={{
-              title: "App vs Background Usage",
-              centerTitle: "Total Data Usage",
-              centerValue: "656.8 GB",
-              series: [68, 32],
-              labels: ["Active Apps", "Background Usage"],
-              colors: ["#3494e6", "#ff6a00"],
-              gradientColors: ["#ec6ead", "#ee0979"],
-              devices: [
-                {
-                  name: "Active Apps",
-                  icon: "apps",
-                  percentage: "68%",
-                  iconColor: "text-primary",
-                },
-                {
-                  name: "Background Usage",
-                  icon: "cloud_sync",
-                  percentage: "32%",
-                  iconColor: "text-warning",
-                },
-              ],
-            }}
-            showDropdown={false}
-          />
+          {(() => {
+            const appVsBackgroundData = getWidgetData('appVsBackgroundUsage', fallbackData.appVsBackgroundUsage);
+            return (
+              <DeviceTypeWidget
+                data={{
+                  title: appVsBackgroundData.title,
+                  centerTitle: appVsBackgroundData.centerTitle,
+                  centerValue: appVsBackgroundData.centerValue,
+                  series: appVsBackgroundData.series,
+                  labels: appVsBackgroundData.labels,
+                  colors: appVsBackgroundData.colors,
+                  gradientColors: appVsBackgroundData.gradientColors,
+                  devices: appVsBackgroundData.devices,
+                }}
+                showDropdown={appVsBackgroundData.showDropdown}
+              />
+            );
+          })()}
         </Col>
 
         <Col xxl={8} lg={12} className="d-flex align-items-stretch">
