@@ -949,18 +949,23 @@ const Overview: React.FC = () => {
         <Col xxl={4}>
           <Row className="g-3 mb-3">
             <Col md={6} className="d-flex align-items-stretch">
-              <IconBarChartWidget
-                title="Most Visited App"
-                value="82.7K"
-                subtitle="WhatsApp had 12.5% more monthly visits"
-                chartId="bar-chart-1"
-                data={[4, 10, 12, 17, 25, 30, 40, 55, 68]}
-                colors={["#ff6a00"]}
-                gradientColors={["#7928ca"]}
-                icon="open_in_browser"
-                iconBgClass="bg-warning bg-opacity-10 text-warning"
-                showDropdown={false}
-              />
+              {(() => {
+                const mostVisitedData = getWidgetData('mostVisitedApp', fallbackData.mostVisitedApp);
+                return (
+                  <IconBarChartWidget
+                    title={mostVisitedData.title}
+                    value={mostVisitedData.value}
+                    subtitle={mostVisitedData.subtitle}
+                    chartId={mostVisitedData.chartId}
+                    data={mostVisitedData.data}
+                    colors={mostVisitedData.colors}
+                    gradientColors={mostVisitedData.gradientColors}
+                    icon={mostVisitedData.icon}
+                    iconBgClass={mostVisitedData.iconBgClass}
+                    showDropdown={mostVisitedData.showDropdown}
+                  />
+                );
+              })()}
             </Col>
             <Col md={6} className="d-flex align-items-stretch">
               <IconLineChartWidget
