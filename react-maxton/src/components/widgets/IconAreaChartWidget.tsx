@@ -144,9 +144,9 @@ const IconAreaChartWidget: React.FC<IconAreaChartWidgetProps> = ({
               <h5 className="mb-0">{value}</h5>
               <p className="mb-0" style={{ fontSize: "12px" }}>{title}</p>
             </div>
-            {iconImage ? (
+            {iconImage && iconImage.trim() !== "" ? (
               <img
-                src={iconImage || "/assets/images/apps/01.png"}
+                src={iconImage}
                 alt={title}
                 className="rounded"
                 width="32"
