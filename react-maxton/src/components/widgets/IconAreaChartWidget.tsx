@@ -146,7 +146,7 @@ const IconAreaChartWidget: React.FC<IconAreaChartWidgetProps> = ({
             </div>
             {iconImage ? (
               <img
-                src={iconImage}
+                src={iconImage || "/assets/images/apps/01.png"}
                 alt={title}
                 className="rounded"
                 width="32"
