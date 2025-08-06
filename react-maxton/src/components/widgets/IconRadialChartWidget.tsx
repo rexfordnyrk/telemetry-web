@@ -164,7 +164,7 @@ const IconRadialChartWidget: React.FC<IconRadialChartWidgetProps> = ({
               <h5 className="mb-0">{value}</h5>
               <p className="mb-0" style={{ fontSize: "12px" }}>{title}</p>
             </div>
-            {iconImage ? (
+            {iconImage && iconImage.trim() !== "" ? (
               <img
                 src={iconImage}
                 alt={title}
