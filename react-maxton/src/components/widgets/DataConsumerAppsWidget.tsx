@@ -125,7 +125,7 @@ const DataConsumerAppsWidget: React.FC<DataConsumerAppsWidgetProps> = ({
               <div key={index} className="d-flex align-items-center gap-3">
                 <div className="social-icon d-flex align-items-center gap-3 flex-grow-1">
                   <img
-                    src={app.icon}
+                    src={app.icon || "/assets/images/apps/01.png"}
                     width="40"
                     alt={app.name}
                   />
