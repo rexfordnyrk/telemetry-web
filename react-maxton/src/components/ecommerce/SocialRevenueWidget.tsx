@@ -125,7 +125,7 @@ const SocialRevenueWidget: React.FC<SocialRevenueWidgetProps> = ({
               <div key={index} className="d-flex align-items-center gap-3">
                 <div className="social-icon d-flex align-items-center gap-3 flex-grow-1">
                   <img
-                    src={platform.icon}
+                    src={platform.icon || "/assets/images/apps/01.png"}
                     width="40"
                     alt={platform.name}
                   />
