@@ -142,7 +142,7 @@ const IconLineChartWidget: React.FC<IconLineChartWidgetProps> = ({
               <h5 className="mb-0">{value}</h5>
               <p className="mb-0">{title}</p>
             </div>
-            {iconImage ? (
+            {iconImage && iconImage.trim() !== "" ? (
               <img
                 src={iconImage}
                 alt={title}
