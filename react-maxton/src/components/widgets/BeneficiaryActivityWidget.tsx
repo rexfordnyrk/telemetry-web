@@ -172,7 +172,7 @@ const BeneficiaryActivityWidget: React.FC<BeneficiaryActivityWidgetProps> = ({
                     <div className="d-flex align-items-center flex-row gap-2">
                       <div>
                         <img
-                          src={activity.mostUsedAppIcon}
+                          src={activity.mostUsedAppIcon || "/assets/images/apps/01.png"}
                           width="24"
                           alt={activity.mostUsedApp}
                         />
