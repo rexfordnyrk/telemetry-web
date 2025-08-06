@@ -187,7 +187,7 @@ const BeneficiaryActivityWidget: React.FC<BeneficiaryActivityWidgetProps> = ({
                     <div className="d-flex align-items-center flex-row gap-2">
                       <div>
                         <img
-                          src={activity.mostVisitedAppIcon}
+                          src={activity.mostVisitedAppIcon || "/assets/images/apps/01.png"}
                           width="24"
                           alt={activity.mostVisitedApp}
                         />
