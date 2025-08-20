@@ -11,7 +11,7 @@ const Devices: React.FC = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   // Redux state for devices
-  const { devices, loading, error, deleting, deleteError } = useAppSelector((state) => state.devices);
+  const { devices, loading, error } = useAppSelector((state) => state.devices);
 
   const [showModal, setShowModal] = useState(false);
   const [modalAction, setModalAction] = useState<"disable" | "delete">("disable");
@@ -24,18 +24,9 @@ const Devices: React.FC = () => {
     dispatch(fetchDevices());
   }, [dispatch]);
 
-  // Handle delete error by showing alert
-  useEffect(() => {
-    if (deleteError) {
-      dispatch(
-        addAlert({
-          type: "danger",
-          title: "Delete Failed",
-          message: deleteError,
-        })
-      );
-    }
-  }, [deleteError, dispatch]);
+
+
+
 
   // Filter devices based on active filters
   const filteredDevices = useMemo(() => {
@@ -105,7 +96,6 @@ const Devices: React.FC = () => {
 
   // Handle action button clicks
   const handleActionClick = (device: any, action: "disable" | "delete") => {
-    console.log('Opening modal for:', action, device);
     setTargetDevice(device);
     setModalAction(action);
     setShowModal(true);
@@ -113,15 +103,11 @@ const Devices: React.FC = () => {
 
   // Handle confirm action (delete/disable)
   const handleConfirmAction = async () => {
-    console.log('handleConfirmAction called with action:', modalAction);
-    
     if (modalAction === "delete") {
       try {
-        console.log('Starting delete operation for device:', targetDevice?.id);
         // Make the DELETE API call to remove the device
         await dispatch(deleteDevice(targetDevice.id)).unwrap();
         
-        console.log('Delete operation successful');
         // Show success message
         dispatch(
           addAlert({
@@ -131,16 +117,22 @@ const Devices: React.FC = () => {
           })
         );
         
-        // Close the modal
+        // Close modal and reset state
         setShowModal(false);
         setTargetDevice(null);
+        
       } catch (error) {
-        // Error message will be shown via deleteError state
-        console.error('Delete operation failed:', error);
+        // Show error message
+        dispatch(
+          addAlert({
+            type: "danger",
+            title: "Delete Failed",
+            message: `Failed to delete device: ${error}`,
+          })
+        );
         // Keep modal open to show error
       }
     } else {
-      console.log('Handling disable/enable operation');
       const newStatus = !targetDevice?.is_active ? "activated" : "deactivated";
       dispatch(
         addAlert({
@@ -338,21 +330,14 @@ const Devices: React.FC = () => {
                             className="btn btn-sm p-1"
                             title="Delete Device"
                             onClick={() => handleActionClick(device, "delete")}
-                            disabled={deleting && targetDevice?.id === device.id}
                             style={{
                               border: "none",
                               background: "transparent",
                             }}
                           >
-                            {deleting && targetDevice?.id === device.id ? (
-                              <div className="spinner-border spinner-border-sm text-danger" role="status">
-                                <span className="visually-hidden">Deleting...</span>
-                              </div>
-                            ) : (
-                              <i className="material-icons-outlined text-danger">
-                                delete
-                              </i>
-                            )}
+                            <i className="material-icons-outlined text-danger">
+                              delete
+                            </i>
                           </button>
                         </div>
                       </td>
@@ -413,15 +398,9 @@ const Devices: React.FC = () => {
                   type="button"
                   className="btn-close"
                   onClick={() => {
-                    console.log('Close button clicked');
-                    // Prevent dismissal during delete operations
-                    if (modalAction === "delete" && deleting) {
-                      return;
-                    }
                     setShowModal(false);
                     setTargetDevice(null);
                   }}
-                  disabled={modalAction === "delete" && deleting}
                 ></button>
               </div>
               <div className="card-body p-4">
@@ -435,48 +414,24 @@ const Devices: React.FC = () => {
                   )}
                 </p>
                 
-                {/* Display delete error if any */}
-                {modalAction === "delete" && deleteError && (
-                  <div className="alert alert-danger mt-3" role="alert">
-                    <strong>Error:</strong> {deleteError}
-                  </div>
-                )}
+
                 <div className="d-md-flex d-grid align-items-center gap-3 mt-3">
                   <button
                     type="button"
                     className="btn btn-grd-royal px-4 rounded-0"
                     onClick={() => {
-                      console.log('Cancel button clicked');
-                      // Prevent dismissal during delete operations
-                      if (modalAction === "delete" && deleting) {
-                        return;
-                      }
                       setShowModal(false);
                       setTargetDevice(null);
                     }}
-                    disabled={modalAction === "delete" && deleting}
                   >
                     Cancel
                   </button>
                   <button
                     type="button"
                     className={`btn ${modalAction === "delete" ? "btn-grd-danger" : "btn-grd-warning"} px-4 rounded-0`}
-                    onClick={() => {
-                      console.log('Action button clicked:', modalAction);
-                      handleConfirmAction();
-                    }}
-                    disabled={modalAction === "delete" && deleting}
+                    onClick={handleConfirmAction}
                   >
-                    {modalAction === "delete" && deleting ? (
-                      <>
-                        <div className="spinner-border spinner-border-sm me-2" role="status">
-                          <span className="visually-hidden">Deleting...</span>
-                        </div>
-                        Deleting...
-                      </>
-                    ) : (
-                      <>{modalAction === "delete" ? "Delete" : "Retire"} Device</>
-                    )}
+                    {modalAction === "delete" ? "Delete" : "Retire"} Device
                   </button>
                 </div>
               </div>
