@@ -157,16 +157,6 @@ const Devices: React.FC = () => {
               <i className="material-icons-outlined me-1">filter_list</i>
               Filters
             </button>
-            <button
-              type="button"
-              className="btn btn-grd-primary px-4"
-              onClick={() => {
-                /* TODO: Implement new device modal */
-              }}
-              disabled={loading}
-            >
-              + | New Device
-            </button>
           </div>
         </div>
 
