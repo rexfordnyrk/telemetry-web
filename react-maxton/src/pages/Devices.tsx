@@ -19,10 +19,13 @@ const Devices: React.FC = () => {
   const [showFilterModal, setShowFilterModal] = useState(false);
   const [activeFilters, setActiveFilters] = useState<{ [key: string]: any }>({});
 
+
   // Fetch devices from API on mount
   useEffect(() => {
     dispatch(fetchDevices());
   }, [dispatch]);
+
+
 
 
 
@@ -69,7 +72,7 @@ const Devices: React.FC = () => {
   }, [devices]);
 
   // Initialize DataTable using custom hook
-  useDataTable("devices-datatable", memoizedDevices);
+  const { destroyDataTable, tableInstance, isInitialized } = useDataTable("devices-datatable", memoizedDevices);
 
   // Helper to get status badge
   const getStatusElement = (status: string) => {
@@ -120,6 +123,30 @@ const Devices: React.FC = () => {
         // Close modal and reset state
         setShowModal(false);
         setTargetDevice(null);
+        
+        // Remove the row from DataTable directly
+        if (tableInstance && isInitialized) {
+          try {
+            console.log('Attempting to remove row for device:', targetDevice.id);
+            // Find the row with the deleted device ID and remove it
+            const row = tableInstance.row(`[data-device-id="${targetDevice.id}"]`);
+            console.log('Found row:', row.length > 0 ? 'Yes' : 'No');
+            if (row.length > 0) {
+              row.remove().draw();
+              console.log('Row removed successfully');
+            } else {
+              console.warn('Row not found, falling back to table refresh');
+              destroyDataTable();
+            }
+          } catch (error) {
+            console.warn('Error removing row from DataTable:', error);
+            // Fallback: force table refresh
+            destroyDataTable();
+          }
+        } else {
+          console.log('DataTable not ready, falling back to table refresh');
+          destroyDataTable();
+        }
         
       } catch (error) {
         // Show error message
@@ -222,6 +249,7 @@ const Devices: React.FC = () => {
             <div className="table-responsive">
               <table
                 id="devices-datatable"
+
                 className="table table-striped table-bordered"
                 style={{ width: "100%" }}
               >
@@ -240,7 +268,7 @@ const Devices: React.FC = () => {
                 </thead>
                 <tbody>
                   {memoizedDevices.map((device) => (
-                    <tr key={device.id}>
+                    <tr key={device.id} data-device-id={device.id}>
                       <td>
                         <a
                           href="#"

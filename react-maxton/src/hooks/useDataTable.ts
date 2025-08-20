@@ -123,5 +123,6 @@ export const useDataTable = (
   return {
     isInitialized: isInitializedRef.current,
     destroyDataTable,
+    tableInstance: tableInstanceRef.current,
   };
 };
