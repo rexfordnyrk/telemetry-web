@@ -138,9 +138,11 @@ interface DeviceState {
   deviceDetails: DeviceDetails | null;
   loading: boolean;
   detailsLoading: boolean;
+  updating: boolean;
   deleting: boolean;
   error: string | null;
   detailsError: string | null;
+  updateError: string | null;
   deleteError: string | null;
 }
 
@@ -149,9 +151,11 @@ const initialState: DeviceState = {
   deviceDetails: null,
   loading: false,
   detailsLoading: false,
+  updating: false,
   deleting: false,
   error: null,
   detailsError: null,
+  updateError: null,
   deleteError: null,
 };
 
@@ -254,6 +258,42 @@ export const deleteDevice = createAsyncThunk(
   }
 );
 
+/**
+ * Async thunk to update device information via the API.
+ * This request is authenticated using the JWT token from the auth state.
+ * After successful update, the device details are refreshed in the local state.
+ */
+export const updateDevice = createAsyncThunk(
+  'devices/updateDevice',
+  async ({ deviceId, deviceData }: { deviceId: string; deviceData: any }, { getState, rejectWithValue, dispatch }) => {
+    try {
+      const state = getState() as RootState;
+      const token = state.auth.token;
+      if (!token) {
+        throw new Error('No authentication token available');
+      }
+      
+      const url = buildApiUrl(`/api/v1/devices/${deviceId}`);
+      const response = await fetch(url, {
+        method: 'PUT',
+        headers: getAuthHeaders(token),
+        body: JSON.stringify(deviceData),
+      });
+      
+      if (!response.ok) {
+        const errorMessage = await handleApiError(response, 'Failed to update device', dispatch);
+        throw new Error(errorMessage);
+      }
+      
+      // Return the updated device data
+      const updatedDevice = await response.json();
+      return updatedDevice;
+    } catch (error) {
+      return rejectWithValue(error instanceof Error ? error.message : 'Failed to update device');
+    }
+  }
+);
+
 // Create the devices slice
 const deviceSlice = createSlice({
   name: 'devices',
@@ -306,6 +346,22 @@ const deviceSlice = createSlice({
       .addCase(deleteDevice.rejected, (state, action) => {
         state.deleting = false;
         state.deleteError = action.payload as string;
+      })
+      // Handle updateDevice
+      .addCase(updateDevice.pending, (state) => {
+        state.updating = true;
+        state.updateError = null;
+      })
+      .addCase(updateDevice.fulfilled, (state, action) => {
+        state.updating = false;
+        // If the updated device is the currently displayed details, refresh them
+        if (state.deviceDetails && state.deviceDetails.id === action.payload.id) {
+          state.deviceDetails = action.payload;
+        }
+      })
+      .addCase(updateDevice.rejected, (state, action) => {
+        state.updating = false;
+        state.updateError = action.payload as string;
       });
   },
 });

@@ -15,7 +15,7 @@ import MainLayout from "../layouts/MainLayout";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { addAlert } from "../store/slices/alertSlice";
 import { useDataTable } from "../hooks/useDataTable";
-import { fetchDeviceDetails, clearDeviceDetails } from "../store/slices/deviceSlice";
+import { fetchDeviceDetails, clearDeviceDetails, updateDevice } from "../store/slices/deviceSlice";
 
 const DeviceDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -26,6 +26,8 @@ const DeviceDetails: React.FC = () => {
   const deviceDetails = useAppSelector((state) => state.devices.deviceDetails);
   const detailsLoading = useAppSelector((state) => state.devices.detailsLoading);
   const detailsError = useAppSelector((state) => state.devices.detailsError);
+  const updating = useAppSelector((state) => state.devices.updating);
+  const updateError = useAppSelector((state) => state.devices.updateError);
 
   // Use deviceDetails for all summary and tab/table data
   const device = deviceDetails;
@@ -66,6 +68,7 @@ const DeviceDetails: React.FC = () => {
     is_active: false,
     imei: "",
     serial_number: "",
+    mac_address: "",
     fingerprint: "",
   });
 
@@ -81,6 +84,7 @@ const DeviceDetails: React.FC = () => {
         is_active: device.is_active,
         imei: (device as any)?.imei || "",
         serial_number: (device as any)?.serial_number || "",
+        mac_address: device.mac_address || "",
         fingerprint: (device as any)?.fingerprint || "",
       });
     }
@@ -159,18 +163,64 @@ const DeviceDetails: React.FC = () => {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // TODO: Implement updateDevice action
-    dispatch(
-      addAlert({
-        type: "success",
-        title: "Device Updated",
-        message: "Device information has been updated successfully.",
-      }),
-    );
-    setIsEditing(false);
+    if (!id || !device) {
+      dispatch(
+        addAlert({
+          type: "danger",
+          title: "Error",
+          message: "Device ID or device data not available.",
+        }),
+      );
+      return;
+    }
+
+    try {
+      // Prepare the data for the API call
+      const updateData = {
+        id: id,
+        imei: formData.imei,
+        serial_number: formData.serial_number,
+        mac_address: formData.mac_address,
+        device_name: formData.device_name,
+        android_version: formData.android_version,
+        app_version: formData.app_version,
+        organization: formData.organization,
+        programme: formData.programme,
+        is_active: formData.is_active,
+        fingerprint: formData.fingerprint,
+      };
+
+      // Make the API call to update the device
+      await dispatch(updateDevice({ deviceId: id, deviceData: updateData })).unwrap();
+
+      // Show success message
+      dispatch(
+        addAlert({
+          type: "success",
+          title: "Device Updated",
+          message: "Device information has been updated successfully.",
+        }),
+      );
+
+      // Exit editing mode
+      setIsEditing(false);
+
+      // Refresh device details to show updated data
+      dispatch(fetchDeviceDetails(id));
+
+    } catch (error) {
+      // Show error message
+      dispatch(
+        addAlert({
+          type: "danger",
+          title: "Update Failed",
+          message: error instanceof Error ? error.message : "Failed to update device. Please try again.",
+        }),
+      );
+    }
   };
 
   const handleCancel = () => {
@@ -184,6 +234,7 @@ const DeviceDetails: React.FC = () => {
         is_active: device.is_active,
         imei: (device as any)?.imei || "",
         serial_number: (device as any)?.serial_number || "",
+        mac_address: device.mac_address || "",
         fingerprint: (device as any)?.fingerprint || "",
       });
     }
@@ -217,6 +268,7 @@ const DeviceDetails: React.FC = () => {
                   <button
                     className="btn btn-outline-primary btn-sm"
                     onClick={() => setIsEditing(true)}
+                    disabled={updating}
                   >
                     <i className="bx bx-edit me-2"></i>Edit Device
                   </button>
@@ -226,12 +278,23 @@ const DeviceDetails: React.FC = () => {
                       type="submit"
                       form="device-form"
                       className="btn btn-primary btn-sm"
+                      disabled={updating}
                     >
-                      <i className="bx bx-save me-2"></i>Save
+                      {updating ? (
+                        <>
+                          <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                          Saving...
+                        </>
+                      ) : (
+                        <>
+                          <i className="bx bx-save me-2"></i>Save
+                        </>
+                      )}
                     </button>
                     <button
                       className="btn btn-outline-secondary btn-sm"
                       onClick={handleCancel}
+                      disabled={updating}
                     >
                       Cancel
                     </button>
@@ -265,8 +328,10 @@ const DeviceDetails: React.FC = () => {
                   className="form-control"
                   id="mac_address"
                   name="mac_address"
-                  value={device.mac_address || ""}
-                  disabled
+                  value={formData.mac_address}
+                  onChange={handleInputChange}
+                  disabled={!isEditing}
+                  placeholder="Enter MAC address"
                 />
               </div>
 
@@ -395,6 +460,14 @@ const DeviceDetails: React.FC = () => {
                 </div>
               </div>
             </form>
+
+            {/* Display update errors if any */}
+            {updateError && isEditing && (
+              <div className="alert alert-danger mt-3" role="alert">
+                <i className="bx bx-error-circle me-2"></i>
+                <strong>Update Error:</strong> {updateError}
+              </div>
+            )}
           </div>
         </div>
 
