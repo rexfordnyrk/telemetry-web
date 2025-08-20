@@ -138,8 +138,10 @@ interface DeviceState {
   deviceDetails: DeviceDetails | null;
   loading: boolean;
   detailsLoading: boolean;
+  deleting: boolean;
   error: string | null;
   detailsError: string | null;
+  deleteError: string | null;
 }
 
 const initialState: DeviceState = {
@@ -147,8 +149,10 @@ const initialState: DeviceState = {
   deviceDetails: null,
   loading: false,
   detailsLoading: false,
+  deleting: false,
   error: null,
   detailsError: null,
+  deleteError: null,
 };
 
 /**
@@ -219,6 +223,37 @@ export const fetchDeviceDetails = createAsyncThunk(
   }
 );
 
+/**
+ * Async thunk to delete a device from the API.
+ * This request is authenticated using the JWT token from the auth state.
+ * After successful deletion, the device is removed from the local state.
+ */
+export const deleteDevice = createAsyncThunk(
+  'devices/deleteDevice',
+  async (deviceId: string, { getState, rejectWithValue, dispatch }) => {
+    try {
+      const state = getState() as RootState;
+      const token = state.auth.token;
+      if (!token) {
+        throw new Error('No authentication token available');
+      }
+      const url = buildApiUrl(`/api/v1/devices/${deviceId}`);
+      const response = await fetch(url, {
+        method: 'DELETE',
+        headers: getAuthHeaders(token),
+      });
+      if (!response.ok) {
+        const errorMessage = await handleApiError(response, 'Failed to delete device', dispatch);
+        throw new Error(errorMessage);
+      }
+      // Return the device ID so we can remove it from the store
+      return deviceId;
+    } catch (error) {
+      return rejectWithValue(error instanceof Error ? error.message : 'Failed to delete device');
+    }
+  }
+);
+
 // Create the devices slice
 const deviceSlice = createSlice({
   name: 'devices',
@@ -257,6 +292,20 @@ const deviceSlice = createSlice({
       .addCase(fetchDeviceDetails.rejected, (state, action) => {
         state.detailsLoading = false;
         state.detailsError = action.payload as string;
+      })
+      // Handle deleteDevice
+      .addCase(deleteDevice.pending, (state) => {
+        state.deleting = true;
+        state.deleteError = null;
+      })
+      .addCase(deleteDevice.fulfilled, (state, action) => {
+        state.deleting = false;
+        // Remove the deleted device from the devices array
+        state.devices = state.devices.filter(device => device.id !== action.payload);
+      })
+      .addCase(deleteDevice.rejected, (state, action) => {
+        state.deleting = false;
+        state.deleteError = action.payload as string;
       });
   },
 });
