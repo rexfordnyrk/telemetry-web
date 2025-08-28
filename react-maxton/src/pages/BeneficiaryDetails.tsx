@@ -1,8 +1,9 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import MainLayout from "../layouts/MainLayout";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { addAlert } from "../store/slices/alertSlice";
+import { fetchBeneficiaryById, clearSingleError } from "../store/slices/beneficiarySlice";
 import { usePermissions } from "../hooks/usePermissions";
 
 const BeneficiaryDetails: React.FC = () => {
@@ -11,14 +12,14 @@ const BeneficiaryDetails: React.FC = () => {
   const dispatch = useAppDispatch();
   const permissions = usePermissions();
 
-  // Get beneficiaries from Redux store (populated from API)
-  const beneficiaries = useAppSelector((state) => state.beneficiaries.beneficiaries);
+  // Get beneficiaries and loading state from Redux store with defensive defaults
+  const { beneficiaries = [], loadingSingle = false, singleError = null } = useAppSelector((state) => state.beneficiaries || {});
 
   // Find beneficiary by ID from the store
-  const beneficiary = useMemo(
-    () => beneficiaries.find((b) => b.id === id),
-    [beneficiaries, id],
-  );
+  const beneficiary = useMemo(() => {
+    if (!Array.isArray(beneficiaries) || !id) return undefined;
+    return beneficiaries.find((b) => b && b.id === id);
+  }, [beneficiaries, id]);
 
   // Form state for editing
   const [isEditing, setIsEditing] = useState(false);
@@ -32,8 +33,22 @@ const BeneficiaryDetails: React.FC = () => {
     is_active: beneficiary?.is_active || false,
   });
 
+  // Fetch beneficiary data when component mounts or ID changes
+  useEffect(() => {
+    if (id) {
+      try {
+        // Clear any previous errors
+        dispatch(clearSingleError());
+        // Fetch the beneficiary (will use store data if available, otherwise API)
+        dispatch(fetchBeneficiaryById(id));
+      } catch (error) {
+        console.error('Error dispatching fetchBeneficiaryById:', error);
+      }
+    }
+  }, [id, dispatch]);
+
   // Update form data when beneficiary changes
-  React.useEffect(() => {
+  useEffect(() => {
     if (beneficiary) {
       setFormData({
         name: beneficiary.name,
@@ -47,14 +62,67 @@ const BeneficiaryDetails: React.FC = () => {
     }
   }, [beneficiary]);
 
-  if (!beneficiary) {
+  // Show loading state while fetching beneficiary
+  if (loadingSingle && !beneficiary) {
     return (
       <MainLayout>
-        <div className="page-content">
-          <div className="alert alert-danger">Beneficiary not found</div>
+        <div className="main-content">
+          <div className="d-flex justify-content-center align-items-center" style={{ minHeight: '400px' }}>
+            <div className="text-center">
+              <div className="spinner-border text-primary" role="status">
+                <span className="visually-hidden">Loading...</span>
+              </div>
+              <p className="mt-3 text-muted">Loading beneficiary details...</p>
+            </div>
+          </div>
         </div>
       </MainLayout>
     );
+  }
+
+  // Show error state if beneficiary fetch failed
+  if (singleError && !beneficiary) {
+    return (
+      <MainLayout>
+        <div className="main-content">
+          <div className="alert alert-danger">
+            <h5>Error Loading Beneficiary</h5>
+            <p>{singleError}</p>
+            <button
+              className="btn btn-primary"
+              onClick={() => navigate('/beneficiary-management/beneficiaries')}
+            >
+              Back to Beneficiaries
+            </button>
+          </div>
+        </div>
+      </MainLayout>
+    );
+  }
+
+  // Show not found if no loading and no error but still no beneficiary
+  if (!loadingSingle && !singleError && !beneficiary) {
+    return (
+      <MainLayout>
+        <div className="main-content">
+          <div className="alert alert-warning">
+            <h5>Beneficiary Not Found</h5>
+            <p>The beneficiary you're looking for could not be found.</p>
+            <button
+              className="btn btn-primary"
+              onClick={() => navigate('/beneficiary-management/beneficiaries')}
+            >
+              Back to Beneficiaries
+            </button>
+          </div>
+        </div>
+      </MainLayout>
+    );
+  }
+
+  // Don't render the main content if we don't have a beneficiary yet
+  if (!beneficiary) {
+    return null;
   }
 
   const handleInputChange = (

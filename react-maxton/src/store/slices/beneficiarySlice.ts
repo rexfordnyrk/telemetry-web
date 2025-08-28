@@ -44,13 +44,66 @@ interface BeneficiaryState {
   beneficiaries: Beneficiary[];
   loading: boolean;
   error: string | null;
+  // Single beneficiary state for details page
+  loadingSingle: boolean;
+  singleError: string | null;
 }
 
 const initialState: BeneficiaryState = {
   beneficiaries: [],
   loading: false,
   error: null,
+  loadingSingle: false,
+  singleError: null,
 };
+
+/**
+ * Async thunk to fetch a single beneficiary by ID from the API.
+ * This will check the store first, and if not found, fetch from API.
+ */
+export const fetchBeneficiaryById = createAsyncThunk(
+  'beneficiaries/fetchBeneficiaryById',
+  async (id: string, { getState, rejectWithValue, dispatch }) => {
+    try {
+      const state = getState() as RootState;
+      const token = state.auth.token;
+
+      if (!token) {
+        throw new Error('No authentication token available');
+      }
+
+      // Check if beneficiary already exists in store
+      const beneficiariesState = state.beneficiaries;
+      if (beneficiariesState && beneficiariesState.beneficiaries && Array.isArray(beneficiariesState.beneficiaries)) {
+        const existingBeneficiary = beneficiariesState.beneficiaries.find(b => b && b.id === id);
+        if (existingBeneficiary) {
+          return existingBeneficiary;
+        }
+      }
+
+      // Fetch from API if not in store
+      const url = buildApiUrl(`/api/v1/beneficiaries/${id}`);
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: getAuthHeaders(token),
+      });
+
+      if (!response.ok) {
+        if (response.status === 404) {
+          throw new Error('Beneficiary not found');
+        }
+        const errorMessage = await handleApiError(response, 'Failed to fetch beneficiary', dispatch);
+        throw new Error(errorMessage);
+      }
+
+      const data = await response.json();
+      // Return the beneficiary data (API returns object with 'data' property)
+      return data.data || data;
+    } catch (error) {
+      return rejectWithValue(error instanceof Error ? error.message : 'Failed to fetch beneficiary');
+    }
+  }
+);
 
 /**
  * Async thunk to fetch beneficiaries from the API.
@@ -93,9 +146,15 @@ export const fetchBeneficiaries = createAsyncThunk(
 const beneficiarySlice = createSlice({
   name: 'beneficiaries',
   initialState,
-  reducers: {},
+  reducers: {
+    // Clear single beneficiary error
+    clearSingleError: (state) => {
+      state.singleError = null;
+    },
+  },
   extraReducers: (builder) => {
     builder
+      // Handle fetching all beneficiaries
       .addCase(fetchBeneficiaries.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -107,8 +166,28 @@ const beneficiarySlice = createSlice({
       .addCase(fetchBeneficiaries.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
+      })
+      // Handle fetching single beneficiary
+      .addCase(fetchBeneficiaryById.pending, (state) => {
+        state.loadingSingle = true;
+        state.singleError = null;
+      })
+      .addCase(fetchBeneficiaryById.fulfilled, (state, action) => {
+        state.loadingSingle = false;
+        // Add or update the beneficiary in the list if not already present
+        const existingIndex = state.beneficiaries.findIndex(b => b.id === action.payload.id);
+        if (existingIndex >= 0) {
+          state.beneficiaries[existingIndex] = action.payload;
+        } else {
+          state.beneficiaries.push(action.payload);
+        }
+      })
+      .addCase(fetchBeneficiaryById.rejected, (state, action) => {
+        state.loadingSingle = false;
+        state.singleError = action.payload as string;
       });
   },
 });
 
-export default beneficiarySlice.reducer; 
+export const { clearSingleError } = beneficiarySlice.actions;
+export default beneficiarySlice.reducer;
