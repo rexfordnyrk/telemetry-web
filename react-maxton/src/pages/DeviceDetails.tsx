@@ -1,21 +1,15 @@
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
   Nav,
   Tab,
-  Table,
-  Badge,
-  Card,
-  Row,
-  Col,
-  Form,
-  Button,
 } from "react-bootstrap";
 import MainLayout from "../layouts/MainLayout";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { addAlert } from "../store/slices/alertSlice";
 import { useDataTable } from "../hooks/useDataTable";
 import { fetchDeviceDetails, clearDeviceDetails, updateDevice } from "../store/slices/deviceSlice";
+import LocationHistoryMap from "../components/LocationHistoryMap";
 
 const DeviceDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -955,19 +949,10 @@ const DeviceDetails: React.FC = () => {
   const renderLocationHistoryTab = () => (
     <div className="row">
       <div className="col-12">
-        <Card className="rounded-4 text-center">
-          <Card.Body className="p-5">
-            <i className="material-icons-outlined display-1 text-muted mb-3">
-              location_on
-            </i>
-            <h4 className="text-muted">Location History</h4>
-            <p className="text-muted">
-              Location tracking will be implemented in future updates. This will
-              show device location history with date-time filtering
-              capabilities.
-            </p>
-          </Card.Body>
-        </Card>
+        <LocationHistoryMap 
+          deviceId={id || ''} 
+          deviceName={device?.device_name || 'Unknown Device'} 
+        />
       </div>
     </div>
   );

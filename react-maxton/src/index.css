@@ -29,3 +29,48 @@ code {
 }
 
 /* Let Perfect Scrollbar handle sidebar scrolling */
+
+/* Leaflet Map Styles */
+.location-map {
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+.location-popup {
+  min-width: 200px;
+}
+
+.location-popup h6 {
+  margin-bottom: 0.5rem;
+  color: #333;
+  font-weight: 600;
+}
+
+.location-popup p {
+  margin-bottom: 0.25rem;
+  font-size: 0.875rem;
+}
+
+.location-history-map .leaflet-container {
+  font-family: "Noto Sans", sans-serif;
+}
+
+.location-history-map .leaflet-popup-content-wrapper {
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.location-history-map .leaflet-popup-tip {
+  background: white;
+}
+
+/* Custom marker styles */
+.location-history-map .leaflet-marker-icon {
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+}
+
+/* Route line styling */
+.location-history-map .leaflet-interactive {
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
