@@ -42,6 +42,7 @@ import RolesPermissions from "./pages/RolesPermissions";
 import Devices from "./pages/Devices";
 import DeviceDetails from "./pages/DeviceDetails";
 import DeviceTracking from "./pages/DeviceTracking";
+import DeviceAssignments from "./pages/DeviceAssignments";
 import Beneficiaries from "./pages/Beneficiaries";
 import BeneficiaryDetails from "./pages/BeneficiaryDetails";
 import NotFound from "./pages/NotFound";
@@ -334,6 +335,16 @@ function App() {
                   element={
                     <ProtectedRoute>
                       <DeviceTracking />
+                    </ProtectedRoute>
+                  }
+                />
+                
+                {/* Device assignments page */}
+                <Route
+                  path="/device-management/device-assignments"
+                  element={
+                    <ProtectedRoute>
+                      <DeviceAssignments />
                     </ProtectedRoute>
                   }
                 />

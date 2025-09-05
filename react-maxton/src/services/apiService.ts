@@ -464,6 +464,29 @@ export const devicesAPI = {
 };
 
 /**
+ * Device assignment API methods
+ * These methods handle device assignment operations
+ */
+export const deviceAssignmentsAPI = {
+  getAssignments: () => ApiService.get(API_CONFIG.ENDPOINTS.DEVICE_ASSIGNMENTS.LIST),
+  getAssignment: (id: string) => ApiService.get(API_CONFIG.ENDPOINTS.DEVICE_ASSIGNMENTS.UPDATE(id)),
+  createAssignment: (assignmentData: any) => ApiService.post(API_CONFIG.ENDPOINTS.DEVICE_ASSIGNMENTS.CREATE, assignmentData),
+  updateAssignment: (id: string, assignmentData: any) => ApiService.put(API_CONFIG.ENDPOINTS.DEVICE_ASSIGNMENTS.UPDATE(id), assignmentData),
+  deleteAssignment: (id: string) => ApiService.delete(API_CONFIG.ENDPOINTS.DEVICE_ASSIGNMENTS.DELETE(id)),
+  assignDevice: (deviceId: string, beneficiaryId: string, notes?: string) => 
+    ApiService.post(API_CONFIG.ENDPOINTS.DEVICE_ASSIGNMENTS.ASSIGN, {
+      device_id: deviceId,
+      beneficiary_id: beneficiaryId,
+      notes: notes || ''
+    }),
+  unassignDevice: (deviceId: string, notes?: string) => 
+    ApiService.post(API_CONFIG.ENDPOINTS.DEVICE_ASSIGNMENTS.UNASSIGN, {
+      device_id: deviceId,
+      notes: notes || ''
+    }),
+};
+
+/**
  * Analytics API methods
  * These methods handle data analytics and reporting
  */

@@ -4,6 +4,7 @@ import alertReducer from "./slices/alertSlice";
 import authReducer from "./slices/authSlice";
 import beneficiaryReducer from "./slices/beneficiarySlice";
 import deviceReducer from "./slices/deviceSlice";
+import deviceAssignmentReducer from "./slices/deviceAssignmentSlice";
 
 export const store = configureStore({
   reducer: {
@@ -12,6 +13,7 @@ export const store = configureStore({
     auth: authReducer,
     beneficiaries: beneficiaryReducer,
     devices: deviceReducer,
+    deviceAssignments: deviceAssignmentReducer,
   },
 });
 

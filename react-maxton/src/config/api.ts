@@ -51,6 +51,16 @@ export const API_CONFIG = {
       DELETE: (id: string) => `/api/v1/devices/${id}`,           // Delete specific device
     },
     
+    // Device assignment endpoints
+    DEVICE_ASSIGNMENTS: {
+      LIST: '/api/v1/device-assignments',    // Get all device assignments
+      CREATE: '/api/v1/device-assignments',  // Create new device assignment
+      UPDATE: (id: string) => `/api/v1/device-assignments/${id}`, // Update specific assignment
+      DELETE: (id: string) => `/api/v1/device-assignments/${id}`, // Delete specific assignment
+      ASSIGN: '/api/v1/device-assignments/assign', // Assign device to beneficiary
+      UNASSIGN: '/api/v1/device-assignments/unassign', // Unassign device from beneficiary
+    },
+    
     // Analytics endpoints for data visualization
     ANALYTICS: {
       OVERVIEW: '/api/v1/analytics/dashboard/overview',                                  // Get overview dashboard data

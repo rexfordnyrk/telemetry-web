@@ -322,7 +322,7 @@ const Sidebar: React.FC = () => {
           <img src="assets/images/logo-icon.png" className="logo-img" alt="" />
         </div>
         <div className="logo-name flex-grow-1">
-          <h5 className="mb-0">Maxton</h5>
+          <h5 className="mb-0">DARE Telemetry</h5>
         </div>
         <div className="sidebar-close" onClick={handleSidebarClose}>
           <span className="material-icons-outlined">close</span>
