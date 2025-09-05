@@ -28,6 +28,8 @@ export interface NavigationItem {
   requiredAllPermissions?: string[]; // User needs all of these permissions
   requiredRoles?: string[];          // User needs any of these roles
   requiredAllRoles?: string[];       // User needs all of these roles
+  // Environment-based visibility
+  devOnly?: boolean;                 // If true, only show in development mode
 }
 
 // User types

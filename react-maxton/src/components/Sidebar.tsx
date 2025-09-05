@@ -5,6 +5,7 @@ import { useLayout } from "../context/LayoutContext";
 import { NavigationItem } from "../types";
 import { navigationData } from "../utils/navigationData";
 import { usePermissions } from "../hooks/usePermissions";
+import { isProduction } from "../utils/environment";
 import LogoutButton from "./LogoutButton";
 
 // Declare global libraries
@@ -26,6 +27,11 @@ const hasPermissionToSeeItem = (
   item: NavigationItem,
   permissions: ReturnType<typeof usePermissions>
 ): boolean => {
+  // Check if item is dev-only and we're in production
+  if (item.devOnly && isProduction()) {
+    return false;
+  }
+
   // If no permission requirements, show the item
   if (!item.requiredPermissions && 
       !item.requiredAllPermissions && 

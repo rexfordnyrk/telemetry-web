@@ -17,12 +17,14 @@ export const navigationData: NavigationItem[] = [
         title: "Analysis",
         path: "/dashboard/analysis",
         icon: "arrow_right",
+        devOnly: true, // Only show in development mode
       },
       {
         id: "dashboard-ecommerce",
         title: "eCommerce",
         path: "/dashboard/ecommerce",
         icon: "arrow_right",
+        devOnly: true, // Only show in development mode
       },
     ],
   },
@@ -30,6 +32,7 @@ export const navigationData: NavigationItem[] = [
     id: "widgets",
     title: "Widgets",
     icon: "widgets",
+    devOnly: true, // Only show in development mode
     children: [
       {
         id: "widgets-data",
@@ -141,6 +144,7 @@ export const navigationData: NavigationItem[] = [
     id: "authentication",
     title: "Authentication",
     icon: "lock",
+    devOnly: true, // Only show in development mode
     children: [
       {
         id: "auth-basic",
