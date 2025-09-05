@@ -67,7 +67,6 @@ const LocationHistoryMap: React.FC<LocationHistoryMapProps> = ({ deviceId, devic
   
   // State for location data and filters
   const [locationData, setLocationData] = useState<LocationPoint[]>([]);
-  const [selectedTimeRange, setSelectedTimeRange] = useState<string>('24h');
   const [pointLimit, setPointLimit] = useState<number>(20);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -128,15 +127,6 @@ const LocationHistoryMap: React.FC<LocationHistoryMapProps> = ({ deviceId, devic
   useEffect(() => {
     fetchLocationHistory();
   }, [fetchLocationHistory]);
-
-  // Handle time range selection
-  const handleTimeRangeChange = (range: string) => {
-    setSelectedTimeRange(range);
-    
-    // Trigger a new API call with the selected time range
-    // Note: The current API doesn't support time filtering, but this is ready for future implementation
-    fetchLocationHistory();
-  };
 
   // Handle point limit change
   const handlePointLimitChange = (limit: number) => {
@@ -217,23 +207,7 @@ const LocationHistoryMap: React.FC<LocationHistoryMapProps> = ({ deviceId, devic
       <Card className="mb-4">
         <Card.Body>
           <Row className="align-items-center">
-            <Col md={3}>
-              <Form.Group>
-                <Form.Label>Time Range</Form.Label>
-                <Form.Select 
-                  value={selectedTimeRange}
-                  onChange={(e) => handleTimeRangeChange(e.target.value)}
-                >
-                  <option value="1h">Last Hour</option>
-                  <option value="6h">Last 6 Hours</option>
-                  <option value="24h">Last 24 Hours</option>
-                  <option value="7d">Last 7 Days</option>
-                  <option value="30d">Last 30 Days</option>
-                </Form.Select>
-              </Form.Group>
-            </Col>
-            
-            <Col md={3}>
+            <Col md={4}>
               <Form.Group>
                 <Form.Label>Point Limit</Form.Label>
                 <Form.Select 
@@ -250,8 +224,8 @@ const LocationHistoryMap: React.FC<LocationHistoryMapProps> = ({ deviceId, devic
               </Form.Group>
             </Col>
             
-            <Col md={3}>
-              <div className="text-end">
+            <Col md={4}>
+              <div className="text-center">
                 <Badge bg="info" className="me-2">
                   {locationData.length} Points
                 </Badge>
@@ -261,7 +235,7 @@ const LocationHistoryMap: React.FC<LocationHistoryMapProps> = ({ deviceId, devic
               </div>
             </Col>
             
-            <Col md={3}>
+            <Col md={4}>
               <div className="text-end">
                 <Button 
                   variant="outline-primary" 
