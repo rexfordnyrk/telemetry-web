@@ -59,6 +59,14 @@ export const API_CONFIG = {
       DEVICE_USAGE: (deviceId: string, period: string) => `/api/v1/analytics/device/${deviceId}/usage/${period}`,     // Get specific device usage
       BENEFICIARY_USAGE: (beneficiaryId: string, period: string) => `/api/v1/analytics/beneficiary/${beneficiaryId}/usage/${period}`, // Get beneficiary usage
     },
+    
+    // Location analytics endpoints
+    LOCATION_ANALYTICS: {
+      DEVICE_HISTORY: (deviceId: string, limit?: number) => {
+        const baseUrl = `/api/v1/location-analytics/devices/${deviceId}/history`;
+        return limit ? `${baseUrl}?limit=${limit}` : baseUrl;
+      },
+    },
   },
 };
 

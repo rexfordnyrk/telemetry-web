@@ -380,12 +380,63 @@ export const authAPI = {
  * User management API methods
  * These methods handle CRUD operations for users
  */
-export const usersAPI = {
-  getUsers: () => ApiService.get(API_CONFIG.ENDPOINTS.USERS.LIST),
-  getUser: (id: string) => ApiService.get(API_CONFIG.ENDPOINTS.USERS.UPDATE(id)),
-  createUser: (userData: any) => ApiService.post(API_CONFIG.ENDPOINTS.USERS.CREATE, userData),
-  updateUser: (id: string, userData: any) => ApiService.put(API_CONFIG.ENDPOINTS.USERS.UPDATE(id), userData),
-  deleteUser: (id: string) => ApiService.delete(API_CONFIG.ENDPOINTS.USERS.DELETE(id)),
+export const userAPI = {
+  /**
+   * Get all users
+   * 
+   * @returns Promise that resolves to list of users
+   */
+  getUsers: () => {
+    return ApiService.get(API_CONFIG.ENDPOINTS.USERS.LIST);
+  },
+  
+  /**
+   * Create a new user
+   * 
+   * @param userData - User data to create
+   * @returns Promise that resolves to created user
+   */
+  createUser: (userData: any) => {
+    return ApiService.post(API_CONFIG.ENDPOINTS.USERS.CREATE, userData);
+  },
+  
+  /**
+   * Update an existing user
+   * 
+   * @param id - User ID to update
+   * @param userData - Updated user data
+   * @returns Promise that resolves to updated user
+   */
+  updateUser: (id: string, userData: any) => {
+    return ApiService.put(API_CONFIG.ENDPOINTS.USERS.UPDATE(id), userData);
+  },
+  
+  /**
+   * Delete a user
+   * 
+   * @param id - User ID to delete
+   * @returns Promise that resolves when deletion is complete
+   */
+  deleteUser: (id: string) => {
+    return ApiService.delete(API_CONFIG.ENDPOINTS.USERS.DELETE(id));
+  },
+};
+
+/**
+ * Location analytics API methods
+ * These methods handle location-related data retrieval
+ */
+export const locationAnalyticsAPI = {
+  /**
+   * Get device location history
+   * 
+   * @param deviceId - Device ID to get location history for
+   * @param limit - Optional limit for number of records (default: 20)
+   * @returns Promise that resolves to location history data
+   */
+  getDeviceLocationHistory: (deviceId: string, limit: number = 20) => {
+    return ApiService.get(API_CONFIG.ENDPOINTS.LOCATION_ANALYTICS.DEVICE_HISTORY(deviceId, limit));
+  },
 };
 
 /**

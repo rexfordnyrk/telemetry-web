@@ -1,9 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, Polyline, useMap } from 'react-leaflet';
 import { Icon, LatLngExpression } from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { Card, Row, Col, Form, Badge } from 'react-bootstrap';
+import { Card, Row, Col, Form, Badge, Alert, Spinner } from 'react-bootstrap';
 import { format } from 'date-fns';
+import { useAppSelector } from '../store/hooks';
+import { buildApiUrl, getAuthHeaders } from '../config/api';
 
 // Fix for default markers in react-leaflet
 delete (Icon.Default.prototype as any)._getIconUrl;
@@ -13,17 +15,33 @@ Icon.Default.mergeOptions({
   shadowUrl: require('leaflet/dist/images/marker-shadow.png'),
 });
 
-// Interface for location data points
+// Interface for API response
+interface LocationHistoryResponse {
+  success: boolean;
+  message: string;
+  device_id: string;
+  data: LocationPoint[];
+  count: number;
+}
+
+// Interface for location data points (matches API response)
 interface LocationPoint {
-  id: string;
+  id: number;
+  device_id: string;
   latitude: number;
   longitude: number;
+  accuracy: number;
+  altitude: number;
+  speed: number;
+  direction: number;
   timestamp: string;
-  accuracy?: number;
-  speed?: number;
-  altitude?: number;
-  battery_level?: number;
-  network_type?: string;
+  country: string;
+  administrative_area: string;
+  locality: string;
+  sub_locality: string;
+  street: string;
+  postal_code: string;
+  display_name: string;
 }
 
 // Interface for component props
@@ -44,68 +62,79 @@ const MapUpdater: React.FC<{ center: [number, number]; zoom: number }> = ({ cent
 };
 
 const LocationHistoryMap: React.FC<LocationHistoryMapProps> = ({ deviceId, deviceName }) => {
+  // Get authentication token from Redux store
+  const token = useAppSelector((state) => state.auth.token);
+  
   // State for location data and filters
   const [locationData, setLocationData] = useState<LocationPoint[]>([]);
   const [selectedTimeRange, setSelectedTimeRange] = useState<string>('24h');
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
   
   // Default center (can be updated based on actual device location)
   const [mapCenter, setMapCenter] = useState<[number, number]>([0, 0]);
   const [mapZoom, setMapZoom] = useState<number>(2);
 
-  // Initialize with mock data and set map center
-  useEffect(() => {
-    // Mock location data for demonstration
-    // In a real application, this would come from an API call
-    const mockLocationData: LocationPoint[] = [
-      {
-        id: '1',
-        latitude: 40.7128,
-        longitude: -74.0060,
-        timestamp: '2024-01-15T10:00:00Z',
-        accuracy: 10,
-        speed: 25,
-        altitude: 100,
-        battery_level: 85,
-        network_type: '4G'
-      },
-      {
-        id: '2',
-        latitude: 40.7140,
-        longitude: -74.0080,
-        timestamp: '2024-01-15T10:15:00Z',
-        accuracy: 15,
-        speed: 30,
-        altitude: 105,
-        battery_level: 83,
-        network_type: '4G'
-      },
-      {
-        id: '3',
-        latitude: 40.7160,
-        longitude: -74.0100,
-        timestamp: '2024-01-15T10:30:00Z',
-        accuracy: 12,
-        speed: 0,
-        altitude: 110,
-        battery_level: 80,
-        network_type: '4G'
-      }
-    ];
-
-    if (mockLocationData.length > 0) {
-      setLocationData(mockLocationData);
-      setMapCenter([mockLocationData[0].latitude, mockLocationData[0].longitude]);
-      setMapZoom(13);
+  // Fetch location history data from API
+  const fetchLocationHistory = useCallback(async () => {
+    if (!deviceId || !token) {
+      console.log('LocationHistoryMap: Missing deviceId or token', { deviceId, token: !!token });
+      return;
     }
-  }, []);
+    
+    setLoading(true);
+    setError(null);
+    
+    try {
+      const url = buildApiUrl(`/api/v1/location-analytics/devices/${deviceId}/history?limit=20`);
+      const headers = getAuthHeaders(token);
+      console.log('LocationHistoryMap: Making API request to:', url);
+      console.log('LocationHistoryMap: Using token:', token.substring(0, 20) + '...');
+      console.log('LocationHistoryMap: Headers:', headers);
+      
+      const response = await fetch(url, {
+        method: 'GET',
+        headers,
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || `HTTP ${response.status}: ${response.statusText}`);
+      }
+      
+      const data: LocationHistoryResponse = await response.json();
+      
+      if (data.success && data.data) {
+        setLocationData(data.data);
+        
+        // Set map center to first location point if available
+        if (data.data.length > 0) {
+          setMapCenter([data.data[0].latitude, data.data[0].longitude]);
+          setMapZoom(13);
+        }
+      } else {
+        setError('Failed to fetch location history data');
+      }
+    } catch (err) {
+      console.error('Error fetching location history:', err);
+      setError(err instanceof Error ? err.message : 'Failed to fetch location history');
+    } finally {
+      setLoading(false);
+    }
+  }, [deviceId, token]);
+
+  // Fetch data on component mount and when deviceId changes
+  useEffect(() => {
+    fetchLocationHistory();
+  }, [fetchLocationHistory]);
 
   // Handle time range selection
   const handleTimeRangeChange = (range: string) => {
     setSelectedTimeRange(range);
     
-    // In a real application, this would trigger an API call to fetch location data
-    // based on the selected time range
-    console.log('Time range changed to:', range);
+    // Trigger a new API call with the selected time range
+    // Note: The current API doesn't support time filtering, but this is ready for future implementation
+    fetchLocationHistory();
   };
 
   // Generate polyline coordinates for the route
@@ -113,6 +142,67 @@ const LocationHistoryMap: React.FC<LocationHistoryMapProps> = ({ deviceId, devic
     point.latitude,
     point.longitude
   ]);
+
+  // Show loading state
+  if (loading) {
+    return (
+      <div className="location-history-map">
+        <Card className="text-center">
+          <Card.Body className="p-5">
+            <Spinner animation="border" variant="primary" className="mb-3" />
+            <h5>Loading Location History...</h5>
+            <p className="text-muted">Fetching device location data</p>
+          </Card.Body>
+        </Card>
+      </div>
+    );
+  }
+
+  // Show error state
+  if (error) {
+    return (
+      <div className="location-history-map">
+        <Alert variant="danger" className="mb-4">
+          <Alert.Heading>Error Loading Location History</Alert.Heading>
+          <p>{error}</p>
+          <hr />
+          <div className="d-flex justify-content-end">
+            <button 
+              className="btn btn-outline-danger" 
+              onClick={fetchLocationHistory}
+            >
+              Try Again
+            </button>
+          </div>
+        </Alert>
+      </div>
+    );
+  }
+
+  // Show no data state
+  if (locationData.length === 0) {
+    return (
+      <div className="location-history-map">
+        <Card className="text-center">
+          <Card.Body className="p-5">
+            <i className="material-icons-outlined display-1 text-muted mb-3">
+              location_off
+            </i>
+            <h4 className="text-muted">No Location Data</h4>
+            <p className="text-muted">
+              No location history found for this device. Location data will appear here once the device starts reporting its position.
+            </p>
+            <button 
+              className="btn btn-outline-primary" 
+              onClick={fetchLocationHistory}
+            >
+              Refresh
+            </button>
+          </Card.Body>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="location-history-map">
@@ -195,11 +285,14 @@ const LocationHistoryMap: React.FC<LocationHistoryMapProps> = ({ deviceId, devic
                       <h6>Location Point #{index + 1}</h6>
                       <p><strong>Time:</strong> {format(new Date(point.timestamp), 'MMM dd, yyyy HH:mm:ss')}</p>
                       <p><strong>Coordinates:</strong> {point.latitude.toFixed(6)}, {point.longitude.toFixed(6)}</p>
-                      {point.accuracy && <p><strong>Accuracy:</strong> {point.accuracy}m</p>}
-                      {point.speed !== undefined && <p><strong>Speed:</strong> {point.speed} km/h</p>}
-                      {point.altitude && <p><strong>Altitude:</strong> {point.altitude}m</p>}
-                      {point.battery_level && <p><strong>Battery:</strong> {point.battery_level}%</p>}
-                      {point.network_type && <p><strong>Network:</strong> {point.network_type}</p>}
+                      <p><strong>Accuracy:</strong> {point.accuracy}m</p>
+                      <p><strong>Speed:</strong> {point.speed} km/h</p>
+                      <p><strong>Altitude:</strong> {point.altitude}m</p>
+                      <p><strong>Direction:</strong> {point.direction}°</p>
+                      <p><strong>Location:</strong> {point.display_name}</p>
+                      <p><strong>Country:</strong> {point.country}</p>
+                      <p><strong>Region:</strong> {point.administrative_area}</p>
+                      <p><strong>City:</strong> {point.locality}</p>
                     </div>
                   </Popup>
                 </Marker>
@@ -225,8 +318,8 @@ const LocationHistoryMap: React.FC<LocationHistoryMapProps> = ({ deviceId, devic
                   <th>Accuracy</th>
                   <th>Speed</th>
                   <th>Altitude</th>
-                  <th>Battery</th>
-                  <th>Network</th>
+                  <th>Direction</th>
+                  <th>Location</th>
                 </tr>
               </thead>
               <tbody>
@@ -237,11 +330,11 @@ const LocationHistoryMap: React.FC<LocationHistoryMapProps> = ({ deviceId, devic
                     <td>
                       {point.latitude.toFixed(6)}, {point.longitude.toFixed(6)}
                     </td>
-                    <td>{point.accuracy ? `${point.accuracy}m` : '-'}</td>
-                    <td>{point.speed !== undefined ? `${point.speed} km/h` : '-'}</td>
-                    <td>{point.altitude ? `${point.altitude}m` : '-'}</td>
-                    <td>{point.battery_level ? `${point.battery_level}%` : '-'}</td>
-                    <td>{point.network_type || '-'}</td>
+                    <td>{point.accuracy}m</td>
+                    <td>{point.speed} km/h</td>
+                    <td>{point.altitude}m</td>
+                    <td>{point.direction}°</td>
+                    <td>{point.display_name}</td>
                   </tr>
                 ))}
               </tbody>
