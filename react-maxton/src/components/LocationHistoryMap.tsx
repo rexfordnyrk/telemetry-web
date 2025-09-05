@@ -2,7 +2,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, Polyline, useMap } from 'react-leaflet';
 import { Icon, LatLngExpression } from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { Card, Row, Col, Form, Badge, Alert, Spinner } from 'react-bootstrap';
+import { Card, Row, Col, Form, Badge, Alert, Spinner, Button } from 'react-bootstrap';
 import { format } from 'date-fns';
 import { useAppSelector } from '../store/hooks';
 import { buildApiUrl, getAuthHeaders } from '../config/api';
@@ -68,6 +68,7 @@ const LocationHistoryMap: React.FC<LocationHistoryMapProps> = ({ deviceId, devic
   // State for location data and filters
   const [locationData, setLocationData] = useState<LocationPoint[]>([]);
   const [selectedTimeRange, setSelectedTimeRange] = useState<string>('24h');
+  const [pointLimit, setPointLimit] = useState<number>(20);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   
@@ -86,7 +87,7 @@ const LocationHistoryMap: React.FC<LocationHistoryMapProps> = ({ deviceId, devic
     setError(null);
     
     try {
-      const url = buildApiUrl(`/api/v1/location-analytics/devices/${deviceId}/history?limit=20`);
+      const url = buildApiUrl(`/api/v1/location-analytics/devices/${deviceId}/history?limit=${pointLimit}`);
       const headers = getAuthHeaders(token);
       console.log('LocationHistoryMap: Making API request to:', url);
       console.log('LocationHistoryMap: Using token:', token.substring(0, 20) + '...');
@@ -121,7 +122,7 @@ const LocationHistoryMap: React.FC<LocationHistoryMapProps> = ({ deviceId, devic
     } finally {
       setLoading(false);
     }
-  }, [deviceId, token]);
+  }, [deviceId, token, pointLimit]);
 
   // Fetch data on component mount and when deviceId changes
   useEffect(() => {
@@ -135,6 +136,12 @@ const LocationHistoryMap: React.FC<LocationHistoryMapProps> = ({ deviceId, devic
     // Trigger a new API call with the selected time range
     // Note: The current API doesn't support time filtering, but this is ready for future implementation
     fetchLocationHistory();
+  };
+
+  // Handle point limit change
+  const handlePointLimitChange = (limit: number) => {
+    setPointLimit(limit);
+    // The useEffect will automatically trigger a new API call due to pointLimit dependency
   };
 
   // Generate polyline coordinates for the route
@@ -227,6 +234,23 @@ const LocationHistoryMap: React.FC<LocationHistoryMapProps> = ({ deviceId, devic
             </Col>
             
             <Col md={3}>
+              <Form.Group>
+                <Form.Label>Point Limit</Form.Label>
+                <Form.Select 
+                  value={pointLimit}
+                  onChange={(e) => handlePointLimitChange(Number(e.target.value))}
+                >
+                  <option value={10}>10 Points</option>
+                  <option value={20}>20 Points</option>
+                  <option value={50}>50 Points</option>
+                  <option value={100}>100 Points</option>
+                  <option value={200}>200 Points</option>
+                  <option value={500}>500 Points</option>
+                </Form.Select>
+              </Form.Group>
+            </Col>
+            
+            <Col md={3}>
               <div className="text-end">
                 <Badge bg="info" className="me-2">
                   {locationData.length} Points
@@ -234,6 +258,28 @@ const LocationHistoryMap: React.FC<LocationHistoryMapProps> = ({ deviceId, devic
                 <Badge bg="success">
                   Route Displayed
                 </Badge>
+              </div>
+            </Col>
+            
+            <Col md={3}>
+              <div className="text-end">
+                <Button 
+                  variant="outline-primary" 
+                  size="sm"
+                  onClick={fetchLocationHistory}
+                  disabled={loading}
+                >
+                  {loading ? (
+                    <>
+                      <Spinner animation="border" size="sm" className="me-2" />
+                      Loading...
+                    </>
+                  ) : (
+                    <>
+                      <i className="material-icons-outlined">refresh</i> Refresh
+                    </>
+                  )}
+                </Button>
               </div>
             </Col>
           </Row>
