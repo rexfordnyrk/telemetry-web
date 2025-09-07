@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { Container, Row, Col, Card, Button, Table, Badge, Alert, Spinner, Form, InputGroup } from 'react-bootstrap';
+import React, { useState, useEffect } from 'react';
+import { Container, Row, Col, Card, Button, Table, Badge, Alert, Spinner, Form, InputGroup, Pagination } from 'react-bootstrap';
 import MainLayout from '../layouts/MainLayout';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
 import { 
@@ -7,13 +7,18 @@ import {
   selectDeviceAssignments, 
   selectDeviceAssignmentsLoading, 
   selectDeviceAssignmentsError,
-  selectActiveDeviceAssignments 
+  selectActiveDeviceAssignments,
+  selectDeviceAssignmentsSearchParams,
+  selectDeviceAssignmentsPagination,
+  clearSearchParams
 } from '../store/slices/deviceAssignmentSlice';
 import { fetchDevices } from '../store/slices/deviceSlice';
 import { fetchBeneficiaries } from '../store/slices/beneficiarySlice';
 import DeviceAssignmentModal from '../components/DeviceAssignmentModal';
+import AssignmentFilterModal from '../components/AssignmentFilterModal';
 import { Device } from '../store/slices/deviceSlice';
 import { Beneficiary } from '../store/slices/beneficiarySlice';
+import { AssignmentSearchParams } from '../store/slices/deviceAssignmentSlice';
 
 /**
  * Device Assignments Page Component
@@ -37,51 +42,69 @@ const DeviceAssignments: React.FC = () => {
   const activeAssignments = useAppSelector(selectActiveDeviceAssignments);
   const loading = useAppSelector(selectDeviceAssignmentsLoading);
   const error = useAppSelector(selectDeviceAssignmentsError);
+  const searchParams = useAppSelector(selectDeviceAssignmentsSearchParams);
+  const pagination = useAppSelector(selectDeviceAssignmentsPagination);
   const { devices } = useAppSelector(state => state.devices);
   const { beneficiaries } = useAppSelector(state => state.beneficiaries);
 
   // Local state
   const [showAssignModal, setShowAssignModal] = useState(false);
   const [showUnassignModal, setShowUnassignModal] = useState(false);
+  const [showFilterModal, setShowFilterModal] = useState(false);
   const [selectedDevice, setSelectedDevice] = useState<Device | null>(null);
   const [selectedBeneficiary, setSelectedBeneficiary] = useState<Beneficiary | null>(null);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [filterStatus, setFilterStatus] = useState<'all' | 'active' | 'inactive'>('all');
+  const [quickSearch, setQuickSearch] = useState('');
 
   // Load data on component mount
   useEffect(() => {
-    dispatch(fetchDeviceAssignments());
+    dispatch(fetchDeviceAssignments({}));
     dispatch(fetchDevices());
     dispatch(fetchBeneficiaries());
   }, [dispatch]);
 
   /**
-   * Filter assignments based on search term and status
+   * Handle quick search
    */
-  const filteredAssignments = useMemo(() => {
-    let filtered = assignments;
+  const handleQuickSearch = (searchTerm: string) => {
+    setQuickSearch(searchTerm);
+    const params: AssignmentSearchParams = {
+      ...searchParams,
+      search: searchTerm || undefined,
+      page: 1 // Reset to first page when searching
+    };
+    dispatch(fetchDeviceAssignments(params));
+  };
 
-    // Filter by status
-    if (filterStatus === 'active') {
-      filtered = filtered.filter(assignment => assignment.is_active);
-    } else if (filterStatus === 'inactive') {
-      filtered = filtered.filter(assignment => !assignment.is_active);
-    }
+  /**
+   * Handle advanced filters
+   */
+  const handleApplyFilters = (filters: AssignmentSearchParams) => {
+    const params: AssignmentSearchParams = {
+      ...filters,
+      page: 1 // Reset to first page when applying filters
+    };
+    dispatch(fetchDeviceAssignments(params));
+  };
 
-    // Filter by search term
-    if (searchTerm) {
-      const term = searchTerm.toLowerCase();
-      filtered = filtered.filter(assignment => 
-        assignment.device?.device_name?.toLowerCase().includes(term) ||
-        assignment.device?.mac_address?.toLowerCase().includes(term) ||
-        assignment.beneficiary?.name?.toLowerCase().includes(term) ||
-        assignment.beneficiary?.email?.toLowerCase().includes(term) ||
-        assignment.notes?.toLowerCase().includes(term)
-      );
-    }
+  /**
+   * Handle pagination
+   */
+  const handlePageChange = (page: number) => {
+    const params: AssignmentSearchParams = {
+      ...searchParams,
+      page
+    };
+    dispatch(fetchDeviceAssignments(params));
+  };
 
-    return filtered;
-  }, [assignments, searchTerm, filterStatus]);
+  /**
+   * Clear all filters
+   */
+  const handleClearFilters = () => {
+    setQuickSearch('');
+    dispatch(clearSearchParams());
+    dispatch(fetchDeviceAssignments({}));
+  };
 
   /**
    * Handle assign button click
@@ -110,7 +133,7 @@ const DeviceAssignments: React.FC = () => {
    */
   const handleAssignmentSuccess = () => {
     // Refresh assignments data
-    dispatch(fetchDeviceAssignments());
+    dispatch(fetchDeviceAssignments(searchParams));
     dispatch(fetchDevices());
     dispatch(fetchBeneficiaries());
   };
@@ -241,7 +264,7 @@ const DeviceAssignments: React.FC = () => {
           </Col>
         </Row>
 
-        {/* Filters and Search */}
+        {/* Search and Filter Controls */}
         <Row className="mb-3">
           <Col md={6}>
             <InputGroup>
@@ -250,34 +273,54 @@ const DeviceAssignments: React.FC = () => {
               </InputGroup.Text>
               <Form.Control
                 type="text"
-                placeholder="Search assignments..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                placeholder="Quick search across all fields..."
+                value={quickSearch}
+                onChange={(e) => handleQuickSearch(e.target.value)}
               />
             </InputGroup>
           </Col>
           <Col md={3}>
-            <Form.Select
-              value={filterStatus}
-              onChange={(e) => setFilterStatus(e.target.value as 'all' | 'active' | 'inactive')}
+            <Button 
+              variant="outline-primary" 
+              onClick={() => setShowFilterModal(true)}
+              className="w-100"
             >
-              <option value="all">All Assignments</option>
-              <option value="active">Active Only</option>
-              <option value="inactive">Inactive Only</option>
-            </Form.Select>
+              <i className="material-icons-outlined me-1">filter_list</i>
+              Advanced Filters
+            </Button>
           </Col>
           <Col md={3}>
             <Button 
               variant="outline-secondary" 
-              onClick={() => {
-                setSearchTerm('');
-                setFilterStatus('all');
-              }}
+              onClick={handleClearFilters}
+              className="w-100"
             >
-              Clear Filters
+              <i className="material-icons-outlined me-1">clear</i>
+              Clear All
             </Button>
           </Col>
         </Row>
+
+        {/* Active Filters Display */}
+        {Object.keys(searchParams).length > 0 && (
+          <Row className="mb-3">
+            <Col>
+              <div className="d-flex flex-wrap gap-2">
+                <span className="badge bg-primary">
+                  Active Filters: {Object.keys(searchParams).length}
+                </span>
+                {Object.entries(searchParams).map(([key, value]) => {
+                  if (value === undefined || value === null || value === '') return null;
+                  return (
+                    <span key={key} className="badge bg-secondary">
+                      {key}: {value.toString()}
+                    </span>
+                  );
+                })}
+              </div>
+            </Col>
+          </Row>
+        )}
 
         {/* Error Alert */}
         {error && (
@@ -300,34 +343,35 @@ const DeviceAssignments: React.FC = () => {
                     <Spinner animation="border" variant="primary" />
                     <p className="mt-2 mb-0">Loading assignments...</p>
                   </div>
-                ) : filteredAssignments.length === 0 ? (
+                ) : assignments.length === 0 ? (
                   <div className="text-center py-4">
                     <i className="material-icons-outlined text-muted" style={{ fontSize: '3rem' }}>
                       assignment
                     </i>
                     <p className="text-muted mt-2 mb-0">
-                      {searchTerm || filterStatus !== 'all' 
+                      {Object.keys(searchParams).length > 0 
                         ? 'No assignments match your filters' 
                         : 'No device assignments found'
                       }
                     </p>
                   </div>
                 ) : (
-                  <div className="table-responsive">
-                    <Table hover className="mb-0">
-                      <thead>
-                        <tr>
-                          <th>Device</th>
-                          <th>Beneficiary</th>
-                          <th>Assigned Date</th>
-                          <th>Unassigned Date</th>
-                          <th>Status</th>
-                          <th>Notes</th>
-                          <th>Actions</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {filteredAssignments.map((assignment) => (
+                  <>
+                    <div className="table-responsive">
+                      <Table hover className="mb-0">
+                        <thead>
+                          <tr>
+                            <th>Device</th>
+                            <th>Beneficiary</th>
+                            <th>Assigned Date</th>
+                            <th>Unassigned Date</th>
+                            <th>Status</th>
+                            <th>Notes</th>
+                            <th>Actions</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {assignments.map((assignment) => (
                           <tr key={assignment.id}>
                             <td>
                               <div>
@@ -390,10 +434,75 @@ const DeviceAssignments: React.FC = () => {
                               )}
                             </td>
                           </tr>
-                        ))}
-                      </tbody>
-                    </Table>
-                  </div>
+                          ))}
+                        </tbody>
+                      </Table>
+                    </div>
+
+                    {/* Pagination */}
+                    {pagination && pagination.total > pagination.limit && (
+                      <div className="d-flex justify-content-center mt-3">
+                        <Pagination>
+                          <Pagination.First 
+                            onClick={() => handlePageChange(1)}
+                            disabled={pagination.page === 1}
+                          />
+                          <Pagination.Prev 
+                            onClick={() => handlePageChange(pagination.page - 1)}
+                            disabled={pagination.page === 1}
+                          />
+                          
+                          {/* Page numbers */}
+                          {Array.from({ length: Math.ceil(pagination.total / pagination.limit) }, (_, i) => i + 1)
+                            .filter(page => {
+                              const current = pagination.page;
+                              return page === 1 || page === Math.ceil(pagination.total / pagination.limit) || 
+                                     (page >= current - 2 && page <= current + 2);
+                            })
+                            .map((page, index, array) => {
+                              if (index > 0 && page - array[index - 1] > 1) {
+                                return (
+                                  <React.Fragment key={`ellipsis-${page}`}>
+                                    <Pagination.Ellipsis />
+                                    <Pagination.Item 
+                                      active={page === pagination.page}
+                                      onClick={() => handlePageChange(page)}
+                                    >
+                                      {page}
+                                    </Pagination.Item>
+                                  </React.Fragment>
+                                );
+                              }
+                              return (
+                                <Pagination.Item 
+                                  key={page}
+                                  active={page === pagination.page}
+                                  onClick={() => handlePageChange(page)}
+                                >
+                                  {page}
+                                </Pagination.Item>
+                              );
+                            })}
+                          
+                          <Pagination.Next 
+                            onClick={() => handlePageChange(pagination.page + 1)}
+                            disabled={pagination.page === Math.ceil(pagination.total / pagination.limit)}
+                          />
+                          <Pagination.Last 
+                            onClick={() => handlePageChange(Math.ceil(pagination.total / pagination.limit))}
+                            disabled={pagination.page === Math.ceil(pagination.total / pagination.limit)}
+                          />
+                        </Pagination>
+                      </div>
+                    )}
+
+                    {/* Results info */}
+                    {pagination && (
+                      <div className="text-center text-muted mt-2">
+                        Showing {((pagination.page - 1) * pagination.limit) + 1} to {Math.min(pagination.page * pagination.limit, pagination.total)} of {pagination.total} results
+                      </div>
+                    )}
+                  </>
                 )}
               </Card.Body>
             </Card>
@@ -416,6 +525,14 @@ const DeviceAssignments: React.FC = () => {
           device={selectedDevice}
           beneficiary={selectedBeneficiary}
           onSuccess={handleAssignmentSuccess}
+        />
+
+        {/* Filter Modal */}
+        <AssignmentFilterModal
+          show={showFilterModal}
+          onHide={() => setShowFilterModal(false)}
+          onApplyFilters={handleApplyFilters}
+          currentFilters={searchParams}
         />
         </Container>
       </div>

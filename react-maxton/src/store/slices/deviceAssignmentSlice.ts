@@ -37,12 +37,39 @@ export interface DeviceAssignment {
   };
 }
 
+// Define search and filter parameters
+export interface AssignmentSearchParams {
+  search?: string;
+  device_name?: string;
+  beneficiary_name?: string;
+  organization?: string;
+  is_active?: boolean;
+  android_version?: string;
+  district?: string;
+  device_mac_address?: string;
+  beneficiary_email?: string;
+  notes?: string;
+  assigned_after?: string;
+  assigned_before?: string;
+  page?: number;
+  limit?: number;
+}
+
+// Define pagination info
+export interface PaginationInfo {
+  limit: number;
+  page: number;
+  total: number;
+}
+
 // Define the state shape for device assignments
 interface DeviceAssignmentState {
   assignments: DeviceAssignment[];
   loading: boolean;
   error: string | null;
   lastFetch: number | null;
+  searchParams: AssignmentSearchParams;
+  pagination: PaginationInfo | null;
 }
 
 // Initial state
@@ -51,6 +78,8 @@ const initialState: DeviceAssignmentState = {
   loading: false,
   error: null,
   lastFetch: null,
+  searchParams: {},
+  pagination: null,
 };
 
 // Async thunks for API operations
@@ -61,10 +90,14 @@ const initialState: DeviceAssignmentState = {
  */
 export const fetchDeviceAssignments = createAsyncThunk(
   'deviceAssignments/fetchDeviceAssignments',
-  async (_, { rejectWithValue }) => {
+  async (params: AssignmentSearchParams = {}, { rejectWithValue }) => {
     try {
-      const response = await deviceAssignmentsAPI.getAssignments();
-      return (response as any).data.data; // Extract data from the response wrapper
+      const response = await deviceAssignmentsAPI.getAssignments(params);
+      return {
+        data: (response as any).data.data, // Extract data from the response wrapper
+        pagination: (response as any).data.pagination,
+        searchParams: params || {}
+      };
     } catch (error: any) {
       return rejectWithValue(error.message || 'Failed to fetch device assignments');
     }
@@ -160,6 +193,18 @@ const deviceAssignmentSlice = createSlice({
     clearAssignments: (state) => {
       state.assignments = [];
       state.lastFetch = null;
+      state.searchParams = {};
+      state.pagination = null;
+    },
+    
+    // Update search parameters
+    updateSearchParams: (state, action) => {
+      state.searchParams = { ...state.searchParams, ...action.payload };
+    },
+    
+    // Clear search parameters
+    clearSearchParams: (state) => {
+      state.searchParams = {};
     },
   },
   extraReducers: (builder) => {
@@ -171,7 +216,9 @@ const deviceAssignmentSlice = createSlice({
       })
       .addCase(fetchDeviceAssignments.fulfilled, (state, action) => {
         state.loading = false;
-        state.assignments = action.payload;
+        state.assignments = action.payload.data;
+        state.pagination = action.payload.pagination;
+        state.searchParams = action.payload.searchParams;
         state.lastFetch = Date.now();
         state.error = null;
       })
@@ -256,13 +303,15 @@ const deviceAssignmentSlice = createSlice({
 });
 
 // Export actions
-export const { clearError, clearAssignments } = deviceAssignmentSlice.actions;
+export const { clearError, clearAssignments, updateSearchParams, clearSearchParams } = deviceAssignmentSlice.actions;
 
 // Selectors for accessing state
 export const selectDeviceAssignments = (state: RootState) => state.deviceAssignments.assignments;
 export const selectDeviceAssignmentsLoading = (state: RootState) => state.deviceAssignments.loading;
 export const selectDeviceAssignmentsError = (state: RootState) => state.deviceAssignments.error;
 export const selectDeviceAssignmentsLastFetch = (state: RootState) => state.deviceAssignments.lastFetch;
+export const selectDeviceAssignmentsSearchParams = (state: RootState) => state.deviceAssignments.searchParams;
+export const selectDeviceAssignmentsPagination = (state: RootState) => state.deviceAssignments.pagination;
 
 // Selector for active assignments only
 export const selectActiveDeviceAssignments = (state: RootState) => 

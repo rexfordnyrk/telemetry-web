@@ -20,10 +20,15 @@ The device assignment feature provides a comprehensive interface for managing th
 - **Available Devices**: Count of devices not currently assigned
 - **Available Beneficiaries**: Count of beneficiaries not currently assigned to devices
 
-### 3. Search and Filtering
-- **Search**: Search assignments by device name, MAC address, beneficiary name, or email
-- **Status Filter**: Filter by active, inactive, or all assignments
-- **Real-time Filtering**: Instant results as you type
+### 3. Advanced Search and Filtering
+- **Quick Search**: Real-time search across all fields (device name, beneficiary name, email, notes)
+- **Advanced Filters**: Comprehensive filtering modal with multiple criteria:
+  - Device filters (name, MAC address, Android version)
+  - Beneficiary filters (name, email, district)
+  - Assignment filters (organization, status, notes, date range)
+  - Pagination controls (results per page)
+- **Active Filter Display**: Visual indicators showing applied filters
+- **Clear Filters**: One-click clear all filters functionality
 
 ## Components
 
@@ -43,7 +48,14 @@ A modal component that handles both assignment and unassignment operations:
 - **Form Validation**: Ensures required fields are selected
 - **Error Handling**: Displays API errors and validation messages
 
-### 3. Redux State Management
+### 3. AssignmentFilterModal Component
+An advanced filtering modal that provides comprehensive search capabilities:
+- **Multiple Filter Types**: Device, beneficiary, assignment, and date filters
+- **Form Validation**: Date range validation and input validation
+- **Clear All Filters**: One-click reset functionality
+- **Responsive Design**: Works on all device sizes
+
+### 4. Redux State Management
 - **deviceAssignmentSlice**: Manages assignment state and API operations
 - **API Integration**: Handles all CRUD operations for assignments
 - **Error Handling**: Consistent error handling across all operations
@@ -53,12 +65,40 @@ A modal component that handles both assignment and unassignment operations:
 The feature uses the following API endpoints:
 
 ```
-GET    /api/v1/devices/assignments         # Get all assignments
+GET    /api/v1/devices/assignments         # Get all assignments with search/filter support
 POST   /api/v1/devices/assignments         # Create new assignment (assign device to beneficiary)
 PUT    /api/v1/devices/assignments/:id     # Update assignment
 DELETE /api/v1/devices/assignments/:id     # Delete assignment
 POST   /api/v1/devices/assignments/:id/unassign # Unassign device from beneficiary
 ```
+
+### Search and Filter Parameters
+
+The GET endpoint supports extensive search and filtering capabilities:
+
+**General Search:**
+- `search` - Search across all fields (device name, beneficiary name, email, notes)
+
+**Device Filters:**
+- `device_name` - Filter by device name (e.g., "Samsung")
+- `device_mac_address` - Filter by MAC address (e.g., "00:11:22")
+- `android_version` - Filter by Android version (e.g., "Android 12")
+
+**Beneficiary Filters:**
+- `beneficiary_name` - Filter by beneficiary name (e.g., "John")
+- `beneficiary_email` - Filter by email (e.g., "john@example.com")
+- `district` - Filter by district (e.g., "Accra Central")
+
+**Assignment Filters:**
+- `organization` - Filter by organization
+- `is_active` - Filter by assignment status (true/false)
+- `notes` - Search in assignment notes
+- `assigned_after` - Filter by assignment date (YYYY-MM-DD)
+- `assigned_before` - Filter by assignment date (YYYY-MM-DD)
+
+**Pagination:**
+- `page` - Page number (default: 1)
+- `limit` - Results per page (default: 20)
 
 ### API Request/Response Format
 

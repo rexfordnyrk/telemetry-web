@@ -465,10 +465,38 @@ export const devicesAPI = {
 
 /**
  * Device assignment API methods
- * These methods handle device assignment operations
+ * These methods handle device assignment operations with advanced search and filtering
  */
 export const deviceAssignmentsAPI = {
-  getAssignments: () => ApiService.get(API_CONFIG.ENDPOINTS.DEVICE_ASSIGNMENTS.LIST),
+  getAssignments: (params?: {
+    search?: string;
+    device_name?: string;
+    beneficiary_name?: string;
+    organization?: string;
+    is_active?: boolean;
+    android_version?: string;
+    district?: string;
+    device_mac_address?: string;
+    beneficiary_email?: string;
+    notes?: string;
+    assigned_after?: string;
+    assigned_before?: string;
+    page?: number;
+    limit?: number;
+  }) => {
+    const queryParams = new URLSearchParams();
+    if (params) {
+      Object.entries(params).forEach(([key, value]) => {
+        if (value !== undefined && value !== null && value !== '') {
+          queryParams.append(key, value.toString());
+        }
+      });
+    }
+    const url = queryParams.toString() 
+      ? `${API_CONFIG.ENDPOINTS.DEVICE_ASSIGNMENTS.LIST}?${queryParams.toString()}`
+      : API_CONFIG.ENDPOINTS.DEVICE_ASSIGNMENTS.LIST;
+    return ApiService.get(url);
+  },
   getAssignment: (id: string) => ApiService.get(API_CONFIG.ENDPOINTS.DEVICE_ASSIGNMENTS.UPDATE(id)),
   createAssignment: (assignmentData: any) => ApiService.post(API_CONFIG.ENDPOINTS.DEVICE_ASSIGNMENTS.CREATE, assignmentData),
   updateAssignment: (id: string, assignmentData: any) => ApiService.put(API_CONFIG.ENDPOINTS.DEVICE_ASSIGNMENTS.UPDATE(id), assignmentData),
