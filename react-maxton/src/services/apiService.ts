@@ -473,16 +473,16 @@ export const deviceAssignmentsAPI = {
   createAssignment: (assignmentData: any) => ApiService.post(API_CONFIG.ENDPOINTS.DEVICE_ASSIGNMENTS.CREATE, assignmentData),
   updateAssignment: (id: string, assignmentData: any) => ApiService.put(API_CONFIG.ENDPOINTS.DEVICE_ASSIGNMENTS.UPDATE(id), assignmentData),
   deleteAssignment: (id: string) => ApiService.delete(API_CONFIG.ENDPOINTS.DEVICE_ASSIGNMENTS.DELETE(id)),
-  assignDevice: (deviceId: string, beneficiaryId: string, notes?: string) => 
-    ApiService.post(API_CONFIG.ENDPOINTS.DEVICE_ASSIGNMENTS.ASSIGN, {
+  assignDevice: (deviceId: string, beneficiaryId: string, assignedBy: string, notes?: string) => 
+    ApiService.post(API_CONFIG.ENDPOINTS.DEVICE_ASSIGNMENTS.CREATE, {
       device_id: deviceId,
       beneficiary_id: beneficiaryId,
+      assigned_by: assignedBy,
       notes: notes || ''
     }),
-  unassignDevice: (deviceId: string, notes?: string) => 
-    ApiService.post(API_CONFIG.ENDPOINTS.DEVICE_ASSIGNMENTS.UNASSIGN, {
-      device_id: deviceId,
-      notes: notes || ''
+  unassignDevice: (assignmentId: string, note?: string) => 
+    ApiService.post(API_CONFIG.ENDPOINTS.DEVICE_ASSIGNMENTS.UNASSIGN(assignmentId), {
+      note: note || ''
     }),
 };
 
