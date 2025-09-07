@@ -178,7 +178,25 @@ const DeviceAssignments: React.FC = () => {
               </ol>
             </nav>
           </div>
-          <div className="ms-auto d-flex gap-2">
+          <div className="ms-auto d-flex gap-2 align-items-center">
+            <InputGroup style={{ width: '300px' }}>
+              <InputGroup.Text>
+                <i className="material-icons-outlined">search</i>
+              </InputGroup.Text>
+              <Form.Control
+                type="text"
+                placeholder="Quick search across all fields..."
+                value={quickSearch}
+                onChange={(e) => handleQuickSearch(e.target.value)}
+              />
+            </InputGroup>
+            <Button 
+              variant="outline-primary" 
+              onClick={() => setShowFilterModal(true)}
+            >
+              <i className="material-icons-outlined me-1">filter_list</i>
+              Advanced Filters
+            </Button>
             <Button 
               variant="primary" 
               onClick={handleAssignClick}
@@ -264,42 +282,6 @@ const DeviceAssignments: React.FC = () => {
           </Col>
         </Row>
 
-        {/* Search and Filter Controls */}
-        <Row className="mb-3">
-          <Col md={6}>
-            <InputGroup>
-              <InputGroup.Text>
-                <i className="material-icons-outlined">search</i>
-              </InputGroup.Text>
-              <Form.Control
-                type="text"
-                placeholder="Quick search across all fields..."
-                value={quickSearch}
-                onChange={(e) => handleQuickSearch(e.target.value)}
-              />
-            </InputGroup>
-          </Col>
-          <Col md={3}>
-            <Button 
-              variant="outline-primary" 
-              onClick={() => setShowFilterModal(true)}
-              className="w-100"
-            >
-              <i className="material-icons-outlined me-1">filter_list</i>
-              Advanced Filters
-            </Button>
-          </Col>
-          <Col md={3}>
-            <Button 
-              variant="outline-secondary" 
-              onClick={handleClearFilters}
-              className="w-100"
-            >
-              <i className="material-icons-outlined me-1">clear</i>
-              Clear All
-            </Button>
-          </Col>
-        </Row>
 
         {/* Active Filters Display */}
         {Object.keys(searchParams).length > 0 && (

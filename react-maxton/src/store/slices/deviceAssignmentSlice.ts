@@ -1,6 +1,8 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { RootState } from '../index';
 import { deviceAssignmentsAPI } from '../../services/apiService';
+import { buildApiUrl, getAuthHeaders, API_CONFIG } from '../../config/api';
+import { handleApiError } from '../../utils/apiUtils';
 
 // Define the DeviceAssignment type based on the API response structure
 export interface DeviceAssignment {
@@ -87,15 +89,47 @@ const initialState: DeviceAssignmentState = {
 /**
  * Fetch all device assignments from the API
  * This thunk handles loading all device assignments with their related data
+ * This request is authenticated using the JWT token from the auth state.
  */
 export const fetchDeviceAssignments = createAsyncThunk(
   'deviceAssignments/fetchDeviceAssignments',
-  async (params: AssignmentSearchParams = {}, { rejectWithValue }) => {
+  async (params: AssignmentSearchParams = {}, { getState, rejectWithValue, dispatch }) => {
     try {
-      const response = await deviceAssignmentsAPI.getAssignments(params);
+      const state = getState() as RootState;
+      const token = state.auth.token;
+      if (!token) {
+        throw new Error('No authentication token available');
+      }
+
+      // Build query parameters
+      const queryParams = new URLSearchParams();
+      if (params) {
+        Object.entries(params).forEach(([key, value]) => {
+          if (value !== undefined && value !== null && value !== '') {
+            queryParams.append(key, value.toString());
+          }
+        });
+      }
+      
+      const url = queryParams.toString() 
+        ? `${API_CONFIG.ENDPOINTS.DEVICE_ASSIGNMENTS.LIST}?${queryParams.toString()}`
+        : API_CONFIG.ENDPOINTS.DEVICE_ASSIGNMENTS.LIST;
+
+      const response = await fetch(buildApiUrl(url), {
+        method: 'GET',
+        headers: getAuthHeaders(token),
+      });
+
+      if (!response.ok) {
+        // Use global error handler for consistent error messages and session handling
+        const errorMessage = await handleApiError(response, 'Failed to fetch device assignments', dispatch);
+        throw new Error(errorMessage);
+      }
+
+      const data = await response.json();
       return {
-        data: (response as any).data.data, // Extract data from the response wrapper
-        pagination: (response as any).data.pagination,
+        data: data.data, // Extract data from the response wrapper
+        pagination: data.pagination,
         searchParams: params || {}
       };
     } catch (error: any) {
