@@ -139,7 +139,7 @@ const ImportVisitsModal: React.FC<ImportVisitsModalProps> = ({ show, onHide }) =
         name: row["name"] || "",
         programme: row["programme"] || "",
         activity: row["activity"] || "",
-        assisted_by: row["assisted_by"] || "",
+        assisted_by: row["assisted_by"] && row["assisted_by"].trim() ? row["assisted_by"].trim() : null,
         notes: row["notes"] || "",
         check_in: checkIn,
         check_out: checkOut,
