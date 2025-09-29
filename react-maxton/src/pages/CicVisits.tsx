@@ -33,6 +33,7 @@ const CicVisits: React.FC = () => {
   const memoized = useMemo(() => filteredVisits, [filteredVisits]);
 
   useDataTable("cic-visits-datatable", memoized);
+  const tableKey = useMemo(() => `cic-visits-${memoized.length}`,[memoized.length]);
 
   const handleActionClick = (visit: Visit, action: "delete") => {
     setTargetVisit(visit);
@@ -141,7 +142,7 @@ const CicVisits: React.FC = () => {
               </div>
             ) : (
               <div className="table-responsive">
-                <table id="cic-visits-datatable" className="table table-striped table-bordered" style={{ width: "100%" }}>
+                <table key={tableKey} id="cic-visits-datatable" className="table table-striped table-bordered" style={{ width: "100%" }}>
                   <thead>
                     <tr>
                       <th>CIC</th>
