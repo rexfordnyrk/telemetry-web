@@ -4,8 +4,9 @@ import { useAppDispatch, useAppSelector } from '../store/hooks';
 import { Device } from '../store/slices/deviceSlice';
 import { Beneficiary } from '../store/slices/beneficiarySlice';
 import { createDeviceAssignment, unassignDevice } from '../store/slices/deviceAssignmentSlice';
-import { fetchDevices } from '../store/slices/deviceSlice';
-import { fetchBeneficiaries } from '../store/slices/beneficiarySlice';
+import { fetchUnassignedDevices } from '../store/slices/deviceSlice';
+import { fetchUnassignedBeneficiaries } from '../store/slices/beneficiarySlice';
+import SearchableDropdown from './SearchableDropdown';
 
 /**
  * Props interface for the DeviceAssignmentModal component
@@ -43,38 +44,34 @@ const DeviceAssignmentModal: React.FC<DeviceAssignmentModalProps> = ({
 }) => {
   // Redux state and dispatch
   const dispatch = useAppDispatch();
-  const { devices, loading: devicesLoading } = useAppSelector(state => state.devices);
-  const { beneficiaries, loading: beneficiariesLoading } = useAppSelector(state => state.beneficiaries);
+  const { unassignedDevices, unassignedLoading: devicesLoading } = useAppSelector(state => state.devices);
+  const { unassignedBeneficiaries, unassignedLoading: beneficiariesLoading } = useAppSelector(state => state.beneficiaries);
   const { assignments, loading: assignmentLoading, error: assignmentError } = useAppSelector(state => state.deviceAssignments);
   const { user } = useAppSelector(state => state.auth);
 
   // Local state for form data
-  const [selectedDeviceId, setSelectedDeviceId] = useState<string>('');
-  const [selectedBeneficiaryId, setSelectedBeneficiaryId] = useState<string>('');
+  const [selectedDevice, setSelectedDevice] = useState<Device | null>(null);
+  const [selectedBeneficiary, setSelectedBeneficiary] = useState<Beneficiary | null>(null);
   const [notes, setNotes] = useState<string>('');
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
 
   // Reset form when modal opens/closes or mode changes
   useEffect(() => {
     if (show) {
-      setSelectedDeviceId(device?.id || '');
-      setSelectedBeneficiaryId(beneficiary?.id || '');
+      setSelectedDevice(device || null);
+      setSelectedBeneficiary(beneficiary || null);
       setNotes('');
       setValidationErrors({});
     }
   }, [show, mode, device, beneficiary]);
 
-  // Load data when modal opens
+  // Load unassigned data when modal opens
   useEffect(() => {
     if (show) {
-      if (devices.length === 0) {
-        dispatch(fetchDevices());
-      }
-      if (beneficiaries.length === 0) {
-        dispatch(fetchBeneficiaries());
-      }
+      dispatch(fetchUnassignedDevices(''));
+      dispatch(fetchUnassignedBeneficiaries(''));
     }
-  }, [show, dispatch, devices.length, beneficiaries.length]);
+  }, [show, dispatch]);
 
   /**
    * Validate form data before submission
@@ -83,10 +80,10 @@ const DeviceAssignmentModal: React.FC<DeviceAssignmentModalProps> = ({
     const errors: Record<string, string> = {};
 
     if (mode === 'assign') {
-      if (!selectedDeviceId) {
+      if (!selectedDevice) {
         errors.device = 'Please select a device';
       }
-      if (!selectedBeneficiaryId) {
+      if (!selectedBeneficiary) {
         errors.beneficiary = 'Please select a beneficiary';
       }
     }
@@ -106,10 +103,10 @@ const DeviceAssignmentModal: React.FC<DeviceAssignmentModalProps> = ({
     }
 
     try {
-      if (mode === 'assign') {
+      if (mode === 'assign' && selectedDevice && selectedBeneficiary) {
         await dispatch(createDeviceAssignment({
-          deviceId: selectedDeviceId,
-          beneficiaryId: selectedBeneficiaryId,
+          deviceId: selectedDevice.id,
+          beneficiaryId: selectedBeneficiary.id,
           assignedBy: user?.email || 'unknown@example.com',
           notes: notes.trim()
         })).unwrap();
@@ -141,13 +138,9 @@ const DeviceAssignmentModal: React.FC<DeviceAssignmentModalProps> = ({
     onHide();
   };
 
-  // Filter devices and beneficiaries based on current assignments
-  const availableDevices = devices.filter(d => !d.current_beneficiary_id && d.is_active);
-  const availableBeneficiaries = beneficiaries.filter(b => !b.current_device_id && b.is_active);
-
-  // Get device and beneficiary names for display
-  const selectedDevice = devices.find(d => d.id === selectedDeviceId);
-  const selectedBeneficiary = beneficiaries.find(b => b.id === selectedBeneficiaryId);
+  // Use unassigned devices and beneficiaries directly
+  const availableDevices = unassignedDevices;
+  const availableBeneficiaries = unassignedBeneficiaries;
 
   return (
     <Modal show={show} onHide={handleClose} size="lg" centered>
@@ -181,60 +174,46 @@ const DeviceAssignmentModal: React.FC<DeviceAssignmentModalProps> = ({
               <Col md={6}>
                 <Form.Group>
                   <Form.Label>Select Device *</Form.Label>
-                  <Form.Select
-                    value={selectedDeviceId}
-                    onChange={(e) => setSelectedDeviceId(e.target.value)}
-                    isInvalid={!!validationErrors.device}
-                    disabled={devicesLoading}
-                  >
-                    <option value="">Choose a device...</option>
-                    {availableDevices.map(device => (
-                      <option key={device.id} value={device.id}>
-                        {device.device_name} ({device.mac_address}) - {device.organization}
-                      </option>
-                    ))}
-                  </Form.Select>
-                  {validationErrors.device && (
-                    <Form.Control.Feedback type="invalid">
-                      {validationErrors.device}
-                    </Form.Control.Feedback>
-                  )}
-                  {devicesLoading && (
-                    <Form.Text className="text-muted">Loading devices...</Form.Text>
-                  )}
-                  {!devicesLoading && availableDevices.length === 0 && (
-                    <Form.Text className="text-muted">No available devices found</Form.Text>
-                  )}
+                  <SearchableDropdown
+                    items={availableDevices.map(device => ({
+                      ...device,
+                      id: device.id,
+                      name: device.device_name,
+                      subtitle: `${device.mac_address} - ${device.organization}`
+                    }))}
+                    selectedItem={selectedDevice}
+                    onSelect={setSelectedDevice}
+                    placeholder="Choose a device..."
+                    loading={devicesLoading}
+                    error={validationErrors.device}
+                    searchPlaceholder="Search devices..."
+                    noResultsText="No available devices found"
+                    displayKey="name"
+                    subtitleKey="subtitle"
+                  />
                 </Form.Group>
               </Col>
 
               <Col md={6}>
                 <Form.Group>
                   <Form.Label>Select Beneficiary *</Form.Label>
-                  <Form.Select
-                    value={selectedBeneficiaryId}
-                    onChange={(e) => setSelectedBeneficiaryId(e.target.value)}
-                    isInvalid={!!validationErrors.beneficiary}
-                    disabled={beneficiariesLoading}
-                  >
-                    <option value="">Choose a beneficiary...</option>
-                    {availableBeneficiaries.map(beneficiary => (
-                      <option key={beneficiary.id} value={beneficiary.id}>
-                        {beneficiary.name} ({beneficiary.email}) - {beneficiary.organization}
-                      </option>
-                    ))}
-                  </Form.Select>
-                  {validationErrors.beneficiary && (
-                    <Form.Control.Feedback type="invalid">
-                      {validationErrors.beneficiary}
-                    </Form.Control.Feedback>
-                  )}
-                  {beneficiariesLoading && (
-                    <Form.Text className="text-muted">Loading beneficiaries...</Form.Text>
-                  )}
-                  {!beneficiariesLoading && availableBeneficiaries.length === 0 && (
-                    <Form.Text className="text-muted">No available beneficiaries found</Form.Text>
-                  )}
+                  <SearchableDropdown
+                    items={availableBeneficiaries.map(beneficiary => ({
+                      ...beneficiary,
+                      id: beneficiary.id,
+                      name: beneficiary.name,
+                      subtitle: `${beneficiary.email} - ${beneficiary.organization}`
+                    }))}
+                    selectedItem={selectedBeneficiary}
+                    onSelect={setSelectedBeneficiary}
+                    placeholder="Choose a beneficiary..."
+                    loading={beneficiariesLoading}
+                    error={validationErrors.beneficiary}
+                    searchPlaceholder="Search beneficiaries..."
+                    noResultsText="No available beneficiaries found"
+                    displayKey="name"
+                    subtitleKey="subtitle"
+                  />
                 </Form.Group>
               </Col>
             </Row>
@@ -273,7 +252,7 @@ const DeviceAssignmentModal: React.FC<DeviceAssignmentModalProps> = ({
           <Button
             variant={mode === 'assign' ? 'primary' : 'warning'}
             type="submit"
-            disabled={assignmentLoading || (mode === 'assign' && (!selectedDeviceId || !selectedBeneficiaryId))}
+            disabled={assignmentLoading || (mode === 'assign' && (!selectedDevice || !selectedBeneficiary))}
           >
             {assignmentLoading ? 'Processing...' : (mode === 'assign' ? 'Assign Device' : 'Unassign Device')}
           </Button>

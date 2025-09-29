@@ -109,7 +109,7 @@ const DeviceTracking: React.FC = () => {
 
   // Fetch devices on component mount
   useEffect(() => {
-    dispatch(fetchDevices());
+    dispatch(fetchDevices({}));
   }, [dispatch]);
 
   // Fetch last known locations from API

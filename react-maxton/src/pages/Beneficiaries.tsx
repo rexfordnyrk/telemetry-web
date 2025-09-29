@@ -27,7 +27,7 @@ const Beneficiaries: React.FC = () => {
 
   // Fetch beneficiaries from API on mount
   useEffect(() => {
-    dispatch(fetchBeneficiaries());
+    dispatch(fetchBeneficiaries({}));
   }, [dispatch]);
 
   // Filter beneficiaries based on active filters

@@ -22,7 +22,7 @@ const Devices: React.FC = () => {
 
   // Fetch devices from API on mount
   useEffect(() => {
-    dispatch(fetchDevices());
+    dispatch(fetchDevices({}));
   }, [dispatch]);
 
 

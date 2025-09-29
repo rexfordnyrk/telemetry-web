@@ -135,12 +135,15 @@ export interface DeviceDetails extends Device {
 // Define the state shape for devices
 interface DeviceState {
   devices: Device[];
+  unassignedDevices: Device[];
   deviceDetails: DeviceDetails | null;
   loading: boolean;
+  unassignedLoading: boolean;
   detailsLoading: boolean;
   updating: boolean;
   deleting: boolean;
   error: string | null;
+  unassignedError: string | null;
   detailsError: string | null;
   updateError: string | null;
   deleteError: string | null;
@@ -148,16 +151,28 @@ interface DeviceState {
 
 const initialState: DeviceState = {
   devices: [],
+  unassignedDevices: [],
   deviceDetails: null,
   loading: false,
+  unassignedLoading: false,
   detailsLoading: false,
   updating: false,
   deleting: false,
   error: null,
+  unassignedError: null,
   detailsError: null,
   updateError: null,
   deleteError: null,
 };
+
+// Define parameters interface for device fetching
+export interface DeviceFetchParams {
+  is_unassigned?: boolean;
+  search?: string;
+  organization?: string;
+  programme?: string;
+  is_active?: boolean;
+}
 
 /**
  * Async thunk to fetch devices from the API.
@@ -165,15 +180,29 @@ const initialState: DeviceState = {
  */
 export const fetchDevices = createAsyncThunk(
   'devices/fetchDevices',
-  async (_, { getState, rejectWithValue, dispatch }) => {
+  async (params: DeviceFetchParams = {}, { getState, rejectWithValue, dispatch }) => {
     try {
       const state = getState() as RootState;
       const token = state.auth.token;
       if (!token) {
         throw new Error('No authentication token available');
       }
-      const url = buildApiUrl('/api/v1/devices');
-      const response = await fetch(url, {
+
+      // Build query parameters
+      const queryParams = new URLSearchParams();
+      if (params) {
+        Object.entries(params).forEach(([key, value]) => {
+          if (value !== undefined && value !== null && value !== '') {
+            queryParams.append(key, value.toString());
+          }
+        });
+      }
+      
+      const url = queryParams.toString() 
+        ? `/api/v1/devices?${queryParams.toString()}`
+        : '/api/v1/devices';
+
+      const response = await fetch(buildApiUrl(url), {
         method: 'GET',
         headers: getAuthHeaders(token),
       });
@@ -192,6 +221,52 @@ export const fetchDevices = createAsyncThunk(
       }
     } catch (error) {
       return rejectWithValue(error instanceof Error ? error.message : 'Failed to fetch devices');
+    }
+  }
+);
+
+/**
+ * Async thunk to fetch unassigned devices from the API.
+ * This request is authenticated using the JWT token from the auth state.
+ */
+export const fetchUnassignedDevices = createAsyncThunk(
+  'devices/fetchUnassignedDevices',
+  async (search: string = '', { getState, rejectWithValue, dispatch }) => {
+    try {
+      const state = getState() as RootState;
+      const token = state.auth.token;
+      if (!token) {
+        throw new Error('No authentication token available');
+      }
+
+      // Build query parameters
+      const queryParams = new URLSearchParams();
+      queryParams.append('is_unassigned', 'true');
+      if (search) {
+        queryParams.append('search', search);
+      }
+      
+      const url = `/api/v1/devices?${queryParams.toString()}`;
+
+      const response = await fetch(buildApiUrl(url), {
+        method: 'GET',
+        headers: getAuthHeaders(token),
+      });
+      if (!response.ok) {
+        // Use global error handler for consistent error messages and session handling
+        const errorMessage = await handleApiError(response, 'Failed to fetch unassigned devices', dispatch);
+        throw new Error(errorMessage);
+      }
+      const data = await response.json();
+      // The API returns an object with a 'data' property containing the array
+      if (data && Array.isArray(data.data)) {
+        return data.data;
+      } else {
+        // If the response is not as expected, return an empty array
+        return [];
+      }
+    } catch (error) {
+      return rejectWithValue(error instanceof Error ? error.message : 'Failed to fetch unassigned devices');
     }
   }
 );
@@ -362,6 +437,19 @@ const deviceSlice = createSlice({
       .addCase(updateDevice.rejected, (state, action) => {
         state.updating = false;
         state.updateError = action.payload as string;
+      })
+      // Handle fetchUnassignedDevices
+      .addCase(fetchUnassignedDevices.pending, (state) => {
+        state.unassignedLoading = true;
+        state.unassignedError = null;
+      })
+      .addCase(fetchUnassignedDevices.fulfilled, (state, action) => {
+        state.unassignedLoading = false;
+        state.unassignedDevices = action.payload;
+      })
+      .addCase(fetchUnassignedDevices.rejected, (state, action) => {
+        state.unassignedLoading = false;
+        state.unassignedError = action.payload as string;
       });
   },
 });

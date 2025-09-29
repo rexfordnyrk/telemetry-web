@@ -12,8 +12,8 @@ import {
   selectDeviceAssignmentsPagination,
   clearSearchParams
 } from '../store/slices/deviceAssignmentSlice';
-import { fetchDevices } from '../store/slices/deviceSlice';
-import { fetchBeneficiaries } from '../store/slices/beneficiarySlice';
+import { fetchDevices, fetchUnassignedDevices } from '../store/slices/deviceSlice';
+import { fetchBeneficiaries, fetchUnassignedBeneficiaries } from '../store/slices/beneficiarySlice';
 import DeviceAssignmentModal from '../components/DeviceAssignmentModal';
 import AssignmentFilterModal from '../components/AssignmentFilterModal';
 import { Device } from '../store/slices/deviceSlice';
@@ -58,8 +58,11 @@ const DeviceAssignments: React.FC = () => {
   // Load data on component mount
   useEffect(() => {
     dispatch(fetchDeviceAssignments({}));
-    dispatch(fetchDevices());
-    dispatch(fetchBeneficiaries());
+    dispatch(fetchDevices({}));
+    dispatch(fetchBeneficiaries({}));
+    // Fetch unassigned devices and beneficiaries for assignment modal
+    dispatch(fetchUnassignedDevices(''));
+    dispatch(fetchUnassignedBeneficiaries(''));
   }, [dispatch]);
 
   /**
@@ -134,8 +137,11 @@ const DeviceAssignments: React.FC = () => {
   const handleAssignmentSuccess = () => {
     // Refresh assignments data
     dispatch(fetchDeviceAssignments(searchParams));
-    dispatch(fetchDevices());
-    dispatch(fetchBeneficiaries());
+    dispatch(fetchDevices({}));
+    dispatch(fetchBeneficiaries({}));
+    // Refresh unassigned data for assignment modal
+    dispatch(fetchUnassignedDevices(''));
+    dispatch(fetchUnassignedBeneficiaries(''));
   };
 
   /**

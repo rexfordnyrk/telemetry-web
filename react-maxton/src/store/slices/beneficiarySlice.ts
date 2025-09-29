@@ -39,11 +39,24 @@ export interface Beneficiary {
   }>;
 }
 
+// Define parameters interface for beneficiary fetching
+export interface BeneficiaryFetchParams {
+  is_unassigned?: boolean;
+  search?: string;
+  organization?: string;
+  programme?: string;
+  district?: string;
+  is_active?: boolean;
+}
+
 // Define the state shape for beneficiaries
 interface BeneficiaryState {
   beneficiaries: Beneficiary[];
+  unassignedBeneficiaries: Beneficiary[];
   loading: boolean;
+  unassignedLoading: boolean;
   error: string | null;
+  unassignedError: string | null;
   // Single beneficiary state for details page
   loadingSingle: boolean;
   singleError: string | null;
@@ -51,8 +64,11 @@ interface BeneficiaryState {
 
 const initialState: BeneficiaryState = {
   beneficiaries: [],
+  unassignedBeneficiaries: [],
   loading: false,
+  unassignedLoading: false,
   error: null,
+  unassignedError: null,
   loadingSingle: false,
   singleError: null,
 };
@@ -111,15 +127,29 @@ export const fetchBeneficiaryById = createAsyncThunk(
  */
 export const fetchBeneficiaries = createAsyncThunk(
   'beneficiaries/fetchBeneficiaries',
-  async (_, { getState, rejectWithValue, dispatch }) => {
+  async (params: BeneficiaryFetchParams = {}, { getState, rejectWithValue, dispatch }) => {
     try {
       const state = getState() as RootState;
       const token = state.auth.token;
       if (!token) {
         throw new Error('No authentication token available');
       }
-      const url = buildApiUrl('/api/v1/beneficiaries');
-      const response = await fetch(url, {
+
+      // Build query parameters
+      const queryParams = new URLSearchParams();
+      if (params) {
+        Object.entries(params).forEach(([key, value]) => {
+          if (value !== undefined && value !== null && value !== '') {
+            queryParams.append(key, value.toString());
+          }
+        });
+      }
+      
+      const url = queryParams.toString() 
+        ? `/api/v1/beneficiaries?${queryParams.toString()}`
+        : '/api/v1/beneficiaries';
+
+      const response = await fetch(buildApiUrl(url), {
         method: 'GET',
         headers: getAuthHeaders(token),
       });
@@ -138,6 +168,52 @@ export const fetchBeneficiaries = createAsyncThunk(
       }
     } catch (error) {
       return rejectWithValue(error instanceof Error ? error.message : 'Failed to fetch beneficiaries');
+    }
+  }
+);
+
+/**
+ * Async thunk to fetch unassigned beneficiaries from the API.
+ * This request is authenticated using the JWT token from the auth state.
+ */
+export const fetchUnassignedBeneficiaries = createAsyncThunk(
+  'beneficiaries/fetchUnassignedBeneficiaries',
+  async (search: string = '', { getState, rejectWithValue, dispatch }) => {
+    try {
+      const state = getState() as RootState;
+      const token = state.auth.token;
+      if (!token) {
+        throw new Error('No authentication token available');
+      }
+
+      // Build query parameters
+      const queryParams = new URLSearchParams();
+      queryParams.append('is_unassigned', 'true');
+      if (search) {
+        queryParams.append('search', search);
+      }
+      
+      const url = `/api/v1/beneficiaries?${queryParams.toString()}`;
+
+      const response = await fetch(buildApiUrl(url), {
+        method: 'GET',
+        headers: getAuthHeaders(token),
+      });
+      if (!response.ok) {
+        // Use global error handler for consistent error messages and session handling
+        const errorMessage = await handleApiError(response, 'Failed to fetch unassigned beneficiaries', dispatch);
+        throw new Error(errorMessage);
+      }
+      const data = await response.json();
+      // The API returns an object with a 'data' property containing the array
+      if (data && Array.isArray(data.data)) {
+        return data.data;
+      } else {
+        // If the response is not as expected, return an empty array
+        return [];
+      }
+    } catch (error) {
+      return rejectWithValue(error instanceof Error ? error.message : 'Failed to fetch unassigned beneficiaries');
     }
   }
 );
@@ -185,6 +261,19 @@ const beneficiarySlice = createSlice({
       .addCase(fetchBeneficiaryById.rejected, (state, action) => {
         state.loadingSingle = false;
         state.singleError = action.payload as string;
+      })
+      // Handle fetchUnassignedBeneficiaries
+      .addCase(fetchUnassignedBeneficiaries.pending, (state) => {
+        state.unassignedLoading = true;
+        state.unassignedError = null;
+      })
+      .addCase(fetchUnassignedBeneficiaries.fulfilled, (state, action) => {
+        state.unassignedLoading = false;
+        state.unassignedBeneficiaries = action.payload;
+      })
+      .addCase(fetchUnassignedBeneficiaries.rejected, (state, action) => {
+        state.unassignedLoading = false;
+        state.unassignedError = action.payload as string;
       });
   },
 });
