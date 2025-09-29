@@ -5,6 +5,7 @@ import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { addAlert } from "../store/slices/alertSlice";
 import { useDataTable } from "../hooks/useDataTable";
 import NewBeneficiaryModal from "../components/NewBeneficiaryModal";
+import ImportBeneficiariesModal from "../components/ImportBeneficiariesModal";
 import FilterModal from "../components/FilterModal";
 import { fetchBeneficiaries } from "../store/slices/beneficiarySlice";
 import PermissionRoute from "../components/PermissionRoute";
@@ -17,6 +18,7 @@ const Beneficiaries: React.FC = () => {
   const { beneficiaries, loading, error } = useAppSelector((state) => state.beneficiaries);
 
   const [showNewBeneficiaryModal, setShowNewBeneficiaryModal] = useState(false);
+  const [showImportModal, setShowImportModal] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [modalAction, setModalAction] = useState<"disable" | "delete">("disable");
   const [targetBeneficiary, setTargetBeneficiary] = useState<any>(null);
@@ -182,21 +184,32 @@ const Beneficiaries: React.FC = () => {
               type="button"
               className="btn btn-outline-primary px-4"
               onClick={() => setShowFilterModal(true)}
-                disabled={loading}
+              disabled={loading}
             >
               <i className="material-icons-outlined me-1">filter_list</i>
               Filters
             </button>
-              {permissions.hasPermission('create_beneficiaries') && (
-            <button
-              type="button"
-              className="btn btn-grd-primary px-4"
-              onClick={() => setShowNewBeneficiaryModal(true)}
+            {permissions.hasPermission('create_beneficiaries') && (
+              <>
+                <button
+                  type="button"
+                  className="btn btn-grd-info px-4"
+                  onClick={() => setShowImportModal(true)}
                   disabled={loading}
-            >
-              + | New Beneficiary
-            </button>
-              )}
+                >
+                  <i className="material-icons-outlined me-1">file_upload</i>
+                  Import Beneficiaries
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-grd-primary px-4"
+                  onClick={() => setShowNewBeneficiaryModal(true)}
+                  disabled={loading}
+                >
+                  + | New Beneficiary
+                </button>
+              </>
+            )}
           </div>
         </div>
 
@@ -450,6 +463,10 @@ const Beneficiaries: React.FC = () => {
         filterOptions={filterOptions}
         onApplyFilters={handleApplyFilters}
         title="Beneficiaries"
+      />
+      <ImportBeneficiariesModal
+        show={showImportModal}
+        onHide={() => setShowImportModal(false)}
       />
     </MainLayout>
     </PermissionRoute>
