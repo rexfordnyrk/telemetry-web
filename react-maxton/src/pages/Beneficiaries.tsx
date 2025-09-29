@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import MainLayout from "../layouts/MainLayout";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { addAlert } from "../store/slices/alertSlice";
-import { useDataTable } from "../hooks/useDataTable";
+import DataTableWrapper from "../components/DataTableWrapper";
 import NewBeneficiaryModal from "../components/NewBeneficiaryModal";
 import ImportBeneficiariesModal from "../components/ImportBeneficiariesModal";
 import FilterModal from "../components/FilterModal";
@@ -100,8 +100,6 @@ const Beneficiaries: React.FC = () => {
     };
   }, [beneficiaries]);
 
-  // Initialize DataTable using custom hook
-  useDataTable("beneficiaries-datatable", memoizedBeneficiaries);
   const tableKey = useMemo(() => `beneficiaries-${memoizedBeneficiaries.length}`,[memoizedBeneficiaries.length]);
 
   // Helper to get status badge
@@ -256,9 +254,10 @@ const Beneficiaries: React.FC = () => {
               ) : (
             <div className="table-responsive">
               {tableVisible && (
-              <table
+              <DataTableWrapper
                 key={tableKey}
                 id="beneficiaries-datatable"
+                data={memoizedBeneficiaries}
                 className="table table-striped table-bordered"
                 style={{ width: "100%" }}
               >
@@ -399,7 +398,7 @@ const Beneficiaries: React.FC = () => {
                     <th>Actions</th>
                   </tr>
                 </tfoot>
-              </table>
+              </DataTableWrapper>
               )}
                 </div>
               )}

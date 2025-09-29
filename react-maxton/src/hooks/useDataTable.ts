@@ -1,6 +1,6 @@
 import { useEffect, useRef, useCallback } from "react";
 
-interface DataTableOptions {
+export interface DataTableOptions {
   responsive?: boolean;
   pageLength?: number;
   lengthChange?: boolean;

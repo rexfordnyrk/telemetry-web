@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import MainLayout from "../layouts/MainLayout";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { addAlert } from "../store/slices/alertSlice";
-import { useDataTable } from "../hooks/useDataTable";
+import DataTableWrapper from "../components/DataTableWrapper";
 import ImportVisitsModal from "../components/ImportVisitsModal";
 import CheckInModal from "../components/CheckInModal";
 import { fetchVisits, removeVisit, Visit } from "../store/slices/visitSlice";
@@ -32,7 +32,6 @@ const CicVisits: React.FC = () => {
 
   const memoized = useMemo(() => filteredVisits, [filteredVisits]);
 
-  useDataTable("cic-visits-datatable", memoized);
   const tableKey = useMemo(() => `cic-visits-${memoized.length}`,[memoized.length]);
   const [tableVisible, setTableVisible] = useState(true);
   useEffect(() => {
@@ -149,7 +148,7 @@ const CicVisits: React.FC = () => {
             ) : (
               <div className="table-responsive">
                 {tableVisible && (
-                <table key={tableKey} id="cic-visits-datatable" className="table table-striped table-bordered" style={{ width: "100%" }}>
+                <DataTableWrapper key={tableKey} id="cic-visits-datatable" data={memoized} className="table table-striped table-bordered" style={{ width: "100%" }}>
                   <thead>
                     <tr>
                       <th>CIC</th>
@@ -203,7 +202,7 @@ const CicVisits: React.FC = () => {
                       <th>Actions</th>
                     </tr>
                   </tfoot>
-                </table>
+                </DataTableWrapper>
                 )}
               </div>
             )}
