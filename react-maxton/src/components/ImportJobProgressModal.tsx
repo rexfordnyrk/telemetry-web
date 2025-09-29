@@ -75,7 +75,7 @@ const ImportJobProgressModal: React.FC<ImportJobProgressModalProps> = ({ show, o
               </button>
             )}
             <button type="button" className={`btn ${status?.status === 'completed' ? 'btn-grd-success' : status?.status === 'failed' ? 'btn-grd-danger' : 'btn-secondary'}`} onClick={onClose}>
-              Close
+              {status?.status === 'completed' ? 'Done' : 'Close'}
             </button>
           </div>
         </div>
