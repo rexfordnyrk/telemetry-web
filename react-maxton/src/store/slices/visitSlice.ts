@@ -9,7 +9,7 @@ export interface Visit {
   name: string;
   programme: string; // Intervention
   activity: string;
-  assisted_by: string;
+  assisted_by: string | null;
   notes: string;
   check_in: string; // ISO datetime
   check_out: string | null; // ISO datetime or null
