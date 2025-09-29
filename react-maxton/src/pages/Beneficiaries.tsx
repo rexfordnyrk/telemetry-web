@@ -383,8 +383,7 @@ const Beneficiaries: React.FC = () => {
                   ordering: true,
                   info: true,
                   autoWidth: false,
-                  responsive: true,
-                  dom: 'lBfrtip'
+                  responsive: true
                 }}
                 className="table table-striped table-bordered"
                 style={{ width: "100%" }}
