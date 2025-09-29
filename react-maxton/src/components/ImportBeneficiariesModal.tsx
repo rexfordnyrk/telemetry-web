@@ -356,6 +356,15 @@ const ImportBeneficiariesModal: React.FC<ImportBeneficiariesModalProps> = ({ sho
     return () => { cancelled = true; };
   }, [show, importSource, token]);
 
+  useEffect(() => {
+    return () => {
+      if (pollRef.current) {
+        window.clearInterval(pollRef.current);
+        pollRef.current = null;
+      }
+    };
+  }, []);
+
   return (
     <Modal
       show={show}
