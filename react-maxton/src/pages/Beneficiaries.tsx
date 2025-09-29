@@ -378,33 +378,7 @@ const Beneficiaries: React.FC = () => {
                 }}
                 className="table table-striped table-bordered"
                 style={{ width: "100%" }}
-              >
-                <thead>
-                  <tr>
-                    <th>Name</th>
-                    <th>Email</th>
-                    <th>District</th>
-                    <th>Partner</th>
-                    <th>Intervention</th>
-                    <th>Date Enrolled</th>
-                    <th>Assigned Device</th>
-                    <th>Actions</th>
-                  </tr>
-                </thead>
-                <tbody></tbody>
-                <tfoot>
-                  <tr>
-                    <th>Name</th>
-                    <th>Email</th>
-                    <th>District</th>
-                    <th>Partner</th>
-                    <th>Intervention</th>
-                    <th>Date Enrolled</th>
-                    <th>Assigned Device</th>
-                    <th>Actions</th>
-                  </tr>
-                </tfoot>
-              </DataTableWrapper>
+              />
                 </div>
               )}
             </div>
