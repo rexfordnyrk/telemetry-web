@@ -41,7 +41,11 @@ export const API_CONFIG = {
       CREATE: '/api/v1/beneficiaries',       // Create new beneficiary
       UPDATE: (id: string) => `/api/v1/beneficiaries/${id}`,     // Update specific beneficiary
       DELETE: (id: string) => `/api/v1/beneficiaries/${id}`,     // Delete specific beneficiary
-      PMS_IMPORT: '/api/v1/beneficiaries/import/pms', // Import beneficiaries from PMS using filters
+      PMS_IMPORT: '/api/v1/beneficiaries/import/pms', // Legacy PMS import endpoint (sync)
+      IMPORT: '/api/v1/beneficiaries/import', // Queue async import job
+      IMPORT_JOB: (jobId: string) => `/api/v1/beneficiaries/import/jobs/${jobId}`, // Get job status
+      IMPORT_JOBS: '/api/v1/beneficiaries/import/jobs', // List jobs
+      IMPORT_JOB_CANCEL: (jobId: string) => `/api/v1/beneficiaries/import/jobs/${jobId}/cancel`, // Cancel job
     },
 
     // Lookup endpoints for select lists
