@@ -32,7 +32,6 @@ const CicVisits: React.FC = () => {
 
   const memoized = useMemo(() => filteredVisits, [filteredVisits]);
 
-  const tableKey = useMemo(() => `cic-visits-${memoized.length}`,[memoized.length]);
 
   const dtColumns = useMemo(() => [
     { title: 'CIC', data: 'cic' },
@@ -86,12 +85,6 @@ const CicVisits: React.FC = () => {
 
     return () => { if ($table && $table.off) $table.off('.dtActions'); };
   }, [memoized]);
-  const [tableVisible, setTableVisible] = useState(true);
-  useEffect(() => {
-    setTableVisible(false);
-    const t = setTimeout(() => setTableVisible(true), 0);
-    return () => clearTimeout(t);
-  }, [memoized.length]);
 
   const handleActionClick = (visit: Visit, action: "delete") => {
     setTargetVisit(visit);
@@ -200,8 +193,7 @@ const CicVisits: React.FC = () => {
               </div>
             ) : (
               <div className="table-responsive">
-                {tableVisible && (
-                <DataTableWrapper key={tableKey} id="cic-visits-datatable" data={memoized} options={{ columns: dtColumns, pageLength: 10, autoWidth: false, searching: true, ordering: true, info: true, lengthChange: true, responsive: true }} className="table table-striped table-bordered" style={{ width: "100%" }}>
+                <DataTableWrapper id="cic-visits-datatable" data={memoized} options={{ columns: dtColumns, pageLength: 10, autoWidth: false, searching: true, ordering: true, info: true, lengthChange: true, responsive: true }} className="table table-striped table-bordered" style={{ width: "100%" }}>
                   <thead>
                     <tr>
                       <th>CIC</th>
@@ -232,7 +224,6 @@ const CicVisits: React.FC = () => {
                     </tr>
                   </tfoot>
                 </DataTableWrapper>
-                )}
               </div>
             )}
           </div>
