@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { Modal, Form, Row, Col, Table, Alert } from "react-bootstrap";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { addAlert } from "../store/slices/alertSlice";
@@ -83,6 +83,25 @@ const ImportBeneficiariesModal: React.FC<ImportBeneficiariesModalProps> = ({ sho
 
   const [importSource, setImportSource] = useState<ImportSource>("csv");
   const [isImporting, setIsImporting] = useState(false);
+
+  // PMS lookups and filter state
+  interface LookupItem { id: string; name: string; }
+  const [districts, setDistricts] = useState<LookupItem[]>([]);
+  const [interventions, setInterventions] = useState<LookupItem[]>([]);
+  const [partners, setPartners] = useState<LookupItem[]>([]);
+  const [lookupLoading, setLookupLoading] = useState(false);
+  const [lookupError, setLookupError] = useState<string | null>(null);
+
+  const [districtID, setDistrictID] = useState("");
+  const [interventionID, setInterventionID] = useState("");
+  const [partnerID, setPartnerID] = useState("");
+
+  const [updatedAfter, setUpdatedAfter] = useState("");
+  const [createdAfter, setCreatedAfter] = useState("");
+  const [updatedBetweenStart, setUpdatedBetweenStart] = useState("");
+  const [updatedBetweenEnd, setUpdatedBetweenEnd] = useState("");
+  const [createdBetweenStart, setCreatedBetweenStart] = useState("");
+  const [createdBetweenEnd, setCreatedBetweenEnd] = useState("");
 
   const [fileName, setFileName] = useState("");
   const [parsedHeaders, setParsedHeaders] = useState<string[]>([]);
@@ -191,11 +210,28 @@ const ImportBeneficiariesModal: React.FC<ImportBeneficiariesModalProps> = ({ sho
     setIsImporting(true);
     setError(null);
     try {
+      // Validate ranges if partially filled
+      if ((updatedBetweenStart && !updatedBetweenEnd) || (!updatedBetweenStart && updatedBetweenEnd)) {
+        throw new Error("Please provide both start and end dates for Updated Between.");
+      }
+      if ((createdBetweenStart && !createdBetweenEnd) || (!createdBetweenStart && createdBetweenEnd)) {
+        throw new Error("Please provide both start and end dates for Created Between.");
+      }
+
+      const pmsFilters: any = {};
+      if (districtID) pmsFilters.districtID = districtID;
+      if (interventionID) pmsFilters.interventionID = interventionID;
+      if (partnerID) pmsFilters.partnerID = partnerID;
+      if (updatedAfter) pmsFilters.updatedAfter = updatedAfter;
+      if (createdAfter) pmsFilters.createdAfter = createdAfter;
+      if (updatedBetweenStart && updatedBetweenEnd) pmsFilters.updatedBetween = { from: updatedBetweenStart, to: updatedBetweenEnd };
+      if (createdBetweenStart && createdBetweenEnd) pmsFilters.createdBetween = { from: createdBetweenStart, to: createdBetweenEnd };
+
       const url = buildApiUrl(API_CONFIG.ENDPOINTS.BENEFICIARIES.PMS_IMPORT);
       const response = await fetch(url, {
         method: "POST",
         headers: getAuthHeaders(token),
-        body: JSON.stringify({ filters }),
+        body: JSON.stringify({ filters: pmsFilters }),
       });
       if (!response.ok) {
         const text = await response.text();
@@ -214,7 +250,7 @@ const ImportBeneficiariesModal: React.FC<ImportBeneficiariesModalProps> = ({ sho
       dispatch(addAlert({
         type: "success",
         title: "PMS Import Complete",
-        message: `${importedCount} beneficiaries imported from PMS using current filters.`,
+        message: `${importedCount} beneficiaries imported from PMS using selected filters.`,
       }));
       resetStateAndClose();
     } catch (err) {
@@ -222,7 +258,7 @@ const ImportBeneficiariesModal: React.FC<ImportBeneficiariesModalProps> = ({ sho
     } finally {
       setIsImporting(false);
     }
-  }, [dispatch, token, filters]);
+  }, [dispatch, token, districtID, interventionID, partnerID, updatedAfter, createdAfter, updatedBetweenStart, updatedBetweenEnd, createdBetweenStart, createdBetweenEnd]);
 
   const handleImport = useCallback(() => {
     if (importSource === "csv") {
@@ -238,11 +274,56 @@ const ImportBeneficiariesModal: React.FC<ImportBeneficiariesModalProps> = ({ sho
     setParsedRows([]);
     setError(null);
     setImportSource("csv");
+    // Reset PMS filters
+    setDistrictID("");
+    setInterventionID("");
+    setPartnerID("");
+    setUpdatedAfter("");
+    setCreatedAfter("");
+    setUpdatedBetweenStart("");
+    setUpdatedBetweenEnd("");
+    setCreatedBetweenStart("");
+    setCreatedBetweenEnd("");
     onHide();
   }, [onHide]);
 
   const previewRows = useMemo(() => parsedRows.slice(0, 5), [parsedRows]);
-  const filterEntries = useMemo(() => Object.entries(filters || {}), [filters]);
+
+  // Load lookups when switching to PMS
+  useEffect(() => {
+    if (!show || importSource !== 'pms') return;
+    if (!token) return;
+    let cancelled = false;
+    const load = async () => {
+      try {
+        setLookupLoading(true);
+        setLookupError(null);
+        const [dRes, iRes, pRes] = await Promise.all([
+          fetch(buildApiUrl(API_CONFIG.ENDPOINTS.LOOKUPS.DISTRICTS), { headers: getAuthHeaders(token) }),
+          fetch(buildApiUrl(API_CONFIG.ENDPOINTS.LOOKUPS.INTERVENTIONS), { headers: getAuthHeaders(token) }),
+          fetch(buildApiUrl(API_CONFIG.ENDPOINTS.LOOKUPS.PARTNERS), { headers: getAuthHeaders(token) }),
+        ]);
+        if (!dRes.ok || !iRes.ok || !pRes.ok) {
+          throw new Error('Failed to load lookup lists');
+        }
+        const [dData, iData, pData] = await Promise.all([dRes.json(), iRes.json(), pRes.json()]);
+        if (cancelled) return;
+        const mapItems = (raw: any): LookupItem[] => {
+          const arr = raw?.data || raw || [];
+          return Array.isArray(arr) ? arr.map((x: any) => ({ id: String(x.id), name: x.name || x.title || x.label || String(x.id) })) : [];
+        };
+        setDistricts(mapItems(dData));
+        setInterventions(mapItems(iData));
+        setPartners(mapItems(pData));
+      } catch (e) {
+        if (!cancelled) setLookupError(e instanceof Error ? e.message : 'Lookup load failed');
+      } finally {
+        if (!cancelled) setLookupLoading(false);
+      }
+    };
+    load();
+    return () => { cancelled = true; };
+  }, [show, importSource, token]);
 
   return (
     <Modal
@@ -307,7 +388,7 @@ const ImportBeneficiariesModal: React.FC<ImportBeneficiariesModalProps> = ({ sho
                       </tr>
                     </thead>
                     <tbody>
-                      {previewRows.map((r, idx) => (
+                      {parsedRows.slice(0, 5).map((r, idx) => (
                         <tr key={idx}>
                           {parsedHeaders.map((h) => (
                             <td key={h}>{r[h] || ""}</td>
@@ -317,41 +398,93 @@ const ImportBeneficiariesModal: React.FC<ImportBeneficiariesModalProps> = ({ sho
                     </tbody>
                   </Table>
                 </div>
-                {parsedRows.length > previewRows.length && (
-                  <div className="text-muted small">Showing first {previewRows.length} of {parsedRows.length} rows</div>
+                {parsedRows.length > 5 && (
+                  <div className="text-muted small">Showing first 5 of {parsedRows.length} rows</div>
                 )}
               </div>
             )}
           </>
         ) : (
           <>
-            <Alert variant="info" className="mb-3">
-              Importing from PMS will request beneficiaries from the backend using the current filters below.
-            </Alert>
-            <div className="table-responsive">
-              <Table striped bordered size="sm" className="mb-0">
-                <thead>
-                  <tr>
-                    <th>Filter</th>
-                    <th>Value</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filterEntries.length === 0 ? (
-                    <tr>
-                      <td colSpan={2} className="text-muted">No filters selected. All available PMS beneficiaries may be imported.</td>
-                    </tr>
-                  ) : (
-                    filterEntries.map(([k, v]) => (
-                      <tr key={k}>
-                        <td>{k}</td>
-                        <td>{String(v)}</td>
-                      </tr>
-                    ))
-                  )}
-                </tbody>
-              </Table>
-            </div>
+            {lookupError && (
+              <Alert variant="danger" className="mb-3">{lookupError}</Alert>
+            )}
+            <Row className="g-3">
+              <Col md={4}>
+                <Form.Group>
+                  <Form.Label>District</Form.Label>
+                  <Form.Select value={districtID} onChange={(e) => setDistrictID(e.target.value)} disabled={lookupLoading}>
+                    <option value="">Select District</option>
+                    {districts.map((d) => (
+                      <option key={d.id} value={d.id}>{d.name}</option>
+                    ))}
+                  </Form.Select>
+                </Form.Group>
+              </Col>
+              <Col md={4}>
+                <Form.Group>
+                  <Form.Label>Intervention</Form.Label>
+                  <Form.Select value={interventionID} onChange={(e) => setInterventionID(e.target.value)} disabled={lookupLoading}>
+                    <option value="">Select Intervention</option>
+                    {interventions.map((i) => (
+                      <option key={i.id} value={i.id}>{i.name}</option>
+                    ))}
+                  </Form.Select>
+                </Form.Group>
+              </Col>
+              <Col md={4}>
+                <Form.Group>
+                  <Form.Label>Partner</Form.Label>
+                  <Form.Select value={partnerID} onChange={(e) => setPartnerID(e.target.value)} disabled={lookupLoading}>
+                    <option value="">Select Partner</option>
+                    {partners.map((p) => (
+                      <option key={p.id} value={p.id}>{p.name}</option>
+                    ))}
+                  </Form.Select>
+                </Form.Group>
+              </Col>
+            </Row>
+
+            <hr />
+
+            <Row className="g-3">
+              <Col md={3}>
+                <Form.Group>
+                  <Form.Label>Updated After</Form.Label>
+                  <Form.Control type="date" value={updatedAfter} onChange={(e) => setUpdatedAfter(e.target.value)} />
+                </Form.Group>
+              </Col>
+              <Col md={3}>
+                <Form.Group>
+                  <Form.Label>Created After</Form.Label>
+                  <Form.Control type="date" value={createdAfter} onChange={(e) => setCreatedAfter(e.target.value)} />
+                </Form.Group>
+              </Col>
+              <Col md={3}>
+                <Form.Group>
+                  <Form.Label>Updated Between (From)</Form.Label>
+                  <Form.Control type="date" value={updatedBetweenStart} onChange={(e) => setUpdatedBetweenStart(e.target.value)} />
+                </Form.Group>
+              </Col>
+              <Col md={3}>
+                <Form.Group>
+                  <Form.Label>Updated Between (To)</Form.Label>
+                  <Form.Control type="date" value={updatedBetweenEnd} onChange={(e) => setUpdatedBetweenEnd(e.target.value)} />
+                </Form.Group>
+              </Col>
+              <Col md={3}>
+                <Form.Group>
+                  <Form.Label>Created Between (From)</Form.Label>
+                  <Form.Control type="date" value={createdBetweenStart} onChange={(e) => setCreatedBetweenStart(e.target.value)} />
+                </Form.Group>
+              </Col>
+              <Col md={3}>
+                <Form.Group>
+                  <Form.Label>Created Between (To)</Form.Label>
+                  <Form.Control type="date" value={createdBetweenEnd} onChange={(e) => setCreatedBetweenEnd(e.target.value)} />
+                </Form.Group>
+              </Col>
+            </Row>
           </>
         )}
       </Modal.Body>
