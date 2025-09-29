@@ -166,6 +166,17 @@ const Beneficiaries: React.FC = () => {
     }
   ], []);
 
+  const dtOptions = useMemo(() => ({
+    columns: dtColumns,
+    pageLength: 10,
+    lengthChange: true,
+    searching: true,
+    ordering: true,
+    info: true,
+    autoWidth: false,
+    responsive: true,
+  }), [dtColumns]);
+
   // Delegate clicks from DataTables-rendered content
   useEffect(() => {
     if (!window.$) return;
