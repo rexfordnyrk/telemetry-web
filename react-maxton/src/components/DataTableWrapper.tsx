@@ -1,4 +1,4 @@
-import React, { PropsWithChildren } from "react";
+import React from "react";
 import { useDataTable } from "../hooks/useDataTable";
 import type { DataTableOptions } from "../hooks/useDataTable";
 
@@ -9,22 +9,18 @@ interface DataTableWrapperProps extends React.TableHTMLAttributes<HTMLTableEleme
   shouldInitialize?: boolean;
 }
 
-const DataTableWrapper: React.FC<PropsWithChildren<DataTableWrapperProps>> = ({
+const DataTableWrapper: React.FC<DataTableWrapperProps> = ({
   id,
   data,
   options,
   shouldInitialize = true,
-  children,
   className,
   style,
   ...rest
 }) => {
   useDataTable(id, data, options, shouldInitialize);
-  return (
-    <table id={id} className={className} style={style} {...rest}>
-      {children}
-    </table>
-  );
+  // Intentionally render no children so DataTables fully owns the DOM subtree
+  return <table id={id} className={className} style={style} {...rest} />;
 };
 
 export default DataTableWrapper;
