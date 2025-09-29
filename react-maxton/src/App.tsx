@@ -360,7 +360,17 @@ function App() {
                     </ProtectedRoute>
                   }
                 />
-                
+
+                {/* CIC Visits page */}
+                <Route
+                  path="/beneficiary-management/cic-visits"
+                  element={
+                    <ProtectedRoute>
+                      <CicVisits />
+                    </ProtectedRoute>
+                  }
+                />
+
                 {/* Individual beneficiary details page */}
                 <Route
                   path="/beneficiary-management/beneficiaries/:id"
