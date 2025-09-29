@@ -43,7 +43,14 @@ export const API_CONFIG = {
       DELETE: (id: string) => `/api/v1/beneficiaries/${id}`,     // Delete specific beneficiary
       PMS_IMPORT: '/api/v1/beneficiaries/import/pms', // Import beneficiaries from PMS using filters
     },
-    
+
+    // Lookup endpoints for select lists
+    LOOKUPS: {
+      DISTRICTS: '/api/v1/lookups/districts',
+      INTERVENTIONS: '/api/v1/lookups/interventions',
+      PARTNERS: '/api/v1/lookups/partners',
+    },
+
     // Device management endpoints
     DEVICES: {
       LIST: '/api/v1/devices',               // Get all devices
