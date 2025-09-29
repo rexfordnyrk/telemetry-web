@@ -41,6 +41,7 @@ export const API_CONFIG = {
       CREATE: '/api/v1/beneficiaries',       // Create new beneficiary
       UPDATE: (id: string) => `/api/v1/beneficiaries/${id}`,     // Update specific beneficiary
       DELETE: (id: string) => `/api/v1/beneficiaries/${id}`,     // Delete specific beneficiary
+      PMS_IMPORT: '/api/v1/beneficiaries/import/pms', // Import beneficiaries from PMS using filters
     },
     
     // Device management endpoints

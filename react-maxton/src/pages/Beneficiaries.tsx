@@ -467,6 +467,7 @@ const Beneficiaries: React.FC = () => {
       <ImportBeneficiariesModal
         show={showImportModal}
         onHide={() => setShowImportModal(false)}
+        filters={activeFilters}
       />
     </MainLayout>
     </PermissionRoute>
