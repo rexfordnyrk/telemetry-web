@@ -102,6 +102,123 @@ const Beneficiaries: React.FC = () => {
 
   const tableKey = useMemo(() => `beneficiaries-${memoizedBeneficiaries.length}`,[memoizedBeneficiaries.length]);
 
+  const dtColumns = useMemo(() => [
+    {
+      title: 'Name',
+      data: null,
+      render: (_: any, __: any, row: any) => {
+        const initials = String(row.name || '')
+          .split(' ')
+          .map((n: string) => n[0])
+          .join('')
+          .toUpperCase();
+        const email = row.email || '';
+        return `
+          <div class="d-flex align-items-center gap-3">
+            <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center" style="width:40px;height:40px;font-size:14px;">
+              ${initials}
+            </div>
+            <div>
+              <a href="#" class="text-decoration-none fw-bold" data-action="view-beneficiary" data-id="${row.id}">
+                ${row.name || ''}
+              </a>
+              <div class="text-muted small">${email}</div>
+            </div>
+          </div>`;
+      }
+    },
+    { title: 'Email', data: 'email' },
+    { title: 'District', data: 'district' },
+    { title: 'Partner', data: 'organization' },
+    { title: 'Intervention', data: 'programme' },
+    {
+      title: 'Date Enrolled',
+      data: 'date_enrolled',
+      render: (d: any) => {
+        try { return d ? new Date(d).toLocaleDateString() : '-'; } catch { return '-'; }
+      }
+    },
+    {
+      title: 'Assigned Device',
+      data: null,
+      render: (_: any, __: any, row: any) => {
+        if (row.current_device) {
+          const id = row.current_device.id;
+          const name = row.current_device.device_name || 'Device';
+          return `<a href="#" class="text-decoration-none fw-bold text-primary" data-action="view-device" data-id="${id}" title="Device ID: ${id}">${name}</a>`;
+        }
+        return '<span class="text-muted">Unassigned</span>';
+      }
+    },
+    {
+      title: 'Actions',
+      data: null,
+      orderable: false,
+      searchable: false,
+      render: (_: any, __: any, row: any) => {
+        const isActive = !!row.is_active;
+        return `
+          <div class="d-flex gap-1">
+            <button class="btn btn-sm p-1" title="Edit Beneficiary" data-action="edit" data-id="${row.id}" style="border:none;background:transparent;">
+              <i class="material-icons-outlined text-primary">edit</i>
+            </button>
+            <button class="btn btn-sm p-1" title="${isActive ? 'Deactivate' : 'Activate'} Beneficiary" data-action="toggle-active" data-id="${row.id}" style="border:none;background:transparent;">
+              <i class="material-icons-outlined text-warning">${isActive ? 'block' : 'check_circle'}</i>
+            </button>
+            <button class="btn btn-sm p-1" title="Delete Beneficiary" data-action="delete" data-id="${row.id}" style="border:none;background:transparent;">
+              <i class="material-icons-outlined text-danger">delete</i>
+            </button>
+          </div>`;
+      }
+    }
+  ], []);
+
+  // Delegate clicks from DataTables-rendered content
+  useEffect(() => {
+    if (!window.$) return;
+    const $table = window.$('#beneficiaries-datatable');
+    if ($table.length === 0) return;
+
+    const onViewBeneficiary = (e: any) => {
+      e.preventDefault();
+      const id = window.$(e.currentTarget).data('id');
+      if (id) navigate(`/beneficiary-management/beneficiaries/${id}`);
+    };
+    const onViewDevice = (e: any) => {
+      e.preventDefault();
+      const id = window.$(e.currentTarget).data('id');
+      if (id) navigate(`/device-management/devices/${id}`);
+    };
+    const onEdit = (e: any) => {
+      e.preventDefault();
+      const id = window.$(e.currentTarget).data('id');
+      if (id) navigate(`/beneficiary-management/beneficiaries/${id}`);
+    };
+    const onToggle = (e: any) => {
+      e.preventDefault();
+      const id = window.$(e.currentTarget).data('id');
+      const b = memoizedBeneficiaries.find((x: any) => x.id === id);
+      if (b) handleActionClick(b, 'disable');
+    };
+    const onDelete = (e: any) => {
+      e.preventDefault();
+      const id = window.$(e.currentTarget).data('id');
+      const b = memoizedBeneficiaries.find((x: any) => x.id === id);
+      if (b) handleActionClick(b, 'delete');
+    };
+
+    $table.off('.dtActions');
+    $table.on('click.dtActions', 'a[data-action="view-beneficiary"]', onViewBeneficiary);
+    $table.on('click.dtActions', 'a[data-action="view-device"]', onViewDevice);
+    $table.on('click.dtActions', 'button[data-action="edit"]', onEdit);
+    $table.on('click.dtActions', 'button[data-action="toggle-active"]', onToggle);
+    $table.on('click.dtActions', 'button[data-action="delete"]', onDelete);
+
+    return () => {
+      if ($table && $table.off) $table.off('.dtActions');
+    };
+  }, [navigate, memoizedBeneficiaries]);
+
   // Helper to get status badge
   const getStatusElement = (status: string) => {
     const statusConfig = {
@@ -258,6 +375,17 @@ const Beneficiaries: React.FC = () => {
                 key={tableKey}
                 id="beneficiaries-datatable"
                 data={memoizedBeneficiaries}
+                options={{
+                  columns: dtColumns,
+                  pageLength: 10,
+                  lengthChange: true,
+                  searching: true,
+                  ordering: true,
+                  info: true,
+                  autoWidth: false,
+                  responsive: true,
+                  dom: 'lBfrtip'
+                }}
                 className="table table-striped table-bordered"
                 style={{ width: "100%" }}
               >
@@ -273,119 +401,7 @@ const Beneficiaries: React.FC = () => {
                     <th>Actions</th>
                   </tr>
                 </thead>
-                <tbody>
-                  {memoizedBeneficiaries.map((beneficiary) => (
-                    <tr key={beneficiary.id}>
-                      <td>
-                        <div className="d-flex align-items-center gap-3">
-                          <div
-                            className="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center"
-                            style={{
-                              width: "40px",
-                              height: "40px",
-                              fontSize: "14px",
-                            }}
-                          >
-                            {getInitials(beneficiary.name)}
-                          </div>
-                          <div>
-                            <a
-                              href="#"
-                              className="text-decoration-none fw-bold"
-                              onClick={(e) => {
-                                e.preventDefault();
-                                navigate(
-                                  `/beneficiary-management/beneficiaries/${beneficiary.id}`,
-                                );
-                              }}
-                            >
-                              {beneficiary.name}
-                            </a>
-                            <div className="text-muted small">
-                              {beneficiary.email}
-                            </div>
-                          </div>
-                        </div>
-                      </td>
-                      <td>{beneficiary.email}</td>
-                      <td>{beneficiary.district}</td>
-                      <td>{beneficiary.organization}</td>
-                      <td>{beneficiary.programme}</td>
-                      <td>
-                            {new Date(beneficiary.date_enrolled).toLocaleDateString()}
-                      </td>
-                      <td>
-                        {beneficiary.current_device ? (
-                          <a
-                            href="#"
-                            className="text-decoration-none fw-bold text-primary"
-                            onClick={(e) => {
-                              e.preventDefault();
-                                  // Only navigate if current_device is not null
-                                  if (beneficiary.current_device) {
-                              navigate(
-                                `/device-management/devices/${beneficiary.current_device.id}`,
-                              );
-                                  }
-                            }}
-                                title={
-                                  beneficiary.current_device
-                                    ? `Device ID: ${beneficiary.current_device.id}`
-                                    : undefined
-                                }
-                          >
-                                {/* Only show device name if current_device is not null */}
-                            {beneficiary.current_device.device_name}
-                          </a>
-                        ) : (
-                          <span className="text-muted">Unassigned</span>
-                        )}
-                      </td>
-                      <td>
-                        <div className="d-flex gap-1">
-                          <button
-                            className="btn btn-sm p-1"
-                            title="Edit Beneficiary"
-                            style={{
-                              border: "none",
-                              background: "transparent",
-                            }}
-                          >
-                                <i className="material-icons-outlined text-primary">edit</i>
-                          </button>
-                          <button
-                            className="btn btn-sm p-1"
-                            title={
-                              !beneficiary.is_active
-                                ? "Activate Beneficiary"
-                                : "Deactivate Beneficiary"
-                            }
-                                onClick={() => handleActionClick(beneficiary, "disable")}
-                            style={{
-                              border: "none",
-                              background: "transparent",
-                            }}
-                          >
-                            <i className="material-icons-outlined text-warning">
-                                  {!beneficiary.is_active ? "check_circle" : "block"}
-                            </i>
-                          </button>
-                          <button
-                            className="btn btn-sm p-1"
-                            title="Delete Beneficiary"
-                                onClick={() => handleActionClick(beneficiary, "delete")}
-                            style={{
-                              border: "none",
-                              background: "transparent",
-                            }}
-                          >
-                                <i className="material-icons-outlined text-danger">delete</i>
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
+                <tbody></tbody>
                 <tfoot>
                   <tr>
                     <th>Name</th>
