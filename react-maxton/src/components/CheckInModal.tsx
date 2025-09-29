@@ -36,7 +36,6 @@ const CheckInModal: React.FC<CheckInModalProps> = ({ show, onHide }) => {
     if (!formData.name.trim()) next.name = "Name is required";
     if (!formData.programme.trim()) next.programme = "Intervention is required";
     if (!formData.activity.trim()) next.activity = "Activity is required";
-    if (!formData.assisted_by.trim()) next.assisted_by = "Assisted By is required";
     if (!formData.check_in.trim()) next.check_in = "Check-In is required";
     setErrors(next);
     return Object.keys(next).length === 0;
@@ -59,7 +58,7 @@ const CheckInModal: React.FC<CheckInModalProps> = ({ show, onHide }) => {
       name: formData.name.trim(),
       programme: formData.programme.trim(),
       activity: formData.activity.trim(),
-      assisted_by: formData.assisted_by.trim(),
+      assisted_by: formData.assisted_by.trim() ? formData.assisted_by.trim() : null,
       notes: formData.notes.trim(),
       check_in: toIso(formData.check_in),
       check_out: null,
@@ -167,7 +166,7 @@ const CheckInModal: React.FC<CheckInModalProps> = ({ show, onHide }) => {
             <Col md={6}>
               <Form.Group>
                 <Form.Label>
-                  Assisted By <span className="text-danger">*</span>
+                  Assisted By
                 </Form.Label>
                 <Form.Control
                   type="text"
@@ -175,9 +174,7 @@ const CheckInModal: React.FC<CheckInModalProps> = ({ show, onHide }) => {
                   value={formData.assisted_by}
                   onChange={handleInputChange}
                   placeholder="Enter staff name"
-                  isInvalid={!!errors.assisted_by}
                 />
-                <Form.Control.Feedback type="invalid">{errors.assisted_by}</Form.Control.Feedback>
               </Form.Group>
             </Col>
             <Col md={6}>
