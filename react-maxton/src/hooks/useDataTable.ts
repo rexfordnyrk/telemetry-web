@@ -10,6 +10,9 @@ export interface DataTableOptions {
   autoWidth?: boolean;
   order?: Array<[number, string]>;
   columnDefs?: any[];
+  columns?: any[];
+  rowId?: string;
+  data?: any[];
   processing?: boolean;
   serverSide?: boolean;
   deferRender?: boolean;
@@ -25,11 +28,9 @@ export const useDataTable = (
   const isInitializedRef = useRef(false);
   const tableInstanceRef = useRef<any>(null);
 
-  // Cleanup function to destroy DataTable instance
   const destroyDataTable = useCallback(() => {
     if (tableInstanceRef.current && window.$ && typeof window.$.fn.DataTable === 'function') {
       try {
-        // Check if the table still exists in DOM before destroying
         const tableElement = document.getElementById(tableId);
         if (tableElement) {
           tableInstanceRef.current.destroy();
@@ -42,8 +43,8 @@ export const useDataTable = (
     }
   }, [tableId]);
 
+  // Initialize once, with provided columns/options. Seed with initial data.
   useEffect(() => {
-    // Don't initialize if condition is false or if jQuery/DataTable isn't available
     if (!shouldInitialize || !window.$ || typeof window.$.fn.DataTable !== 'function') {
       return;
     }
@@ -51,7 +52,6 @@ export const useDataTable = (
     // Clean up any existing instance before initializing
     destroyDataTable();
 
-    // Small delay to ensure DOM is ready
     const timeoutId = setTimeout(() => {
       try {
         const $table = window.$(`#${tableId}`);
@@ -61,8 +61,9 @@ export const useDataTable = (
             serverSide: false,
             deferRender: false,
             ...options,
+            data: options.data ?? data,
           };
-          tableInstanceRef.current = $table.DataTable(defaultOptions);
+          tableInstanceRef.current = $table.DataTable(defaultOptions as any);
           isInitializedRef.current = true;
         }
       } catch (error) {
@@ -74,28 +75,24 @@ export const useDataTable = (
     return () => {
       clearTimeout(timeoutId);
     };
-  }, [shouldInitialize, options, destroyDataTable, tableId, data]);
+    // Re-init only when structural options change (columns/dom/order/etc.) or shouldInitialize toggles
+  }, [shouldInitialize, destroyDataTable, tableId, options]);
 
-  // Reset initialization flag when shouldInitialize changes
+  // On data changes, update via DataTables API instead of destroying
   useEffect(() => {
-    if (!shouldInitialize) {
-      destroyDataTable();
-    } else if (shouldInitialize && !isInitializedRef.current) {
-      // If shouldInitialize becomes true and we're not initialized, 
-      // the main initialization effect will handle it
-      // This is just to ensure we don't have stale state
+    if (!isInitializedRef.current || !tableInstanceRef.current) return;
+    try {
+      const api = tableInstanceRef.current;
+      api.rows().clear();
+      if (Array.isArray(data) && data.length > 0) {
+        api.rows.add(data);
+      }
+      api.draw(false);
+    } catch (error) {
+      console.warn('Error updating DataTable rows via API:', error);
     }
-  }, [shouldInitialize, destroyDataTable]);
+  }, [data]);
 
-  // On data changes, destroy the DataTable so it can be re-initialized cleanly in the init effect above.
-  useEffect(() => {
-    if (isInitializedRef.current) {
-      destroyDataTable();
-    }
-    // Re-init happens via dependency on `data` in the init effect
-  }, [data, destroyDataTable]);
-
-  // Cleanup on unmount
   useEffect(() => {
     return () => {
       destroyDataTable();
