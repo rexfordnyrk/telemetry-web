@@ -137,6 +137,12 @@ export const navigationData: NavigationItem[] = [
         path: "/beneficiary-management/beneficiaries",
         icon: "arrow_right",
       },
+      {
+        id: "cic-visits",
+        title: "CIC Visits",
+        path: "/beneficiary-management/cic-visits",
+        icon: "arrow_right",
+      },
     ],
   },
 
