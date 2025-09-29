@@ -9,7 +9,6 @@ import { fetchVisits, removeVisit, Visit } from "../store/slices/visitSlice";
 
 const CicVisits: React.FC = () => {
   const dispatch = useAppDispatch();
-  const navigate = useNavigate();
   const { visits, loading, error } = useAppSelector((state) => state.visits);
 
   const [showCheckInModal, setShowCheckInModal] = useState(false);
