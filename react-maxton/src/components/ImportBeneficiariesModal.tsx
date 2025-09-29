@@ -83,6 +83,11 @@ const ImportBeneficiariesModal: React.FC<ImportBeneficiariesModalProps> = ({ sho
 
   const [importSource, setImportSource] = useState<ImportSource>("csv");
   const [isImporting, setIsImporting] = useState(false);
+  const [pageSize, setPageSize] = useState(200);
+  const [jobId, setJobId] = useState<string | null>(null);
+  const [jobStatus, setJobStatus] = useState<any>(null);
+  const [showProgress, setShowProgress] = useState(false);
+  const pollRef = useRef<number | null>(null);
 
   // PMS lookups and filter state
   interface LookupItem { id: string; name: string; }
