@@ -34,6 +34,12 @@ const CicVisits: React.FC = () => {
 
   useDataTable("cic-visits-datatable", memoized);
   const tableKey = useMemo(() => `cic-visits-${memoized.length}`,[memoized.length]);
+  const [tableVisible, setTableVisible] = useState(true);
+  useEffect(() => {
+    setTableVisible(false);
+    const t = setTimeout(() => setTableVisible(true), 0);
+    return () => clearTimeout(t);
+  }, [memoized.length]);
 
   const handleActionClick = (visit: Visit, action: "delete") => {
     setTargetVisit(visit);
@@ -142,6 +148,7 @@ const CicVisits: React.FC = () => {
               </div>
             ) : (
               <div className="table-responsive">
+                {tableVisible && (
                 <table key={tableKey} id="cic-visits-datatable" className="table table-striped table-bordered" style={{ width: "100%" }}>
                   <thead>
                     <tr>
@@ -197,6 +204,7 @@ const CicVisits: React.FC = () => {
                     </tr>
                   </tfoot>
                 </table>
+                )}
               </div>
             )}
           </div>
