@@ -217,7 +217,6 @@ const ImportBeneficiariesModal: React.FC<ImportBeneficiariesModalProps> = ({ sho
     setIsImporting(true);
     setError(null);
     try {
-      // Validate ranges if partially filled
       if ((updatedBetweenStart && !updatedBetweenEnd) || (!updatedBetweenStart && updatedBetweenEnd)) {
         throw new Error("Please provide both start and end dates for Updated Between.");
       }
@@ -225,47 +224,72 @@ const ImportBeneficiariesModal: React.FC<ImportBeneficiariesModalProps> = ({ sho
         throw new Error("Please provide both start and end dates for Created Between.");
       }
 
-      const pmsFilters: any = {};
-      if (districtID) pmsFilters.districtID = districtID;
-      if (interventionID) pmsFilters.interventionID = interventionID;
-      if (partnerID) pmsFilters.partnerID = partnerID;
-      if (updatedAfter) pmsFilters.updatedAfter = updatedAfter;
-      if (createdAfter) pmsFilters.createdAfter = createdAfter;
-      if (updatedBetweenStart && updatedBetweenEnd) pmsFilters.updatedBetween = { from: updatedBetweenStart, to: updatedBetweenEnd };
-      if (createdBetweenStart && createdBetweenEnd) pmsFilters.createdBetween = { from: createdBetweenStart, to: createdBetweenEnd };
+      const payload: any = { page_size: pageSize };
+      if (districtID) payload.district_id = parseInt(districtID, 10);
+      if (interventionID) payload.intervention_id = parseInt(interventionID, 10);
+      if (partnerID) payload.implementing_partner_id = parseInt(partnerID, 10);
+      if (updatedAfter) payload.updated_after = updatedAfter;
+      if (createdAfter) payload.created_after = createdAfter;
+      if (updatedBetweenStart && updatedBetweenEnd) payload.updated_between = { from: updatedBetweenStart, to: updatedBetweenEnd };
+      if (createdBetweenStart && createdBetweenEnd) payload.created_between = { from: createdBetweenStart, to: createdBetweenEnd };
 
-      const url = buildApiUrl(API_CONFIG.ENDPOINTS.BENEFICIARIES.PMS_IMPORT);
+      const url = buildApiUrl(API_CONFIG.ENDPOINTS.BENEFICIARIES.IMPORT);
       const response = await fetch(url, {
         method: "POST",
         headers: getAuthHeaders(token),
-        body: JSON.stringify({ filters: pmsFilters }),
+        body: JSON.stringify(payload),
       });
       if (!response.ok) {
         const text = await response.text();
-        throw new Error(text || "Failed to import from PMS");
+        throw new Error(text || "Failed to queue PMS import");
       }
       const data = await response.json();
-      const imported = data?.data?.beneficiaries || data?.beneficiaries || [];
-      const importedCount = data?.data?.imported_count || data?.imported_count || imported.length || 0;
-
-      if (Array.isArray(imported) && imported.length > 0) {
-        dispatch(addBeneficiaries(imported));
-      } else {
-        await dispatch(fetchBeneficiaries({}));
+      const queuedJobId = data?.job_id || data?.data?.job_id;
+      if (!queuedJobId) {
+        throw new Error("No job id returned from server");
       }
+      setJobId(queuedJobId);
+      setShowProgress(true);
 
-      dispatch(addAlert({
-        type: "success",
-        title: "PMS Import Complete",
-        message: `${importedCount} beneficiaries imported from PMS using selected filters.`,
-      }));
-      resetStateAndClose();
+      // start polling
+      const poll = async () => {
+        if (!queuedJobId) return;
+        try {
+          const res = await fetch(buildApiUrl(API_CONFIG.ENDPOINTS.BENEFICIARIES.IMPORT_JOB(queuedJobId)), { headers: getAuthHeaders(token) });
+          if (!res.ok) throw new Error(await res.text());
+          const d = await res.json();
+          const s = d?.data || d;
+          setJobStatus(s);
+          const st = s?.status;
+          if (st === 'completed') {
+            dispatch(addAlert({ type: 'success', title: 'Import Completed', message: `Created ${s.created_records ?? 0}, Updated ${s.updated_records ?? 0}.` }));
+            await dispatch(fetchBeneficiaries({}));
+            if (pollRef.current) window.clearInterval(pollRef.current);
+            pollRef.current = null;
+            setIsImporting(false);
+          } else if (st === 'failed' || st === 'canceled') {
+            dispatch(addAlert({ type: 'error', title: 'Import ' + (st === 'failed' ? 'Failed' : 'Canceled'), message: s.error_message || 'The import did not complete.' }));
+            if (pollRef.current) window.clearInterval(pollRef.current);
+            pollRef.current = null;
+            setIsImporting(false);
+          }
+        } catch (e) {
+          // Stop polling on hard error
+          if (pollRef.current) window.clearInterval(pollRef.current);
+          pollRef.current = null;
+          setIsImporting(false);
+          setError(e instanceof Error ? e.message : 'Polling failed');
+        }
+      };
+      if (pollRef.current) window.clearInterval(pollRef.current);
+      pollRef.current = window.setInterval(poll, 2000) as any;
+      // fire immediately
+      poll();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to import from PMS");
-    } finally {
       setIsImporting(false);
     }
-  }, [dispatch, token, districtID, interventionID, partnerID, updatedAfter, createdAfter, updatedBetweenStart, updatedBetweenEnd, createdBetweenStart, createdBetweenEnd]);
+  }, [dispatch, token, pageSize, districtID, interventionID, partnerID, updatedAfter, createdAfter, updatedBetweenStart, updatedBetweenEnd, createdBetweenStart, createdBetweenEnd]);
 
   const handleImport = useCallback(() => {
     if (importSource === "csv") {
@@ -499,9 +523,15 @@ const ImportBeneficiariesModal: React.FC<ImportBeneficiariesModalProps> = ({ sho
       <Modal.Footer className="d-flex justify-content-between">
         <button type="button" className="btn btn-light" onClick={resetStateAndClose} disabled={isImporting}>
           <i className="bx bx-x me-2"></i>
-          Cancel
+          Close
         </button>
-        <div>
+        <div className="d-flex align-items-center gap-2">
+          {importSource === 'pms' && (
+            <div className="d-flex align-items-center gap-2">
+              <label className="small mb-0">Page Size</label>
+              <input type="number" className="form-control form-control-sm" style={{ width: 90 }} value={pageSize} onChange={(e) => setPageSize(Math.max(1, parseInt(e.target.value || '1', 10)))} disabled={isImporting} />
+            </div>
+          )}
           <button
             type="button"
             className={`btn ${importSource === "csv" ? "btn-grd-info" : "btn-grd-primary"}`}
@@ -513,6 +543,22 @@ const ImportBeneficiariesModal: React.FC<ImportBeneficiariesModalProps> = ({ sho
           </button>
         </div>
       </Modal.Footer>
+
+      {/* Progress Modal */}
+      <ImportJobProgressModal
+        show={showProgress}
+        status={jobStatus as ImportJobStatus}
+        onClose={() => setShowProgress(false)}
+        onBackground={() => setShowProgress(false)}
+        onCancelJob={async () => {
+          if (!token || !jobId) return;
+          try {
+            await fetch(buildApiUrl(API_CONFIG.ENDPOINTS.BENEFICIARIES.IMPORT_JOB_CANCEL(jobId)), { method: 'POST', headers: getAuthHeaders(token) });
+          } catch (e) {
+            // ignore
+          }
+        }}
+      />
     </Modal>
   );
 };
