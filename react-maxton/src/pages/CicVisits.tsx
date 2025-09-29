@@ -33,6 +33,59 @@ const CicVisits: React.FC = () => {
   const memoized = useMemo(() => filteredVisits, [filteredVisits]);
 
   const tableKey = useMemo(() => `cic-visits-${memoized.length}`,[memoized.length]);
+
+  const dtColumns = useMemo(() => [
+    { title: 'CIC', data: 'cic' },
+    { title: 'Name', data: 'name' },
+    { title: 'Intervention', data: 'programme' },
+    { title: 'Activity', data: 'activity' },
+    { title: 'Assisted By', data: 'assisted_by', render: (d: any) => d || '-' },
+    { title: 'Notes / Follow Up', data: 'notes', render: (d: any) => d || '-' },
+    { title: 'Check-In', data: 'check_in', render: (d: any) => d ? new Date(d).toLocaleString() : '-' },
+    { title: 'Check Out', data: 'check_out', render: (d: any) => d ? new Date(d).toLocaleString() : '-' },
+    { title: 'Duration', data: 'duration_minutes', render: (mins: any) => {
+      const m = Number(mins);
+      if (!m || m <= 0) return '-';
+      const h = Math.floor(m / 60);
+      const r = m % 60;
+      return h > 0 ? `${h}h ${r}m` : `${r}m`;
+    } },
+    {
+      title: 'Actions', data: null, orderable: false, searchable: false,
+      render: (_: any, __: any, row: any) => `
+        <div class="d-flex gap-1">
+          <button class="btn btn-sm p-1" title="Edit" data-action="edit" data-id="${row.id}" style="border:none;background:transparent;">
+            <i class="material-icons-outlined text-primary">edit</i>
+          </button>
+          <button class="btn btn-sm p-1" title="Delete" data-action="delete" data-id="${row.id}" style="border:none;background:transparent;">
+            <i class="material-icons-outlined text-danger">delete</i>
+          </button>
+        </div>`
+    }
+  ], []);
+
+  useEffect(() => {
+    if (!window.$) return;
+    const $table = window.$('#cic-visits-datatable');
+    if ($table.length === 0) return;
+
+    const onDelete = (e: any) => {
+      e.preventDefault();
+      const id = window.$(e.currentTarget).data('id');
+      const v = memoized.find((x) => x.id === id);
+      if (v) handleActionClick(v, 'delete');
+    };
+    const onEdit = (e: any) => {
+      e.preventDefault();
+      // Optional: open edit modal later
+    };
+
+    $table.off('.dtActions');
+    $table.on('click.dtActions', 'button[data-action="delete"]', onDelete);
+    $table.on('click.dtActions', 'button[data-action="edit"]', onEdit);
+
+    return () => { if ($table && $table.off) $table.off('.dtActions'); };
+  }, [memoized]);
   const [tableVisible, setTableVisible] = useState(true);
   useEffect(() => {
     setTableVisible(false);
@@ -148,7 +201,7 @@ const CicVisits: React.FC = () => {
             ) : (
               <div className="table-responsive">
                 {tableVisible && (
-                <DataTableWrapper key={tableKey} id="cic-visits-datatable" data={memoized} className="table table-striped table-bordered" style={{ width: "100%" }}>
+                <DataTableWrapper key={tableKey} id="cic-visits-datatable" data={memoized} options={{ columns: dtColumns, pageLength: 10, autoWidth: false, searching: true, ordering: true, info: true, lengthChange: true, responsive: true }} className="table table-striped table-bordered" style={{ width: "100%" }}>
                   <thead>
                     <tr>
                       <th>CIC</th>
@@ -163,31 +216,7 @@ const CicVisits: React.FC = () => {
                       <th>Actions</th>
                     </tr>
                   </thead>
-                  <tbody>
-                    {memoized.map((visit) => (
-                      <tr key={visit.id}>
-                        <td>{visit.cic}</td>
-                        <td>{visit.name}</td>
-                        <td>{visit.programme}</td>
-                        <td>{visit.activity}</td>
-                        <td>{visit.assisted_by || "-"}</td>
-                        <td>{visit.notes || "-"}</td>
-                        <td>{new Date(visit.check_in).toLocaleString()}</td>
-                        <td>{visit.check_out ? new Date(visit.check_out).toLocaleString() : "-"}</td>
-                        <td>{formatDuration(visit.duration_minutes)}</td>
-                        <td>
-                          <div className="d-flex gap-1">
-                            <button className="btn btn-sm p-1" title="Edit" style={{ border: "none", background: "transparent" }}>
-                              <i className="material-icons-outlined text-primary">edit</i>
-                            </button>
-                            <button className="btn btn-sm p-1" title="Delete" onClick={() => handleActionClick(visit, "delete")} style={{ border: "none", background: "transparent" }}>
-                              <i className="material-icons-outlined text-danger">delete</i>
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
+                  <tbody></tbody>
                   <tfoot>
                     <tr>
                       <th>CIC</th>
