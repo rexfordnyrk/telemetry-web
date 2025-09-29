@@ -193,37 +193,7 @@ const CicVisits: React.FC = () => {
               </div>
             ) : (
               <div className="table-responsive">
-                <DataTableWrapper id="cic-visits-datatable" data={memoized} options={{ columns: dtColumns, pageLength: 10, autoWidth: false, searching: true, ordering: true, info: true, lengthChange: true, responsive: true }} className="table table-striped table-bordered" style={{ width: "100%" }}>
-                  <thead>
-                    <tr>
-                      <th>CIC</th>
-                      <th>Name</th>
-                      <th>Intervention</th>
-                      <th>Activity</th>
-                      <th>Assisted By</th>
-                      <th>Notes / Follow Up</th>
-                      <th>Check-In</th>
-                      <th>Check Out</th>
-                      <th>Duration</th>
-                      <th>Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody></tbody>
-                  <tfoot>
-                    <tr>
-                      <th>CIC</th>
-                      <th>Name</th>
-                      <th>Intervention</th>
-                      <th>Activity</th>
-                      <th>Assisted By</th>
-                      <th>Notes / Follow Up</th>
-                      <th>Check-In</th>
-                      <th>Check Out</th>
-                      <th>Duration</th>
-                      <th>Actions</th>
-                    </tr>
-                  </tfoot>
-                </DataTableWrapper>
+                <DataTableWrapper id="cic-visits-datatable" data={memoized} options={{ columns: dtColumns, pageLength: 10, autoWidth: false, searching: true, ordering: true, info: true, lengthChange: true, responsive: true }} className="table table-striped table-bordered" style={{ width: "100%" }} />
               </div>
             )}
           </div>
