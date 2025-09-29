@@ -377,16 +377,7 @@ const Beneficiaries: React.FC = () => {
               <DataTableWrapper
                 id="beneficiaries-datatable"
                 data={memoizedBeneficiaries}
-                options={{
-                  columns: dtColumns,
-                  pageLength: 10,
-                  lengthChange: true,
-                  searching: true,
-                  ordering: true,
-                  info: true,
-                  autoWidth: false,
-                  responsive: true
-                }}
+                options={dtOptions}
                 className="table table-striped table-bordered"
                 style={{ width: "100%" }}
               />
