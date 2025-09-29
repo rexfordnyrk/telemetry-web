@@ -1,7 +1,6 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useCallback, useRef, useState } from "react";
 import { Modal, Form, Row, Col, Table, Alert } from "react-bootstrap";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
-import { useEffect, useMemo, useCallback, useRef, useState } from "react";
 import ImportJobProgressModal, { ImportJobStatus } from "./ImportJobProgressModal";
 import { addAlert } from "../store/slices/alertSlice";
 import { Beneficiary } from "../store/slices/beneficiarySlice";
@@ -268,7 +267,7 @@ const ImportBeneficiariesModal: React.FC<ImportBeneficiariesModalProps> = ({ sho
             pollRef.current = null;
             setIsImporting(false);
           } else if (st === 'failed' || st === 'canceled') {
-            dispatch(addAlert({ type: 'error', title: 'Import ' + (st === 'failed' ? 'Failed' : 'Canceled'), message: s.error_message || 'The import did not complete.' }));
+            dispatch(addAlert({ type: 'danger', title: 'Import ' + (st === 'failed' ? 'Failed' : 'Canceled'), message: s.error_message || 'The import did not complete.' }));
             if (pollRef.current) window.clearInterval(pollRef.current);
             pollRef.current = null;
             setIsImporting(false);
