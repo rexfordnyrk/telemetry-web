@@ -63,6 +63,17 @@ const CicVisits: React.FC = () => {
     }
   ], []);
 
+  const dtOptions = React.useMemo(() => ({
+    columns: dtColumns,
+    pageLength: 10,
+    autoWidth: false,
+    searching: true,
+    ordering: true,
+    info: true,
+    lengthChange: true,
+    responsive: true,
+  }), [dtColumns]);
+
   useEffect(() => {
     if (!window.$) return;
     const $table = window.$('#cic-visits-datatable');
@@ -193,7 +204,7 @@ const CicVisits: React.FC = () => {
               </div>
             ) : (
               <div className="table-responsive">
-                <DataTableWrapper id="cic-visits-datatable" data={memoized} options={{ columns: dtColumns, pageLength: 10, autoWidth: false, searching: true, ordering: true, info: true, lengthChange: true, responsive: true }} className="table table-striped table-bordered" style={{ width: "100%" }} />
+                <DataTableWrapper id="cic-visits-datatable" data={memoized} options={dtOptions} className="table table-striped table-bordered" style={{ width: "100%" }} />
               </div>
             )}
           </div>
