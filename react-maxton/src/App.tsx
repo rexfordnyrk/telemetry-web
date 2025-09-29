@@ -49,6 +49,7 @@ import NotFound from "./pages/NotFound";
 import MainComponents from "./pages/MainComponents";
 import EcommerceComponents from "./pages/EcommerceComponents";
 import Overview from "./pages/Overview";
+import CicVisits from "./pages/CicVisits";
 
 // Utility components
 import ErrorBoundary from "./components/ErrorBoundary";
