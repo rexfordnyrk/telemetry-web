@@ -165,7 +165,7 @@ const CicVisits: React.FC = () => {
                         <td>{visit.name}</td>
                         <td>{visit.programme}</td>
                         <td>{visit.activity}</td>
-                        <td>{visit.assisted_by}</td>
+                        <td>{visit.assisted_by || "-"}</td>
                         <td>{visit.notes || "-"}</td>
                         <td>{new Date(visit.check_in).toLocaleString()}</td>
                         <td>{visit.check_out ? new Date(visit.check_out).toLocaleString() : "-"}</td>
