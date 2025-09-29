@@ -88,6 +88,7 @@ const ImportBeneficiariesModal: React.FC<ImportBeneficiariesModalProps> = ({ sho
   const [jobId, setJobId] = useState<string | null>(null);
   const [jobStatus, setJobStatus] = useState<any>(null);
   const [showProgress, setShowProgress] = useState(false);
+  const [jobCompleted, setJobCompleted] = useState(false);
   const pollRef = useRef<number | null>(null);
 
   // PMS lookups and filter state
@@ -262,10 +263,10 @@ const ImportBeneficiariesModal: React.FC<ImportBeneficiariesModalProps> = ({ sho
           const st = s?.status;
           if (st === 'completed') {
             dispatch(addAlert({ type: 'success', title: 'Import Completed', message: `Created ${s.created_records ?? 0}, Updated ${s.updated_records ?? 0}.` }));
-            await dispatch(fetchBeneficiaries({}));
             if (pollRef.current) window.clearInterval(pollRef.current);
             pollRef.current = null;
             setIsImporting(false);
+            setJobCompleted(true);
           } else if (st === 'failed' || st === 'canceled') {
             dispatch(addAlert({ type: 'danger', title: 'Import ' + (st === 'failed' ? 'Failed' : 'Canceled'), message: s.error_message || 'The import did not complete.' }));
             if (pollRef.current) window.clearInterval(pollRef.current);
@@ -556,7 +557,13 @@ const ImportBeneficiariesModal: React.FC<ImportBeneficiariesModalProps> = ({ sho
       <ImportJobProgressModal
         show={showProgress}
         status={jobStatus as ImportJobStatus}
-        onClose={() => setShowProgress(false)}
+        onClose={async () => {
+          setShowProgress(false);
+          if (jobCompleted) {
+            await dispatch(fetchBeneficiaries({}));
+            setJobCompleted(false);
+          }
+        }}
         onBackground={() => setShowProgress(false)}
         onCancelJob={async () => {
           if (!token || !jobId) return;
