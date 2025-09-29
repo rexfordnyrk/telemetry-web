@@ -79,6 +79,12 @@ const Beneficiaries: React.FC = () => {
 
   // Memoize filtered beneficiaries to prevent unnecessary re-renders
   const memoizedBeneficiaries = useMemo(() => filteredBeneficiaries, [filteredBeneficiaries]);
+  const [tableVisible, setTableVisible] = useState(true);
+  useEffect(() => {
+    setTableVisible(false);
+    const t = setTimeout(() => setTableVisible(true), 0);
+    return () => clearTimeout(t);
+  }, [memoizedBeneficiaries.length]);
 
   // Define filter options
   const filterOptions = useMemo(() => {
@@ -249,6 +255,7 @@ const Beneficiaries: React.FC = () => {
                 </div>
               ) : (
             <div className="table-responsive">
+              {tableVisible && (
               <table
                 key={tableKey}
                 id="beneficiaries-datatable"
@@ -393,6 +400,7 @@ const Beneficiaries: React.FC = () => {
                   </tr>
                 </tfoot>
               </table>
+              )}
                 </div>
               )}
             </div>
