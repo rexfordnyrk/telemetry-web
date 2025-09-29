@@ -96,6 +96,7 @@ const Beneficiaries: React.FC = () => {
 
   // Initialize DataTable using custom hook
   useDataTable("beneficiaries-datatable", memoizedBeneficiaries);
+  const tableKey = useMemo(() => `beneficiaries-${memoizedBeneficiaries.length}`,[memoizedBeneficiaries.length]);
 
   // Helper to get status badge
   const getStatusElement = (status: string) => {
@@ -249,6 +250,7 @@ const Beneficiaries: React.FC = () => {
               ) : (
             <div className="table-responsive">
               <table
+                key={tableKey}
                 id="beneficiaries-datatable"
                 className="table table-striped table-bordered"
                 style={{ width: "100%" }}
