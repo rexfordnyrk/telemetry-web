@@ -188,8 +188,8 @@ const CicVisits: React.FC = () => {
     setShowModal(true);
   };
 
-  const handleCloseModal = () => {
-    if (deleteSubmitting) {
+  const handleCloseModal = (force: boolean = false) => {
+    if (deleteSubmitting && !force) {
       return;
     }
     setShowModal(false);
