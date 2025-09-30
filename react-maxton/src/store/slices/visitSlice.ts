@@ -147,6 +147,21 @@ const visitSlice = createSlice({
       .addCase(fetchVisits.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
+      })
+      .addCase(checkoutVisit.pending, (state) => {
+        state.error = null;
+      })
+      .addCase(checkoutVisit.fulfilled, (state, action) => {
+        const updated = action.payload;
+        const idx = state.visits.findIndex((visit) => visit.id === updated.id);
+        if (idx >= 0) {
+          state.visits[idx] = updated;
+        } else {
+          state.visits.push(updated);
+        }
+      })
+      .addCase(checkoutVisit.rejected, (state, action) => {
+        state.error = action.payload as string;
       });
   },
 });
