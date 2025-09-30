@@ -306,7 +306,16 @@ const CicVisits: React.FC = () => {
       </div>
 
       {showModal && (
-        <div className="modal fade show d-block" tabIndex={-1} style={{ backgroundColor: "rgba(0,0,0,0.5)" }} onClick={() => setShowModal(false)}>
+        <div
+          className="modal fade show d-block"
+          tabIndex={-1}
+          style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
+          onClick={() => {
+            if (!deleteSubmitting) {
+              setShowModal(false);
+            }
+          }}
+        >
           <div className="modal-dialog">
             <div className={`card border-top border-3 border-danger rounded-0`} onClick={(e) => e.stopPropagation()}>
               <div className="card-header py-3 px-4">
