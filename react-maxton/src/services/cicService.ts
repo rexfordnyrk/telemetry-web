@@ -59,7 +59,7 @@ export const cicService = {
     return ApiService.put<CicResponse>(API_CONFIG.ENDPOINTS.CICS.UPDATE(id), payload);
   },
 
-  async remove(id: string): Promise<{ success: boolean; message?: string }> {
+  async remove(id: string): Promise<{ success: boolean; message?: string; error?: string }> {
     return ApiService.delete(API_CONFIG.ENDPOINTS.CICS.DELETE(id));
   },
 };
