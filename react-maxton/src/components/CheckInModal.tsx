@@ -238,7 +238,7 @@ const CheckInModal: React.FC<CheckInModalProps> = ({ show, onHide }) => {
         const items = Array.isArray(payload?.data) ? payload.data : Array.isArray(payload) ? payload : [];
 
         const mapped: BeneficiaryOption[] = items
-          .map((item: any) => {
+          .map((item: Record<string, unknown>) => {
             const name = item?.name ?? item?.full_name ?? item?.beneficiary_name ?? "";
             const programme = item?.programme ?? item?.programme_name ?? item?.intervention ?? null;
             const id = item?.id ?? item?.uuid ?? item?.beneficiary_id ?? name;
@@ -248,10 +248,10 @@ const CheckInModal: React.FC<CheckInModalProps> = ({ show, onHide }) => {
               programme: programme ? String(programme) : undefined,
             } as BeneficiaryOption;
           })
-          .filter((item) => item.name.trim().length > 0);
+          .filter((item: BeneficiaryOption) => item.name.trim().length > 0);
 
         const unique = new Map<string, BeneficiaryOption>();
-        mapped.forEach((item) => {
+        mapped.forEach((item: BeneficiaryOption) => {
           const key = `${item.id}-${item.name}`.toLowerCase();
           if (!unique.has(key)) {
             unique.set(key, item);
