@@ -71,12 +71,18 @@ const ImportVisitsModal: React.FC<ImportVisitsModalProps> = ({ show, onHide }) =
         setParsedRows([]);
         return;
       }
-      const normalizedHeaders = headers.map(normalizeKey).map(h => {
-        if (h === "intervention") return "programme";
-        if (h === "assistedby") return "assisted_by";
+      const normalizedHeaders = headers.map(normalizeKey).map((h) => {
+        if (h === "cic" || h === "cicname" || h === "cic_center" || h === "ciccentre") return "cic_name";
+        if (h === "cicid" || h === "cic_code" || h === "cic_uuid") return "cic_id";
+        if (h === "name" || h === "beneficiary" || h === "beneficiaryname") return "beneficiary_name";
+        if (h === "beneficiaryid" || h === "participant_id") return "beneficiary_id";
+        if (h === "programme" || h === "program" || h === "intervention" || h === "intervention_name") return "intervention_name";
+        if (h === "programme_id" || h === "program_id" || h === "interventionid" || h === "intervention_id") return "intervention_id";
+        if (h === "activity" || h === "activityname") return "activity_name";
+        if (h === "assistedby" || h === "assisted_by") return "assisted_by";
         if (h === "notes_follow_up" || h === "notesfollowup") return "notes";
-        if (h === "checkin" || h === "check_in_time") return "check_in";
-        if (h === "checkout" || h === "check_out_time") return "check_out";
+        if (h === "checkin" || h === "check_in" || h === "check_in_time" || h === "checkinat") return "check_in_at";
+        if (h === "checkout" || h === "check_out" || h === "check_out_time" || h === "checkoutat") return "check_out_at";
         if (h === "duration" || h === "durationmins" || h === "duration_min") return "duration_minutes";
         return h;
       });
