@@ -250,7 +250,7 @@ const SettingsCics: React.FC = () => {
     setFormSubmitting(false);
   }, []);
 
-  const handleFormChange = (event: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleFormChange = (event: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = event.target;
     setFormState((prev) => {
       if (name === "region_id") {
