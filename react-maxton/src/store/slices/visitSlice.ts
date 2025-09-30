@@ -105,8 +105,31 @@ export const checkoutVisit = createAsyncThunk(
       }
 
       const data = await response.json();
-      const visit = (data?.data ?? data) as Visit;
-      return visit;
+      const payloadVisit = (data?.data ?? data) as Partial<Visit> | Visit;
+      const existingVisit = state.visits.visits.find((v) => v.id === id);
+      const mergedVisit: Visit = {
+        ...(existingVisit ?? {
+          id,
+          cic: "",
+          name: "",
+          programme: "",
+          activity: "",
+          assisted_by: null,
+          notes: "",
+          check_in: new Date().toISOString(),
+          check_out: null,
+          duration_minutes: null,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        }),
+        ...payloadVisit,
+        id,
+        check_out: payloadVisit && "check_out" in payloadVisit && payloadVisit.check_out ? payloadVisit.check_out : body.check_out,
+        updated_at: payloadVisit && "updated_at" in payloadVisit && payloadVisit.updated_at
+          ? payloadVisit.updated_at
+          : new Date().toISOString(),
+      } as Visit;
+      return mergedVisit;
     } catch (error) {
       return rejectWithValue(error instanceof Error ? error.message : "Failed to checkout visit");
     }
