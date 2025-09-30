@@ -164,6 +164,24 @@ export interface ImplementingPartnersListResponse {
   };
 }
 
+export interface InterventionResponse {
+  success: boolean;
+  message?: string;
+  data: InterventionRecord;
+}
+
+export interface InterventionsListResponse {
+  success: boolean;
+  message?: string;
+  data: InterventionRecord[];
+  pagination?: {
+    current_page: number;
+    total_pages: number;
+    total_records: number;
+    limit: number;
+  };
+}
+
 export interface CreateImplementingPartnerPayload {
   name: string;
   region_id: string;
@@ -183,5 +201,19 @@ export interface UpdateImplementingPartnerPayload {
   phone?: string | null;
   email?: string | null;
   locality?: string | null;
+  external_id?: number | null;
+}
+
+export interface CreateInterventionPayload {
+  name: string;
+  implementing_partner_id: string;
+  description?: string | null;
+  external_id?: number;
+}
+
+export interface UpdateInterventionPayload {
+  name?: string;
+  implementing_partner_id?: string;
+  description?: string | null;
   external_id?: number | null;
 }
