@@ -593,7 +593,7 @@ const CheckInModal: React.FC<CheckInModalProps> = ({ show, onHide }) => {
                     value={formData.cic_id}
                     onChange={handleCicSelectChange}
                     isInvalid={!!errors.cic_id}
-                    disabled={cicLoading}
+                    disabled={cicLoading || formSubmitting}
                   >
                     <option value="">Select CIC</option>
                     {cicOptions.map((option) => (
