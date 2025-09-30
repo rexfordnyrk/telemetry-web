@@ -321,8 +321,6 @@ const ImportBeneficiariesModal: React.FC<ImportBeneficiariesModalProps> = ({ sho
     }
   }, [importSource, importFromCSV, importFromPMS]);
 
-  const previewRows = useMemo(() => parsedRows.slice(0, 5), [parsedRows]);
-
   // Load lookups when switching to PMS
   useEffect(() => {
     if (!show || importSource !== 'pms') return;
