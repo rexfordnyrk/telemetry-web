@@ -120,6 +120,15 @@ const ImportVisitsModal: React.FC<ImportVisitsModalProps> = ({ show, onHide }) =
     return Number.isFinite(n) ? n : null;
   };
 
+  const generateIdFromValue = useCallback((value: string, prefix: string) => {
+    const trimmed = value.trim();
+    if (!trimmed) {
+      return `${prefix}-${crypto.randomUUID()}`;
+    }
+    const normalized = trimmed.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+    return `${prefix}-${normalized || crypto.randomUUID()}`;
+  }, []);
+
   const handleImport = useCallback(() => {
     if (parsedRows.length === 0) {
       setError("No rows to import. Please select a valid CSV file.");
