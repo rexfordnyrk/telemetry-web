@@ -82,6 +82,15 @@ export const API_CONFIG = {
       DELETE: (id: string) => `/api/v1/implementing-partners/${id}`,
     },
 
+    // Interventions endpoints
+    INTERVENTIONS: {
+      LIST: '/api/v1/interventions',
+      CREATE: '/api/v1/interventions',
+      DETAIL: (id: string) => `/api/v1/interventions/${id}`,
+      UPDATE: (id: string) => `/api/v1/interventions/${id}`,
+      DELETE: (id: string) => `/api/v1/interventions/${id}`,
+    },
+
     // Device management endpoints
     DEVICES: {
       LIST: '/api/v1/devices',               // Get all devices
