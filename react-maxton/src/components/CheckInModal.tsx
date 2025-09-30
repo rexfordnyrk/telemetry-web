@@ -365,23 +365,23 @@ const CheckInModal: React.FC<CheckInModalProps> = ({ show, onHide }) => {
   };
 
   const handleBeneficiaryInputChange = (value: string) => {
+    const differsFromSelected = !selectedBeneficiary || value !== selectedBeneficiary.name;
     setBeneficiaryQuery(value);
     setShowBeneficiarySuggestions(true);
-    setFormData((prev) => {
-      const shouldResetProgramme = selectedBeneficiary && value !== selectedBeneficiary.name;
-      return {
-        ...prev,
-        name: value,
-        programme: shouldResetProgramme ? "" : prev.programme,
-      };
-    });
+    setFormData((prev) => ({
+      ...prev,
+      beneficiary_name: value,
+      beneficiary_id: differsFromSelected ? "" : prev.beneficiary_id,
+      intervention_id: differsFromSelected ? null : prev.intervention_id,
+      intervention_name: differsFromSelected ? "" : prev.intervention_name,
+    }));
 
-    if (selectedBeneficiary && value !== selectedBeneficiary.name) {
+    if (differsFromSelected) {
       setSelectedBeneficiary(null);
     }
 
-    if (errors.name) {
-      setErrors((prev) => ({ ...prev, name: "" }));
+    if (errors.beneficiary_id) {
+      setErrors((prev) => ({ ...prev, beneficiary_id: "" }));
     }
   };
 
@@ -389,17 +389,40 @@ const CheckInModal: React.FC<CheckInModalProps> = ({ show, onHide }) => {
     setSelectedBeneficiary(option);
     setBeneficiaryQuery(option.name);
     setShowBeneficiarySuggestions(false);
+
+    let resolvedInterventionId: string | null = option.intervention_id ?? null;
+    let resolvedInterventionName: string = option.intervention_name ?? "";
+
+    if (resolvedInterventionId) {
+      const match = interventionOptions.find((item) => item.id === resolvedInterventionId);
+      if (match) {
+        resolvedInterventionName = match.name;
+      } else if (resolvedInterventionName) {
+        setInterventionOptions((prev) => {
+          if (prev.some((item) => item.id === resolvedInterventionId)) {
+            return prev;
+          }
+          return [...prev, { id: resolvedInterventionId!, name: resolvedInterventionName }];
+        });
+      }
+    } else if (resolvedInterventionName) {
+      const matchByName = interventionOptions.find((item) => item.name.toLowerCase() === resolvedInterventionName.toLowerCase());
+      if (matchByName) {
+        resolvedInterventionId = matchByName.id;
+        resolvedInterventionName = matchByName.name;
+      }
+    }
+
     setFormData((prev) => ({
       ...prev,
-      name: option.name,
-      programme: option.programme ?? "",
+      beneficiary_id: option.id,
+      beneficiary_name: option.name,
+      intervention_id: resolvedInterventionId,
+      intervention_name: resolvedInterventionName,
     }));
 
-    if (errors.name) {
-      setErrors((prev) => ({ ...prev, name: "" }));
-    }
-    if (option.programme && errors.programme) {
-      setErrors((prev) => ({ ...prev, programme: "" }));
+    if (errors.beneficiary_id) {
+      setErrors((prev) => ({ ...prev, beneficiary_id: "" }));
     }
   };
 
