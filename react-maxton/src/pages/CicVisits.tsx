@@ -183,6 +183,8 @@ const CicVisits: React.FC = () => {
   const handleActionClick = (visit: Visit, action: "delete") => {
     setTargetVisit(visit);
     setModalAction(action);
+    setDeleteError(null);
+    setDeleteSubmitting(false);
     setShowModal(true);
   };
 
