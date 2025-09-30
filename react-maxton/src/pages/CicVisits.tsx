@@ -105,7 +105,7 @@ const CicVisits: React.FC = () => {
 
   const handleVisitCheckout = useCallback(
     async (visit: Visit, sourceButton?: HTMLElement | null) => {
-      if (checkoutProcessingId === visit.id || visit.check_out) {
+      if (checkoutProcessingId === visit.id || visit.check_out_at) {
         return;
       }
 
@@ -119,15 +119,15 @@ const CicVisits: React.FC = () => {
           checkoutVisit({ id: visit.id, checkoutTime: new Date().toISOString() })
         ).unwrap();
 
-        const checkOutDisplayTime = updated.check_out
-          ? new Date(updated.check_out).toLocaleString()
+        const checkOutDisplayTime = updated.check_out_at
+          ? new Date(updated.check_out_at).toLocaleString()
           : new Date().toLocaleString();
 
         dispatch(
           addAlert({
             type: "success",
             title: "Visit Checked Out",
-            message: `${updated.name} checked out at ${checkOutDisplayTime}.`,
+            message: `${updated.beneficiary_name || "Beneficiary"} checked out at ${checkOutDisplayTime}.`,
           })
         );
       } catch (error) {
