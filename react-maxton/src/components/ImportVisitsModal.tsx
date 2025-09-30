@@ -189,7 +189,7 @@ const ImportVisitsModal: React.FC<ImportVisitsModalProps> = ({ show, onHide }) =
       message: `${visits.length} visit records have been added from ${fileName}.`,
     }));
     resetStateAndClose();
-  }, [dispatch, parsedRows, fileName, generateIdFromValue]);
+  }, [dispatch, parsedRows, fileName, generateIdFromValue, resetStateAndClose]);
 
   const resetStateAndClose = useCallback(() => {
     setFileName("");
