@@ -136,23 +136,46 @@ const ImportVisitsModal: React.FC<ImportVisitsModalProps> = ({ show, onHide }) =
     }
     const now = new Date().toISOString();
     const visits: Visit[] = parsedRows.map((row) => {
-      const checkIn = row["check_in"] ? toIso(row["check_in"]) : now;
-      const checkOut = row["check_out"] ? toIso(row["check_out"]) : null;
+      const cicName = row["cic_name"] || "";
+      const cicIdRaw = row["cic_id"] || "";
+      const beneficiaryName = row["beneficiary_name"] || "";
+      const beneficiaryIdRaw = row["beneficiary_id"] || "";
+      const interventionName = row["intervention_name"] || "";
+      const interventionIdRaw = row["intervention_id"] || "";
+      const activityName = row["activity_name"] || "";
+      const assistedByValue = row["assisted_by"] || "";
+      const notesValue = row["notes"] || "";
+
+      const cic_id = cicIdRaw.trim() || generateIdFromValue(cicName, "cic");
+      const beneficiary_id = beneficiaryIdRaw.trim() || generateIdFromValue(beneficiaryName, "beneficiary");
+      const intervention_id = interventionIdRaw.trim()
+        ? interventionIdRaw.trim()
+        : interventionName.trim()
+          ? generateIdFromValue(interventionName, "intervention")
+          : null;
+
+      const checkInAt = row["check_in_at"] ? toIso(row["check_in_at"]) : now;
+      const checkOutAt = row["check_out_at"] ? toIso(row["check_out_at"]) : null;
+
       let duration = toInt(row["duration_minutes"]);
-      if (!duration && checkOut) {
-        const diffMs = new Date(checkOut).getTime() - new Date(checkIn).getTime();
+      if (!duration && checkOutAt) {
+        const diffMs = new Date(checkOutAt).getTime() - new Date(checkInAt).getTime();
         duration = Math.max(0, Math.round(diffMs / 60000));
       }
+
       return {
         id: crypto.randomUUID(),
-        cic: row["cic"] || "",
-        name: row["name"] || "",
-        programme: row["programme"] || "",
-        activity: row["activity"] || "",
-        assisted_by: row["assisted_by"] && row["assisted_by"].trim() ? row["assisted_by"].trim() : null,
-        notes: row["notes"] || "",
-        check_in: checkIn,
-        check_out: checkOut,
+        cic_id,
+        cic_name: cicName || "Unknown CIC",
+        beneficiary_id,
+        beneficiary_name: beneficiaryName || "Unknown Beneficiary",
+        intervention_id,
+        intervention_name: interventionName ? interventionName : intervention_id ? intervention_id : null,
+        activity_name: activityName ? activityName : null,
+        assisted_by: assistedByValue.trim() ? assistedByValue.trim() : null,
+        notes: notesValue.trim() ? notesValue.trim() : null,
+        check_in_at: checkInAt,
+        check_out_at: checkOutAt,
         duration_minutes: duration ?? null,
         created_at: now,
         updated_at: now,
@@ -166,7 +189,7 @@ const ImportVisitsModal: React.FC<ImportVisitsModalProps> = ({ show, onHide }) =
       message: `${visits.length} visit records have been added from ${fileName}.`,
     }));
     resetStateAndClose();
-  }, [dispatch, parsedRows, fileName]);
+  }, [dispatch, parsedRows, fileName, generateIdFromValue]);
 
   const resetStateAndClose = useCallback(() => {
     setFileName("");
