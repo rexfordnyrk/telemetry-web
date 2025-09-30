@@ -206,6 +206,7 @@ const CheckInModal: React.FC<CheckInModalProps> = ({ show, onHide }) => {
 
     if (!token) {
       setBeneficiaryFetchError("Authentication is required to search beneficiaries.");
+      setBeneficiaryLoading(false);
       return;
     }
 
