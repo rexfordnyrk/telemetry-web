@@ -684,18 +684,29 @@ const CheckInModal: React.FC<CheckInModalProps> = ({ show, onHide }) => {
             </Col>
             <Col md={6}>
               <Form.Group>
-                <Form.Label>
-                  Intervention <span className="text-danger">*</span>
+                <Form.Label className="d-flex align-items-center gap-2">
+                  Intervention
+                  {interventionsLoading && <Spinner animation="border" size="sm" role="status" />}
                 </Form.Label>
-                <Form.Control
-                  type="text"
-                  name="programme"
-                  value={formData.programme}
-                  onChange={handleStandardInputChange}
-                  placeholder="Enter intervention"
-                  isInvalid={!!errors.programme}
-                />
-                <Form.Control.Feedback type="invalid">{errors.programme}</Form.Control.Feedback>
+                <Form.Select
+                  name="intervention_id"
+                  value={formData.intervention_id ?? ""}
+                  onChange={handleInterventionSelect}
+                  disabled={interventionsLoading || interventionOptions.length === 0}
+                >
+                  <option value="">Select intervention (optional)</option>
+                  {interventionOptions.map((option) => (
+                    <option key={option.id} value={option.id}>
+                      {option.name}
+                    </option>
+                  ))}
+                </Form.Select>
+                {interventionsError && <div className="invalid-feedback d-block">{interventionsError}</div>}
+                {formData.intervention_name && !formData.intervention_id && (
+                  <Form.Text className="text-muted">
+                    Beneficiary linked to: {formData.intervention_name}
+                  </Form.Text>
+                )}
               </Form.Group>
             </Col>
             <Col md={6}>
