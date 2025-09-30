@@ -47,3 +47,31 @@ export interface CicCentre {
   phoneNumber: string;
   email?: string;
 }
+
+export interface RegionResponse {
+  success: boolean;
+  message?: string;
+  data: RegionRecord;
+}
+
+export interface RegionsListResponse {
+  success: boolean;
+  message?: string;
+  data: RegionRecord[];
+  pagination?: {
+    current_page: number;
+    total_pages: number;
+    total_records: number;
+    limit: number;
+  };
+}
+
+export interface CreateRegionPayload {
+  name: string;
+  external_id?: number;
+}
+
+export interface UpdateRegionPayload {
+  name?: string;
+  external_id?: number | null;
+}
