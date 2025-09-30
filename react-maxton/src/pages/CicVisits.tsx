@@ -314,16 +314,38 @@ const CicVisits: React.FC = () => {
                 <button type="button" className="btn-close" onClick={() => setShowModal(false)}></button>
               </div>
               <div className="card-body p-4">
+                {deleteError && (
+                  <div className="alert alert-danger" role="alert">
+                    {deleteError}
+                  </div>
+                )}
                 <p>
-                  Are you sure you want to delete the visit for <strong>{targetVisit?.name}</strong>?
+                  Are you sure you want to delete the visit for <strong>{targetVisit?.beneficiary_name || "this beneficiary"}</strong>?
                   <span className="text-danger d-block mt-2">This action cannot be undone.</span>
                 </p>
                 <div className="d-md-flex d-grid align-items-center gap-3 mt-3">
-                  <button type="button" className="btn btn-grd-royal px-4 rounded-0" onClick={() => setShowModal(false)}>
+                  <button
+                    type="button"
+                    className="btn btn-grd-royal px-4 rounded-0"
+                    onClick={() => setShowModal(false)}
+                    disabled={deleteSubmitting}
+                  >
                     Cancel
                   </button>
-                  <button type="button" className="btn btn-grd-danger px-4 rounded-0" onClick={handleConfirmAction}>
-                    Delete Visit
+                  <button
+                    type="button"
+                    className="btn btn-grd-danger px-4 rounded-0"
+                    onClick={handleConfirmAction}
+                    disabled={deleteSubmitting}
+                  >
+                    {deleteSubmitting ? (
+                      <span className="d-inline-flex align-items-center gap-2">
+                        <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                        Deleting...
+                      </span>
+                    ) : (
+                      "Delete Visit"
+                    )}
                   </button>
                 </div>
               </div>
