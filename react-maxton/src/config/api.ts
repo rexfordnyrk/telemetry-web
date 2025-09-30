@@ -57,6 +57,12 @@ export const API_CONFIG = {
       DELETE: (id: string) => `/api/v1/cics/${id}`,
     },
 
+    VISITS: {
+      LIST: '/api/v1/cic-visits',
+      DETAIL: (id: string) => `/api/v1/cic-visits/${id}`,
+      CHECKOUT: (id: string) => `/api/v1/cic-visits/${id}/checkout`,
+    },
+
     // Lookup endpoints for select lists
     LOOKUPS: {
       DISTRICTS: '/api/v1/lookups/districts',
