@@ -62,46 +62,29 @@ export interface CicCentre {
 export interface CicRecord {
   id: string;
   name: string;
-  region_id: string |
-    null;
-  district_id: string |
-    null;
-  locality: string |
-    null;
-  contact_person: string |
-    null;
-  phone_number: string |
-    null;
-  email: string |
-    null;
-  status: string |
-    null;
+  region_id: string | null;
+  district_id: string | null;
+  locality: string | null;
+  contact_person: string | null;
+  phone_number: string | null;
+  email: string | null;
+  status: string | null;
   created_at: string;
   updated_at: string;
-  deleted_at?: string |
-    null;
-  region?: RegionRecord |
-    null;
-  district?: DistrictRecord |
-    null;
+  deleted_at?: string | null;
+  region?: RegionRecord | null;
+  district?: DistrictRecord | null;
 }
 
 export interface CreateCicPayload {
   name: string;
-  region_id?: string |
-    null;
-  district_id?: string |
-    null;
-  locality?: string |
-    null;
-  contact_person?: string |
-    null;
-  phone_number?: string |
-    null;
-  email?: string |
-    null;
-  status?: string |
-    null;
+  region_id?: string | null;
+  district_id?: string | null;
+  locality?: string | null;
+  contact_person?: string | null;
+  phone_number?: string | null;
+  email?: string | null;
+  status?: string | null;
 }
 
 export interface UpdateCicPayload extends CreateCicPayload {}
