@@ -129,6 +129,14 @@ const ImportVisitsModal: React.FC<ImportVisitsModalProps> = ({ show, onHide }) =
     return `${prefix}-${normalized || crypto.randomUUID()}`;
   }, []);
 
+  const resetStateAndClose = useCallback(() => {
+    setFileName("");
+    setParsedHeaders([]);
+    setParsedRows([]);
+    setError(null);
+    onHide();
+  }, [onHide]);
+
   const handleImport = useCallback(() => {
     if (parsedRows.length === 0) {
       setError("No rows to import. Please select a valid CSV file.");
@@ -190,14 +198,6 @@ const ImportVisitsModal: React.FC<ImportVisitsModalProps> = ({ show, onHide }) =
     }));
     resetStateAndClose();
   }, [dispatch, parsedRows, fileName, generateIdFromValue, resetStateAndClose]);
-
-  const resetStateAndClose = useCallback(() => {
-    setFileName("");
-    setParsedHeaders([]);
-    setParsedRows([]);
-    setError(null);
-    onHide();
-  }, [onHide]);
 
   return (
     <Modal show={show} onHide={resetStateAndClose} size="lg" centered style={{ backgroundColor: "rgba(0,0,0,0.5)" }}>
