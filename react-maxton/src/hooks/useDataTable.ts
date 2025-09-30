@@ -27,6 +27,8 @@ export const useDataTable = (
 ) => {
   const isInitializedRef = useRef(false);
   const tableInstanceRef = useRef<any>(null);
+  const manageDataInternally =
+    options.data !== undefined || (Array.isArray(options.columns) && options.columns.length > 0);
 
   const destroyDataTable = useCallback(() => {
     if (tableInstanceRef.current && window.$ && typeof window.$.fn.DataTable === 'function') {
@@ -61,8 +63,14 @@ export const useDataTable = (
             serverSide: false,
             deferRender: false,
             ...options,
-            data: options.data ?? data,
           };
+
+          if (manageDataInternally) {
+            defaultOptions.data = options.data ?? data;
+          } else if ("data" in defaultOptions) {
+            delete (defaultOptions as Record<string, unknown>).data;
+          }
+
           tableInstanceRef.current = $table.DataTable(defaultOptions as any);
           isInitializedRef.current = true;
         }
@@ -80,6 +88,7 @@ export const useDataTable = (
 
   // On data changes, update via DataTables API instead of destroying
   useEffect(() => {
+    if (!manageDataInternally) return;
     if (!isInitializedRef.current || !tableInstanceRef.current) return;
     try {
       const api = tableInstanceRef.current;
@@ -91,7 +100,7 @@ export const useDataTable = (
     } catch (error) {
       console.warn('Error updating DataTable rows via API:', error);
     }
-  }, [data]);
+  }, [data, manageDataInternally]);
 
   useEffect(() => {
     return () => {
