@@ -47,14 +47,14 @@ const CicVisits: React.FC = () => {
 
 
   const dtColumns = useMemo(() => [
-    { title: 'CIC', data: 'cic' },
-    { title: 'Name', data: 'name' },
-    { title: 'Intervention', data: 'programme' },
-    { title: 'Activity', data: 'activity' },
+    { title: 'CIC', data: 'cic_name', render: (d: any) => d || '-' },
+    { title: 'Beneficiary', data: 'beneficiary_name', render: (d: any) => d || '-' },
+    { title: 'Intervention', data: 'intervention_name', render: (d: any) => d || '-' },
+    { title: 'Activity', data: 'activity_name', render: (d: any) => d || '-' },
     { title: 'Assisted By', data: 'assisted_by', render: (d: any) => d || '-' },
     { title: 'Notes / Follow Up', data: 'notes', render: (d: any) => d || '-' },
-    { title: 'Check-In', data: 'check_in', render: (d: any) => d ? new Date(d).toLocaleString() : '-' },
-    { title: 'Check Out', data: 'check_out', render: (d: any) => d ? new Date(d).toLocaleString() : '-' },
+    { title: 'Check-In', data: 'check_in_at', render: (d: any) => d ? new Date(d).toLocaleString() : '-' },
+    { title: 'Check-Out', data: 'check_out_at', render: (d: any) => d ? new Date(d).toLocaleString() : '-' },
     { title: 'Duration', data: 'duration_minutes', render: (mins: any) => {
       const m = Number(mins);
       if (!m || m <= 0) return '-';
@@ -66,7 +66,7 @@ const CicVisits: React.FC = () => {
       title: 'Actions', data: null, orderable: false, searchable: false,
       render: (_: any, __: any, row: Visit) => {
         const isProcessing = checkoutProcessingId === row.id;
-        const isCheckedOut = Boolean(row.check_out);
+        const isCheckedOut = Boolean(row.check_out_at);
         const checkoutDisabled = isCheckedOut || isProcessing ? 'disabled' : '';
         const checkoutIcon = isCheckedOut
           ? '<i class="material-icons-outlined align-middle">check_circle</i>'
