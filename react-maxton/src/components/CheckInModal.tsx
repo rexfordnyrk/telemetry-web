@@ -296,23 +296,27 @@ const CheckInModal: React.FC<CheckInModalProps> = ({ show, onHide }) => {
         const items = Array.isArray(payload?.data) ? payload.data : Array.isArray(payload) ? payload : [];
 
         const mapped: BeneficiaryOption[] = items
-          .map((item: Record<string, unknown>) => {
+          .map((item: any) => {
             const name = item?.name ?? item?.full_name ?? item?.beneficiary_name ?? "";
-            const programme = item?.programme ?? item?.programme_name ?? item?.intervention ?? null;
-            const id = item?.id ?? item?.uuid ?? item?.beneficiary_id ?? name;
+            const id = item?.id ?? item?.uuid ?? item?.beneficiary_id ?? null;
+            if (!id || !name) {
+              return null;
+            }
+            const interventionId = item?.intervention_id ?? item?.programme_id ?? item?.intervention?.id ?? null;
+            const interventionName = item?.intervention?.name ?? item?.programme ?? item?.programme_name ?? null;
             return {
               id: String(id),
               name: String(name),
-              programme: programme ? String(programme) : undefined,
+              intervention_id: interventionId ? String(interventionId) : null,
+              intervention_name: interventionName ? String(interventionName) : null,
             } as BeneficiaryOption;
           })
-          .filter((item: BeneficiaryOption) => item.name.trim().length > 0);
+          .filter((item: BeneficiaryOption | null): item is BeneficiaryOption => Boolean(item && item.name.trim().length > 0));
 
         const unique = new Map<string, BeneficiaryOption>();
         mapped.forEach((item: BeneficiaryOption) => {
-          const key = `${item.id}-${item.name}`.toLowerCase();
-          if (!unique.has(key)) {
-            unique.set(key, item);
+          if (!unique.has(item.id)) {
+            unique.set(item.id, item);
           }
         });
 
