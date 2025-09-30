@@ -5,7 +5,7 @@ import { addAlert } from "../store/slices/alertSlice";
 import DataTableWrapper from "../components/DataTableWrapper";
 import ImportVisitsModal from "../components/ImportVisitsModal";
 import CheckInModal from "../components/CheckInModal";
-import { fetchVisits, removeVisit, Visit } from "../store/slices/visitSlice";
+import { checkoutVisit, fetchVisits, removeVisit, Visit } from "../store/slices/visitSlice";
 
 const CicVisits: React.FC = () => {
   const dispatch = useAppDispatch();
