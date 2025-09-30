@@ -4,18 +4,11 @@ import MainLayout from "../layouts/MainLayout";
 import DataTableWrapper from "../components/DataTableWrapper";
 import { useAppDispatch } from "../store/hooks";
 import { addAlert } from "../store/slices/alertSlice";
-import { initialDistricts } from "../data/settingsData";
 import { regionService } from "../services/regionService";
-import type { RegionRecord } from "../types/settings";
+import { districtService } from "../services/districtService";
+import type { DistrictRecord, RegionRecord } from "../types/settings";
 
 type LocalityTab = "regions" | "districts";
-
-interface DistrictRow {
-  id: number;
-  districtName: string;
-  regionName: string;
-  regionExternalId?: number;
-}
 
 interface RegionFormState {
   name: string;
@@ -23,38 +16,14 @@ interface RegionFormState {
 }
 
 interface DistrictFormState {
-  districtName: string;
+  name: string;
   regionId: string;
+  externalId: string;
 }
-
-const applyRegionNamesToDistricts = (
-  regions: RegionRecord[],
-  districts: DistrictRow[],
-): DistrictRow[] => {
-  if (regions.length === 0) {
-    return districts;
-  }
-
-  const externalMap = new Map<number, string>();
-  regions.forEach((region) => {
-    if (region.external_id !== null) {
-      externalMap.set(region.external_id, region.name);
-    }
-  });
-
-  return districts.map((district) => {
-    if (district.regionExternalId !== undefined && district.regionExternalId !== null) {
-      const matchedName = externalMap.get(district.regionExternalId);
-      if (matchedName) {
-        return { ...district, regionName: matchedName };
-      }
-    }
-    return district;
-  });
-};
 
 const SettingsLocality: React.FC = () => {
   const dispatch = useAppDispatch();
+
   const [activeTab, setActiveTab] = useState<LocalityTab>("regions");
   const [showModal, setShowModal] = useState(false);
   const [modalType, setModalType] = useState<LocalityTab>("regions");
@@ -65,26 +34,24 @@ const SettingsLocality: React.FC = () => {
   const [regionsLoading, setRegionsLoading] = useState(false);
   const [regionsError, setRegionsError] = useState<string | null>(null);
 
-  const [regionForm, setRegionForm] = useState<RegionFormState>({ name: "", externalId: "" });
-  const [districtForm, setDistrictForm] = useState<DistrictFormState>({ districtName: "", regionId: "" });
+  const [districts, setDistricts] = useState<DistrictRecord[]>([]);
+  const [districtsLoading, setDistrictsLoading] = useState(false);
+  const [districtsError, setDistrictsError] = useState<string | null>(null);
 
-  const [districts, setDistricts] = useState<DistrictRow[]>(
-    initialDistricts.map((district) => ({
-      id: district.id,
-      districtName: district.districtName,
-      regionName: "Unassigned",
-      regionExternalId: district.regionID,
-    })),
-  );
+  const [regionForm, setRegionForm] = useState<RegionFormState>({ name: "", externalId: "" });
+  const [districtForm, setDistrictForm] = useState<DistrictFormState>({ name: "", regionId: "", externalId: "" });
+
+  const regionById = useMemo(() => {
+    const entries = regions.map((region) => [region.id, region]);
+    return new Map<string, RegionRecord>(entries);
+  }, [regions]);
 
   const loadRegions = useCallback(async () => {
     setRegionsLoading(true);
     setRegionsError(null);
     try {
       const response = await regionService.list();
-      const regionRecords = response.data ?? [];
-      setRegions(regionRecords);
-      setDistricts((prev) => applyRegionNamesToDistricts(regionRecords, prev));
+      setRegions(response.data ?? []);
     } catch (error) {
       const message = error instanceof Error ? error.message : "Failed to load regions.";
       setRegionsError(message);
@@ -93,20 +60,30 @@ const SettingsLocality: React.FC = () => {
     }
   }, []);
 
-  useEffect(() => {
-    loadRegions();
-  }, [loadRegions]);
+  const loadDistricts = useCallback(async () => {
+    setDistrictsLoading(true);
+    setDistrictsError(null);
+    try {
+      const response = await districtService.list();
+      setDistricts(response.data ?? []);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Failed to load districts.";
+      setDistrictsError(message);
+    } finally {
+      setDistrictsLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
-    setDistricts((prev) => applyRegionNamesToDistricts(regions, prev));
-  }, [regions]);
+    void loadRegions();
+    void loadDistricts();
+  }, [loadRegions, loadDistricts]);
 
   useEffect(() => {
     if (regions.length === 0) {
       setDistrictForm((prev) => ({ ...prev, regionId: "" }));
       return;
     }
-
     setDistrictForm((prev) => {
       if (!prev.regionId || !regions.some((region) => region.id === prev.regionId)) {
         return { ...prev, regionId: regions[0].id };
@@ -123,7 +100,7 @@ const SettingsLocality: React.FC = () => {
     if (type === "regions") {
       setRegionForm({ name: "", externalId: "" });
     } else {
-      setDistrictForm({ districtName: "", regionId: regions[0]?.id ?? "" });
+      setDistrictForm({ name: "", regionId: regions[0]?.id ?? "", externalId: "" });
     }
 
     setShowModal(true);
@@ -146,15 +123,19 @@ const SettingsLocality: React.FC = () => {
     [regions],
   );
 
-  const districtsTableData = useMemo(
-    () =>
-      districts.map((district) => ({
+  const districtsTableData = useMemo(() => {
+    return districts.map((district) => {
+      const regionRecord = district.region ?? regionById.get(district.region_id);
+      return {
         id: district.id,
-        districtName: district.districtName,
-        regionName: district.regionName,
-      })),
-    [districts],
-  );
+        name: district.name,
+        externalId: district.external_id ?? "-",
+        regionName: regionRecord ? regionRecord.name : "Unassigned",
+        createdAt: district.created_at ? new Date(district.created_at).toLocaleString() : "-",
+        updatedAt: district.updated_at ? new Date(district.updated_at).toLocaleString() : "-",
+      };
+    });
+  }, [districts, regionById]);
 
   const regionColumns = useMemo(
     () => [
@@ -170,8 +151,11 @@ const SettingsLocality: React.FC = () => {
   const districtColumns = useMemo(
     () => [
       { title: "ID", data: "id" },
-      { title: "District Name", data: "districtName" },
+      { title: "District Name", data: "name" },
+      { title: "External ID", data: "externalId" },
       { title: "Region", data: "regionName" },
+      { title: "Created At", data: "createdAt" },
+      { title: "Updated At", data: "updatedAt" },
     ],
     [],
   );
@@ -239,11 +223,7 @@ const SettingsLocality: React.FC = () => {
       };
       const response = await regionService.create(payload);
       if (response.data) {
-        setRegions((prev) => {
-          const updated = [...prev, response.data];
-          setDistricts((districtState) => applyRegionNamesToDistricts(updated, districtState));
-          return updated;
-        });
+        setRegions((prev) => [...prev, response.data]);
         dispatch(
           addAlert({
             type: "success",
@@ -261,22 +241,26 @@ const SettingsLocality: React.FC = () => {
     }
   };
 
-  const handleDistrictSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleDistrictSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    setFormError(null);
+    if (isSubmitting) return;
 
-    const trimmedName = districtForm.districtName.trim();
+    setFormError(null);
+    const trimmedName = districtForm.name.trim();
+    const trimmedExternalId = districtForm.externalId.trim();
+    const selectedRegionId = districtForm.regionId;
+
     if (!trimmedName) {
       setFormError("District name is required.");
       return;
     }
 
-    if (!districtForm.regionId) {
+    if (!selectedRegionId) {
       setFormError("Please select a region.");
       return;
     }
 
-    const selectedRegion = regions.find((region) => region.id === districtForm.regionId);
+    const selectedRegion = regionById.get(selectedRegionId);
     if (!selectedRegion) {
       setFormError("Selected region is not available.");
       return;
@@ -284,7 +268,7 @@ const SettingsLocality: React.FC = () => {
 
     const duplicate = districts.some(
       (district) =>
-        district.districtName.toLowerCase() === trimmedName.toLowerCase() && district.regionName === selectedRegion.name,
+        district.name.toLowerCase() === trimmedName.toLowerCase() && district.region_id === selectedRegionId,
     );
 
     if (duplicate) {
@@ -292,23 +276,48 @@ const SettingsLocality: React.FC = () => {
       return;
     }
 
-    const nextId = districts.reduce((maxId, district) => Math.max(maxId, district.id), 0) + 1;
-    const newDistrict: DistrictRow = {
-      id: nextId,
-      districtName: trimmedName.toUpperCase(),
-      regionName: selectedRegion.name,
-      regionExternalId: selectedRegion.external_id ?? undefined,
-    };
+    let externalIdValue: number | undefined;
+    if (trimmedExternalId) {
+      const parsed = Number(trimmedExternalId);
+      if (!Number.isFinite(parsed)) {
+        setFormError("External ID must be a valid number.");
+        return;
+      }
+      externalIdValue = parsed;
+    }
 
-    setDistricts((prev) => [...prev, newDistrict]);
-    setShowModal(false);
+    setIsSubmitting(true);
+    try {
+      const payload = {
+        name: trimmedName.toUpperCase(),
+        region_id: selectedRegionId,
+        ...(externalIdValue !== undefined ? { external_id: externalIdValue } : {}),
+      };
+      const response = await districtService.create(payload);
+      if (response.data) {
+        setDistricts((prev) => [...prev, response.data]);
+        dispatch(
+          addAlert({
+            type: "success",
+            title: "Success",
+            message: response.message ?? `District "${response.data.name}" created successfully.`,
+          }),
+        );
+        setShowModal(false);
+      }
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Failed to create district.";
+      setFormError(message);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     if (modalType === "regions") {
       void handleRegionSubmit(event);
     } else {
-      handleDistrictSubmit(event);
+      void handleDistrictSubmit(event);
     }
   };
 
@@ -396,10 +405,15 @@ const SettingsLocality: React.FC = () => {
                 </div>
               </div>
               <div className={`tab-pane fade${activeTab === "districts" ? " show active" : ""}`} role="tabpanel">
-                {regions.length === 0 && (
-                  <div className="alert alert-info">
-                    Add or sync regions before creating districts.
+                {districtsError && <div className="alert alert-danger">{districtsError}</div>}
+                {districtsLoading && (
+                  <div className="d-flex align-items-center gap-2 mb-3 text-muted">
+                    <Spinner animation="border" size="sm" />
+                    <span>Loading districts...</span>
                   </div>
+                )}
+                {regions.length === 0 && !regionsLoading && (
+                  <div className="alert alert-info">Add or sync regions before creating districts.</div>
                 )}
                 <div className="table-responsive">
                   <DataTableWrapper
@@ -449,12 +463,12 @@ const SettingsLocality: React.FC = () => {
                   <Form.Label>District Name</Form.Label>
                   <Form.Control
                     type="text"
-                    value={districtForm.districtName}
+                    value={districtForm.name}
                     placeholder="Enter district name"
-                    onChange={(event) => setDistrictForm((prev) => ({ ...prev, districtName: event.target.value }))}
+                    onChange={(event) => setDistrictForm((prev) => ({ ...prev, name: event.target.value }))}
                   />
                 </Form.Group>
-                <Form.Group className="mb-0" controlId="newDistrictRegion">
+                <Form.Group className="mb-3" controlId="newDistrictRegion">
                   <Form.Label>Region</Form.Label>
                   <Form.Select
                     value={districtForm.regionId}
@@ -468,6 +482,15 @@ const SettingsLocality: React.FC = () => {
                     ))}
                   </Form.Select>
                 </Form.Group>
+                <Form.Group className="mb-0" controlId="newDistrictExternalId">
+                  <Form.Label>External ID (optional)</Form.Label>
+                  <Form.Control
+                    type="text"
+                    value={districtForm.externalId}
+                    placeholder="Enter external ID"
+                    onChange={(event) => setDistrictForm((prev) => ({ ...prev, externalId: event.target.value }))}
+                  />
+                </Form.Group>
               </>
             )}
           </Modal.Body>
@@ -480,7 +503,7 @@ const SettingsLocality: React.FC = () => {
               className="btn btn-grd-primary px-4"
               disabled={isSubmitting || (modalType === "districts" && regions.length === 0)}
             >
-              {isSubmitting && modalType === "regions" ? "Saving..." : modalType === "regions" ? "Add Region" : "Add District"}
+              {isSubmitting ? "Saving..." : modalType === "regions" ? "Add Region" : "Add District"}
             </button>
           </Modal.Footer>
         </Form>
