@@ -3,6 +3,15 @@ export interface Region {
   regionName: string;
 }
 
+export interface RegionRecord {
+  id: string;
+  external_id: number | null;
+  name: string;
+  created_at: string;
+  updated_at: string;
+  deleted_at: string | null;
+}
+
 export interface District {
   id: number;
   districtName: string;
