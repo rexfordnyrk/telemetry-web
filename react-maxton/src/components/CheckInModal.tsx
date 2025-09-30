@@ -450,22 +450,36 @@ const CheckInModal: React.FC<CheckInModalProps> = ({ show, onHide }) => {
                   CIC <span className="text-danger">*</span>
                   {cicLoading && <Spinner animation="border" size="sm" role="status" className="ms-1" />}
                 </Form.Label>
-                <Form.Select
-                  name="cic"
-                  value={formData.cic}
-                  onChange={handleStandardInputChange}
-                  isInvalid={!!errors.cic}
-                  disabled={cicLoading}
-                >
-                  <option value="">Select CIC</option>
-                  {cicOptions.map((option) => (
-                    <option key={option.id} value={option.name}>
-                      {option.name}
-                    </option>
-                  ))}
-                </Form.Select>
+                {hasCicOptions ? (
+                  <Form.Select
+                    name="cic"
+                    value={formData.cic}
+                    onChange={handleStandardInputChange}
+                    isInvalid={!!errors.cic}
+                    disabled={cicLoading}
+                  >
+                    <option value="">Select CIC</option>
+                    {cicOptions.map((option) => (
+                      <option key={option.id} value={option.name}>
+                        {option.name}
+                      </option>
+                    ))}
+                  </Form.Select>
+                ) : (
+                  <Form.Control
+                    type="text"
+                    name="cic"
+                    value={formData.cic}
+                    onChange={handleStandardInputChange}
+                    placeholder="Enter CIC name"
+                    isInvalid={!!errors.cic}
+                  />
+                )}
                 <Form.Control.Feedback type="invalid">{errors.cic}</Form.Control.Feedback>
                 {cicError && !errors.cic && <div className="invalid-feedback d-block">{cicError}</div>}
+                {!hasCicOptions && !cicLoading && !cicError && (
+                  <Form.Text className="text-muted">CIC list will appear here once available. Enter the name manually for now.</Form.Text>
+                )}
               </Form.Group>
             </Col>
             <Col md={6}>
