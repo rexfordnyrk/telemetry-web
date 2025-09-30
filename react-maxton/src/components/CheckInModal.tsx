@@ -91,6 +91,10 @@ const CheckInModal: React.FC<CheckInModalProps> = ({ show, onHide }) => {
   const [cicLoading, setCicLoading] = useState(false);
   const [cicError, setCicError] = useState<string | null>(null);
 
+  const [interventionOptions, setInterventionOptions] = useState<InterventionOption[]>([]);
+  const [interventionsLoading, setInterventionsLoading] = useState(false);
+  const [interventionsError, setInterventionsError] = useState<string | null>(null);
+
   const [beneficiaryQuery, setBeneficiaryQuery] = useState("");
   const [beneficiaryResults, setBeneficiaryResults] = useState<BeneficiaryOption[]>([]);
   const [beneficiaryLoading, setBeneficiaryLoading] = useState(false);
@@ -101,6 +105,7 @@ const CheckInModal: React.FC<CheckInModalProps> = ({ show, onHide }) => {
 
   const beneficiaryContainerRef = useRef<HTMLDivElement | null>(null);
   const hasLoadedCics = useRef(false);
+  const hasLoadedInterventions = useRef(false);
 
   const debouncedBeneficiaryQuery = useDebouncedValue(beneficiaryQuery, 400);
 
