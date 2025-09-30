@@ -50,6 +50,10 @@ import MainComponents from "./pages/MainComponents";
 import EcommerceComponents from "./pages/EcommerceComponents";
 import Overview from "./pages/Overview";
 import CicVisits from "./pages/CicVisits";
+import SettingsLocality from "./pages/SettingsLocality";
+import SettingsPartners from "./pages/SettingsPartners";
+import SettingsInterventions from "./pages/SettingsInterventions";
+import SettingsCics from "./pages/SettingsCics";
 
 // Utility components
 import ErrorBoundary from "./components/ErrorBoundary";
