@@ -59,6 +59,71 @@ export interface CicCentre {
   email?: string;
 }
 
+export interface CicRecord {
+  id: string;
+  name: string;
+  region_id: string |
+    null;
+  district_id: string |
+    null;
+  locality: string |
+    null;
+  contact_person: string |
+    null;
+  phone_number: string |
+    null;
+  email: string |
+    null;
+  status: string |
+    null;
+  created_at: string;
+  updated_at: string;
+  deleted_at?: string |
+    null;
+  region?: RegionRecord |
+    null;
+  district?: DistrictRecord |
+    null;
+}
+
+export interface CreateCicPayload {
+  name: string;
+  region_id?: string |
+    null;
+  district_id?: string |
+    null;
+  locality?: string |
+    null;
+  contact_person?: string |
+    null;
+  phone_number?: string |
+    null;
+  email?: string |
+    null;
+  status?: string |
+    null;
+}
+
+export interface UpdateCicPayload extends CreateCicPayload {}
+
+export interface CicResponse {
+  success: boolean;
+  message?: string;
+  data: CicRecord;
+}
+
+export interface CicsListResponse {
+  success: boolean;
+  message?: string;
+  data: CicRecord[];
+  pagination?: {
+    current_page: number;
+    total_pages: number;
+    total_records: number;
+    limit: number;
+  };
+}
+
 export interface ImplementingPartnerRecord {
   id: string;
   external_id: number | null;
