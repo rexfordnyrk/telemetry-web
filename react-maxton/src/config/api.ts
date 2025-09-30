@@ -55,6 +55,15 @@ export const API_CONFIG = {
       PARTNERS: '/api/v1/lookups/partners',
     },
 
+    // Regions endpoints
+    REGIONS: {
+      LIST: '/api/v1/regions',
+      CREATE: '/api/v1/regions',
+      DETAIL: (id: string) => `/api/v1/regions/${id}`,
+      UPDATE: (id: string) => `/api/v1/regions/${id}`,
+      DELETE: (id: string) => `/api/v1/regions/${id}`,
+    },
+
     // Device management endpoints
     DEVICES: {
       LIST: '/api/v1/devices',               // Get all devices
