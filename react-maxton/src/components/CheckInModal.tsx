@@ -546,7 +546,7 @@ const CheckInModal: React.FC<CheckInModalProps> = ({ show, onHide }) => {
         </Modal.Title>
       </Modal.Header>
       <Modal.Body className="p-4">
-        <Form onSubmit={handleSubmit}>
+        <Form onSubmit={handleFormSubmit}>
           <Row className="g-3">
             <Col md={6}>
               <Form.Group>
