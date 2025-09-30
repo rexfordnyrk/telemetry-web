@@ -76,6 +76,18 @@ export interface ImplementingPartnerRecord {
   deleted_at: string | null;
 }
 
+export interface InterventionRecord {
+  id: string;
+  external_id: number | null;
+  name: string;
+  description: string | null;
+  implementing_partner_id: string;
+  implementing_partner?: ImplementingPartnerRecord;
+  created_at: string;
+  updated_at: string;
+  deleted_at: string | null;
+}
+
 export interface RegionResponse {
   success: boolean;
   message?: string;
