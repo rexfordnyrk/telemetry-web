@@ -64,6 +64,15 @@ export const API_CONFIG = {
       DELETE: (id: string) => `/api/v1/regions/${id}`,
     },
 
+    // Districts endpoints
+    DISTRICTS: {
+      LIST: '/api/v1/districts',
+      CREATE: '/api/v1/districts',
+      DETAIL: (id: string) => `/api/v1/districts/${id}`,
+      UPDATE: (id: string) => `/api/v1/districts/${id}`,
+      DELETE: (id: string) => `/api/v1/districts/${id}`,
+    },
+
     // Device management endpoints
     DEVICES: {
       LIST: '/api/v1/devices',               // Get all devices
