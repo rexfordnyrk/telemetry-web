@@ -59,6 +59,23 @@ export interface CicCentre {
   email?: string;
 }
 
+export interface ImplementingPartnerRecord {
+  id: string;
+  external_id: number | null;
+  name: string;
+  contact_person: string | null;
+  phone: string | null;
+  email: string | null;
+  region_id: string;
+  district_id: string;
+  locality: string | null;
+  region?: RegionRecord;
+  district?: DistrictRecord;
+  created_at: string;
+  updated_at: string;
+  deleted_at: string | null;
+}
+
 export interface RegionResponse {
   success: boolean;
   message?: string;
@@ -114,5 +131,45 @@ export interface CreateDistrictPayload {
 export interface UpdateDistrictPayload {
   name?: string;
   region_id?: string;
+  external_id?: number | null;
+}
+
+export interface ImplementingPartnerResponse {
+  success: boolean;
+  message?: string;
+  data: ImplementingPartnerRecord;
+}
+
+export interface ImplementingPartnersListResponse {
+  success: boolean;
+  message?: string;
+  data: ImplementingPartnerRecord[];
+  pagination?: {
+    current_page: number;
+    total_pages: number;
+    total_records: number;
+    limit: number;
+  };
+}
+
+export interface CreateImplementingPartnerPayload {
+  name: string;
+  region_id: string;
+  district_id: string;
+  contact_person?: string | null;
+  phone?: string | null;
+  email?: string | null;
+  locality?: string | null;
+  external_id?: number;
+}
+
+export interface UpdateImplementingPartnerPayload {
+  name?: string;
+  region_id?: string;
+  district_id?: string;
+  contact_person?: string | null;
+  phone?: string | null;
+  email?: string | null;
+  locality?: string | null;
   external_id?: number | null;
 }
