@@ -355,7 +355,7 @@ function App() {
                 />
                 
                 {/* ===== BENEFICIARY MANAGEMENT ROUTES ===== */}
-                
+
                 {/* Beneficiaries list page */}
                 <Route
                   path="/beneficiary-management/beneficiaries"
@@ -385,7 +385,41 @@ function App() {
                     </ProtectedRoute>
                   }
                 />
-                
+
+                {/* ===== SETTINGS ROUTES ===== */}
+                <Route
+                  path="/settings/locality"
+                  element={
+                    <ProtectedRoute>
+                      <SettingsLocality />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/settings/partners"
+                  element={
+                    <ProtectedRoute>
+                      <SettingsPartners />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/settings/interventions"
+                  element={
+                    <ProtectedRoute>
+                      <SettingsInterventions />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/settings/cics"
+                  element={
+                    <ProtectedRoute>
+                      <SettingsCics />
+                    </ProtectedRoute>
+                  }
+                />
+
                 {/* ===== FALLBACK ROUTE ===== */}
                 {/* 404 page for any unmatched routes */}
                 <Route path="*" element={<NotFound />} />
