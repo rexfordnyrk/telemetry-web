@@ -18,6 +18,8 @@ const CicVisits: React.FC = () => {
   const [targetVisit, setTargetVisit] = useState<Visit | null>(null);
   const [selectedCic, setSelectedCic] = useState<string>("");
   const [checkoutProcessingId, setCheckoutProcessingId] = useState<string | null>(null);
+  const [deleteSubmitting, setDeleteSubmitting] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
 
   useEffect(() => {
     // Try to fetch from backend if available; otherwise ignore error and rely on client-side imports/check-ins
