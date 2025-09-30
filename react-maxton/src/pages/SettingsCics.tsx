@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { ChangeEvent, FormEvent, useCallback, useEffect, useMemo, useState } from "react";
 import { Col, Form, Modal, Row, Spinner } from "react-bootstrap";
 import MainLayout from "../layouts/MainLayout";
 import DataTableWrapper from "../components/DataTableWrapper";
