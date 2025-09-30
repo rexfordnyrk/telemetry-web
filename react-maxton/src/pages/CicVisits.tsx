@@ -17,6 +17,7 @@ const CicVisits: React.FC = () => {
   const [modalAction, setModalAction] = useState<"delete">("delete");
   const [targetVisit, setTargetVisit] = useState<Visit | null>(null);
   const [selectedCic, setSelectedCic] = useState<string>("");
+  const [checkoutProcessingId, setCheckoutProcessingId] = useState<string | null>(null);
 
   useEffect(() => {
     // Try to fetch from backend if available; otherwise ignore error and rely on client-side imports/check-ins
