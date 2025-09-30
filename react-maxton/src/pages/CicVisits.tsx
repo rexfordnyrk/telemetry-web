@@ -317,13 +317,13 @@ const CicVisits: React.FC = () => {
           className="modal fade show d-block"
           tabIndex={-1}
           style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
-          onClick={handleCloseModal}
+          onClick={() => handleCloseModal()}
         >
           <div className="modal-dialog">
             <div className={`card border-top border-3 border-danger rounded-0`} onClick={(e) => e.stopPropagation()}>
               <div className="card-header py-3 px-4">
                 <h5 className="mb-0 text-danger">Confirm Delete</h5>
-                <button type="button" className="btn-close" onClick={handleCloseModal} disabled={deleteSubmitting}></button>
+                <button type="button" className="btn-close" onClick={() => handleCloseModal()} disabled={deleteSubmitting}></button>
               </div>
               <div className="card-body p-4">
                 {deleteError && (
@@ -339,7 +339,7 @@ const CicVisits: React.FC = () => {
                   <button
                     type="button"
                     className="btn btn-grd-royal px-4 rounded-0"
-                    onClick={handleCloseModal}
+                    onClick={() => handleCloseModal()}
                     disabled={deleteSubmitting}
                   >
                     Cancel
