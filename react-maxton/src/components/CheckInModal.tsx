@@ -15,7 +15,8 @@ interface CheckInModalProps {
 interface BeneficiaryOption {
   id: string;
   name: string;
-  programme?: string;
+  intervention_id?: string | null;
+  intervention_name?: string | null;
 }
 
 interface CicOption {
@@ -23,14 +24,22 @@ interface CicOption {
   name: string;
 }
 
-interface FormState {
-  cic: string;
+interface InterventionOption {
+  id: string;
   name: string;
-  programme: string;
-  activity: string;
+}
+
+interface FormState {
+  cic_id: string;
+  cic_name: string;
+  beneficiary_id: string;
+  beneficiary_name: string;
+  intervention_id: string | null;
+  intervention_name: string;
+  activity_name: string;
   assisted_by: string;
   notes: string;
-  check_in: string;
+  check_in_at: string;
 }
 
 const MIN_BENEFICIARY_QUERY_LENGTH = 2;
@@ -42,13 +51,16 @@ const formatDateTimeLocal = (date: Date): string => {
 };
 
 const createInitialFormState = (): FormState => ({
-  cic: "",
-  name: "",
-  programme: "",
-  activity: "",
+  cic_id: "",
+  cic_name: "",
+  beneficiary_id: "",
+  beneficiary_name: "",
+  intervention_id: null,
+  intervention_name: "",
+  activity_name: "",
   assisted_by: "",
   notes: "",
-  check_in: formatDateTimeLocal(new Date()),
+  check_in_at: formatDateTimeLocal(new Date()),
 });
 
 function useDebouncedValue<T>(value: T, delay: number): T {
