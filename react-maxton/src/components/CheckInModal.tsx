@@ -613,7 +613,9 @@ const CheckInModal: React.FC<CheckInModalProps> = ({ show, onHide }) => {
                 <Form.Control.Feedback type="invalid">{errors.cic_id}</Form.Control.Feedback>
                 {cicError && !errors.cic && <div className="invalid-feedback d-block">{cicError}</div>}
                 {!hasCicOptions && !cicLoading && !cicError && (
-                  <Form.Text className="text-muted">CIC list will appear here once available. Enter the name manually for now.</Form.Text>
+                  <Form.Text className="text-muted">
+                    CIC options will appear here once available. Please ensure a valid CIC is selected before submitting.
+                  </Form.Text>
                 )}
               </Form.Group>
             </Col>
