@@ -250,7 +250,7 @@ const SettingsCics: React.FC = () => {
     setFormSubmitting(false);
   }, []);
 
-  const handleFormChange = (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleFormChange = (event: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = event.target;
     setFormState((prev) => {
       if (name === "region_id") {
@@ -304,7 +304,7 @@ const SettingsCics: React.FC = () => {
     email: sanitizeOptionalField(formState.email),
   });
 
-  const handleFormSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+  const handleFormSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setFormGeneralError(null);
 
