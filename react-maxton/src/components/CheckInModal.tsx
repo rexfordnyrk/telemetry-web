@@ -671,6 +671,7 @@ const CheckInModal: React.FC<CheckInModalProps> = ({ show, onHide }) => {
                     placeholder="Search beneficiary name"
                     autoComplete="off"
                     isInvalid={!!errors.beneficiary_id}
+                    disabled={formSubmitting}
                   />
                   <Form.Control.Feedback type="invalid">{errors.beneficiary_id}</Form.Control.Feedback>
                   {beneficiaryFetchError && <div className="invalid-feedback d-block">{beneficiaryFetchError}</div>}
@@ -726,7 +727,7 @@ const CheckInModal: React.FC<CheckInModalProps> = ({ show, onHide }) => {
                   name="intervention_id"
                   value={formData.intervention_id ?? ""}
                   onChange={handleInterventionSelect}
-                  disabled={interventionsLoading || interventionOptions.length === 0}
+                  disabled={interventionsLoading || interventionOptions.length === 0 || formSubmitting}
                 >
                   <option value="">Select intervention (optional)</option>
                   {interventionOptions.map((option) => (
@@ -755,6 +756,7 @@ const CheckInModal: React.FC<CheckInModalProps> = ({ show, onHide }) => {
                   onChange={handleStandardInputChange}
                   placeholder="Enter activity"
                   isInvalid={!!errors.activity_name}
+                  disabled={formSubmitting}
                 />
                 <Form.Control.Feedback type="invalid">{errors.activity_name}</Form.Control.Feedback>
               </Form.Group>
@@ -768,6 +770,7 @@ const CheckInModal: React.FC<CheckInModalProps> = ({ show, onHide }) => {
                   value={formData.assisted_by}
                   onChange={handleStandardInputChange}
                   placeholder="Enter staff name"
+                  disabled={formSubmitting}
                 />
               </Form.Group>
             </Col>
@@ -782,6 +785,7 @@ const CheckInModal: React.FC<CheckInModalProps> = ({ show, onHide }) => {
                   value={formData.check_in_at}
                   onChange={handleStandardInputChange}
                   isInvalid={!!errors.check_in_at}
+                  disabled={formSubmitting}
                 />
                 <Form.Control.Feedback type="invalid">{errors.check_in_at}</Form.Control.Feedback>
               </Form.Group>
@@ -796,6 +800,7 @@ const CheckInModal: React.FC<CheckInModalProps> = ({ show, onHide }) => {
                   value={formData.notes}
                   onChange={handleStandardInputChange}
                   placeholder="Enter notes or follow up details"
+                  disabled={formSubmitting}
                 />
               </Form.Group>
             </Col>
