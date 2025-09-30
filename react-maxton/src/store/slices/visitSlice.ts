@@ -1,75 +1,162 @@
-import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
-import { RootState } from "../index";
-import { API_CONFIG, buildApiUrl, getAuthHeaders } from "../../config/api";
-import { handleApiError } from "../../utils/apiUtils";
+import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { ApiService } from "../../services/apiService";
+import { API_CONFIG } from "../../config/api";
 
 export interface Visit {
   id: string;
-  cic: string;
-  name: string;
-  programme: string; // Intervention
-  activity: string;
+  cic_id: string;
+  cic_name: string;
+  beneficiary_id: string;
+  beneficiary_name: string;
+  intervention_id: string | null;
+  intervention_name: string | null;
+  activity_name: string | null;
   assisted_by: string | null;
-  notes: string;
-  check_in: string; // ISO datetime
-  check_out: string | null; // ISO datetime or null
-  duration_minutes: number | null; // in minutes
+  notes: string | null;
+  check_in_at: string;
+  check_out_at: string | null;
+  duration_minutes: number | null;
   created_at: string;
   updated_at: string;
 }
 
+interface VisitApi {
+  id: string;
+  cic_id: string;
+  beneficiary_id: string;
+  intervention_id?: string | null;
+  activity_name?: string | null;
+  assisted_by?: string | null;
+  notes?: string | null;
+  check_in_at: string;
+  check_out_at?: string | null;
+  duration?: number | null;
+  created_at: string;
+  updated_at: string;
+  cic?: { id: string; name?: string | null } | null;
+  beneficiary?: { id: string; name?: string | null } | null;
+  intervention?: { id: string; name?: string | null } | null;
+}
+
+interface VisitPagination {
+  current_page: number;
+  total_pages: number;
+  total_records: number;
+  limit: number;
+}
+
 export interface VisitFetchParams {
-  cic?: string;
-  programme?: string;
-  search?: string;
+  page?: number;
+  limit?: number;
+  cic_id?: string;
+  beneficiary_id?: string;
+  intervention_id?: string;
+}
+
+export interface CreateVisitPayload {
+  cic_id: string;
+  beneficiary_id: string;
+  intervention_id?: string | null;
+  activity_name?: string | null;
+  assisted_by?: string | null;
+  notes?: string | null;
+  check_in_at: string;
+}
+
+export interface UpdateVisitPayload {
+  intervention_id?: string | null;
+  activity_name?: string | null;
+  assisted_by?: string | null;
+  notes?: string | null;
+  check_in_at?: string;
+  check_out_at?: string | null;
 }
 
 interface VisitState {
   visits: Visit[];
+  pagination: VisitPagination | null;
   loading: boolean;
   error: string | null;
 }
 
 const initialState: VisitState = {
   visits: [],
+  pagination: null,
   loading: false,
   error: null,
 };
 
+const mapApiVisit = (apiVisit: VisitApi): Visit => ({
+  id: apiVisit.id,
+  cic_id: apiVisit.cic_id,
+  cic_name: apiVisit.cic?.name ?? "",
+  beneficiary_id: apiVisit.beneficiary_id,
+  beneficiary_name: apiVisit.beneficiary?.name ?? "",
+  intervention_id: apiVisit.intervention_id ?? null,
+  intervention_name: apiVisit.intervention?.name ?? null,
+  activity_name: apiVisit.activity_name ?? null,
+  assisted_by: apiVisit.assisted_by ?? null,
+  notes: apiVisit.notes ?? null,
+  check_in_at: apiVisit.check_in_at,
+  check_out_at: apiVisit.check_out_at ?? null,
+  duration_minutes: apiVisit.duration ?? null,
+  created_at: apiVisit.created_at,
+  updated_at: apiVisit.updated_at,
+});
+
 export const fetchVisits = createAsyncThunk(
   "visits/fetchVisits",
-  async (params: VisitFetchParams = {}, { getState, rejectWithValue, dispatch }) => {
+  async (params: VisitFetchParams = {}, { rejectWithValue }) => {
     try {
-      const state = getState() as RootState;
-      const token = state.auth.token;
-      if (!token) {
-        throw new Error("No authentication token available");
-      }
-
-      // If backend endpoint exists, this will work; otherwise the error handler will surface a friendly error.
-      const queryParams = new URLSearchParams();
-      Object.entries(params).forEach(([k, v]) => {
-        if (v !== undefined && v !== null && v !== "") queryParams.append(k, String(v));
-      });
-      const url = queryParams.toString()
-        ? `/api/v1/cic-visits?${queryParams.toString()}`
-        : "/api/v1/cic-visits";
-
-      const response = await fetch(buildApiUrl(url), {
-        method: "GET",
-        headers: getAuthHeaders(token),
+      const query = new URLSearchParams();
+      Object.entries(params).forEach(([key, value]) => {
+        if (value !== undefined && value !== null && value !== "") {
+          query.append(key, String(value));
+        }
       });
 
-      if (!response.ok) {
-        const message = await handleApiError(response, "Failed to fetch CIC visits", dispatch);
-        throw new Error(message);
-      }
+      const endpoint = query.toString()
+        ? `${API_CONFIG.ENDPOINTS.VISITS.LIST}?${query.toString()}`
+        : API_CONFIG.ENDPOINTS.VISITS.LIST;
 
-      const data = await response.json();
-      const arr = Array.isArray(data?.data) ? data.data : Array.isArray(data) ? data : [];
-      return arr as Visit[];
+      const response = await ApiService.get<{ data?: VisitApi[]; pagination?: VisitPagination | null }>(endpoint);
+      const data = Array.isArray(response?.data) ? response.data : [];
+
+      return {
+        visits: data.map(mapApiVisit),
+        pagination: response?.pagination ?? null,
+      };
     } catch (error) {
       return rejectWithValue(error instanceof Error ? error.message : "Failed to fetch CIC visits");
+    }
+  }
+);
+
+export const createVisit = createAsyncThunk(
+  "visits/createVisit",
+  async (payload: CreateVisitPayload, { rejectWithValue }) => {
+    try {
+      const response = await ApiService.post<{ data?: VisitApi }>(API_CONFIG.ENDPOINTS.VISITS.LIST, payload);
+      const visitData = (response?.data ?? response) as VisitApi;
+      return mapApiVisit(visitData);
+    } catch (error) {
+      return rejectWithValue(error instanceof Error ? error.message : "Failed to create visit");
+    }
+  }
+);
+
+export const updateVisit = createAsyncThunk(
+  "visits/updateVisit",
+  async (
+    { id, payload }: { id: string; payload: UpdateVisitPayload },
+    { rejectWithValue }
+  ) => {
+    try {
+      const response = await ApiService.put<{ data?: VisitApi }>(API_CONFIG.ENDPOINTS.VISITS.DETAIL(id), payload);
+      const visitData = (response?.data ?? response) as VisitApi;
+      return mapApiVisit(visitData);
+    } catch (error) {
+      return rejectWithValue(error instanceof Error ? error.message : "Failed to update visit");
     }
   }
 );
@@ -78,60 +165,30 @@ export const checkoutVisit = createAsyncThunk(
   "visits/checkoutVisit",
   async (
     { id, checkoutTime }: { id: string; checkoutTime?: string },
-    { getState, rejectWithValue, dispatch }
+    { rejectWithValue }
   ) => {
     try {
-      const state = getState() as RootState;
-      const token = state.auth.token;
-      if (!token) {
-        throw new Error("No authentication token available");
-      }
-
       const body = {
-        check_out: checkoutTime ?? new Date().toISOString(),
+        check_out_at: checkoutTime ?? new Date().toISOString(),
       };
 
-      const response = await fetch(buildApiUrl(API_CONFIG.ENDPOINTS.VISITS.CHECKOUT(id)), {
-        method: "POST",
-        headers: {
-          ...getAuthHeaders(token),
-        },
-        body: JSON.stringify(body),
-      });
-
-      if (!response.ok) {
-        const message = await handleApiError(response, "Failed to checkout visit", dispatch);
-        throw new Error(message);
-      }
-
-      const data = await response.json();
-      const payloadVisit = (data?.data ?? data) as Partial<Visit> | Visit;
-      const existingVisit = state.visits.visits.find((v) => v.id === id);
-      const mergedVisit: Visit = {
-        ...(existingVisit ?? {
-          id,
-          cic: "",
-          name: "",
-          programme: "",
-          activity: "",
-          assisted_by: null,
-          notes: "",
-          check_in: new Date().toISOString(),
-          check_out: null,
-          duration_minutes: null,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        }),
-        ...payloadVisit,
-        id,
-        check_out: payloadVisit && "check_out" in payloadVisit && payloadVisit.check_out ? payloadVisit.check_out : body.check_out,
-        updated_at: payloadVisit && "updated_at" in payloadVisit && payloadVisit.updated_at
-          ? payloadVisit.updated_at
-          : new Date().toISOString(),
-      } as Visit;
-      return mergedVisit;
+      const response = await ApiService.put<{ data?: VisitApi }>(API_CONFIG.ENDPOINTS.VISITS.CHECKOUT(id), body);
+      const visitData = (response?.data ?? response) as VisitApi;
+      return mapApiVisit(visitData);
     } catch (error) {
       return rejectWithValue(error instanceof Error ? error.message : "Failed to checkout visit");
+    }
+  }
+);
+
+export const deleteVisit = createAsyncThunk(
+  "visits/deleteVisit",
+  async (id: string, { rejectWithValue }) => {
+    try {
+      await ApiService.delete(API_CONFIG.ENDPOINTS.VISITS.DETAIL(id));
+      return id;
+    } catch (error) {
+      return rejectWithValue(error instanceof Error ? error.message : "Failed to delete visit");
     }
   }
 );
@@ -143,19 +200,25 @@ const visitSlice = createSlice({
     addVisits: (state, action: PayloadAction<Visit[]>) => {
       const incoming = action.payload;
       const map = new Map<string, Visit>();
-      state.visits.forEach((v) => map.set(v.id, v));
-      incoming.forEach((v) => map.set(v.id, v));
+      state.visits.forEach((visit) => map.set(visit.id, visit));
+      incoming.forEach((visit) => map.set(visit.id, visit));
       state.visits = Array.from(map.values());
     },
     upsertVisit: (state, action: PayloadAction<Visit>) => {
-      const v = action.payload;
-      const idx = state.visits.findIndex((x) => x.id === v.id);
-      if (idx >= 0) state.visits[idx] = v; else state.visits.push(v);
+      const visit = action.payload;
+      const idx = state.visits.findIndex((x) => x.id === visit.id);
+      if (idx >= 0) {
+        state.visits[idx] = visit;
+      } else {
+        state.visits.push(visit);
+      }
     },
     removeVisit: (state, action: PayloadAction<string>) => {
-      state.visits = state.visits.filter((v) => v.id !== action.payload);
+      state.visits = state.visits.filter((visit) => visit.id !== action.payload);
     },
-    clearError: (state) => { state.error = null; },
+    clearError: (state) => {
+      state.error = null;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -165,14 +228,30 @@ const visitSlice = createSlice({
       })
       .addCase(fetchVisits.fulfilled, (state, action) => {
         state.loading = false;
-        state.visits = action.payload;
+        state.visits = action.payload.visits;
+        state.pagination = action.payload.pagination;
       })
       .addCase(fetchVisits.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
       })
-      .addCase(checkoutVisit.pending, (state) => {
+      .addCase(createVisit.pending, (state) => {
         state.error = null;
+      })
+      .addCase(createVisit.fulfilled, (state, action) => {
+        state.visits = [action.payload, ...state.visits.filter((visit) => visit.id !== action.payload.id)];
+      })
+      .addCase(createVisit.rejected, (state, action) => {
+        state.error = action.payload as string;
+      })
+      .addCase(updateVisit.fulfilled, (state, action) => {
+        const updated = action.payload;
+        const idx = state.visits.findIndex((visit) => visit.id === updated.id);
+        if (idx >= 0) {
+          state.visits[idx] = updated;
+        } else {
+          state.visits.push(updated);
+        }
       })
       .addCase(checkoutVisit.fulfilled, (state, action) => {
         const updated = action.payload;
@@ -184,6 +263,12 @@ const visitSlice = createSlice({
         }
       })
       .addCase(checkoutVisit.rejected, (state, action) => {
+        state.error = action.payload as string;
+      })
+      .addCase(deleteVisit.fulfilled, (state, action) => {
+        state.visits = state.visits.filter((visit) => visit.id !== action.payload);
+      })
+      .addCase(deleteVisit.rejected, (state, action) => {
         state.error = action.payload as string;
       });
   },
