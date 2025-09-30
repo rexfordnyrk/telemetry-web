@@ -357,12 +357,27 @@ const CheckInModal: React.FC<CheckInModalProps> = ({ show, onHide }) => {
     event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>,
   ) => {
     const { name, value } = event.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setFormData((prev) => {
+      if (name === "cic_name") {
+        return {
+          ...prev,
+          cic_name: value,
+          cic_id: value.trim() ? prev.cic_id || generateIdFromValue(value, "cic") : "",
+        };
+      }
+      if (name === "assisted_by" || name === "notes") {
+        return { ...prev, [name]: value };
+      }
+      return {
+        ...prev,
+        [name]: value,
+      };
+    });
     if (errors[name]) {
       setErrors((prev) => ({ ...prev, [name]: "" }));
+    }
+    if (name === "cic_name" && errors.cic_id) {
+      setErrors((prev) => ({ ...prev, cic_id: "" }));
     }
   };
 
@@ -557,6 +572,9 @@ const CheckInModal: React.FC<CheckInModalProps> = ({ show, onHide }) => {
   };
 
   const handleClose = () => {
+    if (formSubmitting) {
+      return;
+    }
     onHide();
   };
 
