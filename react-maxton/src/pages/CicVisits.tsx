@@ -22,8 +22,7 @@ const CicVisits: React.FC = () => {
   const [deleteError, setDeleteError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Try to fetch from backend if available; otherwise ignore error and rely on client-side imports/check-ins
-    dispatch(fetchVisits({})).catch(() => undefined);
+    dispatch(fetchVisits({}));
   }, [dispatch]);
 
   const availableCics = useMemo(() => {
