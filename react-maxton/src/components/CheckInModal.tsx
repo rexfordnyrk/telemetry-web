@@ -86,6 +86,8 @@ const CheckInModal: React.FC<CheckInModalProps> = ({ show, onHide }) => {
 
   const [formData, setFormData] = useState<FormState>(() => createInitialFormState());
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [formGeneralError, setFormGeneralError] = useState<string | null>(null);
+  const [formSubmitting, setFormSubmitting] = useState(false);
 
   const [cicOptions, setCicOptions] = useState<CicOption[]>([]);
   const [cicLoading, setCicLoading] = useState(false);
