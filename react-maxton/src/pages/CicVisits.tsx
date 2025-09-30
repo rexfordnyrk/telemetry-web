@@ -52,17 +52,33 @@ const CicVisits: React.FC = () => {
     } },
     {
       title: 'Actions', data: null, orderable: false, searchable: false,
-      render: (_: any, __: any, row: any) => `
-        <div class="d-flex gap-1">
-          <button class="btn btn-sm p-1" title="Edit" data-action="edit" data-id="${row.id}" style="border:none;background:transparent;">
-            <i class="material-icons-outlined text-primary">edit</i>
-          </button>
-          <button class="btn btn-sm p-1" title="Delete" data-action="delete" data-id="${row.id}" style="border:none;background:transparent;">
-            <i class="material-icons-outlined text-danger">delete</i>
-          </button>
-        </div>`
+      render: (_: any, __: any, row: Visit) => {
+        const isProcessing = checkoutProcessingId === row.id;
+        const isCheckedOut = Boolean(row.check_out);
+        const checkoutDisabled = isCheckedOut || isProcessing ? 'disabled' : '';
+        const checkoutIcon = isCheckedOut
+          ? '<i class="material-icons-outlined align-middle">check_circle</i>'
+          : isProcessing
+            ? '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>'
+            : '<i class="material-icons-outlined align-middle">logout</i>';
+        const checkoutLabel = isCheckedOut ? 'Checked Out' : 'Check-Out';
+
+        return `
+          <div class="d-flex gap-2 align-items-center">
+            <button type="button" class="btn btn-sm btn-outline-success d-flex align-items-center gap-1" data-action="checkout" data-id="${row.id}" ${checkoutDisabled}>
+              ${checkoutIcon}
+              <span>${checkoutLabel}</span>
+            </button>
+            <button class="btn btn-sm p-1" title="Edit" data-action="edit" data-id="${row.id}" style="border:none;background:transparent;">
+              <i class="material-icons-outlined text-primary">edit</i>
+            </button>
+            <button class="btn btn-sm p-1" title="Delete" data-action="delete" data-id="${row.id}" style="border:none;background:transparent;">
+              <i class="material-icons-outlined text-danger">delete</i>
+            </button>
+          </div>`;
+      }
     }
-  ], []);
+  ], [checkoutProcessingId]);
 
   const dtOptions = React.useMemo(() => ({
     columns: dtColumns,
