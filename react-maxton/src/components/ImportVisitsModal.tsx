@@ -215,7 +215,8 @@ const ImportVisitsModal: React.FC<ImportVisitsModalProps> = ({ show, onHide }) =
           <Form.Label>Choose CSV File</Form.Label>
           <Form.Control type="file" accept=".csv,text/csv" onChange={onFileChange} />
           <Form.Text muted>
-            Expected columns: cic, name, programme, activity, assisted_by, optional: notes, check_in, check_out, duration_minutes
+            Expected columns: cic_name, beneficiary_name, activity_name, check_in_at. Optional columns include cic_id, beneficiary_id,
+            intervention_name, intervention_id, assisted_by, notes, check_out_at, duration_minutes.
           </Form.Text>
         </Form.Group>
         {parsedRows.length > 0 && (
