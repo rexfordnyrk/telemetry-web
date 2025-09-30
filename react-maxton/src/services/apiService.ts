@@ -137,7 +137,24 @@ export class ApiService {
    * @returns The stored JWT token or undefined if not found
    */
   private static getToken(): string | undefined {
-    return localStorage.getItem('auth_token') || undefined;
+    const legacyToken = localStorage.getItem('auth_token');
+    if (legacyToken) {
+      return legacyToken;
+    }
+
+    const storedAuthState = localStorage.getItem('auth_state');
+    if (storedAuthState) {
+      try {
+        const parsed = JSON.parse(storedAuthState);
+        if (parsed && typeof parsed.token === 'string' && parsed.token.length > 0) {
+          return parsed.token;
+        }
+      } catch (error) {
+        console.warn('Failed to parse auth_state for token retrieval:', error);
+      }
+    }
+
+    return undefined;
   }
 
   /**
