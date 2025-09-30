@@ -464,44 +464,63 @@ const CheckInModal: React.FC<CheckInModalProps> = ({ show, onHide }) => {
 
   const validate = () => {
     const nextErrors: Record<string, string> = {};
-    if (!formData.cic.trim()) nextErrors.cic = "CIC is required";
-    if (!formData.name.trim()) nextErrors.name = "Name is required";
-    if (!formData.programme.trim()) nextErrors.programme = "Intervention is required";
-    if (!formData.activity.trim()) nextErrors.activity = "Activity is required";
-    if (!formData.check_in.trim()) nextErrors.check_in = "Check-In is required";
+    if (!formData.cic_id.trim()) nextErrors.cic_id = "CIC is required";
+    if (!formData.beneficiary_id.trim()) nextErrors.beneficiary_id = "Beneficiary is required";
+    if (!formData.activity_name.trim()) nextErrors.activity_name = "Activity is required";
+    if (!formData.check_in_at.trim()) nextErrors.check_in_at = "Check-In is required";
     setErrors(nextErrors);
     return Object.keys(nextErrors).length === 0;
   };
 
-  const handleSubmit = (event: React.FormEvent) => {
-    event.preventDefault();
-    if (!validate()) return;
-
-    const nowIso = new Date().toISOString();
-    const visit: Visit = {
-      id: crypto.randomUUID(),
-      cic: formData.cic.trim(),
-      name: formData.name.trim(),
-      programme: formData.programme.trim(),
-      activity: formData.activity.trim(),
-      assisted_by: formData.assisted_by.trim() ? formData.assisted_by.trim() : null,
-      notes: formData.notes.trim(),
-      check_in: toIso(formData.check_in),
-      check_out: null,
-      duration_minutes: null,
-      created_at: nowIso,
-      updated_at: nowIso,
+  const buildPayload = (): CreateVisitPayload => {
+    const payload: CreateVisitPayload = {
+      cic_id: formData.cic_id,
+      beneficiary_id: formData.beneficiary_id,
+      check_in_at: toIso(formData.check_in_at),
     };
 
-    dispatch(upsertVisit(visit));
-    dispatch(
-      addAlert({
-        type: "success",
-        title: "Checked In",
-        message: `${visit.name} checked in at ${new Date(visit.check_in).toLocaleString()}.`,
-      }),
-    );
-    onHide();
+    if (formData.intervention_id) {
+      payload.intervention_id = formData.intervention_id;
+    }
+    if (formData.activity_name.trim()) {
+      payload.activity_name = formData.activity_name.trim();
+    }
+    if (formData.assisted_by.trim()) {
+      payload.assisted_by = formData.assisted_by.trim();
+    }
+    if (formData.notes.trim()) {
+      payload.notes = formData.notes.trim();
+    }
+
+    return payload;
+  };
+
+  const handleFormSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setFormGeneralError(null);
+
+    if (!validate()) {
+      return;
+    }
+
+    const payload = buildPayload();
+
+    try {
+      setFormSubmitting(true);
+      const visit = await dispatch(createVisit(payload)).unwrap();
+      dispatch(
+        addAlert({
+          type: "success",
+          title: "Checked In",
+          message: `${visit.beneficiary_name || "Beneficiary"} checked in at ${new Date(visit.check_in_at).toLocaleString()}.`,
+        })
+      );
+      onHide();
+    } catch (error) {
+      setFormGeneralError(error instanceof Error ? error.message : "Unable to save CIC visit.");
+    } finally {
+      setFormSubmitting(false);
+    }
   };
 
   const handleClose = () => {
