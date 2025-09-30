@@ -25,6 +25,7 @@ export interface Intervention {
   name: string;
   description: string;
   implementingPartnerID: number;
+  implementingPartner?: Partner;
 }
 
 export interface CicCentre {
