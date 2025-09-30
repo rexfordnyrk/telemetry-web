@@ -213,7 +213,7 @@ const CicVisits: React.FC = () => {
           message: `Visit for "${targetVisit.beneficiary_name || "Beneficiary"}" has been deleted.`,
         })
       );
-      handleCloseModal();
+      handleCloseModal(true);
     } catch (error) {
       setDeleteError(error instanceof Error ? error.message : "Failed to delete visit.");
     } finally {
