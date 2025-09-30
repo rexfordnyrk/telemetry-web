@@ -330,7 +330,7 @@ const CheckInModal: React.FC<CheckInModalProps> = ({ show, onHide }) => {
     setFormData((prev) => ({
       ...prev,
       name: option.name,
-      programme: option.programme ?? prev.programme,
+      programme: option.programme ?? "",
     }));
 
     if (errors.name) {
