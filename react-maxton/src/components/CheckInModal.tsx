@@ -610,6 +610,7 @@ const CheckInModal: React.FC<CheckInModalProps> = ({ show, onHide }) => {
                     onChange={handleStandardInputChange}
                     placeholder="Enter CIC name"
                     isInvalid={!!errors.cic_id}
+                    disabled={formSubmitting}
                   />
                 )}
                 <Form.Control.Feedback type="invalid">{errors.cic_id}</Form.Control.Feedback>
