@@ -51,15 +51,10 @@ const ImportVisitsModal: React.FC<ImportVisitsModalProps> = ({ show, onHide }) =
   const [error, setError] = useState<string | null>(null);
 
   const requiredKeys = useMemo(() => [
-    "cic",
-    "name",
-    "programme",
-    "activity",
-    "assisted_by",
-    // notes optional
-    "check_in",
-    // check_out optional
-    // duration_minutes optional
+    "cic_name",
+    "beneficiary_name",
+    "activity_name",
+    "check_in_at",
   ], []);
 
   const onFileChange = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
