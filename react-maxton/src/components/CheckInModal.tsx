@@ -716,13 +716,13 @@ const CheckInModal: React.FC<CheckInModalProps> = ({ show, onHide }) => {
                 </Form.Label>
                 <Form.Control
                   type="text"
-                  name="activity"
-                  value={formData.activity}
+                  name="activity_name"
+                  value={formData.activity_name}
                   onChange={handleStandardInputChange}
                   placeholder="Enter activity"
-                  isInvalid={!!errors.activity}
+                  isInvalid={!!errors.activity_name}
                 />
-                <Form.Control.Feedback type="invalid">{errors.activity}</Form.Control.Feedback>
+                <Form.Control.Feedback type="invalid">{errors.activity_name}</Form.Control.Feedback>
               </Form.Group>
             </Col>
             <Col md={6}>
