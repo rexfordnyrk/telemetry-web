@@ -74,6 +74,45 @@ export const fetchVisits = createAsyncThunk(
   }
 );
 
+export const checkoutVisit = createAsyncThunk(
+  "visits/checkoutVisit",
+  async (
+    { id, checkoutTime }: { id: string; checkoutTime?: string },
+    { getState, rejectWithValue, dispatch }
+  ) => {
+    try {
+      const state = getState() as RootState;
+      const token = state.auth.token;
+      if (!token) {
+        throw new Error("No authentication token available");
+      }
+
+      const body = {
+        check_out: checkoutTime ?? new Date().toISOString(),
+      };
+
+      const response = await fetch(buildApiUrl(API_CONFIG.ENDPOINTS.VISITS.CHECKOUT(id)), {
+        method: "POST",
+        headers: {
+          ...getAuthHeaders(token),
+        },
+        body: JSON.stringify(body),
+      });
+
+      if (!response.ok) {
+        const message = await handleApiError(response, "Failed to checkout visit", dispatch);
+        throw new Error(message);
+      }
+
+      const data = await response.json();
+      const visit = (data?.data ?? data) as Visit;
+      return visit;
+    } catch (error) {
+      return rejectWithValue(error instanceof Error ? error.message : "Failed to checkout visit");
+    }
+  }
+);
+
 const visitSlice = createSlice({
   name: "visits",
   initialState,
