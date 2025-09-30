@@ -124,6 +124,23 @@ const ImportBeneficiariesModal: React.FC<ImportBeneficiariesModalProps> = ({ sho
     "programme",
   ], []);
 
+  const resetState = useCallback(() => {
+    setFileName("");
+    setParsedHeaders([]);
+    setParsedRows([]);
+    setError(null);
+    setImportSource("csv");
+    setDistrictID("");
+    setInterventionID("");
+    setPartnerID("");
+    setUpdatedAfter("");
+    setCreatedAfter("");
+    setUpdatedBetweenStart("");
+    setUpdatedBetweenEnd("");
+    setCreatedBetweenStart("");
+    setCreatedBetweenEnd("");
+  }, []);
+
   const onFileChange = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
     setError(null);
     const file = e.target.files?.[0];
