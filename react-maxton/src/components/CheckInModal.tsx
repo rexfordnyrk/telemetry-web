@@ -211,6 +211,46 @@ const CheckInModal: React.FC<CheckInModalProps> = ({ show, onHide }) => {
   }, [show, token, dispatch]);
 
   useEffect(() => {
+    if (!show || hasLoadedInterventions.current) {
+      return;
+    }
+
+    const loadInterventions = async () => {
+      try {
+        setInterventionsLoading(true);
+        setInterventionsError(null);
+        const response = await interventionService.list({ limit: 200 });
+        const items = Array.isArray(response?.data) ? response.data : [];
+        const mapped: InterventionOption[] = items
+          .map((item: any) => {
+            const id = item?.id ?? item?.uuid ?? null;
+            const name = item?.name ?? item?.title ?? "";
+            if (!id || !name) return null;
+            return { id: String(id), name: String(name) };
+          })
+          .filter((item: InterventionOption | null): item is InterventionOption => Boolean(item && item.name.trim().length > 0));
+
+        const unique = new Map<string, InterventionOption>();
+        mapped.forEach((item) => {
+          if (!unique.has(item.id)) {
+            unique.set(item.id, item);
+          }
+        });
+
+        const sorted = Array.from(unique.values()).sort((a, b) => a.name.localeCompare(b.name));
+        setInterventionOptions(sorted);
+        hasLoadedInterventions.current = true;
+      } catch (error) {
+        setInterventionsError(error instanceof Error ? error.message : "Failed to load interventions");
+      } finally {
+        setInterventionsLoading(false);
+      }
+    };
+
+    loadInterventions();
+  }, [show]);
+
+  useEffect(() => {
     if (!show) {
       return;
     }
