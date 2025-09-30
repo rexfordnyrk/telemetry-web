@@ -625,8 +625,8 @@ const CheckInModal: React.FC<CheckInModalProps> = ({ show, onHide }) => {
                 <div className="beneficiary-autocomplete" ref={beneficiaryContainerRef}>
                   <Form.Control
                     type="text"
-                    name="name"
-                    value={formData.name}
+                    name="beneficiary_name"
+                    value={formData.beneficiary_name}
                     onChange={(event) => handleBeneficiaryInputChange(event.target.value)}
                     onFocus={() => {
                       if (beneficiaryResults.length > 0 || canSearchBeneficiaries) {
@@ -636,9 +636,9 @@ const CheckInModal: React.FC<CheckInModalProps> = ({ show, onHide }) => {
                     onKeyDown={handleBeneficiaryKeyDown}
                     placeholder="Search beneficiary name"
                     autoComplete="off"
-                    isInvalid={!!errors.name}
+                    isInvalid={!!errors.beneficiary_id}
                   />
-                  <Form.Control.Feedback type="invalid">{errors.name}</Form.Control.Feedback>
+                  <Form.Control.Feedback type="invalid">{errors.beneficiary_id}</Form.Control.Feedback>
                   {beneficiaryFetchError && <div className="invalid-feedback d-block">{beneficiaryFetchError}</div>}
                   {showBeneficiarySuggestions && (
                     <div className="beneficiary-suggestion-list shadow-sm" role="listbox">
@@ -670,8 +670,8 @@ const CheckInModal: React.FC<CheckInModalProps> = ({ show, onHide }) => {
                               }}
                             >
                               <div className="fw-medium">{option.name}</div>
-                              {option.programme && (
-                                <div className="beneficiary-suggestion-programme">{option.programme}</div>
+                              {option.intervention_name && (
+                                <div className="beneficiary-suggestion-programme">{option.intervention_name}</div>
                               )}
                             </li>
                           ))}
