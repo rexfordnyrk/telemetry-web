@@ -133,6 +133,8 @@ const CheckInModal: React.FC<CheckInModalProps> = ({ show, onHide }) => {
     setBeneficiaryFetchError(null);
     setShowBeneficiarySuggestions(false);
     setHighlightedIndex(-1);
+    setFormGeneralError(null);
+    setFormSubmitting(false);
   }, [show]);
 
   useEffect(() => {
