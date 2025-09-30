@@ -587,15 +587,15 @@ const CheckInModal: React.FC<CheckInModalProps> = ({ show, onHide }) => {
                 </Form.Label>
                 {hasCicOptions ? (
                   <Form.Select
-                    name="cic"
-                    value={formData.cic}
-                    onChange={handleStandardInputChange}
-                    isInvalid={!!errors.cic}
+                    name="cic_id"
+                    value={formData.cic_id}
+                    onChange={handleCicSelectChange}
+                    isInvalid={!!errors.cic_id}
                     disabled={cicLoading}
                   >
                     <option value="">Select CIC</option>
                     {cicOptions.map((option) => (
-                      <option key={option.id} value={option.name}>
+                      <option key={option.id} value={option.id}>
                         {option.name}
                       </option>
                     ))}
@@ -603,14 +603,14 @@ const CheckInModal: React.FC<CheckInModalProps> = ({ show, onHide }) => {
                 ) : (
                   <Form.Control
                     type="text"
-                    name="cic"
-                    value={formData.cic}
+                    name="cic_name"
+                    value={formData.cic_name}
                     onChange={handleStandardInputChange}
                     placeholder="Enter CIC name"
-                    isInvalid={!!errors.cic}
+                    isInvalid={!!errors.cic_id}
                   />
                 )}
-                <Form.Control.Feedback type="invalid">{errors.cic}</Form.Control.Feedback>
+                <Form.Control.Feedback type="invalid">{errors.cic_id}</Form.Control.Feedback>
                 {cicError && !errors.cic && <div className="invalid-feedback d-block">{cicError}</div>}
                 {!hasCicOptions && !cicLoading && !cicError && (
                   <Form.Text className="text-muted">CIC list will appear here once available. Enter the name manually for now.</Form.Text>
