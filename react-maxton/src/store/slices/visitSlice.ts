@@ -190,5 +190,4 @@ const visitSlice = createSlice({
 });
 
 export const { addVisits, upsertVisit, removeVisit, clearError } = visitSlice.actions;
-export { checkoutVisit };
 export default visitSlice.reducer;
