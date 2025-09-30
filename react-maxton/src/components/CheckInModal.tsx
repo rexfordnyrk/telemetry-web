@@ -771,13 +771,22 @@ const CheckInModal: React.FC<CheckInModalProps> = ({ show, onHide }) => {
             </Col>
           </Row>
           <div className="d-flex justify-content-end gap-2 mt-4">
-            <button type="button" className="btn btn-light" onClick={handleClose}>
+            <button type="button" className="btn btn-light" onClick={handleClose} disabled={formSubmitting}>
               <i className="bx bx-x me-2"></i>
               Cancel
             </button>
-            <button type="submit" className="btn btn-grd-primary">
-              <i className="material-icons-outlined me-1">login</i>
-              Check-In
+            <button type="submit" className="btn btn-grd-primary" disabled={formSubmitting}>
+              {formSubmitting ? (
+                <span className="d-inline-flex align-items-center gap-2">
+                  <Spinner animation="border" size="sm" role="status" />
+                  Saving...
+                </span>
+              ) : (
+                <>
+                  <i className="material-icons-outlined me-1">login</i>
+                  Check-In
+                </>
+              )}
             </button>
           </div>
         </Form>
