@@ -155,7 +155,7 @@ const CheckInModal: React.FC<CheckInModalProps> = ({ show, onHide }) => {
         const items = Array.isArray(payload?.data) ? payload.data : Array.isArray(payload) ? payload : [];
 
         const mapped: CicOption[] = items
-          .map((item: any) => {
+          .map((item: Record<string, unknown>) => {
             const name = item?.name ?? item?.cic_name ?? item?.title ?? "";
             const id = item?.id ?? item?.uuid ?? item?.code ?? name;
             return {
@@ -163,10 +163,10 @@ const CheckInModal: React.FC<CheckInModalProps> = ({ show, onHide }) => {
               name: String(name),
             } as CicOption;
           })
-          .filter((item) => item.name.trim().length > 0);
+          .filter((item: CicOption) => item.name.trim().length > 0);
 
         const uniqueByName = new Map<string, CicOption>();
-        mapped.forEach((item) => {
+        mapped.forEach((item: CicOption) => {
           if (!uniqueByName.has(item.name)) {
             uniqueByName.set(item.name, item);
           }
