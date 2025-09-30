@@ -424,6 +424,7 @@ const CheckInModal: React.FC<CheckInModalProps> = ({ show, onHide }) => {
   };
 
   const canSearchBeneficiaries = beneficiaryQuery.trim().length >= MIN_BENEFICIARY_QUERY_LENGTH;
+  const hasCicOptions = cicOptions.length > 0;
 
   return (
     <Modal
