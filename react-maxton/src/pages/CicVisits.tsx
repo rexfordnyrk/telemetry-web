@@ -106,13 +106,22 @@ const CicVisits: React.FC = () => {
       e.preventDefault();
       // Optional: open edit modal later
     };
+    const onCheckoutClick = (e: any) => {
+      e.preventDefault();
+      const id = window.$(e.currentTarget).data('id');
+      const visit = memoized.find((x) => x.id === id);
+      if (visit) {
+        handleVisitCheckout(visit, e.currentTarget as HTMLElement);
+      }
+    };
 
     $table.off('.dtActions');
     $table.on('click.dtActions', 'button[data-action="delete"]', onDelete);
     $table.on('click.dtActions', 'button[data-action="edit"]', onEdit);
+    $table.on('click.dtActions', 'button[data-action="checkout"]', onCheckoutClick);
 
     return () => { if ($table && $table.off) $table.off('.dtActions'); };
-  }, [memoized]);
+  }, [memoized, handleVisitCheckout]);
 
   const handleActionClick = (visit: Visit, action: "delete") => {
     setTargetVisit(visit);
