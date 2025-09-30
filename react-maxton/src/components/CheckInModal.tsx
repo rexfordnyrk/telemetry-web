@@ -744,12 +744,12 @@ const CheckInModal: React.FC<CheckInModalProps> = ({ show, onHide }) => {
                 </Form.Label>
                 <Form.Control
                   type="datetime-local"
-                  name="check_in"
-                  value={formData.check_in}
+                  name="check_in_at"
+                  value={formData.check_in_at}
                   onChange={handleStandardInputChange}
-                  isInvalid={!!errors.check_in}
+                  isInvalid={!!errors.check_in_at}
                 />
-                <Form.Control.Feedback type="invalid">{errors.check_in}</Form.Control.Feedback>
+                <Form.Control.Feedback type="invalid">{errors.check_in_at}</Form.Control.Feedback>
               </Form.Group>
             </Col>
             <Col md={12}>
