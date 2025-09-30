@@ -84,7 +84,7 @@ export const useDataTable = (
       clearTimeout(timeoutId);
     };
     // Re-init only when structural options change (columns/dom/order/etc.) or shouldInitialize toggles
-  }, [shouldInitialize, destroyDataTable, tableId, options, manageDataInternally, data]);
+  }, [shouldInitialize, destroyDataTable, tableId, options, manageDataInternally]);
 
   // On data changes, update via DataTables API instead of destroying
   useEffect(() => {
