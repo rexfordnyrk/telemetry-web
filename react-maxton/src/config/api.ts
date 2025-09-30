@@ -51,6 +51,10 @@ export const API_CONFIG = {
     // CIC endpoints
     CICS: {
       LIST: '/api/v1/cics',
+      CREATE: '/api/v1/cics',
+      DETAIL: (id: string) => `/api/v1/cics/${id}`,
+      UPDATE: (id: string) => `/api/v1/cics/${id}`,
+      DELETE: (id: string) => `/api/v1/cics/${id}`,
     },
 
     // Lookup endpoints for select lists
