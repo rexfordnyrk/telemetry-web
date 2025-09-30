@@ -306,24 +306,7 @@ const ImportBeneficiariesModal: React.FC<ImportBeneficiariesModalProps> = ({ sho
       setError(err instanceof Error ? err.message : "Failed to import from PMS");
       setIsImporting(false);
     }
-  }, [dispatch, token, pageSize, districtID, interventionID, partnerID, updatedAfter, createdAfter, updatedBetweenStart, updatedBetweenEnd, createdBetweenStart, createdBetweenEnd, resetState]);
-
-  const resetState = useCallback(() => {
-    setFileName("");
-    setParsedHeaders([]);
-    setParsedRows([]);
-    setError(null);
-    setImportSource("csv");
-    setDistrictID("");
-    setInterventionID("");
-    setPartnerID("");
-    setUpdatedAfter("");
-    setCreatedAfter("");
-    setUpdatedBetweenStart("");
-    setUpdatedBetweenEnd("");
-    setCreatedBetweenStart("");
-    setCreatedBetweenEnd("");
-  }, []);
+  }, [dispatch, token, pageSize, districtID, interventionID, partnerID, updatedAfter, createdAfter, updatedBetweenStart, updatedBetweenEnd, createdBetweenStart, createdBetweenEnd]);
 
   const handleClose = useCallback(() => {
     resetState();
