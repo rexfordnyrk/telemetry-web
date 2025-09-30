@@ -26,11 +26,21 @@ const CicVisits: React.FC = () => {
     dispatch(fetchVisits({})).catch(() => undefined);
   }, [dispatch]);
 
-  const availableCics = useMemo(() => Array.from(new Set(visits.map(v => v.cic))).sort(), [visits]);
+  const availableCics = useMemo(() => {
+    const map = new Map<string, string>();
+    visits.forEach((visit) => {
+      if (visit.cic_id) {
+        map.set(visit.cic_id, visit.cic_name || "Unnamed CIC");
+      }
+    });
+    return Array.from(map.entries())
+      .map(([id, name]) => ({ id, name }))
+      .sort((a, b) => a.name.localeCompare(b.name));
+  }, [visits]);
 
   const filteredVisits = useMemo(() => {
     if (!selectedCic) return visits;
-    return visits.filter(v => v.cic === selectedCic);
+    return visits.filter((visit) => visit.cic_id === selectedCic);
   }, [visits, selectedCic]);
 
   const memoized = useMemo(() => filteredVisits, [filteredVisits]);
