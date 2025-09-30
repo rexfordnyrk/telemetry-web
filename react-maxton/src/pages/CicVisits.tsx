@@ -91,6 +91,51 @@ const CicVisits: React.FC = () => {
     responsive: true,
   }), [dtColumns]);
 
+  const handleVisitCheckout = useCallback(
+    async (visit: Visit, sourceButton?: HTMLElement | null) => {
+      if (checkoutProcessingId === visit.id || visit.check_out) {
+        return;
+      }
+
+      setCheckoutProcessingId(visit.id);
+      if (sourceButton) {
+        sourceButton.setAttribute("disabled", "true");
+      }
+
+      try {
+        const updated = await dispatch(
+          checkoutVisit({ id: visit.id, checkoutTime: new Date().toISOString() })
+        ).unwrap();
+
+        const checkOutDisplayTime = updated.check_out
+          ? new Date(updated.check_out).toLocaleString()
+          : new Date().toLocaleString();
+
+        dispatch(
+          addAlert({
+            type: "success",
+            title: "Visit Checked Out",
+            message: `${updated.name} checked out at ${checkOutDisplayTime}.`,
+          })
+        );
+      } catch (error) {
+        if (sourceButton) {
+          sourceButton.removeAttribute("disabled");
+        }
+        dispatch(
+          addAlert({
+            type: "danger",
+            title: "Checkout Failed",
+            message: error instanceof Error ? error.message : "Unable to process checkout.",
+          })
+        );
+      } finally {
+        setCheckoutProcessingId(null);
+      }
+    },
+    [checkoutProcessingId, dispatch]
+  );
+
   useEffect(() => {
     if (!window.$) return;
     const $table = window.$('#cic-visits-datatable');
