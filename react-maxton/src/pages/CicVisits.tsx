@@ -154,11 +154,15 @@ const CicVisits: React.FC = () => {
           checkoutVisit({ id: visit.id, checkoutTime: new Date().toISOString() })
         ).unwrap();
 
+        const checkOutDisplayTime = updated.check_out
+          ? new Date(updated.check_out).toLocaleString()
+          : new Date().toLocaleString();
+
         dispatch(
           addAlert({
             type: "success",
             title: "Visit Checked Out",
-            message: `${updated.name} checked out at ${new Date(updated.check_out ?? "").toLocaleString()}.`,
+            message: `${updated.name} checked out at ${checkOutDisplayTime}.`,
           })
         );
       } catch (error) {
