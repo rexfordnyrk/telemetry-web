@@ -42,8 +42,7 @@ const SettingsLocality: React.FC = () => {
   const [districtForm, setDistrictForm] = useState<DistrictFormState>({ name: "", regionId: "", externalId: "" });
 
   const regionById = useMemo(() => {
-    const entries = regions.map((region) => [region.id, region]);
-    return new Map<string, RegionRecord>(entries);
+    return new Map<string, RegionRecord>(regions.map((region) => [region.id, region] as const));
   }, [regions]);
 
   const loadRegions = useCallback(async () => {
