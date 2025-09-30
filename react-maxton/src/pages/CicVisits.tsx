@@ -244,8 +244,8 @@ const CicVisits: React.FC = () => {
                 disabled={loading}
               >
                 <option value="">All CICs</option>
-                {availableCics.map(c => (
-                  <option key={c} value={c}>{c}</option>
+                {availableCics.map((cic) => (
+                  <option key={cic.id} value={cic.id}>{cic.name}</option>
                 ))}
               </select>
             </div>
