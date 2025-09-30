@@ -48,6 +48,11 @@ export const API_CONFIG = {
       IMPORT_JOB_CANCEL: (jobId: string) => `/api/v1/beneficiaries/import/jobs/${jobId}/cancel`, // Cancel job
     },
 
+    // CIC endpoints
+    CICS: {
+      LIST: '/api/v1/cics',
+    },
+
     // Lookup endpoints for select lists
     LOOKUPS: {
       DISTRICTS: '/api/v1/lookups/districts',
