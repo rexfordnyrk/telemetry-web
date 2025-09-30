@@ -206,8 +206,8 @@ const ImportBeneficiariesModal: React.FC<ImportBeneficiariesModalProps> = ({ sho
       message: `${toBeneficiaries.length} beneficiaries have been added from ${fileName}.`,
     }));
 
-    resetStateAndClose();
-  }, [dispatch, parsedRows, fileName]);
+    resetState();
+  }, [dispatch, parsedRows, fileName, resetState]);
 
   const importFromPMS = useCallback(async () => {
     if (!token) {
@@ -289,23 +289,14 @@ const ImportBeneficiariesModal: React.FC<ImportBeneficiariesModalProps> = ({ sho
       setError(err instanceof Error ? err.message : "Failed to import from PMS");
       setIsImporting(false);
     }
-  }, [dispatch, token, pageSize, districtID, interventionID, partnerID, updatedAfter, createdAfter, updatedBetweenStart, updatedBetweenEnd, createdBetweenStart, createdBetweenEnd]);
+  }, [dispatch, token, pageSize, districtID, interventionID, partnerID, updatedAfter, createdAfter, updatedBetweenStart, updatedBetweenEnd, createdBetweenStart, createdBetweenEnd, resetState]);
 
-  const handleImport = useCallback(() => {
-    if (importSource === "csv") {
-      importFromCSV();
-    } else {
-      importFromPMS();
-    }
-  }, [importSource, importFromCSV, importFromPMS]);
-
-  const resetStateAndClose = useCallback(() => {
+  const resetState = useCallback(() => {
     setFileName("");
     setParsedHeaders([]);
     setParsedRows([]);
     setError(null);
     setImportSource("csv");
-    // Reset PMS filters
     setDistrictID("");
     setInterventionID("");
     setPartnerID("");
@@ -315,8 +306,20 @@ const ImportBeneficiariesModal: React.FC<ImportBeneficiariesModalProps> = ({ sho
     setUpdatedBetweenEnd("");
     setCreatedBetweenStart("");
     setCreatedBetweenEnd("");
+  }, []);
+
+  const handleClose = useCallback(() => {
+    resetState();
     onHide();
-  }, [onHide]);
+  }, [onHide, resetState]);
+
+  const handleImport = useCallback(() => {
+    if (importSource === "csv") {
+      importFromCSV();
+    } else {
+      importFromPMS();
+    }
+  }, [importSource, importFromCSV, importFromPMS]);
 
   const previewRows = useMemo(() => parsedRows.slice(0, 5), [parsedRows]);
 
@@ -368,7 +371,7 @@ const ImportBeneficiariesModal: React.FC<ImportBeneficiariesModalProps> = ({ sho
   return (
     <Modal
       show={show}
-      onHide={resetStateAndClose}
+      onHide={handleClose}
       size="lg"
       centered
       style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
@@ -530,7 +533,7 @@ const ImportBeneficiariesModal: React.FC<ImportBeneficiariesModalProps> = ({ sho
       </Modal.Body>
 
       <Modal.Footer className="d-flex justify-content-between">
-        <button type="button" className="btn btn-light" onClick={resetStateAndClose} disabled={isImporting}>
+        <button type="button" className="btn btn-light" onClick={handleClose} disabled={isImporting}>
           <i className="bx bx-x me-2"></i>
           Close
         </button>
@@ -562,6 +565,7 @@ const ImportBeneficiariesModal: React.FC<ImportBeneficiariesModalProps> = ({ sho
           if (jobCompleted) {
             await dispatch(fetchBeneficiaries({}));
             setJobCompleted(false);
+            resetState();
           }
         }}
         onBackground={() => setShowProgress(false)}
