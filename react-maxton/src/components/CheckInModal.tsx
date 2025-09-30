@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { Modal, Form, Row, Col, Spinner } from "react-bootstrap";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { addAlert } from "../store/slices/alertSlice";
-import { upsertVisit, Visit } from "../store/slices/visitSlice";
+import { createVisit } from "../store/slices/visitSlice";
 import { API_CONFIG, buildApiUrl, getAuthHeaders } from "../config/api";
 import { handleApiError } from "../utils/apiUtils";
 
