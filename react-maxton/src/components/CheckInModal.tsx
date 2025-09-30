@@ -426,6 +426,37 @@ const CheckInModal: React.FC<CheckInModalProps> = ({ show, onHide }) => {
     }
   };
 
+  const handleCicSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const { value } = event.target;
+    const selected = cicOptions.find((item) => item.id === value);
+    setFormData((prev) => ({
+      ...prev,
+      cic_id: value,
+      cic_name: selected?.name ?? "",
+    }));
+    if (errors.cic_id) {
+      setErrors((prev) => ({ ...prev, cic_id: "" }));
+    }
+  };
+
+  const handleInterventionSelect = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const { value } = event.target;
+    if (!value) {
+      setFormData((prev) => ({
+        ...prev,
+        intervention_id: null,
+        intervention_name: "",
+      }));
+    } else {
+      const selected = interventionOptions.find((item) => item.id === value);
+      setFormData((prev) => ({
+        ...prev,
+        intervention_id: value,
+        intervention_name: selected?.name ?? prev.intervention_name,
+      }));
+    }
+  };
+
   const handleBeneficiaryKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === "ArrowDown") {
       event.preventDefault();
