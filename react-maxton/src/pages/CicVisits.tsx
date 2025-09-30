@@ -320,7 +320,7 @@ const CicVisits: React.FC = () => {
             <div className={`card border-top border-3 border-danger rounded-0`} onClick={(e) => e.stopPropagation()}>
               <div className="card-header py-3 px-4">
                 <h5 className="mb-0 text-danger">Confirm Delete</h5>
-                <button type="button" className="btn-close" onClick={() => setShowModal(false)}></button>
+                <button type="button" className="btn-close" onClick={() => setShowModal(false)} disabled={deleteSubmitting}></button>
               </div>
               <div className="card-body p-4">
                 {deleteError && (
