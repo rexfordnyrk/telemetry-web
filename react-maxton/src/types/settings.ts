@@ -77,6 +77,24 @@ export interface RegionsListResponse {
   };
 }
 
+export interface DistrictResponse {
+  success: boolean;
+  message?: string;
+  data: DistrictRecord;
+}
+
+export interface DistrictsListResponse {
+  success: boolean;
+  message?: string;
+  data: DistrictRecord[];
+  pagination?: {
+    current_page: number;
+    total_pages: number;
+    total_records: number;
+    limit: number;
+  };
+}
+
 export interface CreateRegionPayload {
   name: string;
   external_id?: number;
@@ -84,5 +102,17 @@ export interface CreateRegionPayload {
 
 export interface UpdateRegionPayload {
   name?: string;
+  external_id?: number | null;
+}
+
+export interface CreateDistrictPayload {
+  name: string;
+  region_id: string;
+  external_id?: number;
+}
+
+export interface UpdateDistrictPayload {
+  name?: string;
+  region_id?: string;
   external_id?: number | null;
 }
