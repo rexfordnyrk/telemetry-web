@@ -113,6 +113,47 @@ const CicVisits: React.FC = () => {
     setTargetVisit(null);
   };
 
+  const handleVisitCheckout = useCallback(
+    async (visit: Visit, sourceButton?: HTMLElement | null) => {
+      if (checkoutProcessingId === visit.id || visit.check_out) {
+        return;
+      }
+
+      setCheckoutProcessingId(visit.id);
+      if (sourceButton) {
+        sourceButton.setAttribute("disabled", "true");
+      }
+
+      try {
+        const updated = await dispatch(
+          checkoutVisit({ id: visit.id, checkoutTime: new Date().toISOString() })
+        ).unwrap();
+
+        dispatch(
+          addAlert({
+            type: "success",
+            title: "Visit Checked Out",
+            message: `${updated.name} checked out at ${new Date(updated.check_out ?? "").toLocaleString()}.`,
+          })
+        );
+      } catch (error) {
+        if (sourceButton) {
+          sourceButton.removeAttribute("disabled");
+        }
+        dispatch(
+          addAlert({
+            type: "danger",
+            title: "Checkout Failed",
+            message: error instanceof Error ? error.message : "Unable to process checkout.",
+          })
+        );
+      } finally {
+        setCheckoutProcessingId(null);
+      }
+    },
+    [checkoutProcessingId, dispatch]
+  );
+
   const formatDuration = (mins: number | null) => {
     if (!mins || mins <= 0) return "-";
     const h = Math.floor(mins / 60);
