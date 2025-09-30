@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "../index";
-import { buildApiUrl, getAuthHeaders } from "../../config/api";
+import { API_CONFIG, buildApiUrl, getAuthHeaders } from "../../config/api";
 import { handleApiError } from "../../utils/apiUtils";
 
 export interface Visit {
