@@ -188,13 +188,29 @@ const CicVisits: React.FC = () => {
     setShowModal(true);
   };
 
-  const handleConfirmAction = () => {
-    if (modalAction === "delete" && targetVisit) {
-      dispatch(removeVisit(targetVisit.id));
-      dispatch(addAlert({ type: "success", title: "Deleted", message: `Visit for "${targetVisit.name}" has been deleted.` }));
+  const handleConfirmAction = async () => {
+    if (modalAction !== "delete" || !targetVisit) {
+      return;
     }
-    setShowModal(false);
-    setTargetVisit(null);
+
+    try {
+      setDeleteSubmitting(true);
+      setDeleteError(null);
+      await dispatch(deleteVisit(targetVisit.id)).unwrap();
+      dispatch(
+        addAlert({
+          type: "success",
+          title: "Visit Deleted",
+          message: `Visit for "${targetVisit.beneficiary_name || "Beneficiary"}" has been deleted.`,
+        })
+      );
+      setShowModal(false);
+      setTargetVisit(null);
+    } catch (error) {
+      setDeleteError(error instanceof Error ? error.message : "Failed to delete visit.");
+    } finally {
+      setDeleteSubmitting(false);
+    }
   };
 
   return (
