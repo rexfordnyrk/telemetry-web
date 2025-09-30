@@ -50,6 +50,15 @@ const formatDateTimeLocal = (date: Date): string => {
   return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
 };
 
+const generateIdFromValue = (value: string, prefix: string) => {
+  const trimmed = value.trim();
+  if (!trimmed) {
+    return `${prefix}-${crypto.randomUUID()}`;
+  }
+  const normalized = trimmed.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+  return `${prefix}-${normalized || crypto.randomUUID()}`;
+};
+
 const createInitialFormState = (): FormState => ({
   cic_id: "",
   cic_name: "",
