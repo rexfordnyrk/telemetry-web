@@ -1,85 +1,189 @@
-import React, { useEffect, useMemo, useState } from "react";
-import { Form, Modal } from "react-bootstrap";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { Form, Modal, Spinner } from "react-bootstrap";
 import MainLayout from "../layouts/MainLayout";
 import DataTableWrapper from "../components/DataTableWrapper";
-import { District, Partner, Region } from "../types/settings";
-import { initialDistricts, initialPartners, initialRegions } from "../data/settingsData";
+import { useAppDispatch } from "../store/hooks";
+import { addAlert } from "../store/slices/alertSlice";
+import { regionService } from "../services/regionService";
+import { districtService } from "../services/districtService";
+import { implementingPartnerService } from "../services/implementingPartnerService";
+import type {
+  DistrictRecord,
+  ImplementingPartnerRecord,
+  RegionRecord,
+} from "../types/settings";
 
-interface PartnerFormState {
-  partnerName: string;
+type PartnerFormState = {
+  name: string;
   contactPerson: string;
-  phoneNumber: string;
+  phone: string;
   email: string;
-  regionID: number;
-  districtID: number;
+  regionId: string;
+  districtId: string;
   locality: string;
-}
+  externalId: string;
+};
 
 const SettingsPartners: React.FC = () => {
-  const [partners, setPartners] = useState<Partner[]>(initialPartners);
-  const [availableRegions] = useState<Region[]>(initialRegions);
-  const [availableDistricts] = useState<District[]>(initialDistricts);
+  const dispatch = useAppDispatch();
+
+  const [partners, setPartners] = useState<ImplementingPartnerRecord[]>([]);
+  const [regions, setRegions] = useState<RegionRecord[]>([]);
+  const [districts, setDistricts] = useState<DistrictRecord[]>([]);
+
+  const [partnersLoading, setPartnersLoading] = useState(false);
+  const [regionsLoading, setRegionsLoading] = useState(false);
+  const [districtsLoading, setDistrictsLoading] = useState(false);
+
+  const [partnersError, setPartnersError] = useState<string | null>(null);
+  const [regionsError, setRegionsError] = useState<string | null>(null);
+  const [districtsError, setDistrictsError] = useState<string | null>(null);
+
   const [showModal, setShowModal] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
-
-  const defaultRegionId = availableRegions[0]?.id ?? 0;
-  const defaultDistrictId = useMemo(() => {
-    const firstDistrict = availableDistricts.find((district) => district.regionID === defaultRegionId);
-    return firstDistrict?.id ?? 0;
-  }, [availableDistricts, defaultRegionId]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [formState, setFormState] = useState<PartnerFormState>({
-    partnerName: "",
+    name: "",
     contactPerson: "",
-    phoneNumber: "",
+    phone: "",
     email: "",
-    regionID: defaultRegionId,
-    districtID: defaultDistrictId,
+    regionId: "",
+    districtId: "",
     locality: "",
+    externalId: "",
   });
 
-  useEffect(() => {
-    const regionMatches = availableDistricts.some((district) => district.regionID === formState.regionID);
-    if (!regionMatches) {
-      const firstDistrict = availableDistricts.find((district) => district.regionID === formState.regionID);
-      if (firstDistrict) {
-        setFormState((prev) => ({ ...prev, districtID: firstDistrict.id }));
-      }
+  const regionById = useMemo(() => new Map(regions.map((region) => [region.id, region] as const)), [regions]);
+  const districtById = useMemo(() => new Map(districts.map((district) => [district.id, district] as const)), [districts]);
+
+  const loadRegions = useCallback(async () => {
+    setRegionsLoading(true);
+    setRegionsError(null);
+    try {
+      const response = await regionService.list();
+      setRegions(response.data ?? []);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Failed to load regions.";
+      setRegionsError(message);
+    } finally {
+      setRegionsLoading(false);
     }
-  }, [availableDistricts, formState.regionID]);
+  }, []);
 
-  const regionNameById = useMemo(() => {
-    const map = new Map<number, string>();
-    availableRegions.forEach((region) => map.set(region.id, region.regionName));
-    return map;
-  }, [availableRegions]);
+  const loadDistricts = useCallback(async () => {
+    setDistrictsLoading(true);
+    setDistrictsError(null);
+    try {
+      const response = await districtService.list();
+      setDistricts(response.data ?? []);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Failed to load districts.";
+      setDistrictsError(message);
+    } finally {
+      setDistrictsLoading(false);
+    }
+  }, []);
 
-  const districtNameById = useMemo(() => {
-    const map = new Map<number, string>();
-    availableDistricts.forEach((district) => map.set(district.id, district.districtName));
-    return map;
-  }, [availableDistricts]);
+  const loadPartners = useCallback(async () => {
+    setPartnersLoading(true);
+    setPartnersError(null);
+    try {
+      const response = await implementingPartnerService.list();
+      setPartners(response.data ?? []);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Failed to load partners.";
+      setPartnersError(message);
+    } finally {
+      setPartnersLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    void loadRegions();
+    void loadDistricts();
+    void loadPartners();
+  }, [loadRegions, loadDistricts, loadPartners]);
+
+  useEffect(() => {
+    if (regions.length === 0) {
+      setFormState((prev) => ({ ...prev, regionId: "", districtId: "" }));
+      return;
+    }
+
+    setFormState((prev) => {
+      const currentRegionExists = prev.regionId && regions.some((region) => region.id === prev.regionId);
+      const nextRegionId = currentRegionExists ? prev.regionId : regions[0].id;
+      const matchingDistricts = districts.filter((district) => district.region_id === nextRegionId);
+      const currentDistrictExists = prev.districtId && matchingDistricts.some((district) => district.id === prev.districtId);
+      const nextDistrictId = currentDistrictExists ? prev.districtId : matchingDistricts[0]?.id ?? "";
+      return { ...prev, regionId: nextRegionId, districtId: nextDistrictId };
+    });
+  }, [regions, districts]);
+
+  const filteredDistrictOptions = useMemo(() => {
+    if (!formState.regionId) return [] as DistrictRecord[];
+    return districts.filter((district) => district.region_id === formState.regionId);
+  }, [districts, formState.regionId]);
+
+  const openModal = () => {
+    const defaultRegionId = regions[0]?.id ?? "";
+    const defaultDistrictId = districts.find((district) => district.region_id === defaultRegionId)?.id ?? "";
+    setFormState({
+      name: "",
+      contactPerson: "",
+      phone: "",
+      email: "",
+      regionId: defaultRegionId,
+      districtId: defaultDistrictId,
+      locality: "",
+      externalId: "",
+    });
+    setFormError(null);
+    setIsSubmitting(false);
+    setShowModal(true);
+  };
+
+  const closeModal = () => {
+    setShowModal(false);
+    setIsSubmitting(false);
+  };
 
   const tableData = useMemo(
     () =>
-      partners.map((partner) => ({
-        ...partner,
-        regionName: regionNameById.get(partner.regionID) ?? "Unknown",
-        districtName: districtNameById.get(partner.districtID) ?? "Unknown",
-      })),
-    [partners, regionNameById, districtNameById],
+      partners.map((partner) => {
+        const regionRecord = partner.region ?? regionById.get(partner.region_id);
+        const districtRecord = partner.district ?? districtById.get(partner.district_id);
+        return {
+          id: partner.id,
+          name: partner.name,
+          contactPerson: partner.contact_person ?? "-",
+          phone: partner.phone ?? "-",
+          email: partner.email ?? "-",
+          regionName: regionRecord ? regionRecord.name : "Unknown",
+          districtName: districtRecord ? districtRecord.name : "Unknown",
+          locality: partner.locality ?? "-",
+          externalId: partner.external_id ?? "-",
+          createdAt: partner.created_at ? new Date(partner.created_at).toLocaleString() : "-",
+          updatedAt: partner.updated_at ? new Date(partner.updated_at).toLocaleString() : "-",
+        };
+      }),
+    [partners, regionById, districtById],
   );
 
   const columns = useMemo(
     () => [
       { title: "ID", data: "id" },
-      { title: "Partner Name", data: "partnerName" },
+      { title: "Partner Name", data: "name" },
       { title: "Contact Person", data: "contactPerson" },
-      { title: "Phone Number", data: "phoneNumber" },
+      { title: "Phone", data: "phone" },
       { title: "Email", data: "email" },
       { title: "Region", data: "regionName" },
       { title: "District", data: "districtName" },
       { title: "Locality", data: "locality" },
+      { title: "External ID", data: "externalId" },
+      { title: "Created At", data: "createdAt" },
+      { title: "Updated At", data: "updatedAt" },
     ],
     [],
   );
@@ -97,43 +201,18 @@ const SettingsPartners: React.FC = () => {
     [columns],
   );
 
-  const availableDistrictOptions = useMemo(
-    () => availableDistricts.filter((district) => district.regionID === formState.regionID),
-    [availableDistricts, formState.regionID],
-  );
-
-  const openModal = () => {
-    setFormError(null);
-    setFormState({
-      partnerName: "",
-      contactPerson: "",
-      phoneNumber: "",
-      email: "",
-      regionID: defaultRegionId,
-      districtID: defaultDistrictId,
-      locality: "",
-    });
-    setShowModal(true);
-  };
-
-  const closeModal = () => {
-    setShowModal(false);
-  };
-
   const validateForm = (state: PartnerFormState) => {
-    if (!state.partnerName.trim()) return "Partner name is required.";
-    if (!state.contactPerson.trim()) return "Contact person is required.";
-    if (!state.phoneNumber.trim()) return "Phone number is required.";
-    if (!state.email.trim()) return "Email is required.";
-    if (!state.email.includes("@")) return "Please provide a valid email address.";
-    if (!state.regionID) return "Region selection is required.";
-    if (!state.districtID) return "District selection is required.";
-    if (!state.locality.trim()) return "Locality is required.";
+    if (!state.name.trim()) return "Partner name is required.";
+    if (!state.regionId) return "Region selection is required.";
+    if (!state.districtId) return "District selection is required.";
+    if (state.email.trim() && !state.email.includes("@")) return "Please provide a valid email address.";
     return null;
   };
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    if (isSubmitting) return;
+
     setFormError(null);
     const validationError = validateForm(formState);
     if (validationError) {
@@ -141,21 +220,66 @@ const SettingsPartners: React.FC = () => {
       return;
     }
 
-    const nextId = partners.reduce((maxId, partner) => Math.max(maxId, partner.id), 0) + 1;
-    const newPartner: Partner = {
-      id: nextId,
-      partnerName: formState.partnerName.trim(),
-      contactPerson: formState.contactPerson.trim(),
-      phoneNumber: formState.phoneNumber.trim(),
-      email: formState.email.trim(),
-      regionID: formState.regionID,
-      districtID: formState.districtID,
-      locality: formState.locality.trim(),
-    };
+    const trimmedName = formState.name.trim();
+    const trimmedContact = formState.contactPerson.trim();
+    const trimmedPhone = formState.phone.trim();
+    const trimmedEmail = formState.email.trim();
+    const trimmedLocality = formState.locality.trim();
+    const trimmedExternalId = formState.externalId.trim();
 
-    setPartners((prev) => [...prev, newPartner]);
-    setShowModal(false);
+    let externalIdValue: number | undefined;
+    if (trimmedExternalId) {
+      const parsedExternalId = Number(trimmedExternalId);
+      if (!Number.isFinite(parsedExternalId)) {
+        setFormError("External ID must be a valid number.");
+        return;
+      }
+      externalIdValue = parsedExternalId;
+    }
+
+    if (!regionById.get(formState.regionId)) {
+      setFormError("Selected region is not available.");
+      return;
+    }
+    if (!districtById.get(formState.districtId)) {
+      setFormError("Selected district is not available.");
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      const payload = {
+        name: trimmedName,
+        region_id: formState.regionId,
+        district_id: formState.districtId,
+        contact_person: trimmedContact || undefined,
+        phone: trimmedPhone || undefined,
+        email: trimmedEmail || undefined,
+        locality: trimmedLocality || undefined,
+        ...(externalIdValue !== undefined ? { external_id: externalIdValue } : {}),
+      };
+
+      const response = await implementingPartnerService.create(payload);
+      if (response.data) {
+        setPartners((prev) => [...prev, response.data]);
+        dispatch(
+          addAlert({
+            type: "success",
+            title: "Success",
+            message: response.message ?? `Partner "${response.data.name}" created successfully.`,
+          }),
+        );
+        setShowModal(false);
+      }
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Failed to create partner.";
+      setFormError(message);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
+
+  const addButtonDisabled = regions.length === 0 || districts.length === 0;
 
   return (
     <MainLayout>
@@ -178,7 +302,12 @@ const SettingsPartners: React.FC = () => {
             </nav>
           </div>
           <div className="ms-auto">
-            <button type="button" className="btn btn-grd-primary px-4" onClick={openModal}>
+            <button
+              type="button"
+              className="btn btn-grd-primary px-4"
+              onClick={openModal}
+              disabled={addButtonDisabled}
+            >
               <i className="material-icons-outlined me-1">add</i>
               Add Partner
             </button>
@@ -192,6 +321,22 @@ const SettingsPartners: React.FC = () => {
 
         <div className="card">
           <div className="card-body">
+            {partnersError && <div className="alert alert-danger">{partnersError}</div>}
+            {(regionsError || districtsError) && (
+              <div className="alert alert-warning mb-3">
+                {regionsError && <div>{regionsError}</div>}
+                {districtsError && <div>{districtsError}</div>}
+              </div>
+            )}
+            {(partnersLoading || regionsLoading || districtsLoading) && (
+              <div className="d-flex align-items-center gap-2 mb-3 text-muted">
+                <Spinner animation="border" size="sm" />
+                <span>Loading partners...</span>
+              </div>
+            )}
+            {!partnersLoading && partners.length === 0 && (
+              <div className="alert alert-info">No partners found. Add a new partner to get started.</div>
+            )}
             <div className="table-responsive">
               <DataTableWrapper
                 id="partners-datatable"
@@ -215,13 +360,13 @@ const SettingsPartners: React.FC = () => {
               <Form.Label>Partner Name</Form.Label>
               <Form.Control
                 type="text"
-                value={formState.partnerName}
+                value={formState.name}
                 placeholder="Enter partner name"
-                onChange={(event) => setFormState((prev) => ({ ...prev, partnerName: event.target.value }))}
+                onChange={(event) => setFormState((prev) => ({ ...prev, name: event.target.value }))}
               />
             </Form.Group>
             <Form.Group className="mb-3" controlId="contactPerson">
-              <Form.Label>Contact Person</Form.Label>
+              <Form.Label>Contact Person (optional)</Form.Label>
               <Form.Control
                 type="text"
                 value={formState.contactPerson}
@@ -230,16 +375,16 @@ const SettingsPartners: React.FC = () => {
               />
             </Form.Group>
             <Form.Group className="mb-3" controlId="phoneNumber">
-              <Form.Label>Phone Number</Form.Label>
+              <Form.Label>Phone (optional)</Form.Label>
               <Form.Control
                 type="tel"
-                value={formState.phoneNumber}
+                value={formState.phone}
                 placeholder="Enter phone number"
-                onChange={(event) => setFormState((prev) => ({ ...prev, phoneNumber: event.target.value }))}
+                onChange={(event) => setFormState((prev) => ({ ...prev, phone: event.target.value }))}
               />
             </Form.Group>
             <Form.Group className="mb-3" controlId="partnerEmail">
-              <Form.Label>Email</Form.Label>
+              <Form.Label>Email (optional)</Form.Label>
               <Form.Control
                 type="email"
                 value={formState.email}
@@ -250,14 +395,13 @@ const SettingsPartners: React.FC = () => {
             <Form.Group className="mb-3" controlId="partnerRegion">
               <Form.Label>Region</Form.Label>
               <Form.Select
-                value={formState.regionID}
-                onChange={(event) =>
-                  setFormState((prev) => ({ ...prev, regionID: Number(event.target.value) }))
-                }
+                value={formState.regionId}
+                onChange={(event) => setFormState((prev) => ({ ...prev, regionId: event.target.value }))}
+                disabled={regions.length === 0}
               >
-                {availableRegions.map((region) => (
+                {regions.map((region) => (
                   <option key={region.id} value={region.id}>
-                    {region.regionName}
+                    {region.name}
                   </option>
                 ))}
               </Form.Select>
@@ -265,20 +409,22 @@ const SettingsPartners: React.FC = () => {
             <Form.Group className="mb-3" controlId="partnerDistrict">
               <Form.Label>District</Form.Label>
               <Form.Select
-                value={formState.districtID}
-                onChange={(event) =>
-                  setFormState((prev) => ({ ...prev, districtID: Number(event.target.value) }))
-                }
+                value={formState.districtId}
+                onChange={(event) => setFormState((prev) => ({ ...prev, districtId: event.target.value }))}
+                disabled={filteredDistrictOptions.length === 0}
               >
-                {availableDistrictOptions.map((district) => (
+                {filteredDistrictOptions.map((district) => (
                   <option key={district.id} value={district.id}>
-                    {district.districtName}
+                    {district.name}
                   </option>
                 ))}
               </Form.Select>
+              {formState.regionId && filteredDistrictOptions.length === 0 && (
+                <div className="form-text text-warning">No districts available for the selected region.</div>
+              )}
             </Form.Group>
-            <Form.Group className="mb-0" controlId="partnerLocality">
-              <Form.Label>Locality</Form.Label>
+            <Form.Group className="mb-3" controlId="partnerLocality">
+              <Form.Label>Locality (optional)</Form.Label>
               <Form.Control
                 type="text"
                 value={formState.locality}
@@ -286,13 +432,26 @@ const SettingsPartners: React.FC = () => {
                 onChange={(event) => setFormState((prev) => ({ ...prev, locality: event.target.value }))}
               />
             </Form.Group>
+            <Form.Group className="mb-0" controlId="partnerExternalId">
+              <Form.Label>External ID (optional)</Form.Label>
+              <Form.Control
+                type="text"
+                value={formState.externalId}
+                placeholder="Enter external ID"
+                onChange={(event) => setFormState((prev) => ({ ...prev, externalId: event.target.value }))}
+              />
+            </Form.Group>
           </Modal.Body>
           <Modal.Footer>
             <button type="button" className="btn btn-outline-secondary" onClick={closeModal}>
               Cancel
             </button>
-            <button type="submit" className="btn btn-grd-primary px-4">
-              Add Partner
+            <button
+              type="submit"
+              className="btn btn-grd-primary px-4"
+              disabled={isSubmitting || regions.length === 0 || filteredDistrictOptions.length === 0}
+            >
+              {isSubmitting ? "Saving..." : "Add Partner"}
             </button>
           </Modal.Footer>
         </Form>
