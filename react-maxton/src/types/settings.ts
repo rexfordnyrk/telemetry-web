@@ -18,6 +18,17 @@ export interface District {
   regionID: number;
 }
 
+export interface DistrictRecord {
+  id: string;
+  external_id: number | null;
+  name: string;
+  region_id: string;
+  created_at: string;
+  updated_at: string;
+  deleted_at: string | null;
+  region?: RegionRecord;
+}
+
 export interface Partner {
   id: number;
   partnerName: string;
