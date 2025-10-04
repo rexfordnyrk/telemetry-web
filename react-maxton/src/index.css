@@ -30,6 +30,57 @@ code {
 
 /* Let Perfect Scrollbar handle sidebar scrolling */
 
+/* Check-in modal enhancements */
+.checkin-modal-backdrop {
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.checkin-modal-content,
+.checkin-modal-header {
+  border-radius: 0;
+}
+
+.beneficiary-autocomplete {
+  position: relative;
+}
+
+.beneficiary-suggestion-list {
+  position: absolute;
+  top: calc(100% + 0.25rem);
+  left: 0;
+  right: 0;
+  z-index: 1040;
+  background-color: var(--bs-body-bg, #fff);
+  border: 1px solid var(--bs-border-color, rgba(0, 0, 0, 0.125));
+  border-radius: 0.375rem;
+  max-height: 16rem;
+  overflow-y: auto;
+  box-shadow: 0 0.5rem 1rem rgba(15, 23, 42, 0.08);
+}
+
+.beneficiary-suggestion-item {
+  padding: 0.5rem 0.75rem;
+  cursor: pointer;
+}
+
+.beneficiary-suggestion-item.active,
+.beneficiary-suggestion-item:hover {
+  background-color: var(--bs-primary-bg-subtle, rgba(13, 110, 253, 0.12));
+  color: var(--bs-primary, #0d6efd);
+}
+
+.beneficiary-suggestion-loading,
+.beneficiary-suggestion-empty {
+  padding: 0.75rem;
+  font-size: 0.875rem;
+  color: var(--bs-secondary-color, #6c757d);
+}
+
+.beneficiary-suggestion-programme {
+  font-size: 0.75rem;
+  color: var(--bs-secondary-color, #6c757d);
+}
+
 /* Leaflet Map Styles */
 .location-map {
   border-radius: 0.5rem;

@@ -41,8 +41,71 @@ export const API_CONFIG = {
       CREATE: '/api/v1/beneficiaries',       // Create new beneficiary
       UPDATE: (id: string) => `/api/v1/beneficiaries/${id}`,     // Update specific beneficiary
       DELETE: (id: string) => `/api/v1/beneficiaries/${id}`,     // Delete specific beneficiary
+      PMS_IMPORT: '/api/v1/beneficiaries/import/pms', // Legacy PMS import endpoint (sync)
+      IMPORT: '/api/v1/beneficiaries/import', // Queue async import job
+      IMPORT_JOB: (jobId: string) => `/api/v1/beneficiaries/import/jobs/${jobId}`, // Get job status
+      IMPORT_JOBS: '/api/v1/beneficiaries/import/jobs', // List jobs
+      IMPORT_JOB_CANCEL: (jobId: string) => `/api/v1/beneficiaries/import/jobs/${jobId}/cancel`, // Cancel job
     },
-    
+
+    // CIC endpoints
+    CICS: {
+      LIST: '/api/v1/cics',
+      CREATE: '/api/v1/cics',
+      DETAIL: (id: string) => `/api/v1/cics/${id}`,
+      UPDATE: (id: string) => `/api/v1/cics/${id}`,
+      DELETE: (id: string) => `/api/v1/cics/${id}`,
+    },
+
+    VISITS: {
+      LIST: '/api/v1/cic-visits',
+      DETAIL: (id: string) => `/api/v1/cic-visits/${id}`,
+      CHECKOUT: (id: string) => `/api/v1/cic-visits/${id}/checkout`,
+    },
+
+    // Lookup endpoints for select lists
+    LOOKUPS: {
+      DISTRICTS: '/api/v1/lookups/districts',
+      INTERVENTIONS: '/api/v1/lookups/interventions',
+      PARTNERS: '/api/v1/lookups/partners',
+    },
+
+    // Regions endpoints
+    REGIONS: {
+      LIST: '/api/v1/regions',
+      CREATE: '/api/v1/regions',
+      DETAIL: (id: string) => `/api/v1/regions/${id}`,
+      UPDATE: (id: string) => `/api/v1/regions/${id}`,
+      DELETE: (id: string) => `/api/v1/regions/${id}`,
+    },
+
+    // Districts endpoints
+    DISTRICTS: {
+      LIST: '/api/v1/districts',
+      CREATE: '/api/v1/districts',
+      DETAIL: (id: string) => `/api/v1/districts/${id}`,
+      UPDATE: (id: string) => `/api/v1/districts/${id}`,
+      DELETE: (id: string) => `/api/v1/districts/${id}`,
+    },
+
+    // Implementing partners endpoints
+    IMPLEMENTING_PARTNERS: {
+      LIST: '/api/v1/implementing-partners',
+      CREATE: '/api/v1/implementing-partners',
+      DETAIL: (id: string) => `/api/v1/implementing-partners/${id}`,
+      UPDATE: (id: string) => `/api/v1/implementing-partners/${id}`,
+      DELETE: (id: string) => `/api/v1/implementing-partners/${id}`,
+    },
+
+    // Interventions endpoints
+    INTERVENTIONS: {
+      LIST: '/api/v1/interventions',
+      CREATE: '/api/v1/interventions',
+      DETAIL: (id: string) => `/api/v1/interventions/${id}`,
+      UPDATE: (id: string) => `/api/v1/interventions/${id}`,
+      DELETE: (id: string) => `/api/v1/interventions/${id}`,
+    },
+
     // Device management endpoints
     DEVICES: {
       LIST: '/api/v1/devices',               // Get all devices

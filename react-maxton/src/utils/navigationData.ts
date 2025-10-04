@@ -137,6 +137,49 @@ export const navigationData: NavigationItem[] = [
         path: "/beneficiary-management/beneficiaries",
         icon: "arrow_right",
       },
+      {
+        id: "cic-visits",
+        title: "CIC Visits",
+        path: "/beneficiary-management/cic-visits",
+        icon: "arrow_right",
+      },
+    ],
+  },
+  {
+    id: "settings-label",
+    title: "Settings",
+    icon: undefined,
+    children: [],
+  },
+  {
+    id: "settings",
+    title: "Settings",
+    icon: "settings",
+    children: [
+      {
+        id: "settings-locality",
+        title: "Locality",
+        path: "/settings/locality",
+        icon: "arrow_right",
+      },
+      {
+        id: "settings-partners",
+        title: "Partners",
+        path: "/settings/partners",
+        icon: "arrow_right",
+      },
+      {
+        id: "settings-interventions",
+        title: "Interventions",
+        path: "/settings/interventions",
+        icon: "arrow_right",
+      },
+      {
+        id: "settings-cics",
+        title: "CICs",
+        path: "/settings/cics",
+        icon: "arrow_right",
+      },
     ],
   },
 

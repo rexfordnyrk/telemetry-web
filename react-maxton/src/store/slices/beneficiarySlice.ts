@@ -1,4 +1,4 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { RootState } from '../index';
 import { buildApiUrl, getAuthHeaders } from '../../config/api';
 import { handleApiError } from '../../utils/apiUtils';
@@ -227,6 +227,15 @@ const beneficiarySlice = createSlice({
     clearSingleError: (state) => {
       state.singleError = null;
     },
+    // Add multiple beneficiaries to the store (e.g., after CSV import)
+    addBeneficiaries: (state, action: PayloadAction<Beneficiary[]>) => {
+      const incoming = action.payload;
+      // Merge by id, preferring incoming over existing
+      const map = new Map<string, Beneficiary>();
+      state.beneficiaries.forEach(b => map.set(b.id, b));
+      incoming.forEach(b => map.set(b.id, b));
+      state.beneficiaries = Array.from(map.values());
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -278,5 +287,5 @@ const beneficiarySlice = createSlice({
   },
 });
 
-export const { clearSingleError } = beneficiarySlice.actions;
+export const { clearSingleError, addBeneficiaries } = beneficiarySlice.actions;
 export default beneficiarySlice.reducer;
