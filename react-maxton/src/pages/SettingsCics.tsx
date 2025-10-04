@@ -185,12 +185,12 @@ const SettingsCics: React.FC = () => {
         orderable: false,
         searchable: false,
         render: (_: unknown, __: unknown, row: CicTableRow) => `
-          <div class="d-flex gap-2">
-            <button type="button" class="btn btn-sm btn-outline-primary" data-action="edit" data-id="${row.id}">
-              <i class="material-icons-outlined align-middle">edit</i>
+          <div class="d-flex gap-1">
+            <button class="btn btn-sm p-1" title="Edit CIC" data-action="edit" data-id="${row.id}" style="border:none;background:transparent;">
+              <i class="material-icons-outlined text-primary">edit</i>
             </button>
-            <button type="button" class="btn btn-sm btn-outline-danger" data-action="delete" data-id="${row.id}">
-              <i class="material-icons-outlined align-middle">delete</i>
+            <button class="btn btn-sm p-1" title="Delete CIC" data-action="delete" data-id="${row.id}" style="border:none;background:transparent;">
+              <i class="material-icons-outlined text-danger">delete</i>
             </button>
           </div>
         `,
