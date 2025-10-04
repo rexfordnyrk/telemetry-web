@@ -41,6 +41,14 @@ const SettingsLocality: React.FC = () => {
   const [regionForm, setRegionForm] = useState<RegionFormState>({ name: "", externalId: "" });
   const [districtForm, setDistrictForm] = useState<DistrictFormState>({ name: "", regionId: "", externalId: "" });
 
+  // Edit/Delete state management
+  const [editingRegion, setEditingRegion] = useState<RegionRecord | null>(null);
+  const [editingDistrict, setEditingDistrict] = useState<DistrictRecord | null>(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<{ type: LocalityTab; record: RegionRecord | DistrictRecord } | null>(null);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
+  const [deleteSubmitting, setDeleteSubmitting] = useState(false);
+
   const regionById = useMemo(() => {
     return new Map<string, RegionRecord>(regions.map((region) => [region.id, region] as const));
   }, [regions]);
@@ -73,10 +81,113 @@ const SettingsLocality: React.FC = () => {
     }
   }, []);
 
+  const openModal = useCallback((type: LocalityTab, record?: RegionRecord | DistrictRecord) => {
+    setModalType(type);
+    setFormError(null);
+    setIsSubmitting(false);
+
+    if (type === "regions") {
+      if (record) {
+        const region = record as RegionRecord;
+        setEditingRegion(region);
+        setRegionForm({ 
+          name: region.name, 
+          externalId: region.external_id?.toString() ?? "" 
+        });
+      } else {
+        setEditingRegion(null);
+        setRegionForm({ name: "", externalId: "" });
+      }
+    } else {
+      if (record) {
+        const district = record as DistrictRecord;
+        setEditingDistrict(district);
+        setDistrictForm({ 
+          name: district.name, 
+          regionId: district.region_id, 
+          externalId: district.external_id?.toString() ?? "" 
+        });
+      } else {
+        setEditingDistrict(null);
+        setDistrictForm({ name: "", regionId: regions[0]?.id ?? "", externalId: "" });
+      }
+    }
+
+    setShowModal(true);
+  }, [regions]);
+
+  const handleActionClick = useCallback((action: string, id: string) => {
+    if (action === "edit") {
+      if (activeTab === "regions") {
+        const region = regions.find(r => r.id === id);
+        if (region) {
+          openModal("regions", region);
+        }
+      } else {
+        const district = districts.find(d => d.id === id);
+        if (district) {
+          openModal("districts", district);
+        }
+      }
+    } else if (action === "delete") {
+      if (activeTab === "regions") {
+        const region = regions.find(r => r.id === id);
+        if (region) {
+          setDeleteTarget({ type: "regions", record: region });
+          setShowDeleteModal(true);
+        }
+      } else {
+        const district = districts.find(d => d.id === id);
+        if (district) {
+          setDeleteTarget({ type: "districts", record: district });
+          setShowDeleteModal(true);
+        }
+      }
+    }
+  }, [activeTab, regions, districts, openModal]);
+
   useEffect(() => {
     void loadRegions();
     void loadDistricts();
   }, [loadRegions, loadDistricts]);
+
+  // Event delegation for action buttons
+  useEffect(() => {
+    const handleTableClick = (event: Event) => {
+      const target = event.target as HTMLElement;
+      const button = target.closest('button[data-action]') as HTMLButtonElement;
+      
+      if (button) {
+        const action = button.getAttribute('data-action');
+        const id = button.getAttribute('data-id');
+        
+        if (action && id) {
+          event.preventDefault();
+          handleActionClick(action, id);
+        }
+      }
+    };
+
+    // Add event listeners to both tables
+    const regionsTable = document.getElementById('regions-datatable');
+    const districtsTable = document.getElementById('districts-datatable');
+    
+    if (regionsTable) {
+      regionsTable.addEventListener('click', handleTableClick);
+    }
+    if (districtsTable) {
+      districtsTable.addEventListener('click', handleTableClick);
+    }
+
+    return () => {
+      if (regionsTable) {
+        regionsTable.removeEventListener('click', handleTableClick);
+      }
+      if (districtsTable) {
+        districtsTable.removeEventListener('click', handleTableClick);
+      }
+    };
+  }, [handleActionClick]);
 
   useEffect(() => {
     if (regions.length === 0) {
@@ -91,23 +202,51 @@ const SettingsLocality: React.FC = () => {
     });
   }, [regions]);
 
-  const openModal = (type: LocalityTab) => {
-    setModalType(type);
-    setFormError(null);
-    setIsSubmitting(false);
-
-    if (type === "regions") {
-      setRegionForm({ name: "", externalId: "" });
-    } else {
-      setDistrictForm({ name: "", regionId: regions[0]?.id ?? "", externalId: "" });
-    }
-
-    setShowModal(true);
-  };
-
   const closeModal = () => {
     setShowModal(false);
     setIsSubmitting(false);
+    setEditingRegion(null);
+    setEditingDistrict(null);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!deleteTarget) return;
+
+    setDeleteSubmitting(true);
+    setDeleteError(null);
+
+    try {
+      if (deleteTarget.type === "regions") {
+        await regionService.remove(deleteTarget.record.id);
+        setRegions(prev => prev.filter(r => r.id !== deleteTarget.record.id));
+        dispatch(addAlert({
+          type: "success",
+          title: "Success",
+          message: `Region "${deleteTarget.record.name}" deleted successfully.`,
+        }));
+      } else {
+        await districtService.remove(deleteTarget.record.id);
+        setDistricts(prev => prev.filter(d => d.id !== deleteTarget.record.id));
+        dispatch(addAlert({
+          type: "success",
+          title: "Success",
+          message: `District "${deleteTarget.record.name}" deleted successfully.`,
+        }));
+      }
+      setShowDeleteModal(false);
+      setDeleteTarget(null);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Failed to delete item.";
+      setDeleteError(message);
+    } finally {
+      setDeleteSubmitting(false);
+    }
+  };
+
+  const handleDeleteCancel = () => {
+    setShowDeleteModal(false);
+    setDeleteTarget(null);
+    setDeleteError(null);
   };
 
   const regionTableData = useMemo(
@@ -143,6 +282,23 @@ const SettingsLocality: React.FC = () => {
       { title: "External ID", data: "externalId" },
       { title: "Created At", data: "createdAt" },
       { title: "Updated At", data: "updatedAt" },
+      {
+        title: "Actions",
+        data: null,
+        orderable: false,
+        searchable: false,
+        render: (_: any, __: any, row: any) => {
+          return `
+            <div class="d-flex gap-1">
+              <button class="btn btn-sm p-1" title="Edit Region" data-action="edit" data-id="${row.id}" style="border:none;background:transparent;">
+                <i class="material-icons-outlined text-primary">edit</i>
+              </button>
+              <button class="btn btn-sm p-1" title="Delete Region" data-action="delete" data-id="${row.id}" style="border:none;background:transparent;">
+                <i class="material-icons-outlined text-danger">delete</i>
+              </button>
+            </div>`;
+        }
+      },
     ],
     [],
   );
@@ -155,6 +311,23 @@ const SettingsLocality: React.FC = () => {
       { title: "Region", data: "regionName" },
       { title: "Created At", data: "createdAt" },
       { title: "Updated At", data: "updatedAt" },
+      {
+        title: "Actions",
+        data: null,
+        orderable: false,
+        searchable: false,
+        render: (_: any, __: any, row: any) => {
+          return `
+            <div class="d-flex gap-1">
+              <button class="btn btn-sm p-1" title="Edit District" data-action="edit" data-id="${row.id}" style="border:none;background:transparent;">
+                <i class="material-icons-outlined text-primary">edit</i>
+              </button>
+              <button class="btn btn-sm p-1" title="Delete District" data-action="delete" data-id="${row.id}" style="border:none;background:transparent;">
+                <i class="material-icons-outlined text-danger">delete</i>
+              </button>
+            </div>`;
+        }
+      },
     ],
     [],
   );
@@ -198,7 +371,11 @@ const SettingsLocality: React.FC = () => {
       return;
     }
 
-    const duplicate = regions.some((region) => region.name.toLowerCase() === trimmedName.toLowerCase());
+    // Check for duplicates (excluding current record if editing)
+    const duplicate = regions.some((region) => 
+      region.name.toLowerCase() === trimmedName.toLowerCase() && 
+      (!editingRegion || region.id !== editingRegion.id)
+    );
     if (duplicate) {
       setFormError("Region already exists.");
       return;
@@ -220,20 +397,39 @@ const SettingsLocality: React.FC = () => {
         name: trimmedName.toUpperCase(),
         ...(externalIdValue !== undefined ? { external_id: externalIdValue } : {}),
       };
-      const response = await regionService.create(payload);
-      if (response.data) {
-        setRegions((prev) => [...prev, response.data]);
-        dispatch(
-          addAlert({
-            type: "success",
-            title: "Success",
-            message: response.message ?? `Region "${response.data.name}" created successfully.`,
-          }),
-        );
-        setShowModal(false);
+
+      if (editingRegion) {
+        // Update existing region
+        const response = await regionService.update(editingRegion.id, payload);
+        if (response.data) {
+          setRegions((prev) => prev.map(r => r.id === editingRegion.id ? response.data : r));
+          dispatch(
+            addAlert({
+              type: "success",
+              title: "Success",
+              message: response.message ?? `Region "${response.data.name}" updated successfully.`,
+            }),
+          );
+          setShowModal(false);
+        }
+      } else {
+        // Create new region
+        const response = await regionService.create(payload);
+        if (response.data) {
+          setRegions((prev) => [...prev, response.data]);
+          dispatch(
+            addAlert({
+              type: "success",
+              title: "Success",
+              message: response.message ?? `Region "${response.data.name}" created successfully.`,
+            }),
+          );
+          setShowModal(false);
+        }
       }
     } catch (error) {
-      const message = error instanceof Error ? error.message : "Failed to create region.";
+      const message = error instanceof Error ? error.message : 
+        editingRegion ? "Failed to update region." : "Failed to create region.";
       setFormError(message);
     } finally {
       setIsSubmitting(false);
@@ -265,9 +461,12 @@ const SettingsLocality: React.FC = () => {
       return;
     }
 
+    // Check for duplicates (excluding current record if editing)
     const duplicate = districts.some(
       (district) =>
-        district.name.toLowerCase() === trimmedName.toLowerCase() && district.region_id === selectedRegionId,
+        district.name.toLowerCase() === trimmedName.toLowerCase() && 
+        district.region_id === selectedRegionId &&
+        (!editingDistrict || district.id !== editingDistrict.id)
     );
 
     if (duplicate) {
@@ -292,20 +491,39 @@ const SettingsLocality: React.FC = () => {
         region_id: selectedRegionId,
         ...(externalIdValue !== undefined ? { external_id: externalIdValue } : {}),
       };
-      const response = await districtService.create(payload);
-      if (response.data) {
-        setDistricts((prev) => [...prev, response.data]);
-        dispatch(
-          addAlert({
-            type: "success",
-            title: "Success",
-            message: response.message ?? `District "${response.data.name}" created successfully.`,
-          }),
-        );
-        setShowModal(false);
+
+      if (editingDistrict) {
+        // Update existing district
+        const response = await districtService.update(editingDistrict.id, payload);
+        if (response.data) {
+          setDistricts((prev) => prev.map(d => d.id === editingDistrict.id ? response.data : d));
+          dispatch(
+            addAlert({
+              type: "success",
+              title: "Success",
+              message: response.message ?? `District "${response.data.name}" updated successfully.`,
+            }),
+          );
+          setShowModal(false);
+        }
+      } else {
+        // Create new district
+        const response = await districtService.create(payload);
+        if (response.data) {
+          setDistricts((prev) => [...prev, response.data]);
+          dispatch(
+            addAlert({
+              type: "success",
+              title: "Success",
+              message: response.message ?? `District "${response.data.name}" created successfully.`,
+            }),
+          );
+          setShowModal(false);
+        }
       }
     } catch (error) {
-      const message = error instanceof Error ? error.message : "Failed to create district.";
+      const message = error instanceof Error ? error.message : 
+        editingDistrict ? "Failed to update district." : "Failed to create district.";
       setFormError(message);
     } finally {
       setIsSubmitting(false);
@@ -431,7 +649,12 @@ const SettingsLocality: React.FC = () => {
       <Modal show={showModal} onHide={closeModal} centered>
         <Form onSubmit={handleSubmit}>
           <Modal.Header closeButton>
-            <Modal.Title>{modalType === "regions" ? "Add Region" : "Add District"}</Modal.Title>
+            <Modal.Title>
+              {modalType === "regions" 
+                ? (editingRegion ? "Edit Region" : "Add Region")
+                : (editingDistrict ? "Edit District" : "Add District")
+              }
+            </Modal.Title>
           </Modal.Header>
           <Modal.Body>
             {formError && <div className="alert alert-danger">{formError}</div>}
@@ -502,10 +725,52 @@ const SettingsLocality: React.FC = () => {
               className="btn btn-grd-primary px-4"
               disabled={isSubmitting || (modalType === "districts" && regions.length === 0)}
             >
-              {isSubmitting ? "Saving..." : modalType === "regions" ? "Add Region" : "Add District"}
+              {isSubmitting 
+                ? "Saving..." 
+                : modalType === "regions" 
+                  ? (editingRegion ? "Update Region" : "Add Region")
+                  : (editingDistrict ? "Update District" : "Add District")
+              }
             </button>
           </Modal.Footer>
         </Form>
+      </Modal>
+
+      {/* Delete Confirmation Modal */}
+      <Modal show={showDeleteModal} onHide={handleDeleteCancel} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>Confirm Delete</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {deleteError && <div className="alert alert-danger">{deleteError}</div>}
+          <p>
+            Are you sure you want to delete this {deleteTarget?.type === "regions" ? "region" : "district"}?
+          </p>
+          <p className="mb-0">
+            <strong>{deleteTarget?.record.name}</strong>
+          </p>
+          <p className="text-muted small mt-2">
+            This action cannot be undone.
+          </p>
+        </Modal.Body>
+        <Modal.Footer>
+          <button 
+            type="button" 
+            className="btn btn-outline-secondary" 
+            onClick={handleDeleteCancel}
+            disabled={deleteSubmitting}
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            className="btn btn-danger"
+            onClick={handleDeleteConfirm}
+            disabled={deleteSubmitting}
+          >
+            {deleteSubmitting ? "Deleting..." : "Delete"}
+          </button>
+        </Modal.Footer>
       </Modal>
     </MainLayout>
   );
