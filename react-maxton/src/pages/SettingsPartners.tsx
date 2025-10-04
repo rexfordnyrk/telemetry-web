@@ -54,6 +54,13 @@ const SettingsPartners: React.FC = () => {
     externalId: "",
   });
 
+  // Edit/Delete state management
+  const [editingPartner, setEditingPartner] = useState<ImplementingPartnerRecord | null>(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<ImplementingPartnerRecord | null>(null);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
+  const [deleteSubmitting, setDeleteSubmitting] = useState(false);
+
   const regionById = useMemo(() => new Map(regions.map((region) => [region.id, region] as const)), [regions]);
   const districtById = useMemo(() => new Map(districts.map((district) => [district.id, district] as const)), [districts]);
 
@@ -126,27 +133,114 @@ const SettingsPartners: React.FC = () => {
     return districts.filter((district) => district.region_id === formState.regionId);
   }, [districts, formState.regionId]);
 
-  const openModal = () => {
-    const defaultRegionId = regions[0]?.id ?? "";
-    const defaultDistrictId = districts.find((district) => district.region_id === defaultRegionId)?.id ?? "";
-    setFormState({
-      name: "",
-      contactPerson: "",
-      phone: "",
-      email: "",
-      regionId: defaultRegionId,
-      districtId: defaultDistrictId,
-      locality: "",
-      externalId: "",
-    });
+  const openModal = useCallback((partner?: ImplementingPartnerRecord) => {
+    if (partner) {
+      setEditingPartner(partner);
+      setFormState({
+        name: partner.name,
+        contactPerson: partner.contact_person ?? "",
+        phone: partner.phone ?? "",
+        email: partner.email ?? "",
+        regionId: partner.region_id,
+        districtId: partner.district_id,
+        locality: partner.locality ?? "",
+        externalId: partner.external_id?.toString() ?? "",
+      });
+    } else {
+      setEditingPartner(null);
+      const defaultRegionId = regions[0]?.id ?? "";
+      const defaultDistrictId = districts.find((district) => district.region_id === defaultRegionId)?.id ?? "";
+      setFormState({
+        name: "",
+        contactPerson: "",
+        phone: "",
+        email: "",
+        regionId: defaultRegionId,
+        districtId: defaultDistrictId,
+        locality: "",
+        externalId: "",
+      });
+    }
     setFormError(null);
     setIsSubmitting(false);
     setShowModal(true);
-  };
+  }, [regions, districts]);
+
+  const handleActionClick = useCallback((action: string, id: string) => {
+    if (action === "edit") {
+      const partner = partners.find(p => p.id === id);
+      if (partner) {
+        openModal(partner);
+      }
+    } else if (action === "delete") {
+      const partner = partners.find(p => p.id === id);
+      if (partner) {
+        setDeleteTarget(partner);
+        setShowDeleteModal(true);
+      }
+    }
+  }, [partners, openModal]);
+
+  // Event delegation for action buttons
+  useEffect(() => {
+    if (!window.$) return;
+    const $table = window.$('#partners-datatable');
+    if ($table.length === 0) return;
+
+    const onEdit = (e: any) => {
+      e.preventDefault();
+      const id = window.$(e.currentTarget).data('id');
+      if (id) handleActionClick('edit', id);
+    };
+    const onDelete = (e: any) => {
+      e.preventDefault();
+      const id = window.$(e.currentTarget).data('id');
+      if (id) handleActionClick('delete', id);
+    };
+
+    $table.off('.dtActions');
+    $table.on('click.dtActions', 'button[data-action="edit"]', onEdit);
+    $table.on('click.dtActions', 'button[data-action="delete"]', onDelete);
+
+    return () => {
+      if ($table && $table.off) $table.off('.dtActions');
+    };
+  }, [handleActionClick]);
 
   const closeModal = () => {
     setShowModal(false);
     setIsSubmitting(false);
+    setEditingPartner(null);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!deleteTarget) return;
+
+    setDeleteSubmitting(true);
+    setDeleteError(null);
+
+    try {
+      await implementingPartnerService.remove(deleteTarget.id);
+      setPartners(prev => prev.filter(p => p.id !== deleteTarget.id));
+      dispatch(addAlert({
+        type: "success",
+        title: "Success",
+        message: `Partner "${deleteTarget.name}" deleted successfully.`,
+      }));
+      setShowDeleteModal(false);
+      setDeleteTarget(null);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Failed to delete partner.";
+      setDeleteError(message);
+    } finally {
+      setDeleteSubmitting(false);
+    }
+  };
+
+  const handleDeleteCancel = () => {
+    setShowDeleteModal(false);
+    setDeleteTarget(null);
+    setDeleteError(null);
   };
 
   const tableData = useMemo(
@@ -184,6 +278,23 @@ const SettingsPartners: React.FC = () => {
       { title: "External ID", data: "externalId" },
       { title: "Created At", data: "createdAt" },
       { title: "Updated At", data: "updatedAt" },
+      {
+        title: "Actions",
+        data: null,
+        orderable: false,
+        searchable: false,
+        render: (_: any, __: any, row: any) => {
+          return `
+            <div class="d-flex gap-1">
+              <button class="btn btn-sm p-1" title="Edit Partner" data-action="edit" data-id="${row.id}" style="border:none;background:transparent;">
+                <i class="material-icons-outlined text-primary">edit</i>
+              </button>
+              <button class="btn btn-sm p-1" title="Delete Partner" data-action="delete" data-id="${row.id}" style="border:none;background:transparent;">
+                <i class="material-icons-outlined text-danger">delete</i>
+              </button>
+            </div>`;
+        }
+      },
     ],
     [],
   );
@@ -259,20 +370,38 @@ const SettingsPartners: React.FC = () => {
         ...(externalIdValue !== undefined ? { external_id: externalIdValue } : {}),
       };
 
-      const response = await implementingPartnerService.create(payload);
-      if (response.data) {
-        setPartners((prev) => [...prev, response.data]);
-        dispatch(
-          addAlert({
-            type: "success",
-            title: "Success",
-            message: response.message ?? `Partner "${response.data.name}" created successfully.`,
-          }),
-        );
-        setShowModal(false);
+      if (editingPartner) {
+        // Update existing partner
+        const response = await implementingPartnerService.update(editingPartner.id, payload);
+        if (response.data) {
+          setPartners((prev) => prev.map(p => p.id === editingPartner.id ? response.data : p));
+          dispatch(
+            addAlert({
+              type: "success",
+              title: "Success",
+              message: response.message ?? `Partner "${response.data.name}" updated successfully.`,
+            }),
+          );
+          setShowModal(false);
+        }
+      } else {
+        // Create new partner
+        const response = await implementingPartnerService.create(payload);
+        if (response.data) {
+          setPartners((prev) => [...prev, response.data]);
+          dispatch(
+            addAlert({
+              type: "success",
+              title: "Success",
+              message: response.message ?? `Partner "${response.data.name}" created successfully.`,
+            }),
+          );
+          setShowModal(false);
+        }
       }
     } catch (error) {
-      const message = error instanceof Error ? error.message : "Failed to create partner.";
+      const message = error instanceof Error ? error.message : 
+        editingPartner ? "Failed to update partner." : "Failed to create partner.";
       setFormError(message);
     } finally {
       setIsSubmitting(false);
@@ -305,7 +434,7 @@ const SettingsPartners: React.FC = () => {
             <button
               type="button"
               className="btn btn-grd-primary px-4"
-              onClick={openModal}
+              onClick={() => openModal()}
               disabled={addButtonDisabled}
             >
               <i className="material-icons-outlined me-1">add</i>
@@ -352,7 +481,7 @@ const SettingsPartners: React.FC = () => {
       <Modal show={showModal} onHide={closeModal} centered>
         <Form onSubmit={handleSubmit}>
           <Modal.Header closeButton>
-            <Modal.Title>Add Partner</Modal.Title>
+            <Modal.Title>{editingPartner ? "Edit Partner" : "Add Partner"}</Modal.Title>
           </Modal.Header>
           <Modal.Body>
             {formError && <div className="alert alert-danger">{formError}</div>}
@@ -451,10 +580,50 @@ const SettingsPartners: React.FC = () => {
               className="btn btn-grd-primary px-4"
               disabled={isSubmitting || regions.length === 0 || filteredDistrictOptions.length === 0}
             >
-              {isSubmitting ? "Saving..." : "Add Partner"}
+              {isSubmitting 
+                ? "Saving..." 
+                : editingPartner ? "Update Partner" : "Add Partner"
+              }
             </button>
           </Modal.Footer>
         </Form>
+      </Modal>
+
+      {/* Delete Confirmation Modal */}
+      <Modal show={showDeleteModal} onHide={handleDeleteCancel} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>Confirm Delete</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {deleteError && <div className="alert alert-danger">{deleteError}</div>}
+          <p>
+            Are you sure you want to delete this partner?
+          </p>
+          <p className="mb-0">
+            <strong>{deleteTarget?.name}</strong>
+          </p>
+          <p className="text-muted small mt-2">
+            This action cannot be undone.
+          </p>
+        </Modal.Body>
+        <Modal.Footer>
+          <button 
+            type="button" 
+            className="btn btn-outline-secondary" 
+            onClick={handleDeleteCancel}
+            disabled={deleteSubmitting}
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            className="btn btn-danger"
+            onClick={handleDeleteConfirm}
+            disabled={deleteSubmitting}
+          >
+            {deleteSubmitting ? "Deleting..." : "Delete"}
+          </button>
+        </Modal.Footer>
       </Modal>
     </MainLayout>
   );

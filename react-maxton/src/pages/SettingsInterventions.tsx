@@ -41,6 +41,13 @@ const SettingsInterventions: React.FC = () => {
     externalId: "",
   });
 
+  // Edit/Delete state management
+  const [editingIntervention, setEditingIntervention] = useState<InterventionRecord | null>(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<InterventionRecord | null>(null);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
+  const [deleteSubmitting, setDeleteSubmitting] = useState(false);
+
   const partnerById = useMemo(() => new Map(partners.map((partner) => [partner.id, partner] as const)), [partners]);
 
   const loadPartners = useCallback(async () => {
@@ -75,6 +82,7 @@ const SettingsInterventions: React.FC = () => {
     void loadPartners();
     void loadInterventions();
   }, [loadPartners, loadInterventions]);
+
 
   useEffect(() => {
     if (partners.length === 0) {
@@ -119,6 +127,23 @@ const SettingsInterventions: React.FC = () => {
       { title: "External ID", data: "externalId" },
       { title: "Created At", data: "createdAt" },
       { title: "Updated At", data: "updatedAt" },
+      {
+        title: "Actions",
+        data: null,
+        orderable: false,
+        searchable: false,
+        render: (_: any, __: any, row: any) => {
+          return `
+            <div class="d-flex gap-1">
+              <button class="btn btn-sm p-1" title="Edit Intervention" data-action="edit" data-id="${row.id}" style="border:none;background:transparent;">
+                <i class="material-icons-outlined text-primary">edit</i>
+              </button>
+              <button class="btn btn-sm p-1" title="Delete Intervention" data-action="delete" data-id="${row.id}" style="border:none;background:transparent;">
+                <i class="material-icons-outlined text-danger">delete</i>
+              </button>
+            </div>`;
+        }
+      },
     ],
     [],
   );
@@ -142,22 +167,105 @@ const SettingsInterventions: React.FC = () => {
     return null;
   };
 
-  const openModal = () => {
-    const defaultPartnerId = partners[0]?.id ?? "";
-    setFormState({
-      name: "",
-      description: "",
-      implementingPartnerId: defaultPartnerId,
-      externalId: "",
-    });
+  const openModal = useCallback((intervention?: InterventionRecord) => {
+    if (intervention) {
+      setEditingIntervention(intervention);
+      setFormState({
+        name: intervention.name,
+        description: intervention.description ?? "",
+        implementingPartnerId: intervention.implementing_partner_id,
+        externalId: intervention.external_id?.toString() ?? "",
+      });
+    } else {
+      setEditingIntervention(null);
+      const defaultPartnerId = partners[0]?.id ?? "";
+      setFormState({
+        name: "",
+        description: "",
+        implementingPartnerId: defaultPartnerId,
+        externalId: "",
+      });
+    }
     setFormError(null);
     setIsSubmitting(false);
     setShowModal(true);
-  };
+  }, [partners]);
 
   const closeModal = () => {
     setShowModal(false);
     setIsSubmitting(false);
+    setEditingIntervention(null);
+  };
+
+  const handleActionClick = useCallback((action: string, id: string) => {
+    if (action === "edit") {
+      const intervention = interventions.find(i => i.id === id);
+      if (intervention) {
+        openModal(intervention);
+      }
+    } else if (action === "delete") {
+      const intervention = interventions.find(i => i.id === id);
+      if (intervention) {
+        setDeleteTarget(intervention);
+        setShowDeleteModal(true);
+      }
+    }
+  }, [interventions, openModal]);
+
+  // Event delegation for action buttons
+  useEffect(() => {
+    if (!window.$) return;
+    const $table = window.$('#interventions-datatable');
+    if ($table.length === 0) return;
+
+    const onEdit = (e: any) => {
+      e.preventDefault();
+      const id = window.$(e.currentTarget).data('id');
+      if (id) handleActionClick('edit', id);
+    };
+    const onDelete = (e: any) => {
+      e.preventDefault();
+      const id = window.$(e.currentTarget).data('id');
+      if (id) handleActionClick('delete', id);
+    };
+
+    $table.off('.dtActions');
+    $table.on('click.dtActions', 'button[data-action="edit"]', onEdit);
+    $table.on('click.dtActions', 'button[data-action="delete"]', onDelete);
+
+    return () => {
+      if ($table && $table.off) $table.off('.dtActions');
+    };
+  }, [handleActionClick]);
+
+  const handleDeleteConfirm = async () => {
+    if (!deleteTarget) return;
+
+    setDeleteSubmitting(true);
+    setDeleteError(null);
+
+    try {
+      await interventionService.remove(deleteTarget.id);
+      setInterventions(prev => prev.filter(i => i.id !== deleteTarget.id));
+      dispatch(addAlert({
+        type: "success",
+        title: "Success",
+        message: `Intervention "${deleteTarget.name}" deleted successfully.`,
+      }));
+      setShowDeleteModal(false);
+      setDeleteTarget(null);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Failed to delete intervention.";
+      setDeleteError(message);
+    } finally {
+      setDeleteSubmitting(false);
+    }
+  };
+
+  const handleDeleteCancel = () => {
+    setShowDeleteModal(false);
+    setDeleteTarget(null);
+    setDeleteError(null);
   };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -199,20 +307,38 @@ const SettingsInterventions: React.FC = () => {
         ...(externalIdValue !== undefined ? { external_id: externalIdValue } : {}),
       };
 
-      const response = await interventionService.create(payload);
-      if (response.data) {
-        setInterventions((prev) => [...prev, response.data]);
-        dispatch(
-          addAlert({
-            type: "success",
-            title: "Success",
-            message: response.message ?? `Intervention "${response.data.name}" created successfully.`,
-          }),
-        );
-        setShowModal(false);
+      if (editingIntervention) {
+        // Update existing intervention
+        const response = await interventionService.update(editingIntervention.id, payload);
+        if (response.data) {
+          setInterventions((prev) => prev.map(i => i.id === editingIntervention.id ? response.data : i));
+          dispatch(
+            addAlert({
+              type: "success",
+              title: "Success",
+              message: response.message ?? `Intervention "${response.data.name}" updated successfully.`,
+            }),
+          );
+          setShowModal(false);
+        }
+      } else {
+        // Create new intervention
+        const response = await interventionService.create(payload);
+        if (response.data) {
+          setInterventions((prev) => [...prev, response.data]);
+          dispatch(
+            addAlert({
+              type: "success",
+              title: "Success",
+              message: response.message ?? `Intervention "${response.data.name}" created successfully.`,
+            }),
+          );
+          setShowModal(false);
+        }
       }
     } catch (error) {
-      const message = error instanceof Error ? error.message : "Failed to create intervention.";
+      const message = error instanceof Error ? error.message : 
+        editingIntervention ? "Failed to update intervention." : "Failed to create intervention.";
       setFormError(message);
     } finally {
       setIsSubmitting(false);
@@ -245,7 +371,7 @@ const SettingsInterventions: React.FC = () => {
             <button
               type="button"
               className="btn btn-grd-primary px-4"
-              onClick={openModal}
+              onClick={() => openModal()}
               disabled={addButtonDisabled}
             >
               <i className="material-icons-outlined me-1">add</i>
@@ -290,7 +416,7 @@ const SettingsInterventions: React.FC = () => {
       <Modal show={showModal} onHide={closeModal} centered>
         <Form onSubmit={handleSubmit}>
           <Modal.Header closeButton>
-            <Modal.Title>Add Intervention</Modal.Title>
+            <Modal.Title>{editingIntervention ? "Edit Intervention" : "Add Intervention"}</Modal.Title>
           </Modal.Header>
           <Modal.Body>
             {formError && <div className="alert alert-danger">{formError}</div>}
@@ -346,10 +472,50 @@ const SettingsInterventions: React.FC = () => {
               className="btn btn-grd-primary px-4"
               disabled={isSubmitting || partners.length === 0}
             >
-              {isSubmitting ? "Saving..." : "Add Intervention"}
+              {isSubmitting 
+                ? "Saving..." 
+                : editingIntervention ? "Update Intervention" : "Add Intervention"
+              }
             </button>
           </Modal.Footer>
         </Form>
+      </Modal>
+
+      {/* Delete Confirmation Modal */}
+      <Modal show={showDeleteModal} onHide={handleDeleteCancel} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>Confirm Delete</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {deleteError && <div className="alert alert-danger">{deleteError}</div>}
+          <p>
+            Are you sure you want to delete this intervention?
+          </p>
+          <p className="mb-0">
+            <strong>{deleteTarget?.name}</strong>
+          </p>
+          <p className="text-muted small mt-2">
+            This action cannot be undone.
+          </p>
+        </Modal.Body>
+        <Modal.Footer>
+          <button 
+            type="button" 
+            className="btn btn-outline-secondary" 
+            onClick={handleDeleteCancel}
+            disabled={deleteSubmitting}
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            className="btn btn-danger"
+            onClick={handleDeleteConfirm}
+            disabled={deleteSubmitting}
+          >
+            {deleteSubmitting ? "Deleting..." : "Delete"}
+          </button>
+        </Modal.Footer>
       </Modal>
     </MainLayout>
   );
