@@ -64,6 +64,11 @@
       href="%PUBLIC_URL%/assets/plugins/datatable/css/dataTables.bootstrap5.min.css"
       rel="stylesheet"
     />
+    <!-- Feather Icons -->
+    <link
+      rel="stylesheet"
+      href="%PUBLIC_URL%/assets/icons/feather/feather.min.css"
+    />
 
     <!-- Main CSS -->
     <link
@@ -84,6 +89,8 @@
     <!-- DataTables JS -->
     <script src="%PUBLIC_URL%/assets/plugins/datatable/js/jquery.dataTables.min.js"></script>
     <script src="%PUBLIC_URL%/assets/plugins/datatable/js/dataTables.bootstrap5.min.js"></script>
+    <!-- Feather Icons JS -->
+    <script src="%PUBLIC_URL%/assets/icons/feather/feather.min.js"></script>
     <script src="%PUBLIC_URL%/assets/js/main.js"></script>
 
     <!-- Initialize after React is ready -->
@@ -107,6 +114,11 @@
             typeof PerfectScrollbar !== "undefined"
           ) {
             new PerfectScrollbar(".user-list");
+          }
+
+          // Initialize Feather Icons
+          if (typeof feather !== "undefined") {
+            feather.replace();
           }
         } catch (error) {
           console.warn("Initialization failed:", error);

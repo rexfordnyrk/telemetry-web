@@ -13,6 +13,9 @@ interface Window {
   $: JQueryStatic;
   jQuery: JQueryStatic;
   PerfectScrollbar?: any;
+  feather?: {
+    replace: (options?: any) => void;
+  };
 }
 
 declare var $: JQueryStatic;

@@ -66,26 +66,25 @@ const CicVisits: React.FC = () => {
       render: (_: any, __: any, row: Visit) => {
         const isProcessing = checkoutProcessingId === row.id;
         const isCheckedOut = Boolean(row.check_out_at);
-        const checkoutDisabled = isCheckedOut || isProcessing ? 'disabled' : '';
-        const checkoutIcon = isCheckedOut
-          ? '<i class="material-icons-outlined align-middle">check_circle</i>'
-          : isProcessing
-            ? '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>'
-            : '<i class="material-icons-outlined align-middle">logout</i>';
-        const checkoutLabel = isCheckedOut ? 'Checked Out' : 'Check-Out';
+        const checkoutIcon = isProcessing
+          ? '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>'
+          : '<i data-feather="log-out" class="align-middle" style="width: 16px; height: 16px;"></i>';
+
+        const checkoutButton = isCheckedOut ? '' : `
+          <button type="button" class="btn btn-sm btn-outline-success d-flex align-items-center gap-1" data-action="checkout" data-id="${row.id}" ${isProcessing ? 'disabled' : ''} style="white-space: nowrap;">
+            ${checkoutIcon}
+            <span>Check-Out</span>
+          </button>`;
 
         return `
           <div class="d-flex gap-2 align-items-center">
-            <button type="button" class="btn btn-sm btn-outline-success d-flex align-items-center gap-1" data-action="checkout" data-id="${row.id}" ${checkoutDisabled}>
-              ${checkoutIcon}
-              <span>${checkoutLabel}</span>
-            </button>
             <button class="btn btn-sm p-1" title="Edit" data-action="edit" data-id="${row.id}" style="border:none;background:transparent;">
               <i class="material-icons-outlined text-primary">edit</i>
             </button>
             <button class="btn btn-sm p-1" title="Delete" data-action="delete" data-id="${row.id}" style="border:none;background:transparent;">
               <i class="material-icons-outlined text-danger">delete</i>
             </button>
+            ${checkoutButton}
           </div>`;
       }
     }
@@ -175,6 +174,11 @@ const CicVisits: React.FC = () => {
     $table.on('click.dtActions', 'button[data-action="delete"]', onDelete);
     $table.on('click.dtActions', 'button[data-action="edit"]', onEdit);
     $table.on('click.dtActions', 'button[data-action="checkout"]', onCheckoutClick);
+
+    // Initialize feather icons for the table
+    if (typeof window.feather !== 'undefined') {
+      window.feather.replace();
+    }
 
     return () => { if ($table && $table.off) $table.off('.dtActions'); };
   }, [memoized, handleVisitCheckout]);
