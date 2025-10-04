@@ -133,6 +133,19 @@ const SettingsPartners: React.FC = () => {
     return districts.filter((district) => district.region_id === formState.regionId);
   }, [districts, formState.regionId]);
 
+  // Handle region changes - update district selection
+  useEffect(() => {
+    if (!formState.regionId) return;
+    
+    const availableDistricts = districts.filter((district) => district.region_id === formState.regionId);
+    const currentDistrictExists = availableDistricts.some((district) => district.id === formState.districtId);
+    
+    if (!currentDistrictExists) {
+      const newDistrictId = availableDistricts.length > 0 ? availableDistricts[0].id : "";
+      setFormState((prev) => ({ ...prev, districtId: newDistrictId }));
+    }
+  }, [formState.regionId, formState.districtId, districts]);
+
   const openModal = useCallback((partner?: ImplementingPartnerRecord) => {
     if (partner) {
       setEditingPartner(partner);
@@ -149,7 +162,8 @@ const SettingsPartners: React.FC = () => {
     } else {
       setEditingPartner(null);
       const defaultRegionId = regions[0]?.id ?? "";
-      const defaultDistrictId = districts.find((district) => district.region_id === defaultRegionId)?.id ?? "";
+      const availableDistricts = districts.filter((district) => district.region_id === defaultRegionId);
+      const defaultDistrictId = availableDistricts.length > 0 ? availableDistricts[0].id : "";
       setFormState({
         name: "",
         contactPerson: "",
@@ -315,6 +329,13 @@ const SettingsPartners: React.FC = () => {
   const validateForm = (state: PartnerFormState) => {
     if (!state.name.trim()) return "Partner name is required.";
     if (!state.regionId) return "Region selection is required.";
+    
+    // Check if there are districts available for the selected region
+    const availableDistricts = districts.filter((district) => district.region_id === state.regionId);
+    if (availableDistricts.length === 0) {
+      return "No districts are available for the selected region.";
+    }
+    
     if (!state.districtId) return "District selection is required.";
     if (state.email.trim() && !state.email.includes("@")) return "Please provide a valid email address.";
     return null;
