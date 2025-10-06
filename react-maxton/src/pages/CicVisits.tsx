@@ -5,7 +5,7 @@ import { addAlert } from "../store/slices/alertSlice";
 import DataTableWrapper from "../components/DataTableWrapper";
 import ImportVisitsModal from "../components/ImportVisitsModal";
 import CheckInModal from "../components/CheckInModal";
-import { checkoutVisit, deleteVisit, fetchVisits, Visit } from "../store/slices/visitSlice";
+import { checkoutVisit, deleteVisit, fetchVisits, updateVisit, Visit, UpdateVisitPayload } from "../store/slices/visitSlice";
 
 const CicVisits: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -20,6 +20,20 @@ const CicVisits: React.FC = () => {
   const [checkoutProcessingId, setCheckoutProcessingId] = useState<string | null>(null);
   const [deleteSubmitting, setDeleteSubmitting] = useState(false);
   const [deleteError, setDeleteError] = useState<string | null>(null);
+
+  // Edit modal state
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editingVisit, setEditingVisit] = useState<Visit | null>(null);
+  const [editFormData, setEditFormData] = useState<UpdateVisitPayload>({
+    intervention_id: null,
+    activity_name: null,
+    assisted_by: null,
+    notes: null,
+    check_in_at: undefined,
+    check_out_at: null,
+  });
+  const [editSubmitting, setEditSubmitting] = useState(false);
+  const [editError, setEditError] = useState<string | null>(null);
 
   useEffect(() => {
     dispatch(fetchVisits({}));
@@ -159,7 +173,11 @@ const CicVisits: React.FC = () => {
     };
     const onEdit = (e: any) => {
       e.preventDefault();
-      // Optional: open edit modal later
+      const id = window.$(e.currentTarget).data('id');
+      const visit = memoized.find((x) => x.id === id);
+      if (visit) {
+        handleOpenEditModal(visit);
+      }
     };
     const onCheckoutClick = (e: any) => {
       e.preventDefault();
@@ -198,6 +216,68 @@ const CicVisits: React.FC = () => {
     setShowModal(false);
     setTargetVisit(null);
     setDeleteError(null);
+  };
+
+  const handleOpenEditModal = (visit: Visit) => {
+    setEditingVisit(visit);
+    setEditFormData({
+      intervention_id: visit.intervention_id,
+      activity_name: visit.activity_name,
+      assisted_by: visit.assisted_by,
+      notes: visit.notes,
+      check_in_at: visit.check_in_at,
+      check_out_at: visit.check_out_at,
+    });
+    setEditError(null);
+    setEditSubmitting(false);
+    setShowEditModal(true);
+  };
+
+  const handleCloseEditModal = () => {
+    setShowEditModal(false);
+    setEditingVisit(null);
+    setEditFormData({
+      intervention_id: null,
+      activity_name: null,
+      assisted_by: null,
+      notes: null,
+      check_in_at: undefined,
+      check_out_at: null,
+    });
+    setEditError(null);
+    setEditSubmitting(false);
+  };
+
+  const handleEditFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setEditFormData(prev => ({
+      ...prev,
+      [name]: value || null
+    }));
+  };
+
+  const handleEditSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingVisit || editSubmitting) return;
+
+    setEditSubmitting(true);
+    setEditError(null);
+
+    try {
+      await dispatch(updateVisit({ id: editingVisit.id, payload: editFormData })).unwrap();
+      dispatch(
+        addAlert({
+          type: "success",
+          title: "Visit Updated",
+          message: `Visit for "${editingVisit.beneficiary_name || "Beneficiary"}" has been updated successfully.`,
+        })
+      );
+      handleCloseEditModal();
+    } catch (error) {
+      setEditError(error instanceof Error ? error.message : "Failed to update visit.");
+    } finally {
+      setEditSubmitting(false);
+    }
   };
 
   const handleConfirmAction = async () => {
@@ -372,6 +452,145 @@ const CicVisits: React.FC = () => {
 
       <CheckInModal show={showCheckInModal} onHide={() => setShowCheckInModal(false)} />
       <ImportVisitsModal show={showImportModal} onHide={() => setShowImportModal(false)} />
+
+      {/* Edit Visit Modal */}
+      {showEditModal && (
+        <div
+          className="modal fade show d-block"
+          tabIndex={-1}
+          style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
+          onClick={() => handleCloseEditModal()}
+        >
+          <div className="modal-dialog modal-lg">
+            <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+              <div className="modal-header">
+                <h5 className="modal-title">Edit Visit</h5>
+                <button
+                  type="button"
+                  className="btn-close"
+                  onClick={() => handleCloseEditModal()}
+                  disabled={editSubmitting}
+                ></button>
+              </div>
+              <form onSubmit={handleEditSubmit}>
+                <div className="modal-body">
+                  {editError && (
+                    <div className="alert alert-danger" role="alert">
+                      {editError}
+                    </div>
+                  )}
+                  
+                  <div className="row g-3">
+                    <div className="col-md-6">
+                      <label htmlFor="editBeneficiary" className="form-label">Beneficiary</label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        id="editBeneficiary"
+                        value={editingVisit?.beneficiary_name || ""}
+                        disabled
+                      />
+                    </div>
+                    <div className="col-md-6">
+                      <label htmlFor="editCic" className="form-label">CIC</label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        id="editCic"
+                        value={editingVisit?.cic_name || ""}
+                        disabled
+                      />
+                    </div>
+                    <div className="col-md-6">
+                      <label htmlFor="editIntervention" className="form-label">Intervention</label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        id="editIntervention"
+                        name="intervention_id"
+                        value={editFormData.intervention_id || ""}
+                        onChange={handleEditFormChange}
+                        placeholder="Enter intervention"
+                      />
+                    </div>
+                    <div className="col-md-6">
+                      <label htmlFor="editActivity" className="form-label">Activity</label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        id="editActivity"
+                        name="activity_name"
+                        value={editFormData.activity_name || ""}
+                        onChange={handleEditFormChange}
+                        placeholder="Enter activity name"
+                      />
+                    </div>
+                    <div className="col-md-6">
+                      <label htmlFor="editAssistedBy" className="form-label">Assisted By</label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        id="editAssistedBy"
+                        name="assisted_by"
+                        value={editFormData.assisted_by || ""}
+                        onChange={handleEditFormChange}
+                        placeholder="Enter assistant name"
+                      />
+                    </div>
+                    <div className="col-md-6">
+                      <label htmlFor="editCheckIn" className="form-label">Check-In Time</label>
+                      <input
+                        type="datetime-local"
+                        className="form-control"
+                        id="editCheckIn"
+                        name="check_in_at"
+                        value={editFormData.check_in_at ? new Date(editFormData.check_in_at).toISOString().slice(0, 16) : ""}
+                        onChange={handleEditFormChange}
+                      />
+                    </div>
+                    <div className="col-12">
+                      <label htmlFor="editNotes" className="form-label">Notes / Follow Up</label>
+                      <textarea
+                        className="form-control"
+                        id="editNotes"
+                        name="notes"
+                        rows={3}
+                        value={editFormData.notes || ""}
+                        onChange={handleEditFormChange}
+                        placeholder="Enter notes or follow-up information"
+                      ></textarea>
+                    </div>
+                  </div>
+                </div>
+                <div className="modal-footer">
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    onClick={() => handleCloseEditModal()}
+                    disabled={editSubmitting}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="btn btn-primary"
+                    disabled={editSubmitting}
+                  >
+                    {editSubmitting ? (
+                      <span className="d-inline-flex align-items-center gap-2">
+                        <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                        Updating...
+                      </span>
+                    ) : (
+                      "Update Visit"
+                    )}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
     </MainLayout>
   );
 };
