@@ -39,6 +39,79 @@ export interface DeviceAssignment {
   };
 }
 
+// Define the comprehensive assignment type from the new API
+export interface AssignmentPageData {
+  assignment_id: string;
+  device_id: string;
+  beneficiary_id: string;
+  assigned_at: string;
+  unassigned_at?: string | null;
+  assigned_by: string;
+  assignment_notes: string;
+  assignment_is_active: boolean;
+  assignment_created_at: string;
+  assignment_updated_at: string;
+  // Device information
+  device_name: string;
+  mac_address: string;
+  android_version: string;
+  app_version: string;
+  device_organization: string;
+  device_programme: string;
+  device_date_enrolled: string;
+  last_synced: string;
+  current_beneficiary_id: string;
+  device_is_active: boolean;
+  fingerprint: string;
+  imei: string;
+  serial_number: string;
+  device_details: {
+    manufacturer: string;
+    model: string;
+    screen_size: string;
+  };
+  device_created_at: string;
+  device_updated_at: string;
+  // Beneficiary information
+  beneficiary_name: string;
+  beneficiary_email: string;
+  beneficiary_phone: string;
+  beneficiary_photo: string;
+  beneficiary_organization: string;
+  beneficiary_district: string;
+  beneficiary_programme: string;
+  beneficiary_date_enrolled: string;
+  current_device_id: string;
+  beneficiary_is_active: boolean;
+  beneficiary_created_at: string;
+  beneficiary_updated_at: string;
+}
+
+// Define basic statistics structure
+export interface BasicStats {
+  total_assignments: number;
+  active_assignments: number;
+  available_devices: number;
+  unassigned_participants: number;
+}
+
+// Define pagination structure for the new API
+export interface AssignmentPagination {
+  page: number;
+  limit: number;
+  total: number;
+  total_pages: number;
+  has_next: boolean;
+  has_prev: boolean;
+}
+
+// Define the assignments page response structure
+export interface AssignmentsPageResponse {
+  basic_stats: BasicStats;
+  assignments: AssignmentPageData[];
+  pagination: AssignmentPagination;
+}
+
 // Define search and filter parameters
 export interface AssignmentSearchParams {
   search?: string;
@@ -67,21 +140,27 @@ export interface PaginationInfo {
 // Define the state shape for device assignments
 interface DeviceAssignmentState {
   assignments: DeviceAssignment[];
+  pageData: AssignmentPageData[];
+  basicStats: BasicStats | null;
   loading: boolean;
   error: string | null;
   lastFetch: number | null;
   searchParams: AssignmentSearchParams;
   pagination: PaginationInfo | null;
+  pagePagination: AssignmentPagination | null;
 }
 
 // Initial state
 const initialState: DeviceAssignmentState = {
   assignments: [],
+  pageData: [],
+  basicStats: null,
   loading: false,
   error: null,
   lastFetch: null,
   searchParams: {},
   pagination: null,
+  pagePagination: null,
 };
 
 // Async thunks for API operations
@@ -134,6 +213,55 @@ export const fetchDeviceAssignments = createAsyncThunk(
       };
     } catch (error: any) {
       return rejectWithValue(error.message || 'Failed to fetch device assignments');
+    }
+  }
+);
+
+/**
+ * Fetch device assignments page data from the new API
+ * This thunk handles loading assignments with comprehensive data, stats, and pagination
+ */
+export const fetchAssignmentsPage = createAsyncThunk(
+  'deviceAssignments/fetchAssignmentsPage',
+  async (params: { page?: number; limit?: number } = {}, { getState, rejectWithValue, dispatch }) => {
+    try {
+      const state = getState() as RootState;
+      const token = state.auth.token;
+      if (!token) {
+        throw new Error('No authentication token available');
+      }
+
+      // Build query parameters
+      const queryParams = new URLSearchParams();
+      if (params.page) {
+        queryParams.append('page', params.page.toString());
+      }
+      if (params.limit) {
+        queryParams.append('limit', params.limit.toString());
+      }
+      
+      const url = queryParams.toString() 
+        ? `${API_CONFIG.ENDPOINTS.DEVICE_ASSIGNMENTS.PAGE}?${queryParams.toString()}`
+        : API_CONFIG.ENDPOINTS.DEVICE_ASSIGNMENTS.PAGE;
+
+      const response = await fetch(buildApiUrl(url), {
+        method: 'GET',
+        headers: getAuthHeaders(token),
+      });
+
+      if (!response.ok) {
+        // Use global error handler for consistent error messages and session handling
+        const errorMessage = await handleApiError(response, 'Failed to fetch assignments page data', dispatch);
+        throw new Error(errorMessage);
+      }
+
+      const data = await response.json();
+      return {
+        data: data.data, // Extract data from the response wrapper
+        searchParams: params || {}
+      };
+    } catch (error: any) {
+      return rejectWithValue(error.message || 'Failed to fetch assignments page data');
     }
   }
 );
@@ -261,6 +389,25 @@ const deviceAssignmentSlice = createSlice({
         state.error = action.payload as string;
       })
       
+      // Fetch assignments page
+      .addCase(fetchAssignmentsPage.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchAssignmentsPage.fulfilled, (state, action) => {
+        state.loading = false;
+        state.pageData = action.payload.data.assignments;
+        state.basicStats = action.payload.data.basic_stats;
+        state.pagePagination = action.payload.data.pagination;
+        state.searchParams = action.payload.searchParams;
+        state.lastFetch = Date.now();
+        state.error = null;
+      })
+      .addCase(fetchAssignmentsPage.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      })
+      
       // Create assignment
       .addCase(createDeviceAssignment.pending, (state) => {
         state.loading = true;
@@ -358,5 +505,14 @@ export const selectAssignmentsByDeviceId = (deviceId: string) => (state: RootSta
 // Selector for assignments by beneficiary ID
 export const selectAssignmentsByBeneficiaryId = (beneficiaryId: string) => (state: RootState) =>
   state.deviceAssignments.assignments.filter(assignment => assignment.beneficiary_id === beneficiaryId);
+
+// Selectors for the new assignments page data
+export const selectAssignmentsPageData = (state: RootState) => state.deviceAssignments.pageData;
+export const selectBasicStats = (state: RootState) => state.deviceAssignments.basicStats;
+export const selectPagePagination = (state: RootState) => state.deviceAssignments.pagePagination;
+
+// Selector for active assignments from page data
+export const selectActivePageAssignments = (state: RootState) => 
+  state.deviceAssignments.pageData.filter(assignment => assignment.assignment_is_active);
 
 export default deviceAssignmentSlice.reducer;

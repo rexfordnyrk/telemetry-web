@@ -4,12 +4,17 @@ import MainLayout from '../layouts/MainLayout';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
 import { 
   fetchDeviceAssignments, 
+  fetchAssignmentsPage,
   selectDeviceAssignments, 
   selectDeviceAssignmentsLoading, 
   selectDeviceAssignmentsError,
   selectActiveDeviceAssignments,
   selectDeviceAssignmentsSearchParams,
   selectDeviceAssignmentsPagination,
+  selectAssignmentsPageData,
+  selectBasicStats,
+  selectPagePagination,
+  selectActivePageAssignments,
   clearSearchParams
 } from '../store/slices/deviceAssignmentSlice';
 import { fetchDevices, fetchUnassignedDevices } from '../store/slices/deviceSlice';
@@ -39,7 +44,10 @@ const DeviceAssignments: React.FC = () => {
   // Redux state and dispatch
   const dispatch = useAppDispatch();
   const assignments = useAppSelector(selectDeviceAssignments);
-  const activeAssignments = useAppSelector(selectActiveDeviceAssignments);
+  const pageData = useAppSelector(selectAssignmentsPageData);
+  const basicStats = useAppSelector(selectBasicStats);
+  const pagePagination = useAppSelector(selectPagePagination);
+  const activeAssignments = useAppSelector(selectActivePageAssignments);
   const loading = useAppSelector(selectDeviceAssignmentsLoading);
   const error = useAppSelector(selectDeviceAssignmentsError);
   const searchParams = useAppSelector(selectDeviceAssignmentsSearchParams);
@@ -57,7 +65,7 @@ const DeviceAssignments: React.FC = () => {
 
   // Load data on component mount
   useEffect(() => {
-    dispatch(fetchDeviceAssignments({}));
+    dispatch(fetchAssignmentsPage({ page: 1, limit: 100 }));
     dispatch(fetchDevices({}));
     dispatch(fetchBeneficiaries({}));
     // Fetch unassigned devices and beneficiaries for assignment modal
@@ -93,11 +101,7 @@ const DeviceAssignments: React.FC = () => {
    * Handle pagination
    */
   const handlePageChange = (page: number) => {
-    const params: AssignmentSearchParams = {
-      ...searchParams,
-      page
-    };
-    dispatch(fetchDeviceAssignments(params));
+    dispatch(fetchAssignmentsPage({ page, limit: 100 }));
   };
 
   /**
@@ -106,7 +110,7 @@ const DeviceAssignments: React.FC = () => {
   const handleClearFilters = () => {
     setQuickSearch('');
     dispatch(clearSearchParams());
-    dispatch(fetchDeviceAssignments({}));
+    dispatch(fetchAssignmentsPage({ page: 1, limit: 100 }));
   };
 
   /**
@@ -122,13 +126,28 @@ const DeviceAssignments: React.FC = () => {
    * Handle unassign button click
    */
   const handleUnassignClick = (assignment: any) => {
-    // Find the full device object from the devices list
-    const fullDevice = devices.find(d => d.id === assignment.device_id);
-    if (fullDevice) {
-      setSelectedDevice(fullDevice);
-      setSelectedBeneficiary(assignment.beneficiary || null);
-      setShowUnassignModal(true);
-    }
+    // Create a device object from the assignment data
+    const deviceObj = {
+      id: assignment.device_id,
+      device_name: assignment.device_name,
+      mac_address: assignment.mac_address,
+      current_beneficiary: {
+        id: assignment.beneficiary_id,
+        name: assignment.beneficiary_name,
+        email: assignment.beneficiary_email
+      }
+    };
+    
+    // Create a beneficiary object from the assignment data
+    const beneficiaryObj = {
+      id: assignment.beneficiary_id,
+      name: assignment.beneficiary_name,
+      email: assignment.beneficiary_email
+    };
+    
+    setSelectedDevice(deviceObj as any);
+    setSelectedBeneficiary(beneficiaryObj as any);
+    setShowUnassignModal(true);
   };
 
   /**
@@ -136,7 +155,7 @@ const DeviceAssignments: React.FC = () => {
    */
   const handleAssignmentSuccess = () => {
     // Refresh assignments data
-    dispatch(fetchDeviceAssignments(searchParams));
+    dispatch(fetchAssignmentsPage({ page: 1, limit: 100 }));
     dispatch(fetchDevices({}));
     dispatch(fetchBeneficiaries({}));
     // Refresh unassigned data for assignment modal
@@ -224,7 +243,7 @@ const DeviceAssignments: React.FC = () => {
                 <div className="d-flex align-items-center">
                   <div className="flex-grow-1">
                     <p className="text-uppercase fw-medium text-muted mb-0">Total Assignments</p>
-                    <h4 className="mb-0">{assignments.length}</h4>
+                    <h4 className="mb-0">{basicStats?.total_assignments || 0}</h4>
                   </div>
                   <div className="flex-shrink-0">
                     <i className="material-icons-outlined text-primary" style={{ fontSize: '2rem' }}>
@@ -241,7 +260,7 @@ const DeviceAssignments: React.FC = () => {
                 <div className="d-flex align-items-center">
                   <div className="flex-grow-1">
                     <p className="text-uppercase fw-medium text-muted mb-0">Active Assignments</p>
-                    <h4 className="mb-0">{activeAssignments.length}</h4>
+                    <h4 className="mb-0">{basicStats?.active_assignments || 0}</h4>
                   </div>
                   <div className="flex-shrink-0">
                     <i className="material-icons-outlined text-success" style={{ fontSize: '2rem' }}>
@@ -258,7 +277,7 @@ const DeviceAssignments: React.FC = () => {
                 <div className="d-flex align-items-center">
                   <div className="flex-grow-1">
                     <p className="text-uppercase fw-medium text-muted mb-0">Available Devices</p>
-                    <h4 className="mb-0">{devices.filter(d => !d.current_beneficiary_id && d.is_active).length}</h4>
+                    <h4 className="mb-0">{basicStats?.available_devices || 0}</h4>
                   </div>
                   <div className="flex-shrink-0">
                     <i className="material-icons-outlined text-info" style={{ fontSize: '2rem' }}>
@@ -274,8 +293,8 @@ const DeviceAssignments: React.FC = () => {
               <Card.Body>
                 <div className="d-flex align-items-center">
                   <div className="flex-grow-1">
-                    <p className="text-uppercase fw-medium text-muted mb-0">Available Beneficiaries</p>
-                    <h4 className="mb-0">{beneficiaries.filter(b => !b.current_device_id && b.is_active).length}</h4>
+                    <p className="text-uppercase fw-medium text-muted mb-0">Unassigned Participants</p>
+                    <h4 className="mb-0">{basicStats?.unassigned_participants || 0}</h4>
                   </div>
                   <div className="flex-shrink-0">
                     <i className="material-icons-outlined text-warning" style={{ fontSize: '2rem' }}>
@@ -331,7 +350,7 @@ const DeviceAssignments: React.FC = () => {
                     <Spinner animation="border" variant="primary" />
                     <p className="mt-2 mb-0">Loading assignments...</p>
                   </div>
-                ) : assignments.length === 0 ? (
+                ) : pageData.length === 0 ? (
                   <div className="text-center py-4">
                     <i className="material-icons-outlined text-muted" style={{ fontSize: '3rem' }}>
                       assignment
@@ -351,58 +370,72 @@ const DeviceAssignments: React.FC = () => {
                           <tr>
                             <th>Device</th>
                             <th>Beneficiary</th>
+                            <th>Organization</th>
                             <th>Assigned Date</th>
-                            <th>Unassigned Date</th>
+                            <th>Last Synced</th>
                             <th>Status</th>
                             <th>Notes</th>
                             <th>Actions</th>
                           </tr>
                         </thead>
                         <tbody>
-                          {assignments.map((assignment) => (
-                          <tr key={assignment.id}>
+                          {pageData.map((assignment) => (
+                          <tr key={assignment.assignment_id}>
                             <td>
                               <div>
-                                <strong>{assignment.device?.device_name || 'Unknown Device'}</strong>
+                                <strong>{assignment.device_name || 'Unknown Device'}</strong>
                                 <br />
                                 <small className="text-muted">
-                                  {assignment.device?.mac_address || 'N/A'}
+                                  {assignment.mac_address || 'N/A'}
+                                </small>
+                                <br />
+                                <small className="text-muted">
+                                  {assignment.android_version} • {assignment.app_version}
                                 </small>
                               </div>
                             </td>
                             <td>
-                              {assignment.beneficiary ? (
-                                <div>
-                                  <strong>{assignment.beneficiary.name}</strong>
-                                  <br />
-                                  <small className="text-muted">
-                                    {assignment.beneficiary.email}
-                                  </small>
-                                </div>
-                              ) : (
-                                <span className="text-muted">No beneficiary</span>
-                              )}
+                              <div>
+                                <strong>{assignment.beneficiary_name || 'No beneficiary'}</strong>
+                                <br />
+                                <small className="text-muted">
+                                  {assignment.beneficiary_email || 'N/A'}
+                                </small>
+                                <br />
+                                <small className="text-muted">
+                                  {assignment.beneficiary_district}
+                                </small>
+                              </div>
+                            </td>
+                            <td>
+                              <div>
+                                <strong>{assignment.device_organization}</strong>
+                                <br />
+                                <small className="text-muted">
+                                  {assignment.device_programme}
+                                </small>
+                              </div>
                             </td>
                             <td>
                               {formatDate(assignment.assigned_at)}
                             </td>
                             <td>
-                              {assignment.unassigned_at ? formatDate(assignment.unassigned_at) : '-'}
+                              {assignment.last_synced ? formatDate(assignment.last_synced) : '-'}
                             </td>
                             <td>
-                              <Badge bg={getStatusBadgeVariant(assignment.is_active)}>
-                                {assignment.is_active ? 'Active' : 'Inactive'}
+                              <Badge bg={getStatusBadgeVariant(assignment.assignment_is_active)}>
+                                {assignment.assignment_is_active ? 'Active' : 'Inactive'}
                               </Badge>
                             </td>
                             <td>
                               <div style={{ maxWidth: '200px' }}>
-                                {assignment.notes ? (
+                                {assignment.assignment_notes ? (
                                   <span 
                                     className="text-truncate d-inline-block" 
                                     style={{ maxWidth: '100%' }}
-                                    title={assignment.notes}
+                                    title={assignment.assignment_notes}
                                   >
-                                    {assignment.notes}
+                                    {assignment.assignment_notes}
                                   </span>
                                 ) : (
                                   <span className="text-muted">No notes</span>
@@ -410,7 +443,7 @@ const DeviceAssignments: React.FC = () => {
                               </div>
                             </td>
                             <td>
-                              {assignment.is_active && assignment.device && (
+                              {assignment.assignment_is_active && (
                                 <Button
                                   variant="outline-warning"
                                   size="sm"
@@ -428,23 +461,23 @@ const DeviceAssignments: React.FC = () => {
                     </div>
 
                     {/* Pagination */}
-                    {pagination && pagination.total > pagination.limit && (
+                    {pagePagination && pagePagination.total > pagePagination.limit && (
                       <div className="d-flex justify-content-center mt-3">
                         <Pagination>
                           <Pagination.First 
                             onClick={() => handlePageChange(1)}
-                            disabled={pagination.page === 1}
+                            disabled={!pagePagination.has_prev}
                           />
                           <Pagination.Prev 
-                            onClick={() => handlePageChange(pagination.page - 1)}
-                            disabled={pagination.page === 1}
+                            onClick={() => handlePageChange(pagePagination.page - 1)}
+                            disabled={!pagePagination.has_prev}
                           />
                           
                           {/* Page numbers */}
-                          {Array.from({ length: Math.ceil(pagination.total / pagination.limit) }, (_, i) => i + 1)
+                          {Array.from({ length: pagePagination.total_pages }, (_, i) => i + 1)
                             .filter(page => {
-                              const current = pagination.page;
-                              return page === 1 || page === Math.ceil(pagination.total / pagination.limit) || 
+                              const current = pagePagination.page;
+                              return page === 1 || page === pagePagination.total_pages || 
                                      (page >= current - 2 && page <= current + 2);
                             })
                             .map((page, index, array) => {
@@ -453,7 +486,7 @@ const DeviceAssignments: React.FC = () => {
                                   <React.Fragment key={`ellipsis-${page}`}>
                                     <Pagination.Ellipsis />
                                     <Pagination.Item 
-                                      active={page === pagination.page}
+                                      active={page === pagePagination.page}
                                       onClick={() => handlePageChange(page)}
                                     >
                                       {page}
@@ -464,7 +497,7 @@ const DeviceAssignments: React.FC = () => {
                               return (
                                 <Pagination.Item 
                                   key={page}
-                                  active={page === pagination.page}
+                                  active={page === pagePagination.page}
                                   onClick={() => handlePageChange(page)}
                                 >
                                   {page}
@@ -473,21 +506,21 @@ const DeviceAssignments: React.FC = () => {
                             })}
                           
                           <Pagination.Next 
-                            onClick={() => handlePageChange(pagination.page + 1)}
-                            disabled={pagination.page === Math.ceil(pagination.total / pagination.limit)}
+                            onClick={() => handlePageChange(pagePagination.page + 1)}
+                            disabled={!pagePagination.has_next}
                           />
                           <Pagination.Last 
-                            onClick={() => handlePageChange(Math.ceil(pagination.total / pagination.limit))}
-                            disabled={pagination.page === Math.ceil(pagination.total / pagination.limit)}
+                            onClick={() => handlePageChange(pagePagination.total_pages)}
+                            disabled={!pagePagination.has_next}
                           />
                         </Pagination>
                       </div>
                     )}
 
                     {/* Results info */}
-                    {pagination && (
+                    {pagePagination && (
                       <div className="text-center text-muted mt-2">
-                        Showing {((pagination.page - 1) * pagination.limit) + 1} to {Math.min(pagination.page * pagination.limit, pagination.total)} of {pagination.total} results
+                        Showing {((pagePagination.page - 1) * pagePagination.limit) + 1} to {Math.min(pagePagination.page * pagePagination.limit, pagePagination.total)} of {pagePagination.total} results
                       </div>
                     )}
                   </>

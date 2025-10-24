@@ -117,6 +117,7 @@ export const API_CONFIG = {
     // Device assignment endpoints
     DEVICE_ASSIGNMENTS: {
       LIST: '/api/v1/devices/assignments',    // Get all device assignments with search/filter support
+      PAGE: '/api/v1/devices/assignments/page', // Get assignments page with stats and pagination
       CREATE: '/api/v1/devices/assignments',  // Create new device assignment
       UPDATE: (id: string) => `/api/v1/devices/assignments/${id}`, // Update specific assignment
       DELETE: (id: string) => `/api/v1/devices/assignments/${id}`, // Delete specific assignment
