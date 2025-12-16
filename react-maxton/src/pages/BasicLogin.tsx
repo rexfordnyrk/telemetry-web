@@ -212,9 +212,9 @@ const BasicLogin: React.FC = () => {
               <div className="card-body p-5">
                 {/* Logo and header */}
                 <img
-                  src="/assets/images/logo1.png"
+                  src="/assets/images/logo.png"
                   className="mb-4"
-                  width="145"
+                  width="300"
                   alt="Company Logo"
                 />
                 <h4 className="fw-bold">Get Started Now</h4>
