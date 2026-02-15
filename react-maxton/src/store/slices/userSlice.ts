@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { RootState } from '../index';
-import { buildApiUrl, getAuthHeaders } from '../../config/api';
+import { buildApiUrl, getAuthHeaders, API_CONFIG } from '../../config/api';
 import { handleApiError } from '../../utils/apiUtils';
 
 export interface Role {
@@ -35,6 +35,8 @@ interface UserState {
   availableRoles: Role[];
   loading: boolean;
   error: string | null;
+  assignRoleLoading: boolean;
+  removeRoleLoading: boolean;
 }
 
 const initialState: UserState = {
@@ -72,6 +74,8 @@ const initialState: UserState = {
   ],
   loading: false,
   error: null,
+  assignRoleLoading: false,
+  removeRoleLoading: false,
 };
 
 /**
@@ -245,6 +249,95 @@ export const deleteUserAsync = createAsyncThunk(
   }
 );
 
+/**
+ * Async thunk for assigning a role to a user.
+ * POST /api/v1/users/:id/roles with body { role_id }.
+ */
+export const assignRoleToUser = createAsyncThunk(
+  'users/assignRoleToUser',
+  async (
+    { userId, role }: { userId: string; role: Role },
+    { getState, rejectWithValue, dispatch }
+  ) => {
+    try {
+      const state = getState() as RootState;
+      const token = state.auth.token;
+
+      if (!token) {
+        throw new Error('No authentication token available');
+      }
+
+      const url = buildApiUrl(API_CONFIG.ENDPOINTS.USER_ROLES.ASSIGN(userId));
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: getAuthHeaders(token),
+        body: JSON.stringify({ role_id: role.id }),
+      });
+
+      if (!response.ok) {
+        const errorMessage = await handleApiError(
+          response,
+          'Failed to assign role to user',
+          dispatch
+        );
+        throw new Error(errorMessage);
+      }
+
+      return { userId, role };
+    } catch (error) {
+      console.error('Error assigning role to user:', error);
+      return rejectWithValue(
+        error instanceof Error ? error.message : 'Failed to assign role to user'
+      );
+    }
+  }
+);
+
+/**
+ * Async thunk for removing a role from a user.
+ * DELETE /api/v1/users/:id/roles/:role_id.
+ */
+export const removeRoleFromUser = createAsyncThunk(
+  'users/removeRoleFromUser',
+  async (
+    { userId, roleId }: { userId: string; roleId: string },
+    { getState, rejectWithValue, dispatch }
+  ) => {
+    try {
+      const state = getState() as RootState;
+      const token = state.auth.token;
+
+      if (!token) {
+        throw new Error('No authentication token available');
+      }
+
+      const url = buildApiUrl(
+        API_CONFIG.ENDPOINTS.USER_ROLES.REMOVE(userId, roleId)
+      );
+      const response = await fetch(url, {
+        method: 'DELETE',
+        headers: getAuthHeaders(token),
+      });
+
+      if (!response.ok) {
+        const errorMessage = await handleApiError(
+          response,
+          'Failed to remove role from user',
+          dispatch
+        );
+        throw new Error(errorMessage);
+      }
+
+      return { userId, roleId };
+    } catch (error) {
+      console.error('Error removing role from user:', error);
+      return rejectWithValue(
+        error instanceof Error ? error.message : 'Failed to remove role from user'
+      );
+    }
+  }
+);
+
 const userSlice = createSlice({
   name: "users",
   initialState,
@@ -387,6 +480,46 @@ const userSlice = createSlice({
       .addCase(deleteUserAsync.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string || 'Failed to delete user';
+      });
+
+    // Handle assignRoleToUser async thunk
+    builder
+      .addCase(assignRoleToUser.pending, (state) => {
+        state.assignRoleLoading = true;
+        state.error = null;
+      })
+      .addCase(assignRoleToUser.fulfilled, (state, action) => {
+        state.assignRoleLoading = false;
+        const { userId, role } = action.payload;
+        const user = state.users.find((u) => u.id === userId);
+        if (user && !user.roles.find((r) => r.id === role.id)) {
+          user.roles.push(role);
+        }
+        state.error = null;
+      })
+      .addCase(assignRoleToUser.rejected, (state, action) => {
+        state.assignRoleLoading = false;
+        state.error = action.payload as string || 'Failed to assign role to user';
+      });
+
+    // Handle removeRoleFromUser async thunk
+    builder
+      .addCase(removeRoleFromUser.pending, (state) => {
+        state.removeRoleLoading = true;
+        state.error = null;
+      })
+      .addCase(removeRoleFromUser.fulfilled, (state, action) => {
+        state.removeRoleLoading = false;
+        const { userId, roleId } = action.payload;
+        const user = state.users.find((u) => u.id === userId);
+        if (user) {
+          user.roles = user.roles.filter((r) => r.id !== roleId);
+        }
+        state.error = null;
+      })
+      .addCase(removeRoleFromUser.rejected, (state, action) => {
+        state.removeRoleLoading = false;
+        state.error = action.payload as string || 'Failed to remove role from user';
       });
   },
 });

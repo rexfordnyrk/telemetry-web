@@ -1,22 +1,145 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 import { useParams } from "react-router-dom";
 import MainLayout from "../layouts/MainLayout";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
-import { updateUser, assignRole, removeRole } from "../store/slices/userSlice";
+import {
+  updateUser,
+  assignRoleToUser,
+  removeRoleFromUser,
+  type Role,
+} from "../store/slices/userSlice";
+import { fetchRoles } from "../store/slices/rolesPermissionsSlice";
 import { addAlert } from "../store/slices/alertSlice";
 import { usePermissions } from "../hooks/usePermissions";
+
+/** Confirmation dialog for removing a role. Rendered with portal; uses inline styles only. */
+function RemoveRoleConfirmDialog({
+  roleName,
+  loading,
+  onConfirm,
+  onCancel,
+}: {
+  roleName: string;
+  loading: boolean;
+  onConfirm: () => void;
+  onCancel: () => void;
+}) {
+  return (
+    <div
+      style={{
+        position: "fixed",
+        inset: 0,
+        zIndex: 10000,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        padding: 16,
+        boxSizing: "border-box",
+      }}
+    >
+      {/* Backdrop – only this layer closes on click */}
+      <div
+        style={{
+          position: "fixed",
+          inset: 0,
+          backgroundColor: "rgba(0, 0, 0, 0.5)",
+          zIndex: 10000,
+        }}
+        onClick={onCancel}
+      />
+      {/* Dialog panel – above backdrop */}
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="remove-role-dialog-title"
+        style={{
+          position: "relative",
+          zIndex: 10001,
+          width: "100%",
+          maxWidth: 420,
+          background: "#fff",
+          borderRadius: 8,
+          boxShadow: "0 4px 20px rgba(0,0,0,0.2)",
+          overflow: "hidden",
+        }}
+      >
+        <div style={{ padding: "20px 24px", borderBottom: "1px solid #eee" }}>
+          <h2
+            id="remove-role-dialog-title"
+            style={{ margin: 0, fontSize: 18, fontWeight: 600, color: "#b8860b" }}
+          >
+            Confirm Role Removal
+          </h2>
+        </div>
+        <div style={{ padding: "24px" }}>
+          <p style={{ margin: "0 0 20px", fontSize: 15, color: "#333", lineHeight: 1.5 }}>
+            Are you sure you want to remove the role <strong>{roleName}</strong> from this user?
+          </p>
+          <div style={{ display: "flex", gap: 12, justifyContent: "flex-end", flexWrap: "wrap" }}>
+            <button
+              type="button"
+              onClick={onCancel}
+              style={{
+                padding: "10px 20px",
+                fontSize: 14,
+                border: "1px solid #ccc",
+                borderRadius: 6,
+                background: "#fff",
+                cursor: "pointer",
+                color: "#333",
+              }}
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              onClick={onConfirm}
+              disabled={loading}
+              style={{
+                padding: "10px 20px",
+                fontSize: 14,
+                border: "none",
+                borderRadius: 6,
+                background: "#dc3545",
+                color: "#fff",
+                cursor: loading ? "not-allowed" : "pointer",
+                opacity: loading ? 0.7 : 1,
+              }}
+            >
+              {loading ? "Removing…" : "Remove Role"}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 const UserDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const dispatch = useAppDispatch();
   const users = useAppSelector((state) => state.users.users);
-  const availableRoles = useAppSelector((state) => state.users.availableRoles);
+  const rolesFromApi = useAppSelector((state) => state.rolesPermissions.roles);
+  const fallbackRoles = useAppSelector((state) => state.users.availableRoles);
+  const availableRoles: Role[] =
+    rolesFromApi.length > 0 ? (rolesFromApi as Role[]) : fallbackRoles;
+  const assignRoleLoading = useAppSelector((state) => state.users.assignRoleLoading);
+  const removeRoleLoading = useAppSelector((state) => state.users.removeRoleLoading);
   const { hasPermission } = usePermissions();
+
+  // Load roles from API when viewing user details (for role assignment dropdown)
+  useEffect(() => {
+    if (hasPermission("view_user_roles") && rolesFromApi.length === 0) {
+      dispatch(fetchRoles({ page: 1, limit: 100 }));
+    }
+  }, [dispatch, hasPermission, rolesFromApi.length]);
 
   // All hooks must be called at the top level
   const [selectedRole, setSelectedRole] = useState("");
   const [showRoleModal, setShowRoleModal] = useState(false);
   const [roleToRemove, setRoleToRemove] = useState<any>(null);
+  const roleToRemoveRef = useRef<Role | null>(null);
   const [passwordData, setPasswordData] = useState({
     newPassword: "",
     confirmPassword: "",
@@ -185,17 +308,22 @@ const UserDetails: React.FC = () => {
     setIsEditing(false);
   };
 
-  const handleAssignRole = () => {
+  const handleAssignRole = async () => {
     if (!selectedRole) return;
 
     const roleToAssign = availableRoles.find(
       (role) => role.id === selectedRole,
-    );
+    ) as Role | undefined;
     if (
-      roleToAssign &&
-      !user.roles.find((role) => role.id === roleToAssign.id)
+      !roleToAssign ||
+      user.roles.find((role) => role.id === roleToAssign.id)
     ) {
-      dispatch(assignRole({ userId: user.id, role: roleToAssign }));
+      return;
+    }
+    try {
+      await dispatch(
+        assignRoleToUser({ userId: user.id, role: roleToAssign }),
+      ).unwrap();
       dispatch(
         addAlert({
           type: "success",
@@ -204,6 +332,14 @@ const UserDetails: React.FC = () => {
         }),
       );
       setSelectedRole("");
+    } catch (err) {
+      dispatch(
+        addAlert({
+          type: "danger",
+          title: "Assign Role Failed",
+          message: err instanceof Error ? err.message : "Failed to assign role to user.",
+        }),
+      );
     }
   };
 
@@ -219,23 +355,45 @@ const UserDetails: React.FC = () => {
       );
       return;
     }
+    roleToRemoveRef.current = role;
     setRoleToRemove(role);
     setShowRoleModal(true);
   };
 
   const confirmRemoveRole = () => {
-    if (roleToRemove) {
-      dispatch(removeRole({ userId: user.id, roleId: roleToRemove.id }));
-      dispatch(
-        addAlert({
-          type: "success",
-          title: "Role Removed",
-          message: `Role "${roleToRemove.name}" has been removed successfully.`,
-        }),
-      );
+    const role = roleToRemoveRef.current;
+    if (!role) {
+      setShowRoleModal(false);
+      setRoleToRemove(null);
+      return;
     }
+    const roleName = role.name;
+    const roleIdToRemove = role.id;
     setShowRoleModal(false);
     setRoleToRemove(null);
+    roleToRemoveRef.current = null;
+    dispatch(
+      removeRoleFromUser({ userId: user.id, roleId: roleIdToRemove }),
+    )
+      .unwrap()
+      .then(() => {
+        dispatch(
+          addAlert({
+            type: "success",
+            title: "Role Removed",
+            message: `Role "${roleName}" has been removed successfully.`,
+          }),
+        );
+      })
+      .catch((err: unknown) => {
+        dispatch(
+          addAlert({
+            type: "danger",
+            title: "Remove Role Failed",
+            message: err instanceof Error ? err.message : "Failed to remove role from user.",
+          }),
+        );
+      });
   };
 
   const handlePasswordReset = () => {
@@ -633,7 +791,7 @@ const UserDetails: React.FC = () => {
                               className="btn-close btn-close-white"
                               style={{ fontSize: "0.75em" }}
                               onClick={() => handleRemoveRole(role)}
-                              disabled={user.roles.length <= 1}
+                              disabled={user.roles.length <= 1 || removeRoleLoading}
                               title={
                                 user.roles.length <= 1
                                   ? "Cannot remove the last role"
@@ -666,9 +824,16 @@ const UserDetails: React.FC = () => {
                         <button
                           className="btn btn-grd-primary px-4"
                           onClick={handleAssignRole}
-                          disabled={!selectedRole}
+                          disabled={!selectedRole || assignRoleLoading}
                         >
-                          Apply
+                          {assignRoleLoading ? (
+                            <>
+                              <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                              Applying...
+                            </>
+                          ) : (
+                            "Apply"
+                          )}
                         </button>
                       </div>
                     </div>
@@ -778,53 +943,21 @@ const UserDetails: React.FC = () => {
         </div>
       </div>
 
-      {/* Role Removal Confirmation Modal */}
-      {showRoleModal && (
-        <div
-          className="modal fade show d-block"
-          tabIndex={-1}
-          style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
-          onClick={() => setShowRoleModal(false)}
-        >
-          <div className="modal-dialog">
-            <div
-              className="card border-top border-3 border-warning rounded-0"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <div className="card-header py-3 px-4">
-                <h5 className="mb-0 text-warning">Confirm Role Removal</h5>
-                <button
-                  type="button"
-                  className="btn-close"
-                  onClick={() => setShowRoleModal(false)}
-                ></button>
-              </div>
-              <div className="card-body p-4">
-                <p>
-                  Are you sure you want to remove the role{" "}
-                  <strong>{roleToRemove?.name}</strong> from this user?
-                </p>
-                <div className="d-md-flex d-grid align-items-center gap-3 mt-3">
-                  <button
-                    type="button"
-                    className="btn btn-grd-royal px-4 rounded-0"
-                    onClick={() => setShowRoleModal(false)}
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="button"
-                    className="btn btn-grd-danger px-4 rounded-0"
-                    onClick={confirmRemoveRole}
-                  >
-                    Remove Role
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Role removal confirmation: rendered in a portal to avoid layout/stacking issues */}
+      {showRoleModal &&
+        createPortal(
+          <RemoveRoleConfirmDialog
+            roleName={roleToRemove?.name ?? ""}
+            loading={removeRoleLoading}
+            onConfirm={confirmRemoveRole}
+            onCancel={() => {
+              setShowRoleModal(false);
+              setRoleToRemove(null);
+              roleToRemoveRef.current = null;
+            }}
+          />,
+          document.body,
+        )}
     </MainLayout>
   );
 };
