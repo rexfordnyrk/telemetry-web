@@ -11,8 +11,6 @@ import {
   StatCardWidget,
 } from "../components/widgets";
 
-declare const $: any;
-
 const WidgetsDataComponents: React.FC = () => {
   return (
     <MainLayout>
