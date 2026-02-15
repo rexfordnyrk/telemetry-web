@@ -140,6 +140,31 @@ export const API_CONFIG = {
         return limit ? `${baseUrl}?limit=${limit}` : baseUrl;
       },
     },
+    
+    // Roles management endpoints
+    ROLES: {
+      LIST: '/api/v1/roles',                 // Get all roles (paginated)
+      CREATE: '/api/v1/roles',               // Create new role
+      DETAIL: (id: string) => `/api/v1/roles/${id}`,         // Get role by ID
+      UPDATE: (id: string) => `/api/v1/roles/${id}`,         // Update role
+      DELETE: (id: string) => `/api/v1/roles/${id}`,         // Delete role
+      ASSIGN_PERMISSIONS: (id: string) => `/api/v1/roles/${id}/permissions`,  // Assign permission(s) to role
+      REMOVE_PERMISSION: (roleId: string, permissionId: string) => `/api/v1/roles/${roleId}/permissions/${permissionId}`, // Remove single permission
+      REMOVE_PERMISSIONS: (id: string) => `/api/v1/roles/${id}/permissions`,  // Remove multiple permissions (bulk)
+    },
+    
+    // Permissions endpoints (read-only)
+    PERMISSIONS: {
+      LIST: '/api/v1/permissions',           // Get all permissions (paginated)
+      DETAIL: (id: string) => `/api/v1/permissions/${id}`,   // Get permission by ID
+    },
+    
+    // User roles & permissions endpoints
+    USER_ROLES: {
+      ASSIGN: (userId: string) => `/api/v1/users/${userId}/roles`,          // Assign role to user
+      REMOVE: (userId: string, roleId: string) => `/api/v1/users/${userId}/roles/${roleId}`, // Remove role from user
+      GET_PERMISSIONS: (userId: string) => `/api/v1/users/${userId}/permissions`, // Get user permissions
+    },
   },
 };
 

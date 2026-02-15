@@ -6,6 +6,7 @@ import beneficiaryReducer from "./slices/beneficiarySlice";
 import deviceReducer from "./slices/deviceSlice";
 import deviceAssignmentReducer from "./slices/deviceAssignmentSlice";
 import visitReducer from "./slices/visitSlice";
+import rolesPermissionsReducer from "./slices/rolesPermissionsSlice";
 
 export const store = configureStore({
   reducer: {
@@ -16,6 +17,7 @@ export const store = configureStore({
     devices: deviceReducer,
     deviceAssignments: deviceAssignmentReducer,
     visits: visitReducer,
+    rolesPermissions: rolesPermissionsReducer,
   },
 });
 
