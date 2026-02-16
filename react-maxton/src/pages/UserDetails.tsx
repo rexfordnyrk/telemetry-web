@@ -53,61 +53,51 @@ function RemoveRoleConfirmDialog({
         role="dialog"
         aria-modal="true"
         aria-labelledby="remove-role-dialog-title"
+        className="card border-top border-3 border-warning rounded-0"
         style={{
           position: "relative",
           zIndex: 10001,
           width: "100%",
           maxWidth: 420,
-          background: "#fff",
-          borderRadius: 8,
-          boxShadow: "0 4px 20px rgba(0,0,0,0.2)",
-          overflow: "hidden",
         }}
       >
-        <div style={{ padding: "20px 24px", borderBottom: "1px solid #eee" }}>
-          <h2
-            id="remove-role-dialog-title"
-            style={{ margin: 0, fontSize: 18, fontWeight: 600, color: "#b8860b" }}
-          >
+        <div className="card-header py-3 px-4 d-flex justify-content-between align-items-center">
+          <h5 id="remove-role-dialog-title" className="mb-0 text-warning">
             Confirm Role Removal
-          </h2>
+          </h5>
+          <button
+            type="button"
+            className="btn-close"
+            onClick={onCancel}
+            aria-label="Close"
+          />
         </div>
-        <div style={{ padding: "24px" }}>
-          <p style={{ margin: "0 0 20px", fontSize: 15, color: "#333", lineHeight: 1.5 }}>
+        <div className="card-body p-4">
+          <p>
             Are you sure you want to remove the role <strong>{roleName}</strong> from this user?
           </p>
           <div style={{ display: "flex", gap: 12, justifyContent: "flex-end", flexWrap: "wrap" }}>
             <button
               type="button"
+              className="btn btn-grd-royal px-4 rounded-0"
               onClick={onCancel}
-              style={{
-                padding: "10px 20px",
-                fontSize: 14,
-                border: "1px solid #ccc",
-                borderRadius: 6,
-                background: "#fff",
-                cursor: "pointer",
-                color: "#333",
-              }}
             >
               Cancel
             </button>
             <button
               type="button"
+              className="btn btn-grd-danger px-4 rounded-0"
               onClick={onConfirm}
               disabled={loading}
-              style={{
-                padding: "10px 20px",
-                fontSize: 14,
-                border: "none",
-                borderRadius: 6,
-                background: "#dc3545",
-                color: "#fff",
-                cursor: loading ? "not-allowed" : "pointer",
-                opacity: loading ? 0.7 : 1,
-              }}
             >
-              {loading ? "Removing…" : "Remove Role"}
+              {loading ? (
+                <>
+                  <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true" />
+                  Removing...
+                </>
+              ) : (
+                "Remove Role"
+              )}
             </button>
           </div>
         </div>
