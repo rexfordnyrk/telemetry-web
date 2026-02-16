@@ -1,4 +1,5 @@
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useState, useMemo, useEffect, useRef, useCallback } from "react";
+import { createPortal } from "react-dom";
 import MainLayout from "../layouts/MainLayout";
 import NewUserModal from "../components/NewUserModal";
 import FilterModal from "../components/FilterModal";
@@ -9,6 +10,111 @@ import { addAlert } from "../store/slices/alertSlice";
 import { useNavigate } from "react-router-dom";
 import { useDataTable } from "../hooks/useDataTable";
 import { usePermissions } from "../hooks/usePermissions";
+
+/** Confirmation dialog for delete/disable user. Rendered with portal; matches RemoveRoleConfirmDialog pattern. */
+function ConfirmUserActionDialog({
+  action,
+  userName,
+  loading,
+  onConfirm,
+  onCancel,
+}: {
+  action: "disable" | "delete";
+  userName: string;
+  loading: boolean;
+  onConfirm: () => void;
+  onCancel: () => void;
+}) {
+  const isDelete = action === "delete";
+  const title = isDelete ? "Confirm Delete User" : "Confirm Disable User";
+  const confirmLabel = isDelete ? "Delete User" : "Disable User";
+  const borderClass = isDelete ? "border-danger" : "border-warning";
+  const titleClass = isDelete ? "text-danger" : "text-warning";
+  const btnClass = isDelete ? "btn-grd-danger" : "btn-grd-warning";
+
+  return (
+    <div
+      style={{
+        position: "fixed",
+        inset: 0,
+        zIndex: 10000,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        padding: 16,
+        boxSizing: "border-box",
+      }}
+    >
+      {/* Backdrop – only this layer closes on click */}
+      <div
+        style={{
+          position: "fixed",
+          inset: 0,
+          backgroundColor: "rgba(0, 0, 0, 0.5)",
+          zIndex: 10000,
+        }}
+        onClick={onCancel}
+      />
+      {/* Dialog panel – above backdrop */}
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="confirm-user-action-dialog-title"
+        className={`card border-top border-3 ${borderClass} rounded-0`}
+        style={{
+          position: "relative",
+          zIndex: 10001,
+          width: "100%",
+          maxWidth: 420,
+        }}
+      >
+        <div className="card-header py-3 px-4 d-flex justify-content-between align-items-center">
+          <h5 id="confirm-user-action-dialog-title" className={`mb-0 ${titleClass}`}>
+            {title}
+          </h5>
+          <button
+            type="button"
+            className="btn-close"
+            onClick={onCancel}
+            aria-label="Close"
+          />
+        </div>
+        <div className="card-body p-4">
+          <p>
+            Are you sure you want to {action} user <strong>{userName}</strong>?
+            {isDelete && (
+              <span className="text-danger d-block mt-2">This action cannot be undone.</span>
+            )}
+          </p>
+          <div style={{ display: "flex", gap: 12, justifyContent: "flex-end", flexWrap: "wrap" }}>
+            <button
+              type="button"
+              className="btn btn-grd-royal px-4 rounded-0"
+              onClick={onCancel}
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              className={`btn ${btnClass} px-4 rounded-0`}
+              onClick={onConfirm}
+              disabled={loading}
+            >
+              {loading ? (
+                <>
+                  <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true" />
+                  {isDelete ? "Deleting..." : "Disabling..."}
+                </>
+              ) : (
+                confirmLabel
+              )}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 /**
  * Users Page Component
@@ -109,12 +215,82 @@ const Users: React.FC = () => {
     };
   }, [users]);
 
-  // Initialize DataTable using custom hook
-  // Only initialize when we have data and are not loading
-  const { isInitialized, destroyDataTable } = useDataTable(
-    "users-datatable", 
-    memoizedUsers,
-    {
+  // DataTables column definitions – data-driven table so React never touches tbody (fixes insertBefore error)
+  const dataTableColumns = useMemo(
+    () => [
+      {
+        title: "Name",
+        data: "first_name",
+        orderable: true,
+        render(data: string, type: string, row: any) {
+          if (type !== "display") return data;
+          const fn = row.first_name || "";
+          const ln = row.last_name || "";
+          const initials = (fn.charAt(0) + ln.charAt(0)).toUpperCase();
+          const name = `${fn} ${ln}`.trim() || "—";
+          const photoHtml = row.photo
+            ? `<img src="${row.photo}" alt="" class="rounded-circle" width="40" height="40" />`
+            : `<div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center" style="width:40px;height:40px;font-size:14px">${initials}</div>`;
+          return `<div class="d-flex align-items-center gap-3">${photoHtml}<div><a href="#" class="text-decoration-none fw-bold users-table-name-link" data-user-id="${row.id}">${name}</a></div></div>`;
+        },
+      },
+      { title: "Email", data: "email", orderable: true },
+      { title: "Organization", data: "organization", orderable: true },
+      {
+        title: "Role",
+        data: "roles",
+        orderable: true,
+        render(data: any[], type: string) {
+          if (type !== "display" || !Array.isArray(data)) return "";
+          return data.map((r: any) => r.name).join(", ");
+        },
+      },
+      {
+        title: "Status",
+        data: "status",
+        orderable: true,
+        render(data: string, type: string) {
+          if (type !== "display") return data;
+          const map: Record<string, { bg: string; text: string }> = {
+            active: { bg: "success", text: "Active" },
+            disabled: { bg: "danger", text: "Disabled" },
+            pending: { bg: "warning", text: "Pending" },
+          };
+          const cfg = map[data] || map.pending;
+          return `<span class="dash-lable mb-0 bg-${cfg.bg} bg-opacity-10 text-${cfg.bg} rounded-2">${cfg.text}</span>`;
+        },
+      },
+      {
+        title: "Created At",
+        data: "created_at",
+        orderable: true,
+        render(data: string, type: string) {
+          if (type !== "display" || !data) return "";
+          return new Date(data).toLocaleDateString();
+        },
+      },
+      {
+        title: "Actions",
+        orderable: false,
+        data: null,
+        defaultContent: "",
+        render(_: any, type: string, row: any) {
+          if (type !== "display") return "";
+          const disableTitle = row.status === "disabled" ? "Enable User" : "Disable User";
+          const disableIcon = row.status === "disabled" ? "check_circle" : "block";
+          return `<div class="d-flex gap-1">
+            <button type="button" class="btn btn-sm p-1 users-table-action" title="Edit User" data-user-id="${row.id}" data-action="edit" style="border:none;background:transparent"><i class="material-icons-outlined text-primary">edit</i></button>
+            <button type="button" class="btn btn-sm p-1 users-table-action" title="${disableTitle}" data-user-id="${row.id}" data-action="disable" style="border:none;background:transparent"><i class="material-icons-outlined text-warning">${disableIcon}</i></button>
+            <button type="button" class="btn btn-sm p-1 users-table-action" title="Delete User" data-user-id="${row.id}" data-action="delete" style="border:none;background:transparent"><i class="material-icons-outlined text-danger">delete</i></button>
+          </div>`;
+        },
+      },
+    ],
+    [],
+  );
+
+  const dataTableOptions = useMemo(
+    () => ({
       responsive: true,
       pageLength: 10,
       lengthChange: true,
@@ -122,31 +298,27 @@ const Users: React.FC = () => {
       ordering: true,
       info: true,
       autoWidth: false,
-      order: [[0, "asc"]],
-      columnDefs: [
-        { orderable: false, targets: -1 }, // Disable ordering on last column (actions)
-      ],
-    },
-    // Only initialize when we have data and are not loading
-    !loading && memoizedUsers.length > 0
+      order: [[0, "asc"]] as [number, string][],
+      columnDefs: [{ orderable: false, targets: -1 }],
+      columns: dataTableColumns,
+    }),
+    [dataTableColumns],
   );
 
-  // Generate a key for the table to force re-render when data changes
-  const tableKey = useMemo(() => {
-    // Include activeFilters in the key to force re-render when filters change
-    const filtersKey = Object.keys(activeFilters).length > 0 
-      ? Object.entries(activeFilters).map(([k, v]) => `${k}:${v}`).join('|')
-      : 'no-filters';
-    return `users-table-${memoizedUsers.length}-${loading}-${filtersKey}`;
-  }, [memoizedUsers.length, loading, activeFilters]);
+  // Initialize DataTable in data-driven mode so updates go through DataTables API (no React DOM conflict)
+  const { isInitialized, destroyDataTable } = useDataTable(
+    "users-datatable",
+    memoizedUsers,
+    dataTableOptions,
+    !loading && memoizedUsers.length > 0,
+  );
 
-  // Cleanup DataTable when filters change
+  // Destroy DataTable when refetch starts (e.g. loading with no data)
   useEffect(() => {
-    // Destroy DataTable when filters change to prevent conflicts
-    if (isInitialized) {
+    if (loading && isInitialized) {
       destroyDataTable();
     }
-  }, [activeFilters, destroyDataTable, isInitialized]);
+  }, [loading, isInitialized, destroyDataTable]);
 
   // Cleanup DataTable when component unmounts
   useEffect(() => {
@@ -155,66 +327,90 @@ const Users: React.FC = () => {
     };
   }, [destroyDataTable]);
 
-  const getInitials = (firstName: string, lastName: string) => {
-    return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase();
-  };
+  const handleUserClick = useCallback(
+    (userId: string) => {
+      navigate(`/user-management/users/${userId}`);
+    },
+    [navigate],
+  );
 
-  const getUserRoles = (roles: any[]) => {
-    return roles.map((role) => role.name).join(", ");
-  };
-
-  const getStatusElement = (status: string) => {
-    const statusConfig = {
-      active: { bg: "success", text: "Active" },
-      disabled: { bg: "danger", text: "Disabled" },
-      pending: { bg: "warning", text: "Pending" },
-    };
-
-    const config =
-      statusConfig[status as keyof typeof statusConfig] || statusConfig.pending;
-
-    return (
-      <span
-        className={`dash-lable mb-0 bg-${config.bg} bg-opacity-10 text-${config.bg} rounded-2`}
-      >
-        {config.text}
-      </span>
-    );
-  };
-
-  const handleUserClick = (userId: string) => {
-    navigate(`/user-management/users/${userId}`);
-  };
-
-  const handleActionClick = (user: any, action: "disable" | "delete") => {
+  const handleActionClick = useCallback((user: any, action: "disable" | "delete") => {
     setTargetUser(user);
     setModalAction(action);
     setShowModal(true);
-  };
+  }, []);
+
+  // Refs for event delegation so DataTables-rendered buttons still trigger React handlers
+  const tableContainerRef = useRef<HTMLDivElement>(null);
+  const handlersRef = useRef({
+    memoizedUsers,
+    handleUserClick,
+    handleActionClick,
+  });
+  handlersRef.current = { memoizedUsers, handleUserClick, handleActionClick };
+
+  useEffect(() => {
+    const el = tableContainerRef.current;
+    if (!el) return;
+    const onTableClick = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      const nameLink = target.closest(".users-table-name-link") as HTMLElement | null;
+      const actionBtn = target.closest(".users-table-action") as HTMLElement | null;
+      const userId = nameLink?.getAttribute("data-user-id") ?? actionBtn?.getAttribute("data-user-id");
+      const action = actionBtn?.getAttribute("data-action");
+      if (!userId) return;
+      const { memoizedUsers: list, handleUserClick: go, handleActionClick: act } = handlersRef.current;
+      const user = list.find((u: any) => u.id === userId);
+      if (nameLink) {
+        e.preventDefault();
+        go(userId);
+      } else if (actionBtn && user) {
+        if (action === "edit") go(userId);
+        else if (action === "disable" || action === "delete") act(user, action);
+      }
+    };
+    el.addEventListener("click", onTableClick);
+    return () => el.removeEventListener("click", onTableClick);
+  }, []);
 
   const handleConfirmAction = () => {
-    if (modalAction === "delete") {
-      dispatch(deleteUserAsync(targetUser.id));
-      dispatch(
-        addAlert({
-          type: "success",
-          title: "Success",
-          message: `User "${targetUser?.first_name} ${targetUser?.last_name}" has been deleted.`,
-        }),
-      );
-    } else {
-      // Handle disable/enable logic here
-      dispatch(
-        addAlert({
-          type: "success",
-          title: "Success",
-          message: `User "${targetUser?.first_name} ${targetUser?.last_name}" has been ${targetUser?.status === "disabled" ? "enabled" : "disabled"}.`,
-        }),
-      );
-    }
+    const user = targetUser;
+    const userName = user ? `${user.first_name} ${user.last_name}` : "";
 
     setShowModal(false);
     setTargetUser(null);
+
+    if (modalAction === "delete" && user) {
+      dispatch(deleteUserAsync(user.id))
+        .unwrap()
+        .then(() => {
+          dispatch(
+            addAlert({
+              type: "success",
+              title: "Success",
+              message: `User "${userName}" has been deleted.`,
+            }),
+          );
+        })
+        .catch((err: unknown) => {
+          dispatch(
+            addAlert({
+              type: "danger",
+              title: "Delete User Failed",
+              message: err instanceof Error ? err.message : "Failed to delete user.",
+            }),
+          );
+        });
+    } else if (modalAction === "disable" && user) {
+      // Handle disable/enable logic here (placeholder – no API yet)
+      dispatch(
+        addAlert({
+          type: "success",
+          title: "Success",
+          message: `User "${userName}" has been ${user.status === "disabled" ? "enabled" : "disabled"}.`,
+        }),
+      );
+    }
   };
 
   const handleApplyFilters = (filters: { [key: string]: any }) => {
@@ -301,7 +497,7 @@ const Users: React.FC = () => {
           {/* Users Table */}
           <div className="card">
             <div className="card-body">
-              {loading ? (
+              {loading && memoizedUsers.length === 0 ? (
                 <div className="text-center py-5">
                   <div className="spinner-border text-primary" role="status">
                     <span className="visually-hidden">Loading...</span>
@@ -309,12 +505,17 @@ const Users: React.FC = () => {
                   <p className="mt-3 text-muted">Loading users from server...</p>
                 </div>
               ) : (
-                <div className="table-responsive">
+                <div className="table-responsive" ref={tableContainerRef}>
+                  {loading && memoizedUsers.length > 0 && (
+                    <div className="text-center py-2 text-muted small">
+                      <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true" />
+                      Updating...
+                    </div>
+                  )}
                   <table
                     id="users-datatable"
                     className="table table-striped table-bordered"
                     style={{ width: "100%" }}
-                    key={tableKey}
                   >
                     <thead>
                       <tr>
@@ -327,102 +528,7 @@ const Users: React.FC = () => {
                         <th>Actions</th>
                       </tr>
                     </thead>
-                    <tbody>
-                      {memoizedUsers.map((user: any) => (
-                        <tr key={user.id}>
-                          <td>
-                            <div className="d-flex align-items-center gap-3">
-                              {user.photo ? (
-                                <img
-                                  src={user.photo}
-                                  alt=""
-                                  className="rounded-circle"
-                                  width="40"
-                                  height="40"
-                                />
-                              ) : (
-                                <div
-                                  className="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center"
-                                  style={{
-                                    width: "40px",
-                                    height: "40px",
-                                    fontSize: "14px",
-                                  }}
-                                >
-                                  {getInitials(user.first_name, user.last_name)}
-                                </div>
-                              )}
-                              <div>
-                                <a
-                                  href="#"
-                                  className="text-decoration-none fw-bold"
-                                  onClick={(e) => {
-                                    e.preventDefault();
-                                    handleUserClick(user.id);
-                                  }}
-                                >
-                                  {user.first_name} {user.last_name}
-                                </a>
-                              </div>
-                            </div>
-                          </td>
-                          <td>{user.email}</td>
-                          <td>{user.organization}</td>
-                          <td>{getUserRoles(user.roles)}</td>
-                          <td>{getStatusElement(user.status)}</td>
-                          <td>{new Date(user.created_at).toLocaleDateString()}</td>
-                          <td>
-                            <div className="d-flex gap-1">
-                              <button
-                                className="btn btn-sm p-1"
-                                title="Edit User"
-                                onClick={() => handleUserClick(user.id)}
-                                style={{
-                                  border: "none",
-                                  background: "transparent",
-                                }}
-                              >
-                                <i className="material-icons-outlined text-primary">
-                                  edit
-                                </i>
-                              </button>
-                              <button
-                                className="btn btn-sm p-1"
-                                title={
-                                  user.status === "disabled"
-                                    ? "Enable User"
-                                    : "Disable User"
-                                }
-                                onClick={() => handleActionClick(user, "disable")}
-                                style={{
-                                  border: "none",
-                                  background: "transparent",
-                                }}
-                              >
-                                <i className="material-icons-outlined text-warning">
-                                  {user.status === "disabled"
-                                    ? "check_circle"
-                                    : "block"}
-                                </i>
-                              </button>
-                              <button
-                                className="btn btn-sm p-1"
-                                title="Delete User"
-                                onClick={() => handleActionClick(user, "delete")}
-                                style={{
-                                  border: "none",
-                                  background: "transparent",
-                                }}
-                              >
-                                <i className="material-icons-outlined text-danger">
-                                  delete
-                                </i>
-                              </button>
-                            </div>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
+                    <tbody />
                     <tfoot>
                       <tr>
                         <th>Name</th>
@@ -445,6 +551,7 @@ const Users: React.FC = () => {
         <NewUserModal
           show={showNewUserModal}
           onClose={() => setShowNewUserModal(false)}
+          onBeforeSuccess={destroyDataTable}
           onSuccess={() => dispatch(fetchUsers())}
         />
 
@@ -457,65 +564,22 @@ const Users: React.FC = () => {
           title="Users"
         />
 
-        {/* Confirmation Modal */}
-        {showModal && (
-          <div
-            className="modal fade show d-block"
-            tabIndex={-1}
-            style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
-            onClick={() => setShowModal(false)}
-          >
-            <div className="modal-dialog">
-              <div
-                className={`card border-top border-3 ${modalAction === "delete" ? "border-danger" : "border-warning"} rounded-0`}
-                onClick={(e) => e.stopPropagation()}
-              >
-                <div className="card-header py-3 px-4">
-                  <h5
-                    className={`mb-0 ${modalAction === "delete" ? "text-danger" : "text-warning"}`}
-                  >
-                    Confirm {modalAction === "delete" ? "Delete" : "Disable"} User
-                  </h5>
-                  <button
-                    type="button"
-                    className="btn-close"
-                    onClick={() => setShowModal(false)}
-                  ></button>
-                </div>
-                <div className="card-body p-4">
-                  <p>
-                    Are you sure you want to {modalAction} user{" "}
-                    <strong>
-                      {targetUser?.first_name} {targetUser?.last_name}
-                    </strong>
-                    ?
-                    {modalAction === "delete" && (
-                      <span className="text-danger d-block mt-2">
-                        This action cannot be undone.
-                      </span>
-                    )}
-                  </p>
-                  <div className="d-md-flex d-grid align-items-center gap-3 mt-3">
-                    <button
-                      type="button"
-                      className="btn btn-grd-royal px-4 rounded-0"
-                      onClick={() => setShowModal(false)}
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      type="button"
-                      className={`btn ${modalAction === "delete" ? "btn-grd-danger" : "btn-grd-warning"} px-4 rounded-0`}
-                      onClick={handleConfirmAction}
-                    >
-                      {modalAction === "delete" ? "Delete" : "Disable"} User
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
+        {/* Confirmation dialog: portaled like RemoveRoleConfirmDialog on UserDetails */}
+        {showModal &&
+          targetUser &&
+          createPortal(
+            <ConfirmUserActionDialog
+              action={modalAction}
+              userName={`${targetUser.first_name} ${targetUser.last_name}`}
+              loading={modalAction === "delete" ? loading : false}
+              onConfirm={handleConfirmAction}
+              onCancel={() => {
+                setShowModal(false);
+                setTargetUser(null);
+              }}
+            />,
+            document.body,
+          )}
       </MainLayout>
     </PermissionRoute>
   );

@@ -537,14 +537,11 @@ const userSlice = createSlice({
         state.loading = true;
         state.error = null;
       })
-      .addCase(createUser.fulfilled, (state, action) => {
+      .addCase(createUser.fulfilled, (state) => {
         state.loading = false;
-        // Add the newly created user to the list
-        const newUser = action.payload;
-        if (newUser && newUser.id) {
-          state.users.push(newUser);
-        }
         state.error = null;
+        // Do not push the new user here — the UI will refetch via fetchUsers()
+        // so the table (DataTables) is destroyed first, avoiding DOM/removeChild errors.
       })
       .addCase(createUser.rejected, (state, action) => {
         state.loading = false;

@@ -6,10 +6,11 @@ import { addAlert } from "../store/slices/alertSlice";
 interface NewUserModalProps {
   show: boolean;
   onClose: () => void;
+  onBeforeSuccess?: () => void; // Run before onSuccess (e.g. tear down DataTable)
   onSuccess?: () => void; // Callback to refresh users list
 }
 
-const NewUserModal: React.FC<NewUserModalProps> = ({ show, onClose, onSuccess }) => {
+const NewUserModal: React.FC<NewUserModalProps> = ({ show, onClose, onBeforeSuccess, onSuccess }) => {
   const dispatch = useAppDispatch();
   const { loading, error } = useAppSelector((state) => state.users);
 
@@ -131,10 +132,11 @@ const NewUserModal: React.FC<NewUserModalProps> = ({ show, onClose, onSuccess })
         }),
       );
 
-      // Reset form and close modal
+      // Reset form and close modal. Destroy table before refetch to avoid DOM conflicts.
       handleReset();
+      onBeforeSuccess?.();
       onClose();
-      onSuccess?.(); // Call the onSuccess callback
+      onSuccess?.();
     } catch (error) {
       // Error is already handled by the Redux slice
       console.error('Error creating user:', error);
