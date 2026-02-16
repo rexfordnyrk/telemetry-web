@@ -149,69 +149,41 @@ const Users: React.FC = () => {
     {},
   );
 
+  const [refreshKey, setRefreshKey] = useState(0);
+
   // Check if user has permission to create users
   const canCreateUsers = permissions.hasPermission('create_users');
 
-  // Fetch users from API when component mounts
-  useEffect(() => {
-    dispatch(fetchUsers());
-  }, [dispatch]);
-
-  // Filter users based on active filters
+  // Client-side filter for date range only; rest is server-side via ajax params
   const filteredUsers = useMemo(() => {
-    if (Object.keys(activeFilters).length === 0) return users;
-
+    if (!activeFilters.created_at_from && !activeFilters.created_at_to) return users;
     return users.filter((user) => {
-      // Role filter
-      if (activeFilters.role && activeFilters.role !== "") {
-        const userRoles = user.roles.map((r) => r.name);
-        if (!userRoles.includes(activeFilters.role)) return false;
-      }
-
-      // Status filter
-      if (activeFilters.status && activeFilters.status !== user.status) {
-        return false;
-      }
-
-      // Organization filter
-      if (
-        activeFilters.organization &&
-        activeFilters.organization !== user.organization
-      ) {
-        return false;
-      }
-
-      // Date range filters
       if (activeFilters.created_at_from) {
         const userDate = new Date(user.created_at);
         const fromDate = new Date(activeFilters.created_at_from);
         if (userDate < fromDate) return false;
       }
-
       if (activeFilters.created_at_to) {
         const userDate = new Date(user.created_at);
         const toDate = new Date(activeFilters.created_at_to);
         if (userDate > toDate) return false;
       }
-
       return true;
     });
-  }, [users, activeFilters]);
+  }, [users, activeFilters.created_at_from, activeFilters.created_at_to]);
 
-  // Memoize filtered users to prevent unnecessary re-renders
   const memoizedUsers = useMemo(() => filteredUsers, [filteredUsers]);
 
-  // Define filter options
+  // Define filter options (from current page data)
   const filterOptions = useMemo(() => {
     const rolesSet = new Set(users.flatMap((u) => u.roles.map((r) => r.name)));
     const statusesSet = new Set(users.map((u) => u.status));
     const organizationsSet = new Set(users.map((u) => u.organization));
-
     return {
       role: Array.from(rolesSet),
       status: Array.from(statusesSet),
       organization: Array.from(organizationsSet),
-      created_at: [], // Date range filter
+      created_at: [],
     };
   }, [users]);
 
@@ -289,43 +261,50 @@ const Users: React.FC = () => {
     [],
   );
 
+  const DEFAULT_PER_PAGE = 50;
+
   const dataTableOptions = useMemo(
     () => ({
-      responsive: true,
-      pageLength: 10,
+      columns: dataTableColumns,
+      serverSide: true,
+      processing: true,
+      pageLength: DEFAULT_PER_PAGE,
       lengthChange: true,
       searching: true,
       ordering: true,
       info: true,
       autoWidth: false,
+      responsive: true,
       order: [[0, "asc"]] as [number, string][],
       columnDefs: [{ orderable: false, targets: -1 }],
-      columns: dataTableColumns,
+      ajax: (requestData: any, callback: (json: { draw?: number; data: any[]; recordsTotal: number; recordsFiltered: number }) => void) => {
+        const start = requestData.start ?? requestData.iDisplayStart ?? 0;
+        const length = requestData.length ?? requestData.iDisplayLength ?? DEFAULT_PER_PAGE;
+        const page = Math.floor(start / length) + 1;
+        const params: Record<string, unknown> = { page, limit: length };
+        if (activeFilters.role) params.role = activeFilters.role;
+        if (activeFilters.status) params.status = activeFilters.status;
+        if (activeFilters.organization) params.organization = activeFilters.organization;
+        dispatch(fetchUsers(params as any))
+          .unwrap()
+          .then((data: any[]) => {
+            const total = start + data.length + (data.length >= length ? 1 : 0);
+            callback({ draw: requestData.draw, data, recordsTotal: total, recordsFiltered: total });
+          })
+          .catch(() => {
+            callback({ draw: requestData.draw, data: [], recordsTotal: 0, recordsFiltered: 0 });
+          });
+      },
     }),
-    [dataTableColumns],
+    [dataTableColumns, activeFilters, dispatch],
   );
 
-  // Initialize DataTable in data-driven mode so updates go through DataTables API (no React DOM conflict)
-  const { isInitialized, destroyDataTable } = useDataTable(
+  const { destroyDataTable } = useDataTable(
     "users-datatable",
-    memoizedUsers,
+    [],
     dataTableOptions,
-    !loading && memoizedUsers.length > 0,
+    true,
   );
-
-  // Destroy DataTable when refetch starts (e.g. loading with no data)
-  useEffect(() => {
-    if (loading && isInitialized) {
-      destroyDataTable();
-    }
-  }, [loading, isInitialized, destroyDataTable]);
-
-  // Cleanup DataTable when component unmounts
-  useEffect(() => {
-    return () => {
-      destroyDataTable();
-    };
-  }, [destroyDataTable]);
 
   const handleUserClick = useCallback(
     (userId: string) => {
@@ -394,6 +373,7 @@ const Users: React.FC = () => {
               message: `User "${userName}" has been deleted.`,
             }),
           );
+          refreshTable();
         })
         .catch((err: unknown) => {
           dispatch(
@@ -419,6 +399,8 @@ const Users: React.FC = () => {
   const handleApplyFilters = (filters: { [key: string]: any }) => {
     setActiveFilters(filters);
   };
+
+  const refreshTable = useCallback(() => setRefreshKey((k) => k + 1), []);
 
   return (
     <PermissionRoute requiredPermissions={['list_users']}>
@@ -500,52 +482,13 @@ const Users: React.FC = () => {
           {/* Users Table */}
           <div className="card">
             <div className="card-body">
-              {loading && memoizedUsers.length === 0 ? (
-                <div className="text-center py-5">
-                  <div className="spinner-border text-primary" role="status">
-                    <span className="visually-hidden">Loading...</span>
-                  </div>
-                  <p className="mt-3 text-muted">Loading users from server...</p>
-                </div>
-              ) : (
-                <div className="table-responsive" ref={tableContainerRef}>
-                  {loading && memoizedUsers.length > 0 && (
-                    <div className="text-center py-2 text-muted small">
-                      <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true" />
-                      Updating...
-                    </div>
-                  )}
-                  <table
-                    id="users-datatable"
-                    className="table table-striped table-bordered"
-                    style={{ width: "100%" }}
-                  >
-                    <thead>
-                      <tr>
-                        <th>Name</th>
-                        <th>Email</th>
-                        <th>Organization</th>
-                        <th>Role</th>
-                        <th>Status</th>
-                        <th>Created At</th>
-                        <th>Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody />
-                    <tfoot>
-                      <tr>
-                        <th>Name</th>
-                        <th>Email</th>
-                        <th>Organization</th>
-                        <th>Role</th>
-                        <th>Status</th>
-                        <th>Created At</th>
-                        <th>Actions</th>
-                      </tr>
-                    </tfoot>
-                  </table>
-                </div>
-              )}
+              <div className="table-responsive" ref={tableContainerRef} key={JSON.stringify(activeFilters) + refreshKey}>
+                <table
+                  id="users-datatable"
+                  className="table table-striped table-bordered"
+                  style={{ width: "100%" }}
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -555,7 +498,7 @@ const Users: React.FC = () => {
           show={showNewUserModal}
           onClose={() => setShowNewUserModal(false)}
           onBeforeSuccess={destroyDataTable}
-          onSuccess={() => dispatch(fetchUsers())}
+          onSuccess={refreshTable}
         />
 
         {/* Filter Modal */}

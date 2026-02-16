@@ -7,6 +7,8 @@ import ImportVisitsModal from "../components/ImportVisitsModal";
 import CheckInModal from "../components/CheckInModal";
 import { checkoutVisit, deleteVisit, fetchVisits, updateVisit, Visit, UpdateVisitPayload } from "../store/slices/visitSlice";
 
+const DEFAULT_PER_PAGE = 50;
+
 const CicVisits: React.FC = () => {
   const dispatch = useAppDispatch();
   const { visits, loading, error } = useAppSelector((state) => state.visits);
@@ -20,6 +22,7 @@ const CicVisits: React.FC = () => {
   const [checkoutProcessingId, setCheckoutProcessingId] = useState<string | null>(null);
   const [deleteSubmitting, setDeleteSubmitting] = useState(false);
   const [deleteError, setDeleteError] = useState<string | null>(null);
+  const [refreshKey, setRefreshKey] = useState(0);
 
   // Edit modal state
   const [showEditModal, setShowEditModal] = useState(false);
@@ -35,10 +38,6 @@ const CicVisits: React.FC = () => {
   const [editSubmitting, setEditSubmitting] = useState(false);
   const [editError, setEditError] = useState<string | null>(null);
 
-  useEffect(() => {
-    dispatch(fetchVisits({}));
-  }, [dispatch]);
-
   const availableCics = useMemo(() => {
     const map = new Map<string, string>();
     visits.forEach((visit) => {
@@ -51,12 +50,7 @@ const CicVisits: React.FC = () => {
       .sort((a, b) => a.name.localeCompare(b.name));
   }, [visits]);
 
-  const filteredVisits = useMemo(() => {
-    if (!selectedCic) return visits;
-    return visits.filter((visit) => visit.cic_id === selectedCic);
-  }, [visits, selectedCic]);
-
-  const memoized = useMemo(() => filteredVisits, [filteredVisits]);
+  const memoized = visits;
 
 
   const dtColumns = useMemo(() => [
@@ -106,14 +100,34 @@ const CicVisits: React.FC = () => {
 
   const dtOptions = React.useMemo(() => ({
     columns: dtColumns,
-    pageLength: 10,
+    serverSide: true,
+    processing: true,
+    pageLength: DEFAULT_PER_PAGE,
+    lengthChange: true,
     autoWidth: false,
     searching: true,
     ordering: true,
     info: true,
-    lengthChange: true,
     responsive: true,
-  }), [dtColumns]);
+    ajax: (requestData: any, callback: (json: { draw?: number; data: any[]; recordsTotal: number; recordsFiltered: number }) => void) => {
+      const start = requestData.start ?? requestData.iDisplayStart ?? 0;
+      const length = requestData.length ?? requestData.iDisplayLength ?? DEFAULT_PER_PAGE;
+      const page = Math.floor(start / length) + 1;
+      const params: Record<string, unknown> = { page, limit: length };
+      if (selectedCic) params.cic_id = selectedCic;
+      dispatch(fetchVisits(params as any))
+        .unwrap()
+        .then(({ visits: data, pagination }) => {
+          const total = pagination?.total_records ?? (start + data.length + (data.length >= length ? 1 : 0));
+          callback({ draw: requestData.draw, data, recordsTotal: total, recordsFiltered: total });
+        })
+        .catch(() => {
+          callback({ draw: requestData.draw, data: [], recordsTotal: 0, recordsFiltered: 0 });
+        });
+    },
+  }), [dtColumns, selectedCic, dispatch]);
+
+  const refreshTable = useCallback(() => setRefreshKey((k) => k + 1), []);
 
   const handleVisitCheckout = useCallback(
     async (visit: Visit, sourceButton?: HTMLElement | null) => {
@@ -142,6 +156,7 @@ const CicVisits: React.FC = () => {
             message: `${updated.beneficiary_name || "Beneficiary"} checked out at ${checkOutDisplayTime}.`,
           })
         );
+        refreshTable();
       } catch (error) {
         if (sourceButton) {
           sourceButton.removeAttribute("disabled");
@@ -157,7 +172,7 @@ const CicVisits: React.FC = () => {
         setCheckoutProcessingId(null);
       }
     },
-    [checkoutProcessingId, dispatch]
+    [checkoutProcessingId, dispatch, refreshTable]
   );
 
   useEffect(() => {
@@ -273,6 +288,7 @@ const CicVisits: React.FC = () => {
         })
       );
       handleCloseEditModal();
+      refreshTable();
     } catch (error) {
       setEditError(error instanceof Error ? error.message : "Failed to update visit.");
     } finally {
@@ -297,6 +313,7 @@ const CicVisits: React.FC = () => {
         })
       );
       handleCloseModal(true);
+      refreshTable();
     } catch (error) {
       setDeleteError(error instanceof Error ? error.message : "Failed to delete visit.");
     } finally {
@@ -380,18 +397,9 @@ const CicVisits: React.FC = () => {
         )}
         <div className="card">
           <div className="card-body">
-            {loading ? (
-              <div className="text-center py-5">
-                <div className="spinner-border text-primary" role="status">
-                  <span className="visually-hidden">Loading...</span>
-                </div>
-                <p className="mt-3 text-muted">Loading visit records from server...</p>
-              </div>
-            ) : (
-              <div className="table-responsive">
-                <DataTableWrapper id="cic-visits-datatable" data={memoized} options={dtOptions} className="table table-striped table-bordered" style={{ width: "100%" }} />
-              </div>
-            )}
+            <div className="table-responsive" key={selectedCic + refreshKey}>
+              <DataTableWrapper id="cic-visits-datatable" data={[]} options={dtOptions} className="table table-striped table-bordered" style={{ width: "100%" }} />
+            </div>
           </div>
         </div>
       </div>

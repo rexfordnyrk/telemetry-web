@@ -1,16 +1,17 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import MainLayout from "../layouts/MainLayout";
 import FilterModal from "../components/FilterModal";
+import DataTableWrapper from "../components/DataTableWrapper";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { addAlert } from "../store/slices/alertSlice";
-import { useDataTable } from "../hooks/useDataTable";
 import { fetchDevices, deleteDevice } from "../store/slices/deviceSlice";
+
+const DEFAULT_PER_PAGE = 50;
 
 const Devices: React.FC = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  // Redux state for devices
   const { devices, loading, error } = useAppSelector((state) => state.devices);
 
   const [showModal, setShowModal] = useState(false);
@@ -18,100 +19,116 @@ const Devices: React.FC = () => {
   const [targetDevice, setTargetDevice] = useState<any>(null);
   const [showFilterModal, setShowFilterModal] = useState(false);
   const [activeFilters, setActiveFilters] = useState<{ [key: string]: any }>({});
+  const [refreshKey, setRefreshKey] = useState(0);
 
-
-  // Fetch devices from API on mount
-  useEffect(() => {
-    dispatch(fetchDevices({}));
-  }, [dispatch]);
-
-
-
-
-
-
-
-  // Filter devices based on active filters
-  const filteredDevices = useMemo(() => {
-    if (Object.keys(activeFilters).length === 0) return devices;
-
-    return devices.filter((device) => {
-      if (
-        activeFilters.organization &&
-        activeFilters.organization !== device.organization
-      )
-        return false;
-      if (
-        activeFilters.programme &&
-        activeFilters.programme !== device.programme
-      )
-        return false;
-      if (
-        activeFilters.is_active !== undefined &&
-        activeFilters.is_active !== device.is_active
-      )
-        return false;
-      return true;
-    });
-  }, [devices, activeFilters]);
-
-  // Memoize filtered devices to prevent unnecessary re-renders
-  const memoizedDevices = useMemo(() => filteredDevices, [filteredDevices]);
-
-  // Define filter options
   const filterOptions = useMemo(() => {
     const organizationsSet = new Set(devices.map((d) => d.organization));
     const programmesSet = new Set(devices.map((d) => d.programme));
-    const activeStates = [true, false];
-
     return {
       organization: Array.from(organizationsSet),
       programme: Array.from(programmesSet),
-      is_active: activeStates,
+      is_active: [true, false],
     };
   }, [devices]);
 
-  // Initialize DataTable using custom hook
-  const { destroyDataTable, tableInstance, isInitialized } = useDataTable("devices-datatable", memoizedDevices);
+  const dtColumns = useMemo(
+    () => [
+      {
+        title: "Device Name",
+        data: "device_name",
+        render: (_: any, __: any, row: any) =>
+          `<a href="#" class="text-decoration-none fw-bold" data-action="view-device" data-id="${row.id}">${row.device_name || ""}</a>`,
+      },
+      { title: "Android Version", data: "android_version" },
+      { title: "App Version", data: "app_version" },
+      { title: "Partner", data: "organization" },
+      { title: "Intervention", data: "programme" },
+      {
+        title: "Active",
+        data: "is_active",
+        render: (d: any) =>
+          `<span class="badge ${d ? "bg-success" : "bg-danger"}">${d ? "Active" : "Inactive"}</span>`,
+      },
+      {
+        title: "Date Enrolled",
+        data: "date_enrolled",
+        render: (d: any) => (d ? new Date(d).toLocaleDateString() : "-"),
+      },
+      {
+        title: "Assigned To",
+        data: null,
+        render: (_: any, __: any, row: any) => {
+          if (row.current_beneficiary) {
+            const b = row.current_beneficiary;
+            return `<a href="#" class="text-decoration-none fw-bold text-primary" data-action="view-beneficiary" data-id="${b.id}">${b.name || ""}</a>`;
+          }
+          return '<span class="text-muted">Unassigned</span>';
+        },
+      },
+      {
+        title: "Actions",
+        data: null,
+        orderable: false,
+        searchable: false,
+        render: (_: any, __: any, row: any) => {
+          const icon = row.is_active ? "block" : "check_circle";
+          return `<div class="d-flex gap-1">
+            <button class="btn btn-sm p-1" title="Edit Device" data-action="edit" data-id="${row.id}" style="border:none;background:transparent"><i class="material-icons-outlined text-primary">edit</i></button>
+            <button class="btn btn-sm p-1" title="Retire/Activate" data-action="toggle" data-id="${row.id}" style="border:none;background:transparent"><i class="material-icons-outlined text-warning">${icon}</i></button>
+            <button class="btn btn-sm p-1" title="Delete Device" data-action="delete" data-id="${row.id}" style="border:none;background:transparent"><i class="material-icons-outlined text-danger">delete</i></button>
+          </div>`;
+        },
+      },
+    ],
+    [],
+  );
 
-  // Helper to get status badge
-  const getStatusElement = (status: string) => {
-    const statusConfig = {
-      active: { bg: "success", text: "Active" },
-      maintenance: { bg: "warning", text: "Maintenance" },
-      lost: { bg: "danger", text: "Lost" },
-      available: { bg: "info", text: "Available" },
-      retired: { bg: "secondary", text: "Retired" },
-    };
+  const dtOptions = useMemo(
+    () => ({
+      columns: dtColumns,
+      serverSide: true,
+      processing: true,
+      pageLength: DEFAULT_PER_PAGE,
+      lengthChange: true,
+      searching: true,
+      ordering: true,
+      info: true,
+      autoWidth: false,
+      responsive: true,
+      ajax: (requestData: any, callback: (json: { draw?: number; data: any[]; recordsTotal: number; recordsFiltered: number }) => void) => {
+        const start = requestData.start ?? requestData.iDisplayStart ?? 0;
+        const length = requestData.length ?? requestData.iDisplayLength ?? DEFAULT_PER_PAGE;
+        const page = Math.floor(start / length) + 1;
+        const params: Record<string, unknown> = { page, limit: length };
+        if (activeFilters.organization) params.organization = activeFilters.organization;
+        if (activeFilters.programme) params.programme = activeFilters.programme;
+        if (activeFilters.is_active !== undefined) params.is_active = activeFilters.is_active;
+        dispatch(fetchDevices(params as any))
+          .unwrap()
+          .then((data: any[]) => {
+            const total = start + data.length + (data.length >= length ? 1 : 0);
+            callback({ draw: requestData.draw, data, recordsTotal: total, recordsFiltered: total });
+          })
+          .catch(() => {
+            callback({ draw: requestData.draw, data: [], recordsTotal: 0, recordsFiltered: 0 });
+          });
+      },
+    }),
+    [dtColumns, activeFilters, dispatch],
+  );
 
-    const config =
-      statusConfig[status as keyof typeof statusConfig] ||
-      statusConfig.available;
+  const refreshTable = useCallback(() => setRefreshKey((k) => k + 1), []);
 
-    return (
-      <span
-        className={`dash-lable mb-0 bg-${config.bg} bg-opacity-10 text-${config.bg} rounded-2`}
-      >
-        {config.text}
-      </span>
-    );
-  };
-
-  // Handle action button clicks
-  const handleActionClick = (device: any, action: "disable" | "delete") => {
+  const handleActionClick = useCallback((device: any, action: "disable" | "delete") => {
     setTargetDevice(device);
     setModalAction(action);
     setShowModal(true);
-  };
+  }, []);
 
-  // Handle confirm action (delete/disable)
   const handleConfirmAction = async () => {
     if (modalAction === "delete") {
       try {
-        // Make the DELETE API call to remove the device
         await dispatch(deleteDevice(targetDevice.id)).unwrap();
-        
-        // Show success message
         dispatch(
           addAlert({
             type: "success",
@@ -119,37 +136,10 @@ const Devices: React.FC = () => {
             message: `Device "${targetDevice?.device_name}" has been deleted successfully.`,
           })
         );
-        
-        // Close modal and reset state
         setShowModal(false);
         setTargetDevice(null);
-        
-        // Remove the row from DataTable directly
-        if (tableInstance && isInitialized) {
-          try {
-            console.log('Attempting to remove row for device:', targetDevice.id);
-            // Find the row with the deleted device ID and remove it
-            const row = tableInstance.row(`[data-device-id="${targetDevice.id}"]`);
-            console.log('Found row:', row.length > 0 ? 'Yes' : 'No');
-            if (row.length > 0) {
-              row.remove().draw();
-              console.log('Row removed successfully');
-            } else {
-              console.warn('Row not found, falling back to table refresh');
-              destroyDataTable();
-            }
-          } catch (error) {
-            console.warn('Error removing row from DataTable:', error);
-            // Fallback: force table refresh
-            destroyDataTable();
-          }
-        } else {
-          console.log('DataTable not ready, falling back to table refresh');
-          destroyDataTable();
-        }
-        
+        refreshTable();
       } catch (error) {
-        // Show error message
         dispatch(
           addAlert({
             type: "danger",
@@ -157,7 +147,6 @@ const Devices: React.FC = () => {
             message: `Failed to delete device: ${error}`,
           })
         );
-        // Keep modal open to show error
       }
     } else {
       const newStatus = !targetDevice?.is_active ? "activated" : "deactivated";
@@ -174,10 +163,51 @@ const Devices: React.FC = () => {
     }
   };
 
-  // Handle filter modal apply
   const handleApplyFilters = (filters: { [key: string]: any }) => {
     setActiveFilters(filters);
   };
+
+  useEffect(() => {
+    if (!window.$) return;
+    const $table = window.$("#devices-datatable");
+    if ($table.length === 0) return;
+    const onViewDevice = (e: any) => {
+      e.preventDefault();
+      const id = window.$(e.currentTarget).data("id");
+      if (id) navigate(`/device-management/devices/${id}`);
+    };
+    const onViewBeneficiary = (e: any) => {
+      e.preventDefault();
+      const id = window.$(e.currentTarget).data("id");
+      if (id) navigate(`/beneficiary-management/beneficiaries/${id}`);
+    };
+    const onEdit = (e: any) => {
+      e.preventDefault();
+      const id = window.$(e.currentTarget).data("id");
+      if (id) navigate(`/device-management/devices/${id}`);
+    };
+    const onToggle = (e: any) => {
+      e.preventDefault();
+      const id = window.$(e.currentTarget).data("id");
+      const device = devices.find((d: any) => d.id === id);
+      if (device) handleActionClick(device, "disable");
+    };
+    const onDelete = (e: any) => {
+      e.preventDefault();
+      const id = window.$(e.currentTarget).data("id");
+      const device = devices.find((d: any) => d.id === id);
+      if (device) handleActionClick(device, "delete");
+    };
+    $table.off(".dtActions");
+    $table.on("click.dtActions", 'a[data-action="view-device"]', onViewDevice);
+    $table.on("click.dtActions", 'a[data-action="view-beneficiary"]', onViewBeneficiary);
+    $table.on("click.dtActions", 'button[data-action="edit"]', onEdit);
+    $table.on("click.dtActions", 'button[data-action="toggle"]', onToggle);
+    $table.on("click.dtActions", 'button[data-action="delete"]', onDelete);
+    return () => {
+      if ($table && $table.off) $table.off(".dtActions");
+    };
+  }, [navigate, devices, handleActionClick]);
 
   return (
     <MainLayout>
@@ -238,156 +268,15 @@ const Devices: React.FC = () => {
         )}
         <div className="card">
           <div className="card-body">
-            {loading ? (
-              <div className="text-center py-5">
-                <div className="spinner-border text-primary" role="status">
-                  <span className="visually-hidden">Loading...</span>
-                </div>
-                <p className="mt-3 text-muted">Loading devices from server...</p>
-              </div>
-            ) : (
-            <div className="table-responsive">
-              <table
+            <div className="table-responsive" key={JSON.stringify(activeFilters) + refreshKey}>
+              <DataTableWrapper
                 id="devices-datatable"
-
+                data={[]}
+                options={dtOptions}
                 className="table table-striped table-bordered"
                 style={{ width: "100%" }}
-              >
-                <thead>
-                  <tr>
-                    <th>Device Name</th>
-                    <th>Android Version</th>
-                    <th>App Version</th>
-                    <th>Partner</th>
-                    <th>Intervention</th>
-                    <th>Active</th>
-                    <th>Date Enrolled</th>
-                    <th>Assigned To</th>
-                    <th>Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {memoizedDevices.map((device) => (
-                    <tr key={device.id} data-device-id={device.id}>
-                      <td>
-                        <a
-                          href="#"
-                          className="text-decoration-none fw-bold"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            navigate(`/device-management/devices/${device.id}`);
-                          }}
-                        >
-                          {device.device_name}
-                        </a>
-                      </td>
-                      <td>{device.android_version}</td>
-                      <td>{device.app_version}</td>
-                      <td>{device.organization}</td>
-                      <td>{device.programme}</td>
-                      <td>
-                        <span
-                          className={`badge ${device.is_active ? "bg-success" : "bg-danger"}`}
-                        >
-                          {device.is_active ? "Active" : "Inactive"}
-                        </span>
-                      </td>
-                      <td>
-                        {new Date(device.date_enrolled).toLocaleDateString()}
-                      </td>
-                      <td>
-                        {device.current_beneficiary ? (
-                          <a
-                            href="#"
-                            className="text-decoration-none fw-bold text-primary"
-                            onClick={(e) => {
-                              e.preventDefault();
-                                // Only navigate if current_beneficiary is not null
-                                if (device.current_beneficiary) {
-                              navigate(
-                                `/beneficiary-management/beneficiaries/${device.current_beneficiary.id}`,
-                              );
-                                }
-                            }}
-                              title={
-                                device.current_beneficiary
-                                  ? `Beneficiary ID: ${device.current_beneficiary.id}`
-                                  : undefined
-                              }
-                          >
-                              {/* Only show beneficiary name if current_beneficiary is not null */}
-                            {device.current_beneficiary.name}
-                          </a>
-                        ) : (
-                          <span className="text-muted">Unassigned</span>
-                        )}
-                      </td>
-                      <td>
-                        <div className="d-flex gap-1">
-                          <button
-                            className="btn btn-sm p-1"
-                            title="Edit Device"
-                            onClick={() =>
-                              navigate(
-                                `/device-management/devices/${device.id}`,
-                              )
-                            }
-                            style={{
-                              border: "none",
-                              background: "transparent",
-                            }}
-                          >
-                            <i className="material-icons-outlined text-primary">
-                              edit
-                            </i>
-                          </button>
-                          <button
-                            className="btn btn-sm p-1"
-                            title="Retire/Activate Device"
-                            onClick={() => handleActionClick(device, "disable")}
-                            style={{
-                              border: "none",
-                              background: "transparent",
-                            }}
-                          >
-                            <i className="material-icons-outlined text-warning">
-                              {!device.is_active ? "check_circle" : "block"}
-                            </i>
-                          </button>
-                          <button
-                            className="btn btn-sm p-1"
-                            title="Delete Device"
-                            onClick={() => handleActionClick(device, "delete")}
-                            style={{
-                              border: "none",
-                              background: "transparent",
-                            }}
-                          >
-                            <i className="material-icons-outlined text-danger">
-                              delete
-                            </i>
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-                <tfoot>
-                  <tr>
-                    <th>Device Name</th>
-                    <th>Android Version</th>
-                    <th>App Version</th>
-                    <th>Partner</th>
-                    <th>Intervention</th>
-                    <th>Active</th>
-                    <th>Date Enrolled</th>
-                    <th>Assigned To</th>
-                    <th>Actions</th>
-                  </tr>
-                </tfoot>
-              </table>
+              />
             </div>
-            )}
           </div>
         </div>
       </div>

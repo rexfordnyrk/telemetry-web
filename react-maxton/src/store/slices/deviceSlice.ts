@@ -167,6 +167,8 @@ const initialState: DeviceState = {
 
 // Define parameters interface for device fetching
 export interface DeviceFetchParams {
+  page?: number;
+  limit?: number;
   is_unassigned?: boolean;
   search?: string;
   organization?: string;

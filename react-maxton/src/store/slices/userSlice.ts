@@ -84,44 +84,64 @@ const initialState: UserState = {
   adminPasswordLoading: false,
 };
 
+/** Params for fetching users list (pagination and filters) */
+export interface UserFetchParams {
+  page?: number;
+  limit?: number;
+  role?: string;
+  status?: string;
+  organization?: string;
+}
+
 /**
  * Async thunk for fetching all users from the API
  * 
  * This thunk makes a GET request to /api/v1/users with the Bearer token
  * in the Authorization header for authentication.
- * 
- * Features:
- * - Automatic authentication using stored JWT token
- * - Error handling for network issues and API errors
- * - Loading state management
- * - Proper TypeScript typing
+ * Supports pagination (page, limit) and optional filters.
  */
 export const fetchUsers = createAsyncThunk(
   'users/fetchUsers',
-  async (_, { getState, rejectWithValue, dispatch }) => {
+  async (params: UserFetchParams = {}, { getState, rejectWithValue, dispatch }) => {
     try {
       const state = getState() as RootState;
       const token = state.auth.token;
-      
+
       if (!token) {
         throw new Error('No authentication token available');
       }
-      
-      const url = buildApiUrl('/api/v1/users');
-      
+
+      const queryParams = new URLSearchParams();
+      if (params) {
+        Object.entries(params).forEach(([key, value]) => {
+          if (value !== undefined && value !== null && value !== '') {
+            queryParams.append(key, value.toString());
+          }
+        });
+      }
+      const url = queryParams.toString()
+        ? buildApiUrl(`/api/v1/users?${queryParams.toString()}`)
+        : buildApiUrl('/api/v1/users');
+
       const response = await fetch(url, {
         method: 'GET',
         headers: getAuthHeaders(token),
       });
-      
+
       if (!response.ok) {
         const errorMessage = await handleApiError(response, 'Failed to fetch users', dispatch);
         throw new Error(errorMessage);
       }
-      
+
       const data = await response.json();
-      return data;
-      
+      const usersArray = Array.isArray(data)
+        ? data
+        : data?.data && Array.isArray(data.data)
+          ? data.data
+          : data?.users && Array.isArray(data.users)
+            ? data.users
+            : [];
+      return usersArray;
     } catch (error) {
       console.error('Error fetching users:', error);
       return rejectWithValue(
@@ -494,21 +514,7 @@ const userSlice = createSlice({
       })
       .addCase(fetchUsers.fulfilled, (state, action) => {
         state.loading = false;
-        // Handle different response formats
-        if (Array.isArray(action.payload)) {
-          // If response is directly an array of users
-          state.users = action.payload;
-        } else if (action.payload.data && Array.isArray(action.payload.data)) {
-          // If response has a data property containing users array
-          state.users = action.payload.data;
-        } else if (action.payload.users && Array.isArray(action.payload.users)) {
-          // If response has a users property
-          state.users = action.payload.users;
-        } else {
-          // Fallback: try to use the payload as is
-          console.warn('Unexpected users API response format:', action.payload);
-          state.users = [];
-        }
+        state.users = Array.isArray(action.payload) ? action.payload : [];
         state.error = null;
       })
       .addCase(fetchUsers.rejected, (state, action) => {
