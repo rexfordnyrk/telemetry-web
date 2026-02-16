@@ -38,6 +38,7 @@ interface UserState {
   error: string | null;
   assignRoleLoading: boolean;
   removeRoleLoading: boolean;
+  adminPasswordLoading: boolean;
 }
 
 const initialState: UserState = {
@@ -78,6 +79,7 @@ const initialState: UserState = {
   error: null,
   assignRoleLoading: false,
   removeRoleLoading: false,
+  adminPasswordLoading: false,
 };
 
 /**
@@ -379,6 +381,51 @@ export const removeRoleFromUser = createAsyncThunk(
   }
 );
 
+/**
+ * Async thunk for admin password update.
+ * PUT /api/v1/users/:id/admin-password with body { new_password }.
+ * Requires create_users permission.
+ */
+export const adminUpdatePassword = createAsyncThunk(
+  'users/adminUpdatePassword',
+  async (
+    { userId, newPassword }: { userId: string; newPassword: string },
+    { getState, rejectWithValue, dispatch }
+  ) => {
+    try {
+      const state = getState() as RootState;
+      const token = state.auth.token;
+
+      if (!token) {
+        throw new Error('No authentication token available');
+      }
+
+      const url = buildApiUrl(API_CONFIG.ENDPOINTS.USERS.ADMIN_PASSWORD(userId));
+      const response = await fetch(url, {
+        method: 'PUT',
+        headers: getAuthHeaders(token),
+        body: JSON.stringify({ new_password: newPassword }),
+      });
+
+      if (!response.ok) {
+        const errorMessage = await handleApiError(
+          response,
+          'Failed to update password',
+          dispatch
+        );
+        throw new Error(errorMessage);
+      }
+
+      return undefined;
+    } catch (error) {
+      console.error('Error updating user password:', error);
+      return rejectWithValue(
+        error instanceof Error ? error.message : 'Failed to update password'
+      );
+    }
+  }
+);
+
 const userSlice = createSlice({
   name: "users",
   initialState,
@@ -589,7 +636,21 @@ const userSlice = createSlice({
       .addCase(removeRoleFromUser.rejected, (state, action) => {
         state.removeRoleLoading = false;
         state.error = action.payload as string || 'Failed to remove role from user';
-      });
+      })
+
+    // Handle adminUpdatePassword async thunk
+    .addCase(adminUpdatePassword.pending, (state) => {
+      state.adminPasswordLoading = true;
+      state.error = null;
+    })
+    .addCase(adminUpdatePassword.fulfilled, (state) => {
+      state.adminPasswordLoading = false;
+      state.error = null;
+    })
+    .addCase(adminUpdatePassword.rejected, (state, action) => {
+      state.adminPasswordLoading = false;
+      state.error = action.payload as string || 'Failed to update password';
+    });
   },
 });
 

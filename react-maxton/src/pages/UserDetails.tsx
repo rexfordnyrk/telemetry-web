@@ -8,6 +8,7 @@ import {
   updateUser,
   assignRoleToUser,
   removeRoleFromUser,
+  adminUpdatePassword,
   type Role,
 } from "../store/slices/userSlice";
 import { fetchRoles } from "../store/slices/rolesPermissionsSlice";
@@ -117,6 +118,7 @@ const UserDetails: React.FC = () => {
     rolesFromApi.length > 0 ? (rolesFromApi as Role[]) : fallbackRoles;
   const assignRoleLoading = useAppSelector((state) => state.users.assignRoleLoading);
   const removeRoleLoading = useAppSelector((state) => state.users.removeRoleLoading);
+  const adminPasswordLoading = useAppSelector((state) => state.users.adminPasswordLoading);
   const userDetailsLoading = useAppSelector((state) => state.users.userDetailsLoading);
   const userDetailsError = useAppSelector((state) => state.users.error);
   const { hasPermission } = usePermissions();
@@ -196,6 +198,7 @@ const UserDetails: React.FC = () => {
   // Check permissions after all hooks are called
   const canReadUsers = hasPermission('read_users');
   const canUpdateUsers = hasPermission('update_users');
+  const canCreateUsers = hasPermission('create_users');
   const canViewUserRoles = hasPermission('view_user_roles');
   const canManageUserRoles = hasPermission('manage_user_roles');
 
@@ -414,7 +417,7 @@ const UserDetails: React.FC = () => {
       });
   };
 
-  const handlePasswordReset = () => {
+  const handlePasswordReset = async () => {
     if (passwordData.newPassword !== passwordData.confirmPassword) {
       dispatch(
         addAlert({
@@ -426,30 +429,41 @@ const UserDetails: React.FC = () => {
       return;
     }
 
-    if (passwordData.newPassword.length < 6) {
+    if (passwordData.newPassword.length < 8) {
       dispatch(
         addAlert({
           type: "danger",
           title: "Password Too Short",
-          message: "Password must be at least 6 characters long.",
+          message: "Password must be at least 8 characters long.",
         }),
       );
       return;
     }
 
-    // TODO: Implement password reset API call
-    dispatch(
-      addAlert({
-        type: "success",
-        title: "Password Reset",
-        message: "Password has been reset successfully.",
-      }),
-    );
-
-    setPasswordData({
-      newPassword: "",
-      confirmPassword: "",
-    });
+    try {
+      await dispatch(
+        adminUpdatePassword({
+          userId: user.id,
+          newPassword: passwordData.newPassword,
+        }),
+      ).unwrap();
+      dispatch(
+        addAlert({
+          type: "success",
+          title: "Password Reset",
+          message: "User password has been updated successfully.",
+        }),
+      );
+      setPasswordData({ newPassword: "", confirmPassword: "" });
+    } catch (err) {
+      dispatch(
+        addAlert({
+          type: "danger",
+          title: "Password Reset Failed",
+          message: err instanceof Error ? err.message : "Failed to update user password.",
+        }),
+      );
+    }
   };
 
   const handleSendResetLink = () => {
@@ -860,8 +874,8 @@ const UserDetails: React.FC = () => {
               </div>
             )}
 
-            {/* Password Management Card */}
-            {canUpdateUsers && (
+            {/* Password Management Card - requires create_users (admin set password) */}
+            {canCreateUsers && (
               <div className="card rounded-4">
                 <div className="card-body">
                   <div className="d-flex align-items-start justify-content-between mb-3">
@@ -912,8 +926,8 @@ const UserDetails: React.FC = () => {
                           name="newPassword"
                           value={passwordData.newPassword}
                           onChange={handlePasswordChange}
-                          placeholder="Enter new password"
-                          minLength={6}
+                          placeholder="Enter new password (min 8 characters)"
+                          minLength={8}
                         />
                       </div>
                       <div className="col-12">
@@ -927,8 +941,8 @@ const UserDetails: React.FC = () => {
                           name="confirmPassword"
                           value={passwordData.confirmPassword}
                           onChange={handlePasswordChange}
-                          placeholder="Confirm new password"
-                          minLength={6}
+                          placeholder="Confirm new password (min 8 characters)"
+                          minLength={8}
                         />
                       </div>
                     </div>
@@ -936,11 +950,22 @@ const UserDetails: React.FC = () => {
 
                   <div className="d-grid gap-2">
                     <button
+                      type="button"
                       className="btn btn-grd-warning px-4 d-flex align-items-center justify-content-center gap-2"
                       onClick={handlePasswordReset}
+                      disabled={adminPasswordLoading}
                     >
-                      <i className="material-icons-outlined">lock_reset</i>
-                      Reset Password
+                      {adminPasswordLoading ? (
+                        <>
+                          <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true" />
+                          Updating...
+                        </>
+                      ) : (
+                        <>
+                          <i className="material-icons-outlined">lock_reset</i>
+                          Reset Password
+                        </>
+                      )}
                     </button>
                     <button
                       className="btn btn-grd-info px-4 d-flex align-items-center justify-content-center gap-2"
