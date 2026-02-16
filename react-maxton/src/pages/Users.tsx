@@ -377,6 +377,9 @@ const Users: React.FC = () => {
     const user = targetUser;
     const userName = user ? `${user.first_name} ${user.last_name}` : "";
 
+    // Destroy DataTable before closing modal so React never reconciles DataTables-mutated DOM (fixes insertBefore crash)
+    destroyDataTable();
+
     setShowModal(false);
     setTargetUser(null);
 
