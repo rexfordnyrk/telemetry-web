@@ -34,6 +34,7 @@ interface UserState {
   selectedUser: User | null;
   availableRoles: Role[];
   loading: boolean;
+  createUserLoading: boolean;
   userDetailsLoading: boolean;
   error: string | null;
   assignRoleLoading: boolean;
@@ -75,6 +76,7 @@ const initialState: UserState = {
     },
   ],
   loading: false,
+  createUserLoading: false,
   userDetailsLoading: false,
   error: null,
   assignRoleLoading: false,
@@ -186,10 +188,15 @@ export const createUser = createAsyncThunk(
       }
       
       const url = buildApiUrl('/api/v1/users');
-      
+      const headers = getAuthHeaders(token) as Record<string, string>;
+      // Ensure JSON is explicitly declared so the server accepts the body
       const response = await fetch(url, {
         method: 'POST',
-        headers: getAuthHeaders(token),
+        headers: {
+          ...headers,
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
         body: JSON.stringify(userData),
       });
       
@@ -531,20 +538,20 @@ const userSlice = createSlice({
         state.error = action.payload as string || 'Failed to fetch user';
       });
 
-    // Handle createUser async thunk
+    // Handle createUser async thunk (use createUserLoading so Users page does not destroy DataTable on submit)
     builder
       .addCase(createUser.pending, (state) => {
-        state.loading = true;
+        state.createUserLoading = true;
         state.error = null;
       })
       .addCase(createUser.fulfilled, (state) => {
-        state.loading = false;
+        state.createUserLoading = false;
         state.error = null;
         // Do not push the new user here — the UI will refetch via fetchUsers()
         // so the table (DataTables) is destroyed first, avoiding DOM/removeChild errors.
       })
       .addCase(createUser.rejected, (state, action) => {
-        state.loading = false;
+        state.createUserLoading = false;
         state.error = action.payload as string || 'Failed to create user';
       });
 

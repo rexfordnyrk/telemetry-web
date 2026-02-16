@@ -12,7 +12,7 @@ interface NewUserModalProps {
 
 const NewUserModal: React.FC<NewUserModalProps> = ({ show, onClose, onBeforeSuccess, onSuccess }) => {
   const dispatch = useAppDispatch();
-  const { loading, error } = useAppSelector((state) => state.users);
+  const { createUserLoading: loading, error } = useAppSelector((state) => state.users);
 
   const [formData, setFormData] = useState({
     first_name: "",
