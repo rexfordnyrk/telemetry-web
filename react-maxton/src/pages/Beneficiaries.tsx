@@ -11,10 +11,13 @@ import { fetchBeneficiaries } from "../store/slices/beneficiarySlice";
 import PermissionRoute from "../components/PermissionRoute";
 import { usePermissions } from "../hooks/usePermissions";
 
+const PER_PAGE_OPTIONS = [10, 25, 50, 100];
+const DEFAULT_PER_PAGE = 50;
+
 const Beneficiaries: React.FC = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  // Redux state for beneficiaries
+  // Redux state for beneficiaries (current page only when using API pagination)
   const { beneficiaries, loading, error } = useAppSelector((state) => state.beneficiaries);
 
   const [showNewBeneficiaryModal, setShowNewBeneficiaryModal] = useState(false);
@@ -24,45 +27,35 @@ const Beneficiaries: React.FC = () => {
   const [targetBeneficiary, setTargetBeneficiary] = useState<any>(null);
   const [showFilterModal, setShowFilterModal] = useState(false);
   const [activeFilters, setActiveFilters] = useState<{ [key: string]: any }>({});
+  const [page, setPage] = useState(1);
+  const [perPage, setPerPage] = useState(DEFAULT_PER_PAGE);
 
   const permissions = usePermissions();
 
-  // Fetch beneficiaries from API on mount
-  useEffect(() => {
-    dispatch(fetchBeneficiaries({}));
-  }, [dispatch]);
+  // Build API params from page, perPage, and activeFilters
+  const fetchParams = useMemo(() => {
+    const params: { page: number; limit: number; organization?: string; district?: string; programme?: string; is_active?: boolean } = {
+      page,
+      limit: perPage,
+    };
+    if (activeFilters.organization) params.organization = activeFilters.organization;
+    if (activeFilters.district) params.district = activeFilters.district;
+    if (activeFilters.programme) params.programme = activeFilters.programme;
+    if (activeFilters.status) {
+      params.is_active = activeFilters.status === "active";
+    }
+    return params;
+  }, [page, perPage, activeFilters]);
 
-  // Filter beneficiaries based on active filters
+  // Fetch beneficiaries from API when page, perPage, or filters change
+  useEffect(() => {
+    dispatch(fetchBeneficiaries(fetchParams));
+  }, [dispatch, fetchParams]);
+
+  // Client-side filter for date range only (if API doesn't support it); rest is server-side via fetchParams
   const filteredBeneficiaries = useMemo(() => {
-    if (Object.keys(activeFilters).length === 0) return beneficiaries;
+    if (!activeFilters.created_at_from && !activeFilters.created_at_to) return beneficiaries;
     return beneficiaries.filter((beneficiary) => {
-      // Organization filter
-      if (
-        activeFilters.organization &&
-        activeFilters.organization !== beneficiary.organization
-      ) {
-        return false;
-      }
-      // District filter
-      if (
-        activeFilters.district &&
-        activeFilters.district !== beneficiary.district
-      ) {
-        return false;
-      }
-      // Programme filter
-      if (
-        activeFilters.programme &&
-        activeFilters.programme !== beneficiary.programme
-      ) {
-        return false;
-      }
-      // Status filter
-      if (activeFilters.status) {
-        const isActive = activeFilters.status === "active";
-        if (beneficiary.is_active !== isActive) return false;
-      }
-      // Date range filters
       if (activeFilters.created_at_from) {
         const beneficiaryDate = new Date(beneficiary.created_at);
         const fromDate = new Date(activeFilters.created_at_from);
@@ -75,10 +68,12 @@ const Beneficiaries: React.FC = () => {
       }
       return true;
     });
-  }, [beneficiaries, activeFilters]);
+  }, [beneficiaries, activeFilters.created_at_from, activeFilters.created_at_to]);
 
-  // Memoize filtered beneficiaries to prevent unnecessary re-renders
   const memoizedBeneficiaries = useMemo(() => filteredBeneficiaries, [filteredBeneficiaries]);
+
+  const hasNextPage = beneficiaries.length >= perPage;
+  const hasPrevPage = page > 1;
 
   // Define filter options
   const filterOptions = useMemo(() => {
@@ -168,14 +163,14 @@ const Beneficiaries: React.FC = () => {
 
   const dtOptions = useMemo(() => ({
     columns: dtColumns,
-    pageLength: 10,
-    lengthChange: true,
+    pageLength: perPage,
+    lengthChange: false,
     searching: true,
     ordering: true,
     info: true,
     autoWidth: false,
     responsive: true,
-  }), [dtColumns]);
+  }), [dtColumns, perPage]);
 
   // Delegate clicks from DataTables-rendered content
   useEffect(() => {
@@ -255,9 +250,15 @@ const Beneficiaries: React.FC = () => {
     setShowModal(true);
   };
 
-  // Handle filter modal apply
+  // Handle filter modal apply; reset to page 1 when filters change
   const handleApplyFilters = (filters: { [key: string]: any }) => {
     setActiveFilters(filters);
+    setPage(1);
+  };
+
+  const handlePerPageChange = (value: number) => {
+    setPerPage(value);
+    setPage(1);
   };
 
   // Handle confirm action (delete/disable)
@@ -373,15 +374,61 @@ const Beneficiaries: React.FC = () => {
                   <p className="mt-3 text-muted">Loading beneficiaries from server...</p>
                 </div>
               ) : (
-            <div className="table-responsive">
-              <DataTableWrapper
-                id="beneficiaries-datatable"
-                data={memoizedBeneficiaries}
-                options={dtOptions}
-                className="table table-striped table-bordered"
-                style={{ width: "100%" }}
-              />
+            <>
+              <div className="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
+                <div className="d-flex align-items-center gap-2">
+                  <label htmlFor="beneficiaries-per-page" className="form-label mb-0 text-muted small">
+                    Show
+                  </label>
+                  <select
+                    id="beneficiaries-per-page"
+                    className="form-select form-select-sm"
+                    style={{ width: "auto" }}
+                    value={perPage}
+                    onChange={(e) => handlePerPageChange(Number(e.target.value))}
+                    disabled={loading}
+                  >
+                    {PER_PAGE_OPTIONS.map((n) => (
+                      <option key={n} value={n}>
+                        {n}
+                      </option>
+                    ))}
+                  </select>
+                  <span className="text-muted small">entries per page</span>
                 </div>
+                <div className="d-flex align-items-center gap-2">
+                  <span className="text-muted small">
+                    Page {page}
+                    {hasNextPage ? "+" : ""}
+                  </span>
+                  <button
+                    type="button"
+                    className="btn btn-sm btn-outline-secondary"
+                    onClick={() => setPage((p) => Math.max(1, p - 1))}
+                    disabled={!hasPrevPage || loading}
+                  >
+                    Previous
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-sm btn-outline-secondary"
+                    onClick={() => setPage((p) => p + 1)}
+                    disabled={!hasNextPage || loading}
+                  >
+                    Next
+                  </button>
+                </div>
+              </div>
+              <div className="table-responsive">
+                <DataTableWrapper
+                  id="beneficiaries-datatable"
+                  data={memoizedBeneficiaries}
+                  options={dtOptions}
+                  className="table table-striped table-bordered"
+                  style={{ width: "100%" }}
+                />
+              </div>
+            </>
               )}
             </div>
           </div>

@@ -41,6 +41,8 @@ export interface Beneficiary {
 
 // Define parameters interface for beneficiary fetching
 export interface BeneficiaryFetchParams {
+  page?: number;
+  limit?: number;
   is_unassigned?: boolean;
   search?: string;
   organization?: string;
