@@ -17,6 +17,8 @@ export interface DataTableOptions {
   serverSide?: boolean;
   deferRender?: boolean;
   dom?: string;
+  /** When serverSide is true, custom ajax function (requestData, callback, settings) for fetching page data */
+  ajax?: (data: any, callback: (json: { draw?: number; data: any[]; recordsTotal: number; recordsFiltered: number }) => void, settings: any) => void;
 }
 
 export const useDataTable = (
@@ -27,8 +29,9 @@ export const useDataTable = (
 ) => {
   const isInitializedRef = useRef(false);
   const tableInstanceRef = useRef<any>(null);
+  const isServerSide = options.serverSide === true;
   const manageDataInternally =
-    options.data !== undefined || (Array.isArray(options.columns) && options.columns.length > 0);
+    !isServerSide && (options.data !== undefined || (Array.isArray(options.columns) && options.columns.length > 0));
 
   const destroyDataTable = useCallback(() => {
     if (tableInstanceRef.current && window.$ && typeof window.$.fn.DataTable === 'function') {
@@ -70,6 +73,9 @@ export const useDataTable = (
           } else if ("data" in defaultOptions) {
             delete (defaultOptions as Record<string, unknown>).data;
           }
+          if (isServerSide && "data" in defaultOptions) {
+            delete (defaultOptions as Record<string, unknown>).data;
+          }
 
           tableInstanceRef.current = $table.DataTable(defaultOptions as any);
           isInitializedRef.current = true;
@@ -86,9 +92,9 @@ export const useDataTable = (
     // Re-init only when structural options change (columns/dom/order/etc.) or shouldInitialize toggles
   }, [shouldInitialize, destroyDataTable, tableId, options, manageDataInternally]);
 
-  // On data changes, update via DataTables API instead of destroying
+  // On data changes, update via DataTables API instead of destroying (skip for server-side; ajax drives data)
   useEffect(() => {
-    if (!manageDataInternally) return;
+    if (!manageDataInternally || isServerSide) return;
     if (!isInitializedRef.current || !tableInstanceRef.current) return;
     try {
       const api = tableInstanceRef.current;
