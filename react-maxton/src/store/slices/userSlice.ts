@@ -34,6 +34,7 @@ interface UserState {
   selectedUser: User | null;
   availableRoles: Role[];
   loading: boolean;
+  userDetailsLoading: boolean;
   error: string | null;
   assignRoleLoading: boolean;
   removeRoleLoading: boolean;
@@ -73,6 +74,7 @@ const initialState: UserState = {
     },
   ],
   loading: false,
+  userDetailsLoading: false,
   error: null,
   assignRoleLoading: false,
   removeRoleLoading: false,
@@ -120,6 +122,45 @@ export const fetchUsers = createAsyncThunk(
       console.error('Error fetching users:', error);
       return rejectWithValue(
         error instanceof Error ? error.message : 'Failed to fetch users'
+      );
+    }
+  }
+);
+
+/**
+ * Async thunk for fetching a single user by ID (e.g. for direct link / refresh on user details page).
+ * GET /api/v1/users/:id
+ */
+export const fetchUserById = createAsyncThunk(
+  'users/fetchUserById',
+  async (userId: string, { getState, rejectWithValue, dispatch }) => {
+    try {
+      const state = getState() as RootState;
+      const token = state.auth.token;
+
+      if (!token) {
+        throw new Error('No authentication token available');
+      }
+
+      const url = buildApiUrl(`/api/v1/users/${userId}`);
+
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: getAuthHeaders(token),
+      });
+
+      if (!response.ok) {
+        const errorMessage = await handleApiError(response, 'Failed to fetch user', dispatch);
+        throw new Error(errorMessage);
+      }
+
+      const data = await response.json();
+      // API may return { data: user } or the user object directly
+      return data?.data ?? data;
+    } catch (error) {
+      console.error('Error fetching user by ID:', error);
+      return rejectWithValue(
+        error instanceof Error ? error.message : 'Failed to fetch user'
       );
     }
   }
@@ -419,6 +460,28 @@ const userSlice = createSlice({
       .addCase(fetchUsers.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string || 'Failed to fetch users';
+      })
+      .addCase(fetchUserById.pending, (state) => {
+        state.userDetailsLoading = true;
+        state.error = null;
+      })
+      .addCase(fetchUserById.fulfilled, (state, action) => {
+        state.userDetailsLoading = false;
+        const user = action.payload;
+        if (user && user.id) {
+          state.selectedUser = user;
+          const index = state.users.findIndex((u) => u.id === user.id);
+          if (index === -1) {
+            state.users.push(user);
+          } else {
+            state.users[index] = user;
+          }
+        }
+        state.error = null;
+      })
+      .addCase(fetchUserById.rejected, (state, action) => {
+        state.userDetailsLoading = false;
+        state.error = action.payload as string || 'Failed to fetch user';
       });
 
     // Handle createUser async thunk
@@ -495,6 +558,9 @@ const userSlice = createSlice({
         if (user && !user.roles.find((r) => r.id === role.id)) {
           user.roles.push(role);
         }
+        if (state.selectedUser?.id === userId && state.selectedUser.roles && !state.selectedUser.roles.find((r) => r.id === role.id)) {
+          state.selectedUser.roles.push(role);
+        }
         state.error = null;
       })
       .addCase(assignRoleToUser.rejected, (state, action) => {
@@ -514,6 +580,9 @@ const userSlice = createSlice({
         const user = state.users.find((u) => u.id === userId);
         if (user) {
           user.roles = user.roles.filter((r) => r.id !== roleId);
+        }
+        if (state.selectedUser?.id === userId && state.selectedUser.roles) {
+          state.selectedUser.roles = state.selectedUser.roles.filter((r) => r.id !== roleId);
         }
         state.error = null;
       })

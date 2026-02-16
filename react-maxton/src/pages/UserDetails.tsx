@@ -4,6 +4,7 @@ import { useParams } from "react-router-dom";
 import MainLayout from "../layouts/MainLayout";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import {
+  fetchUserById,
   updateUser,
   assignRoleToUser,
   removeRoleFromUser,
@@ -116,6 +117,8 @@ const UserDetails: React.FC = () => {
     rolesFromApi.length > 0 ? (rolesFromApi as Role[]) : fallbackRoles;
   const assignRoleLoading = useAppSelector((state) => state.users.assignRoleLoading);
   const removeRoleLoading = useAppSelector((state) => state.users.removeRoleLoading);
+  const userDetailsLoading = useAppSelector((state) => state.users.userDetailsLoading);
+  const userDetailsError = useAppSelector((state) => state.users.error);
   const { hasPermission } = usePermissions();
 
   // Load roles from API when viewing user details (for role assignment dropdown)
@@ -140,6 +143,22 @@ const UserDetails: React.FC = () => {
 
   // Find user by ID
   const user = users.find((u) => u.id === id);
+
+  // When opening via direct link or refresh, user may not be in the list — fetch by ID (once per id)
+  const fetchedIdRef = useRef<string | null>(null);
+  const prevIdRef = useRef<string | undefined>(id);
+  useEffect(() => {
+    if (prevIdRef.current !== id) {
+      prevIdRef.current = id;
+      fetchedIdRef.current = null;
+    }
+  }, [id]);
+  useEffect(() => {
+    if (!id || user) return;
+    if (fetchedIdRef.current === id) return; // already fetched or in progress for this id
+    fetchedIdRef.current = id;
+    dispatch(fetchUserById(id));
+  }, [id, user, dispatch]);
 
   // Initialize form data with user data or empty values
   const [formData, setFormData] = useState({
@@ -197,7 +216,16 @@ const UserDetails: React.FC = () => {
     return (
       <MainLayout>
         <div className="page-content">
-          <div className="alert alert-danger">User not found</div>
+          {userDetailsLoading ? (
+            <div className="d-flex align-items-center justify-content-center py-5">
+              <span className="spinner-border spinner-border-lg text-primary" role="status" aria-hidden="true" />
+              <span className="ms-2">Loading user...</span>
+            </div>
+          ) : (
+            <div className="alert alert-danger">
+              {userDetailsError || "User not found"}
+            </div>
+          )}
         </div>
       </MainLayout>
     );
