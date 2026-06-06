@@ -14,6 +14,7 @@ import {
 import { fetchRoles } from "../store/slices/rolesPermissionsSlice";
 import { addAlert } from "../store/slices/alertSlice";
 import { usePermissions } from "../hooks/usePermissions";
+import { buildApiUrl, API_CONFIG } from "../config/api";
 
 /** Confirmation dialog for removing a role. Rendered with portal; uses inline styles only. */
 function RemoveRoleConfirmDialog({
@@ -466,15 +467,37 @@ const UserDetails: React.FC = () => {
     }
   };
 
-  const handleSendResetLink = () => {
-    // TODO: Implement send reset link API call
-    dispatch(
-      addAlert({
-        type: "success",
-        title: "Reset Link Sent",
-        message: "Password reset link has been sent to the user's email.",
-      }),
-    );
+  const handleSendResetLink = async () => {
+    try {
+      const response = await fetch(
+        buildApiUrl(API_CONFIG.ENDPOINTS.AUTH.FORGOT_PASSWORD),
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: user.email }),
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to send reset link.");
+      }
+
+      dispatch(
+        addAlert({
+          type: "success",
+          title: "Reset Link Sent",
+          message: "If an account exists for that email, a reset link has been sent.",
+        }),
+      );
+    } catch (err: unknown) {
+      dispatch(
+        addAlert({
+          type: "danger",
+          title: "Reset Link Failed",
+          message: err instanceof Error ? err.message : "Failed to send reset link.",
+        }),
+      );
+    }
   };
 
   const getAvailableRolesForAssignment = () => {

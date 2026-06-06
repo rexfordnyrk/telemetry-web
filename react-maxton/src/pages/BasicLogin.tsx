@@ -18,7 +18,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { AppDispatch, RootState } from "../store";
 import { loginUser, clearError, updateFormData, LoginCredentials } from "../store/slices/authSlice";
 
@@ -319,7 +319,7 @@ const BasicLogin: React.FC = () => {
                       </div>
                     </div>
                     <div className="col-md-6 text-end">
-                      <a href="/forgot-password">Forgot Password ?</a>
+                      <Link to="/forgot-password">Forgot Password ?</Link>
                     </div>
                     
                     {/* Login button */}

@@ -1,11 +1,43 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
+import { buildApiUrl, API_CONFIG } from "../config/api";
 
 const ForgotPassword: React.FC = () => {
   const [email, setEmail] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle form submission
+    setLoading(true);
+    setSuccessMessage("");
+    setErrorMessage("");
+
+    try {
+      const response = await fetch(
+        buildApiUrl(API_CONFIG.ENDPOINTS.AUTH.FORGOT_PASSWORD),
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email }),
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error("Unable to process request. Please try again.");
+      }
+
+      const data = await response.json();
+      setSuccessMessage(
+        data.message ||
+          "If an account exists for that email, a reset link has been sent.",
+      );
+    } catch {
+      setErrorMessage("Network error. Please check your connection and try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -27,26 +59,43 @@ const ForgotPassword: React.FC = () => {
                     Enter your registered email ID to reset the password
                   </p>
 
+                  {successMessage && (
+                    <div className="alert alert-success mt-4 mb-0" role="alert">
+                      {successMessage}
+                    </div>
+                  )}
+                  {errorMessage && (
+                    <div className="alert alert-danger mt-4 mb-0" role="alert">
+                      {errorMessage}
+                    </div>
+                  )}
+
                   <div className="form-body mt-4">
                     <form className="row g-4" onSubmit={handleSubmit}>
                       <div className="col-12">
                         <label className="form-label">Email id</label>
                         <input
-                          type="text"
+                          type="email"
                           className="form-control form-control-lg"
                           placeholder="example@user.com"
                           value={email}
                           onChange={(e) => setEmail(e.target.value)}
+                          required
+                          disabled={loading}
                         />
                       </div>
                       <div className="col-12">
                         <div className="d-grid gap-2">
-                          <button type="submit" className="btn btn-grd-primary">
-                            Send
+                          <button
+                            type="submit"
+                            className="btn btn-grd-primary"
+                            disabled={loading}
+                          >
+                            {loading ? "Sending..." : "Send"}
                           </button>
-                          <a href="/login" className="btn btn-light">
+                          <Link to="/login" className="btn btn-light">
                             Back to Login
-                          </a>
+                          </Link>
                         </div>
                       </div>
                     </form>

@@ -25,6 +25,8 @@ export const API_CONFIG = {
       LOGIN: '/api/v1/auth/login',           // User login endpoint
       LOGOUT: '/api/v1/auth/logout',         // User logout endpoint
       REFRESH: '/api/v1/auth/refresh',       // Token refresh endpoint (for future use)
+      FORGOT_PASSWORD: '/api/v1/auth/forgot-password',
+      RESET_PASSWORD: '/api/v1/auth/reset-password',
     },
     
     // User management endpoints
