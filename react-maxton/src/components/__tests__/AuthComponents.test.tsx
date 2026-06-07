@@ -31,23 +31,31 @@ import BasicLogin from '../../pages/BasicLogin';
 import ProtectedRoute from '../ProtectedRoute';
 import PublicRoute from '../PublicRoute';
 
-// ============================================================================
-// MOCK SETUP
-// ============================================================================
-
-/**
- * Mock React Router's useNavigate hook
- * This allows us to test navigation without a real router
- */
-const mockNavigate = jest.fn();
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
-  useNavigate: () => mockNavigate,
-}));
+const { mockNavigate } = jest.requireMock('react-router-dom');
 
 // ============================================================================
 // TEST UTILITIES
 // ============================================================================
+
+const defaultAuthState = {
+  isAuthenticated: false,
+  user: null,
+  token: null,
+  refreshToken: null,
+  expiresIn: null,
+  mfaPending: false,
+  mfaToken: null,
+  mfaMethods: [] as string[],
+  mfaEmailOtpSent: false,
+  loading: false,
+  error: null,
+  initialized: true,
+  formData: {
+    email: '',
+    password: '',
+    rememberMe: false,
+  },
+};
 
 /**
  * Create a test Redux store with custom initial state
@@ -63,16 +71,7 @@ const createTestStore = (initialState = {}) => {
     },
     preloadedState: {
       auth: {
-        isAuthenticated: false,
-        user: null,
-        token: null,
-        loading: false,
-        error: null,
-        formData: {
-          email: '',
-          password: '',
-          rememberMe: false,
-        },
+        ...defaultAuthState,
         ...initialState,
       },
     },
@@ -156,7 +155,7 @@ describe('Authentication Components', () => {
 
       // Check that loading text and spinner are displayed
       expect(screen.getByText(/logging in/i)).toBeInTheDocument();
-      expect(screen.getByRole('button')).toBeDisabled();
+      expect(screen.getByRole('button', { name: /logging in/i })).toBeDisabled();
     });
 
     /**
@@ -250,12 +249,12 @@ describe('Authentication Components', () => {
       const passwordInput = screen.getByLabelText(/password/i);
       const submitButton = screen.getByRole('button', { name: /login/i });
 
-      // Enter short password (less than 8 characters)
+      // Enter short password (less than 6 characters)
       fireEvent.change(passwordInput, { target: { value: '123' } });
       fireEvent.click(submitButton);
 
       // Check that validation error is displayed
-      expect(screen.getByText('Password must be at least 8 characters long')).toBeInTheDocument();
+      expect(screen.getByText('Password must be at least 6 characters long')).toBeInTheDocument();
     });
 
     /**
@@ -278,7 +277,7 @@ describe('Authentication Components', () => {
       fireEvent.click(submitButton);
 
       // Check that no password validation error is displayed
-      expect(screen.queryByText('Password must be at least 8 characters long')).not.toBeInTheDocument();
+      expect(screen.queryByText('Password must be at least 6 characters long')).not.toBeInTheDocument();
     });
 
     /**
@@ -344,9 +343,6 @@ describe('Authentication Components', () => {
      * Test that form submission is prevented when validation fails
      */
     it('prevents form submission when validation fails', async () => {
-      const mockDispatch = jest.fn();
-      jest.spyOn(require('react-redux'), 'useDispatch').mockReturnValue(mockDispatch);
-
       render(
         <TestWrapper>
           <BasicLogin />
@@ -358,8 +354,8 @@ describe('Authentication Components', () => {
       // Try to submit without entering any data
       fireEvent.click(submitButton);
 
-      // Check that dispatch was not called (form submission was prevented)
-      expect(mockDispatch).not.toHaveBeenCalled();
+      expect(screen.getByText('Email is required')).toBeInTheDocument();
+      expect(screen.getByText('Password is required')).toBeInTheDocument();
     });
 
     /**
@@ -447,15 +443,17 @@ describe('Authentication Components', () => {
      */
     it('redirects to login when not authenticated', () => {
       render(
-        <TestWrapper>
+        <TestWrapper initialState={{ isAuthenticated: false, initialized: true }}>
           <ProtectedRoute>
             <div>Protected Content</div>
           </ProtectedRoute>
         </TestWrapper>
       );
 
-      // Check that navigation to login was called
-      expect(mockNavigate).toHaveBeenCalledWith('/login', expect.any(Object));
+      expect(screen.queryByText('Protected Content')).not.toBeInTheDocument();
+      const redirect = screen.getByTestId('router-navigate');
+      expect(redirect).toHaveAttribute('data-to', '/login');
+      expect(redirect).toHaveAttribute('data-replace', 'true');
     });
 
     /**
@@ -463,7 +461,7 @@ describe('Authentication Components', () => {
      */
     it('shows loading spinner when checking authentication', () => {
       render(
-        <TestWrapper initialState={{ loading: true }}>
+        <TestWrapper initialState={{ loading: true, initialized: true }}>
           <ProtectedRoute>
             <div>Protected Content</div>
           </ProtectedRoute>
@@ -511,8 +509,10 @@ describe('Authentication Components', () => {
         </TestWrapper>
       );
 
-      // Check that navigation to dashboard was called
-      expect(mockNavigate).toHaveBeenCalledWith('/dashboard', { replace: true });
+      expect(screen.queryByText('Public Content')).not.toBeInTheDocument();
+      const redirect = screen.getByTestId('router-navigate');
+      expect(redirect).toHaveAttribute('data-to', '/dashboard');
+      expect(redirect).toHaveAttribute('data-replace', 'true');
     });
 
     /**

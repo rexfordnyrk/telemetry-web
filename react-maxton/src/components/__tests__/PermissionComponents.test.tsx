@@ -8,21 +8,8 @@ import PermissionRoute from '../PermissionRoute';
 import Sidebar from '../Sidebar';
 import { navigationData } from '../../utils/navigationData';
 
-// Mock the usePermissions hook
 jest.mock('../../hooks/usePermissions', () => ({
-  usePermissions: () => ({
-    hasPermission: jest.fn(),
-    hasAnyPermission: jest.fn(),
-    hasAllPermissions: jest.fn(),
-    hasRole: jest.fn(),
-    hasAnyRole: jest.fn(),
-    hasAllRoles: jest.fn(),
-    getAllPermissions: jest.fn(),
-    getAllRoles: jest.fn(),
-    can: jest.fn(),
-    user: null,
-    isAuthenticated: false,
-  }),
+  usePermissions: jest.fn(),
 }));
 
 // Mock the LayoutContext
@@ -39,6 +26,26 @@ jest.mock('../../context/LayoutContext', () => ({
  * Test suite for PermissionRoute component
  */
 describe('PermissionRoute', () => {
+  const defaultAuthState = {
+    isAuthenticated: false,
+    user: null,
+    token: null,
+    refreshToken: null,
+    expiresIn: null,
+    mfaPending: false,
+    mfaToken: null,
+    mfaMethods: [] as string[],
+    mfaEmailOtpSent: false,
+    loading: false,
+    error: null,
+    initialized: true,
+    formData: {
+      email: '',
+      password: '',
+      rememberMe: false,
+    },
+  };
+
   const createTestStore = (authState = {}) => {
     return configureStore({
       reducer: {
@@ -46,16 +53,7 @@ describe('PermissionRoute', () => {
       },
       preloadedState: {
         auth: {
-          isAuthenticated: false,
-          user: null,
-          token: null,
-          loading: false,
-          error: null,
-          formData: {
-            email: '',
-            password: '',
-            rememberMe: false,
-          },
+          ...defaultAuthState,
           ...authState,
         },
       },
