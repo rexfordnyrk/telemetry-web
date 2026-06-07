@@ -24,11 +24,26 @@ const ForgotPassword: React.FC = () => {
         },
       );
 
-      if (!response.ok) {
-        throw new Error("Unable to process request. Please try again.");
+      const data = await response.json().catch(() => ({}));
+
+      if (response.status === 429) {
+        setErrorMessage(
+          data.error_description ||
+            data.description ||
+            "Too many password reset requests. Please try again later.",
+        );
+        return;
       }
 
-      const data = await response.json();
+      if (!response.ok) {
+        setErrorMessage(
+          data.error_description ||
+            data.description ||
+            "Unable to process request. Please try again.",
+        );
+        return;
+      }
+
       setSuccessMessage(
         data.message ||
           "If an account exists for that email, a reset link has been sent.",

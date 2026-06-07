@@ -510,15 +510,35 @@ const UserDetails: React.FC = () => {
         },
       );
 
+      const data = await response.json().catch(() => ({}));
+
+      if (response.status === 429) {
+        dispatch(
+          addAlert({
+            type: "warning",
+            title: "Too Many Requests",
+            message:
+              data.error_description ||
+              data.description ||
+              "Too many password reset requests. Please try again later.",
+          }),
+        );
+        return;
+      }
+
       if (!response.ok) {
-        throw new Error("Failed to send reset link.");
+        throw new Error(
+          data.error_description || data.description || "Failed to send reset link.",
+        );
       }
 
       dispatch(
         addAlert({
           type: "success",
           title: "Reset Link Sent",
-          message: "If an account exists for that email, a reset link has been sent.",
+          message:
+            data.message ||
+            "If an account exists for that email, a reset link has been sent.",
         }),
       );
     } catch (err: unknown) {
