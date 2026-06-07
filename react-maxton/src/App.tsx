@@ -54,12 +54,17 @@ import SettingsLocality from "./pages/SettingsLocality";
 import SettingsPartners from "./pages/SettingsPartners";
 import SettingsInterventions from "./pages/SettingsInterventions";
 import SettingsCics from "./pages/SettingsCics";
+import MfaChallenge from "./pages/MfaChallenge";
+import SecuritySettings from "./pages/SecuritySettings";
+import AuthAuditLog from "./pages/AuthAuditLog";
+import PermissionRoute from "./components/PermissionRoute";
 
 // Utility components
 import ErrorBoundary from "./components/ErrorBoundary";
 import Alert from "./components/Alert";
 
 // Styles and assets
+import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./index.css";
 import "./sass/main.scss";
@@ -184,6 +189,16 @@ function App() {
                       <ResetPassword />
                     </PublicRoute>
                   } 
+                />
+
+                {/* MFA challenge - Public route (credentials accepted, MFA pending) */}
+                <Route
+                  path="/login/mfa"
+                  element={
+                    <PublicRoute>
+                      <MfaChallenge />
+                    </PublicRoute>
+                  }
                 />
 
                 {/* ===== PROTECTED ROUTES ===== */}
@@ -311,6 +326,28 @@ function App() {
                     </ProtectedRoute>
                   }
                 />
+
+                {/* Auth audit log - permission gated */}
+                <Route
+                  path="/user-management/auth-audit-log"
+                  element={
+                    <ProtectedRoute>
+                      <PermissionRoute requiredPermissions={['read_auth_events']}>
+                        <AuthAuditLog />
+                      </PermissionRoute>
+                    </ProtectedRoute>
+                  }
+                />
+
+                {/* Profile security settings */}
+                <Route
+                  path="/profile/security"
+                  element={
+                    <ProtectedRoute>
+                      <SecuritySettings />
+                    </ProtectedRoute>
+                  }
+                />
                 
                 {/* ===== DEVICE MANAGEMENT ROUTES ===== */}
                 
@@ -427,6 +464,7 @@ function App() {
               
               {/* Global alert component for notifications */}
               <Alert />
+              <ToastContainer position="top-right" autoClose={5000} />
             </Router>
           </LayoutProvider>
         </AuthInitializer>

@@ -4,6 +4,8 @@ import Header from "../components/Header";
 import Sidebar from "../components/Sidebar";
 import ThemeCustomizer from "../components/ThemeCustomizer";
 import ErrorBoundary from "../components/ErrorBoundary";
+import SessionTimeoutWarning from "../components/SessionTimeoutWarning";
+import { useSessionManager } from "../hooks/useSessionManager";
 import { ComponentProps } from "../types";
 import { RootState } from "../store";
 
@@ -12,7 +14,9 @@ interface MainLayoutProps extends ComponentProps {
 }
 
 const MainLayout: React.FC<MainLayoutProps> = ({ children, title }) => {
-  const { user } = useSelector((state: RootState) => state.auth);
+  const { user, isAuthenticated } = useSelector((state: RootState) => state.auth);
+  const { showWarning, warningMinutes, stayLoggedIn, handleIdleLogout } =
+    useSessionManager();
 
   return (
     <div className="app-root">
@@ -54,6 +58,14 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children, title }) => {
 
       <ThemeCustomizer />
       <div className="overlay btn-toggle"></div>
+
+      {isAuthenticated && showWarning && (
+        <SessionTimeoutWarning
+          warningMinutes={warningMinutes}
+          onStayLoggedIn={stayLoggedIn}
+          onLogout={handleIdleLogout}
+        />
+      )}
     </div>
   );
 };

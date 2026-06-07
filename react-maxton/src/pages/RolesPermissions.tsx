@@ -305,11 +305,17 @@ const RolesPermissions: React.FC = () => {
       }
     } catch (error) {
       console.error("Failed to delete role:", error);
+      const message =
+        typeof error === "string"
+          ? error
+          : error instanceof Error
+            ? error.message
+            : `Failed to delete role "${targetRole.name}". Please try again.`;
       dispatch(
         addAlert({
           type: "danger",
           title: "Error",
-          message: `Failed to delete role "${targetRole.name}". Please try again.`,
+          message,
         })
       );
     }
@@ -756,64 +762,100 @@ const RolesPermissions: React.FC = () => {
         {/* Delete Confirmation Modal */}
         {showModal && (
           <div
-            className="modal fade show d-block"
-            tabIndex={-1}
-            style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
-            onClick={() => setShowModal(false)}
+            style={{
+              position: "fixed",
+              inset: 0,
+              zIndex: 10000,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              padding: 16,
+              boxSizing: "border-box",
+            }}
           >
-            <div className="modal-dialog">
-              <div
-                className="card border-top border-3 border-danger rounded-0"
-                onClick={(e) => e.stopPropagation()}
-              >
-                <div className="card-header py-3 px-4">
-                  <h5 className="mb-0 text-danger">Confirm Delete Role</h5>
+            <div
+              style={{
+                position: "fixed",
+                inset: 0,
+                backgroundColor: "rgba(0, 0, 0, 0.5)",
+                zIndex: 10000,
+              }}
+              onClick={() => setShowModal(false)}
+              aria-hidden="true"
+            />
+            <div
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="confirm-delete-role-title"
+              className="card border-top border-3 border-danger rounded-0"
+              style={{
+                position: "relative",
+                zIndex: 10001,
+                width: "100%",
+                maxWidth: 480,
+              }}
+            >
+              <div className="card-header py-3 px-4 d-flex justify-content-between align-items-center">
+                <h5 id="confirm-delete-role-title" className="mb-0 text-danger">
+                  Confirm Delete Role
+                </h5>
+                <button
+                  type="button"
+                  className="btn-close"
+                  onClick={() => setShowModal(false)}
+                  aria-label="Close"
+                />
+              </div>
+              <div className="card-body p-4">
+                <p>
+                  Are you sure you want to delete role{" "}
+                  <strong>{targetRole?.name}</strong>?
+                </p>
+                <p className="text-danger d-block mt-2">
+                  <i
+                    className="material-icons-outlined me-1"
+                    style={{ fontSize: "16px", verticalAlign: "middle" }}
+                  >
+                    warning
+                  </i>
+                  This action cannot be undone. Users assigned to this role will
+                  lose their associated permissions.
+                </p>
+                <div
+                  style={{
+                    display: "flex",
+                    gap: 12,
+                    justifyContent: "flex-end",
+                    flexWrap: "wrap",
+                    marginTop: 16,
+                  }}
+                >
                   <button
                     type="button"
-                    className="btn-close"
+                    className="btn btn-grd-royal px-4 rounded-0"
                     onClick={() => setShowModal(false)}
-                  ></button>
-                </div>
-                <div className="card-body p-4">
-                  <p>
-                    Are you sure you want to delete role{" "}
-                    <strong>{targetRole?.name}</strong>?
-                  </p>
-                  <p className="text-danger d-block mt-2">
-                    <i className="material-icons-outlined me-1" style={{ fontSize: "16px", verticalAlign: "middle" }}>
-                      warning
-                    </i>
-                    This action cannot be undone. Users assigned to this role will
-                    lose their associated permissions.
-                  </p>
-                  <div className="d-md-flex d-grid align-items-center gap-3 mt-3">
-                    <button
-                      type="button"
-                      className="btn btn-grd-royal px-4 rounded-0"
-                      onClick={() => setShowModal(false)}
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      type="button"
-                      className="btn btn-grd-danger px-4 rounded-0"
-                      onClick={handleConfirmAction}
-                      disabled={deleteLoading}
-                    >
-                      {deleteLoading ? (
-                        <>
-                          <span
-                            className="spinner-border spinner-border-sm me-2"
-                            role="status"
-                            aria-hidden="true"
-                          ></span>
-                          Deleting...
-                        </>
-                      ) : (
-                        "Delete Role"
-                      )}
-                    </button>
-                  </div>
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-grd-danger px-4 rounded-0"
+                    onClick={handleConfirmAction}
+                    disabled={deleteLoading}
+                  >
+                    {deleteLoading ? (
+                      <>
+                        <span
+                          className="spinner-border spinner-border-sm me-2"
+                          role="status"
+                          aria-hidden="true"
+                        />
+                        Deleting...
+                      </>
+                    ) : (
+                      "Delete Role"
+                    )}
+                  </button>
                 </div>
               </div>
             </div>

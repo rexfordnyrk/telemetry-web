@@ -24,9 +24,21 @@ export const API_CONFIG = {
     AUTH: {
       LOGIN: '/api/v1/auth/login',           // User login endpoint
       LOGOUT: '/api/v1/auth/logout',         // User logout endpoint
-      REFRESH: '/api/v1/auth/refresh',       // Token refresh endpoint (for future use)
+      REFRESH: '/api/v1/auth/refresh',       // Token refresh endpoint
+      SESSION_CONFIG: '/api/v1/auth/session-config', // Public idle/session timing config
       FORGOT_PASSWORD: '/api/v1/auth/forgot-password',
       RESET_PASSWORD: '/api/v1/auth/reset-password',
+      PASSWORD_POLICY: '/api/v1/auth/password-policy',
+      MFA_VERIFY: '/api/v1/auth/mfa/verify',
+      MFA_SEND_EMAIL_OTP: '/api/v1/auth/mfa/send-email-otp',
+      MFA_SETTINGS: '/api/v1/auth/mfa/settings',
+      MFA_EMAIL_OTP: '/api/v1/auth/mfa/email-otp',
+      MFA_TOTP_ENROLL: '/api/v1/auth/mfa/totp/enroll',
+      MFA_TOTP_VERIFY: '/api/v1/auth/mfa/totp/verify',
+      MFA_TOTP: '/api/v1/auth/mfa/totp',
+      MFA_BACKUP_CODES_REGENERATE: '/api/v1/auth/mfa/backup-codes/regenerate',
+      AUTH_EVENTS: '/api/v1/auth/events',
+      AUTH_EVENTS_EXPORT: '/api/v1/auth/events/export',
     },
     
     // User management endpoints
@@ -36,6 +48,7 @@ export const API_CONFIG = {
       UPDATE: (id: string) => `/api/v1/users/${id}`,     // Update specific user
       DELETE: (id: string) => `/api/v1/users/${id}`,     // Delete specific user
       ADMIN_PASSWORD: (id: string) => `/api/v1/users/${id}/admin-password`, // Admin set user password (requires create_users)
+      MFA_RESET: (id: string) => `/api/v1/users/${id}/mfa/reset`,
     },
     
     // Beneficiary management endpoints

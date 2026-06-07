@@ -86,6 +86,32 @@ export const navigationData: NavigationItem[] = [
         icon: "arrow_right",
         requiredPermissions: ["list_roles", "list_permissions"], // Require either list_roles or list_permissions
       },
+      {
+        id: "auth-audit-log",
+        title: "Auth Audit Log",
+        path: "/user-management/auth-audit-log",
+        icon: "arrow_right",
+        requiredPermissions: ["read_auth_events"],
+      },
+    ],
+  },
+  {
+    id: "profile-label",
+    title: "Profile",
+    icon: undefined,
+    children: [],
+  },
+  {
+    id: "profile",
+    title: "Profile",
+    icon: "person",
+    children: [
+      {
+        id: "profile-security",
+        title: "Security Settings",
+        path: "/profile/security",
+        icon: "arrow_right",
+      },
     ],
   },
   {

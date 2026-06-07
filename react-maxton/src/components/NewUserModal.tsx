@@ -1,7 +1,14 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { createUser } from "../store/slices/userSlice";
 import { addAlert } from "../store/slices/alertSlice";
+import {
+  validatePassword,
+  formatPolicyHint,
+  fetchPasswordPolicy,
+  PasswordPolicy,
+  DEFAULT_PASSWORD_POLICY,
+} from "../utils/passwordPolicy";
 
 interface NewUserModalProps {
   show: boolean;
@@ -27,6 +34,22 @@ const NewUserModal: React.FC<NewUserModalProps> = ({ show, onClose, onBeforeSucc
   });
 
   const [validationErrors, setValidationErrors] = useState<{ [key: string]: string }>({});
+  const [policy, setPolicy] = useState<PasswordPolicy>(DEFAULT_PASSWORD_POLICY);
+
+  useEffect(() => {
+    if (!show) {
+      return;
+    }
+    let cancelled = false;
+    fetchPasswordPolicy().then((fetched) => {
+      if (!cancelled) {
+        setPolicy(fetched);
+      }
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [show]);
 
   const handleInputChange = (
     e: React.ChangeEvent<
@@ -68,8 +91,11 @@ const NewUserModal: React.FC<NewUserModalProps> = ({ show, onClose, onBeforeSucc
 
     if (!formData.password.trim()) {
       errors.password = "Password is required";
-    } else if (formData.password.length < 8) {
-      errors.password = "Password must be at least 8 characters long";
+    } else {
+      const violations = validatePassword(formData.password, policy);
+      if (violations.length > 0) {
+        errors.password = violations.join("; ");
+      }
     }
 
     if (!formData.username.trim()) {
@@ -294,6 +320,7 @@ const NewUserModal: React.FC<NewUserModalProps> = ({ show, onClose, onBeforeSucc
                     value={formData.password}
                     onChange={handleInputChange}
                   />
+                  <div className="form-text">{formatPolicyHint(policy)}</div>
                   {validationErrors.password && (
                     <div className="invalid-feedback">{validationErrors.password}</div>
                   )}

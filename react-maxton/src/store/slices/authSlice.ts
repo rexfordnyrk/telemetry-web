@@ -32,7 +32,13 @@ export interface LoginCredentials {
  * This matches what the backend returns after successful authentication
  */
 export interface AuthResponse {
-  token: string;  // JWT token for authenticated requests
+  token?: string;  // JWT token for authenticated requests
+  refresh_token?: string; // Opaque refresh token for session renewal
+  expires_in?: number;    // Access token lifetime in seconds
+  mfa_required?: boolean;
+  mfa_token?: string;
+  methods?: string[];
+  email_otp_sent?: boolean;
   user?: {        // Optional user data (if provided by API)
     id: string;
     username: string;
@@ -43,6 +49,12 @@ export interface AuthResponse {
   };
 }
 
+export interface MFAVerifyPayload {
+  mfa_token: string;
+  method: 'totp' | 'email' | 'backup';
+  code: string;
+}
+
 /**
  * Interface for server error responses
  * This matches the error structure returned by the authentication API
@@ -51,6 +63,8 @@ export interface ServerError {
   error: string;              // Error code (e.g., "invalid_credentials", "invalid_request", "server_error")
   error_description?: string;  // Optional detailed error description
   Description?: string;        // Alternative field name for error description
+  description?: string;        // Used by some handlers (e.g. role_in_use)
+  user_count?: number;         // role_in_use conflict payload
 }
 
 /**
@@ -117,6 +131,12 @@ export interface AuthState {
   isAuthenticated: boolean;        // Whether user is logged in
   user: UserInfo | null;           // Current user information from JWT
   token: string | null;            // JWT token for API requests
+  refreshToken: string | null;     // Opaque refresh token for session renewal
+  expiresIn: number | null;        // Access token lifetime in seconds
+  mfaPending: boolean;             // Credentials OK but MFA verification required
+  mfaToken: string | null;         // Short-lived token for MFA step
+  mfaMethods: string[];            // Available MFA methods from login response
+  mfaEmailOtpSent: boolean;        // True when login already sent email OTP (email-only MFA)
   loading: boolean;                // Loading state for async operations
   error: string | null;            // Error message if something goes wrong
   initialized: boolean;             // Whether auth state has been initialized from localStorage
@@ -141,6 +161,8 @@ const saveAuthToStorage = (authState: AuthState) => {
   try {
     const authData = {
       token: authState.token,
+      refreshToken: authState.refreshToken,
+      expiresIn: authState.expiresIn,
       user: authState.user,
       isAuthenticated: authState.isAuthenticated,
       initialized: authState.initialized,
@@ -164,6 +186,8 @@ const loadAuthFromStorage = (): Partial<AuthState> | null => {
       const parsed = JSON.parse(authData);
       return {
         token: parsed.token || null,
+        refreshToken: parsed.refreshToken || null,
+        expiresIn: parsed.expiresIn ?? null,
         user: parsed.user || null,
         isAuthenticated: parsed.isAuthenticated || false,
         initialized: parsed.initialized || false,
@@ -200,6 +224,12 @@ const initialState: AuthState = {
   isAuthenticated: false,  // User starts as not authenticated
   user: null,              // No user data initially
   token: null,             // No token initially
+  refreshToken: null,        // No refresh token initially
+  expiresIn: null,           // No expiry metadata initially
+  mfaPending: false,
+  mfaToken: null,
+  mfaMethods: [],
+  mfaEmailOtpSent: false,
   loading: false,          // Not loading initially
   error: null,             // No errors initially
   initialized: false,       // Not initialized initially
@@ -214,6 +244,8 @@ const initialState: AuthState = {
 const persistedAuth = loadAuthFromStorage();
 if (persistedAuth) {
   initialState.token = persistedAuth.token || null;
+  initialState.refreshToken = persistedAuth.refreshToken || null;
+  initialState.expiresIn = persistedAuth.expiresIn ?? null;
   initialState.user = persistedAuth.user || null;
   initialState.isAuthenticated = persistedAuth.isAuthenticated || false;
   initialState.initialized = persistedAuth.initialized || false;
@@ -355,6 +387,106 @@ export const logoutUser = createAsyncThunk(
   }
 );
 
+/**
+ * Async thunk to refresh the access token using the stored refresh token.
+ */
+export const refreshSession = createAsyncThunk(
+  'auth/refreshSession',
+  async (_, { getState, rejectWithValue }) => {
+    const state = getState() as { auth: AuthState };
+    const refreshToken = state.auth.refreshToken;
+
+    if (!refreshToken) {
+      return rejectWithValue('No refresh token available');
+    }
+
+    try {
+      const response = await fetch(buildApiUrl(API_CONFIG.ENDPOINTS.AUTH.REFRESH), {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+        body: JSON.stringify({ refresh_token: refreshToken }),
+      });
+
+      if (!response.ok) {
+        return rejectWithValue('Session refresh failed');
+      }
+
+      const data: AuthResponse = await response.json();
+      return data;
+    } catch {
+      return rejectWithValue('Session refresh failed');
+    }
+  }
+);
+
+/**
+ * Complete login after MFA verification.
+ */
+export const mfaVerify = createAsyncThunk(
+  'auth/mfaVerify',
+  async (payload: MFAVerifyPayload, { rejectWithValue }) => {
+    try {
+      const response = await fetch(buildApiUrl(API_CONFIG.ENDPOINTS.AUTH.MFA_VERIFY), {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        let errorMessage = 'MFA verification failed';
+        try {
+          const errorData: ServerError = await response.json();
+          errorMessage = parseServerError(errorData);
+        } catch {
+          errorMessage = 'Invalid verification code. Please try again.';
+        }
+        return rejectWithValue(errorMessage);
+      }
+
+      const data: AuthResponse = await response.json();
+      return data;
+    } catch (error) {
+      if (error instanceof TypeError && error.message.includes('fetch')) {
+        return rejectWithValue('Network error. Please check your internet connection and try again.');
+      }
+      return rejectWithValue('An unexpected error occurred. Please try again.');
+    }
+  }
+);
+
+/**
+ * Resend email OTP during MFA login challenge.
+ */
+export const sendEmailOTP = createAsyncThunk(
+  'auth/sendEmailOTP',
+  async (mfaToken: string, { rejectWithValue }) => {
+    try {
+      const response = await fetch(buildApiUrl(API_CONFIG.ENDPOINTS.AUTH.MFA_SEND_EMAIL_OTP), {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+        body: JSON.stringify({ mfa_token: mfaToken }),
+      });
+
+      if (!response.ok) {
+        return rejectWithValue('Failed to send email verification code');
+      }
+
+      return await response.json();
+    } catch {
+      return rejectWithValue('Failed to send email verification code');
+    }
+  }
+);
+
 // ============================================================================
 // REDUX SLICE
 // ============================================================================
@@ -458,16 +590,33 @@ const authSlice = createSlice({
      */
     clearAuth: (state) => {
       state.token = null;
+      state.refreshToken = null;
+      state.expiresIn = null;
       state.user = null;
       state.isAuthenticated = false;
+      state.mfaPending = false;
+      state.mfaToken = null;
+      state.mfaMethods = [];
+      state.mfaEmailOtpSent = false;
       state.initialized = true;
+    },
+    clearMfaState: (state) => {
+      state.mfaPending = false;
+      state.mfaToken = null;
+      state.mfaMethods = [];
+      state.mfaEmailOtpSent = false;
     },
     sessionExpired: (state) => {
       state.token = null;
+      state.refreshToken = null;
+      state.expiresIn = null;
       state.user = null;
       state.isAuthenticated = false;
+      state.mfaPending = false;
+      state.mfaToken = null;
+      state.mfaMethods = [];
+      state.mfaEmailOtpSent = false;
       state.initialized = true;
-      // Clear auth state from localStorage
       clearAuthFromStorage();
     },
   },
@@ -480,13 +629,39 @@ const authSlice = createSlice({
         state.error = null;  // Clear any previous errors
       })
       .addCase(loginUser.fulfilled, (state, action) => {
-        // Login was successful
         state.loading = false;
+        state.error = null;
+
+        if (action.payload.mfa_required) {
+          state.mfaPending = true;
+          state.mfaToken = action.payload.mfa_token ?? null;
+          state.mfaMethods = action.payload.methods ?? [];
+          state.mfaEmailOtpSent = action.payload.email_otp_sent ?? false;
+          state.isAuthenticated = false;
+          state.token = null;
+          state.refreshToken = null;
+          state.expiresIn = null;
+          state.user = null;
+          state.formData = {
+            email: '',
+            password: '',
+            rememberMe: false,
+          };
+          return;
+        }
+
+        // Login was successful without MFA
+        state.mfaPending = false;
+        state.mfaToken = null;
+        state.mfaMethods = [];
+        state.mfaEmailOtpSent = false;
         state.isAuthenticated = true;
-        state.token = action.payload.token;
+        state.token = action.payload.token ?? null;
+        state.refreshToken = action.payload.refresh_token ?? null;
+        state.expiresIn = action.payload.expires_in ?? null;
         
         // Extract user information from JWT claims
-        const claims = decodeJWT(action.payload.token);
+        const claims = action.payload.token ? decodeJWT(action.payload.token) : null;
         if (claims) {
           state.user = {
             id: claims.user_id || claims.sub || '',
@@ -509,7 +684,6 @@ const authSlice = createSlice({
           state.user = null;
         }
         
-        state.error = null;
         // Clear form data only on successful login
         state.formData = {
           email: '',
@@ -522,8 +696,10 @@ const authSlice = createSlice({
         
         // Log the JWT token and its claims for debugging
         console.log('=== LOGIN SUCCESSFUL ===');
-        console.log('Full JWT Token:', action.payload.token);
-        logJWTClaims(action.payload.token, 'Login JWT Claims');
+        if (action.payload.token) {
+          console.log('Full JWT Token:', action.payload.token);
+          logJWTClaims(action.payload.token, 'Login JWT Claims');
+        }
         console.log('Extracted User Info:', state.user);
         console.log('=== END LOGIN SUCCESS ===');
       })
@@ -539,8 +715,98 @@ const authSlice = createSlice({
         state.isAuthenticated = false;
         state.user = null;
         state.token = null;
+        state.refreshToken = null;
+        state.expiresIn = null;
         state.error = null;
-        localStorage.removeItem('auth_token');  // Remove token
+        clearAuthFromStorage();
+      })
+      .addCase(refreshSession.fulfilled, (state, action) => {
+        state.token = action.payload.token ?? null;
+        state.refreshToken = action.payload.refresh_token ?? state.refreshToken;
+        state.expiresIn = action.payload.expires_in ?? state.expiresIn;
+        state.isAuthenticated = true;
+
+        const claims = action.payload.token ? decodeJWT(action.payload.token) : null;
+        if (claims) {
+          state.user = {
+            id: claims.user_id || claims.sub || '',
+            username: claims.username || '',
+            email: claims.email || '',
+            firstName: claims.first_name || '',
+            lastName: claims.last_name || '',
+            fullName: `${claims.first_name || ''} ${claims.last_name || ''}`.trim(),
+            phone: claims.phone,
+            photo: claims.photo,
+            organization: claims.organization,
+            designation: claims.designation,
+            status: claims.status,
+            roles: claims.roles || [],
+            permissions: claims.permissions || [],
+            clientId: claims.client_id,
+            scopes: claims.scopes,
+          };
+        } else {
+          state.user = null;
+        }
+
+        saveAuthToStorage(state);
+      })
+      .addCase(refreshSession.rejected, (state) => {
+        state.token = null;
+        state.refreshToken = null;
+        state.expiresIn = null;
+        state.user = null;
+        state.isAuthenticated = false;
+        state.mfaPending = false;
+        state.mfaToken = null;
+        state.mfaMethods = [];
+        state.mfaEmailOtpSent = false;
+        clearAuthFromStorage();
+      })
+      .addCase(mfaVerify.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(mfaVerify.fulfilled, (state, action) => {
+        state.loading = false;
+        state.mfaPending = false;
+        state.mfaToken = null;
+        state.mfaMethods = [];
+        state.mfaEmailOtpSent = false;
+        state.isAuthenticated = true;
+        state.token = action.payload.token ?? null;
+        state.refreshToken = action.payload.refresh_token ?? null;
+        state.expiresIn = action.payload.expires_in ?? null;
+
+        const claims = action.payload.token ? decodeJWT(action.payload.token) : null;
+        if (claims) {
+          state.user = {
+            id: claims.user_id || claims.sub || '',
+            username: claims.username || '',
+            email: claims.email || '',
+            firstName: claims.first_name || '',
+            lastName: claims.last_name || '',
+            fullName: `${claims.first_name || ''} ${claims.last_name || ''}`.trim(),
+            phone: claims.phone,
+            photo: claims.photo,
+            organization: claims.organization,
+            designation: claims.designation,
+            status: claims.status,
+            roles: claims.roles || [],
+            permissions: claims.permissions || [],
+            clientId: claims.client_id,
+            scopes: claims.scopes,
+          };
+        } else {
+          state.user = null;
+        }
+
+        state.error = null;
+        saveAuthToStorage(state);
+      })
+      .addCase(mfaVerify.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
       });
   },
 });
@@ -552,6 +818,7 @@ export const {
   clearFormData,
   setToken,
   clearAuth,
+  clearMfaState,
   sessionExpired,
   setInitialized,
 } = authSlice.actions;

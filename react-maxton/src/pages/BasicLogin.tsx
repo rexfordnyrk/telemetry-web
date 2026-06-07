@@ -18,7 +18,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, useSearchParams } from "react-router-dom";
 import { AppDispatch, RootState } from "../store";
 import { loginUser, clearError, updateFormData, LoginCredentials } from "../store/slices/authSlice";
 
@@ -30,6 +30,8 @@ const BasicLogin: React.FC = () => {
   // Redux hooks for dispatching actions and accessing state
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const sessionExpiredReason = searchParams.get("reason") === "session_expired";
   
   // Get authentication state from Redux store
   const { loading, error, isAuthenticated, formData } = useSelector((state: RootState) => state.auth);
@@ -131,6 +133,14 @@ const BasicLogin: React.FC = () => {
     }
   };
 
+  /** Normalize email to lowercase on blur for case-insensitive login. */
+  const handleEmailBlur = () => {
+    const normalized = formData.email.trim().toLowerCase();
+    if (normalized !== formData.email) {
+      dispatch(updateFormData({ email: normalized }));
+    }
+  };
+
   /**
    * Handle form submission (login attempt)
    * This function is called when the user clicks the login button
@@ -160,11 +170,14 @@ const BasicLogin: React.FC = () => {
 
     try {
       // Dispatch the login action and wait for it to complete
-      await dispatch(loginUser(credentials)).unwrap();
+      const result = await dispatch(loginUser(credentials)).unwrap();
       
-      // If login is successful, navigate to dashboard
-      // Form data will be cleared by Redux on successful login
-      navigate("/dashboard");
+      // Route to MFA challenge or dashboard based on login response
+      if (result.mfa_required) {
+        navigate("/login/mfa");
+      } else {
+        navigate("/dashboard");
+      }
     } catch (error) {
       // Error is handled by the Redux slice and displayed in the UI
       // IMPORTANT: Form data is preserved in Redux state so user can see and correct their input
@@ -222,6 +235,13 @@ const BasicLogin: React.FC = () => {
                   Enter your credentials to login your account
                 </p>
 
+                {/* Session expired banner */}
+                {sessionExpiredReason && (
+                  <div className="alert alert-warning mt-3" role="alert">
+                    Your session has expired due to inactivity. Please log in again.
+                  </div>
+                )}
+
                 {/* Error Alert - Shows authentication errors */}
                 {error && (
                   <div className="alert alert-danger mt-3" role="alert">
@@ -245,6 +265,7 @@ const BasicLogin: React.FC = () => {
                         placeholder="jhon@example.com"
                         value={formData.email}
                         onChange={handleInputChange}
+                        onBlur={handleEmailBlur}
                         disabled={loading}  // Disable during login attempt
                         required
                       />

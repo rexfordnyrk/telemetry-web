@@ -300,8 +300,12 @@ export const deleteRole = createAsyncThunk(
       });
       
       if (!response.ok) {
-        const errorMessage = await handleApiError(response, 'Failed to delete role', dispatch);
-        throw new Error(errorMessage);
+        const errorMessage = await handleApiError(
+          response,
+          'Failed to delete role',
+          dispatch
+        );
+        return rejectWithValue(errorMessage);
       }
       
       return roleId;

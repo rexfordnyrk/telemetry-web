@@ -1,83 +1,125 @@
 /**
  * Global API error handler for authenticated API calls
- * Handles common API errors like 401 session expired
- * 
- * NOTE: This is NOT for auth endpoints (login/logout) which have their own error handling.
- * This is specifically for authenticated API calls that require a valid JWT token.
- * 
- * When a 401 error is received, it checks the specific error message:
- * - "Authorization header is required"
- * - "Invalid authorization header format" 
- * - "Token has been revoked"
- * - "Invalid token"
- * - "Token has expired"
- * - "Invalid token claims"
- * 
- * For all these cases, it:
- * 1. Dispatches sessionExpired action to clear auth state (if dispatch provided)
- * 2. Shows a warning alert to the user (if dispatch provided)
- * 3. Redirects to login page after 2 seconds (if dispatch provided)
- * 4. Returns a user-friendly error message
- * 
- * @param response - The fetch response object
- * @param errorMessage - Default error message if parsing fails
- * @param dispatch - Redux dispatch function (optional, for session expired handling)
- * @returns Parsed error message
+ * Handles common API errors like 401 session expired with refresh-then-retry
  */
 
-// Import types and actions from authSlice
-import { ServerError, sessionExpired } from '../store/slices/authSlice';
+import { toast } from 'react-toastify';
+import { ServerError, sessionExpired, refreshSession } from '../store/slices/authSlice';
+import { getAuthHeaders } from '../config/api';
+
+const AUTH_ERROR_CODES = [
+  'Authorization header is required',
+  'Invalid authorization header format',
+  'Token has been revoked',
+  'Invalid token',
+  'Token has expired',
+  'Invalid token claims',
+  'invalid_refresh_token',
+  'missing_token',
+];
+
+const SESSION_EXPIRED_MESSAGE = 'Your session has expired. Please log in again.';
+const PERMISSIONS_CHANGED_MESSAGE = 'Your permissions have changed. Please log in again.';
+
+export const handleSessionExpired = (dispatch?: any): void => {
+  if (!dispatch) return;
+
+  dispatch(sessionExpired());
+  toast.warning(SESSION_EXPIRED_MESSAGE);
+  window.location.href = '/login?reason=session_expired';
+};
+
+export const handlePermissionsStale = (dispatch?: any): void => {
+  if (!dispatch) return;
+
+  dispatch(sessionExpired());
+  toast.warning(PERMISSIONS_CHANGED_MESSAGE);
+  window.location.href = '/login?reason=permissions_changed';
+};
+
+export const attemptTokenRefresh = async (
+  dispatch: any,
+  getState: () => { auth: { refreshToken: string | null } }
+): Promise<boolean> => {
+  const refreshToken = getState().auth.refreshToken;
+  if (!refreshToken) {
+    return false;
+  }
+
+  const result = await dispatch(refreshSession());
+  return refreshSession.fulfilled.match(result);
+};
+
+const isAuthError = (errorData: ServerError): boolean => {
+  return AUTH_ERROR_CODES.includes(errorData.error);
+};
 
 export const handleApiError = async (
-  response: Response, 
-  errorMessage: string, 
-  dispatch?: any
+  response: Response,
+  errorMessage: string,
+  dispatch?: any,
+  getState?: () => { auth: { refreshToken: string | null; token: string | null } },
+  alreadyRetried = false
 ): Promise<string> => {
   try {
-    // Try to parse the error response from server
     const errorData: ServerError = await response.json();
-    
-    // Check for 401 authentication errors
-    if (response.status === 401) {
-      const authErrors = [
-        "Authorization header is required",
-        "Invalid authorization header format", 
-        "Token has been revoked",
-        "Invalid token",
-        "Token has expired",
-        "Invalid token claims"
-      ];
-      
-      // Check if this is an authentication-related error
-      if (authErrors.includes(errorData.error)) {
-        // Handle session expiration/authentication issues
-        if (dispatch) {
-          // Clear auth state
-          dispatch(sessionExpired());
-          
-          // Show user-friendly message
-          alert('Your session has expired. Please log in again.');
-          
-          // Redirect to login after 2 seconds
-          setTimeout(() => {
-            window.location.href = '/login';
-          }, 2000);
+
+    if (response.status === 401 && errorData.error === 'token_version_stale') {
+      if (dispatch) {
+        handlePermissionsStale(dispatch);
+      }
+      return PERMISSIONS_CHANGED_MESSAGE;
+    }
+
+    if (response.status === 401 && isAuthError(errorData)) {
+      if (
+        dispatch &&
+        getState &&
+        !alreadyRetried &&
+        getState().auth.refreshToken
+      ) {
+        const refreshed = await attemptTokenRefresh(dispatch, getState);
+        if (refreshed) {
+          return '__RETRY__';
         }
-        
-        // Return user-friendly message
-        return 'Your session has expired. Please log in again.';
+      }
+
+      if (dispatch) {
+        handleSessionExpired(dispatch);
+      }
+
+      return SESSION_EXPIRED_MESSAGE;
+    }
+
+    if (errorData.error === 'role_in_use') {
+      if (errorData.description) {
+        return errorData.description;
+      }
+      if (typeof errorData.user_count === 'number') {
+        return `Cannot delete role: ${errorData.user_count} user(s) assigned. Reassign users first.`;
       }
     }
-    
-    // For non-401 errors or non-auth 401 errors, return the parsed error message
-    return errorData.error || errorMessage;
-  } catch (parseError) {
-    // If we can't parse the error response, use HTTP status-based messages
+
+    return (
+      errorData.error_description ||
+      errorData.Description ||
+      errorData.description ||
+      errorData.error ||
+      errorMessage
+    );
+  } catch {
+    if (response.status === 401) {
+      if (dispatch) {
+        handleSessionExpired(dispatch);
+      }
+      return SESSION_EXPIRED_MESSAGE;
+    }
+
     switch (response.status) {
       case 400:
         return 'Invalid request. Please check your input and try again.';
       case 401:
-        return 'Authentication required. Please log in again.';
+        return SESSION_EXPIRED_MESSAGE;
       case 403:
         return 'Access denied. You do not have permission to perform this action.';
       case 404:
@@ -90,30 +132,55 @@ export const handleApiError = async (
   }
 };
 
-/**
- * Enhanced fetch wrapper with global error handling
- * 
- * @param url - The URL to fetch
- * @param options - Fetch options
- * @param dispatch - Redux dispatch function (optional)
- * @returns Promise with response data
- */
 export const apiFetch = async (
-  url: string, 
+  url: string,
   options: RequestInit = {},
-  dispatch?: any
+  dispatch?: any,
+  getState?: () => { auth: { refreshToken: string | null; token: string | null } }
 ): Promise<any> => {
-  try {
-    const response = await fetch(url, options);
-    
-    if (!response.ok) {
-      const errorMessage = await handleApiError(response, 'API request failed', dispatch);
-      throw new Error(errorMessage);
+  const makeRequest = async (token?: string | null) => {
+    const authHeaders = token ? getAuthHeaders(token) : {};
+    const mergedHeaders = {
+      ...authHeaders,
+      ...(options.headers as Record<string, string> | undefined),
+    };
+
+    return fetch(url, {
+      ...options,
+      headers: mergedHeaders,
+    });
+  };
+
+  const token = getState?.().auth.token;
+  let response = await makeRequest(token);
+
+  if (!response.ok) {
+    const errorMessage = await handleApiError(
+      response,
+      'API request failed',
+      dispatch,
+      getState,
+      false
+    );
+
+    if (errorMessage === '__RETRY__' && getState) {
+      response = await makeRequest(getState().auth.token);
+      if (response.ok) {
+        return await response.json();
+      }
+
+      const retryError = await handleApiError(
+        response,
+        'API request failed',
+        dispatch,
+        getState,
+        true
+      );
+      throw new Error(retryError);
     }
-    
-    return await response.json();
-  } catch (error) {
-    // Re-throw the error for the calling code to handle
-    throw error;
+
+    throw new Error(errorMessage);
   }
-}; 
+
+  return await response.json();
+};

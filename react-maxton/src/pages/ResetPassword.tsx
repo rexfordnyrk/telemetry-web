@@ -1,6 +1,14 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { buildApiUrl, API_CONFIG } from "../config/api";
+import {
+  validatePassword,
+  formatPolicyHint,
+  fetchPasswordPolicy,
+  extractPolicyViolations,
+  PasswordPolicy,
+  DEFAULT_PASSWORD_POLICY,
+} from "../utils/passwordPolicy";
 
 const ResetPassword: React.FC = () => {
   const [searchParams] = useSearchParams();
@@ -11,6 +19,36 @@ const ResetPassword: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  const [passwordViolations, setPasswordViolations] = useState<string[]>([]);
+  const [policy, setPolicy] = useState<PasswordPolicy>(DEFAULT_PASSWORD_POLICY);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetchPasswordPolicy().then((fetched) => {
+      if (!cancelled) {
+        setPolicy(fetched);
+      }
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const runPasswordValidation = (password: string) => {
+    const violations = validatePassword(password, policy);
+    setPasswordViolations(violations);
+    return violations;
+  };
+
+  const handleNewPasswordChange = (value: string) => {
+    setNewPassword(value);
+    if (value) {
+      runPasswordValidation(value);
+    } else {
+      setPasswordViolations([]);
+    }
+    setErrorMessage("");
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -22,8 +60,8 @@ const ResetPassword: React.FC = () => {
       return;
     }
 
-    if (newPassword.length < 8) {
-      setErrorMessage("Password must be at least 8 characters long.");
+    const violations = runPasswordValidation(newPassword);
+    if (violations.length > 0) {
       return;
     }
 
@@ -47,6 +85,14 @@ const ResetPassword: React.FC = () => {
       const data = await response.json();
 
       if (!response.ok) {
+        const serverViolations = extractPolicyViolations(data);
+        if (serverViolations.length > 0) {
+          setPasswordViolations(serverViolations);
+          setErrorMessage(
+            data.description || "Password does not meet requirements.",
+          );
+          return;
+        }
         setErrorMessage(
           data.error_description || data.description || "Failed to reset password.",
         );
@@ -58,6 +104,7 @@ const ResetPassword: React.FC = () => {
       );
       setNewPassword("");
       setConfirmPassword("");
+      setPasswordViolations([]);
     } catch {
       setErrorMessage("Network error. Please check your connection and try again.");
     } finally {
@@ -84,6 +131,9 @@ const ResetPassword: React.FC = () => {
                     We received your reset password request. Please enter your
                     new password!
                   </p>
+                  <p className="text-muted small mt-2 mb-0">
+                    {formatPolicyHint(policy)}
+                  </p>
 
                   {successMessage && (
                     <div className="alert alert-success mt-4 mb-0" role="alert">
@@ -105,15 +155,24 @@ const ResetPassword: React.FC = () => {
                         </label>
                         <input
                           type="password"
-                          className="form-control"
+                          className={`form-control ${passwordViolations.length > 0 ? "is-invalid" : ""}`}
                           id="NewPassword"
                           placeholder="Enter new password"
                           value={newPassword}
-                          onChange={(e) => setNewPassword(e.target.value)}
+                          onChange={(e) => handleNewPasswordChange(e.target.value)}
                           required
-                          minLength={8}
                           disabled={loading || !!successMessage}
                         />
+                        {passwordViolations.length > 0 && (
+                          <ul
+                            className="invalid-feedback d-block"
+                            aria-label="password requirements"
+                          >
+                            {passwordViolations.map((violation) => (
+                              <li key={violation}>{violation}</li>
+                            ))}
+                          </ul>
+                        )}
                       </div>
                       <div className="col-12">
                         <label className="form-label" htmlFor="ConfirmPassword">
@@ -127,7 +186,6 @@ const ResetPassword: React.FC = () => {
                           value={confirmPassword}
                           onChange={(e) => setConfirmPassword(e.target.value)}
                           required
-                          minLength={8}
                           disabled={loading || !!successMessage}
                         />
                       </div>

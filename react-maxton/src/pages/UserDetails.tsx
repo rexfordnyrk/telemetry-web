@@ -15,6 +15,13 @@ import { fetchRoles } from "../store/slices/rolesPermissionsSlice";
 import { addAlert } from "../store/slices/alertSlice";
 import { usePermissions } from "../hooks/usePermissions";
 import { buildApiUrl, API_CONFIG } from "../config/api";
+import {
+  validatePassword,
+  formatPolicyHint,
+  fetchPasswordPolicy,
+  PasswordPolicy,
+  DEFAULT_PASSWORD_POLICY,
+} from "../utils/passwordPolicy";
 
 /** Confirmation dialog for removing a role. Rendered with portal; uses inline styles only. */
 function RemoveRoleConfirmDialog({
@@ -122,6 +129,7 @@ const UserDetails: React.FC = () => {
   const adminPasswordLoading = useAppSelector((state) => state.users.adminPasswordLoading);
   const userDetailsLoading = useAppSelector((state) => state.users.userDetailsLoading);
   const userDetailsError = useAppSelector((state) => state.users.error);
+  const authToken = useAppSelector((state) => state.auth.token);
   const { hasPermission } = usePermissions();
 
   // Load roles from API when viewing user details (for role assignment dropdown)
@@ -140,6 +148,22 @@ const UserDetails: React.FC = () => {
     newPassword: "",
     confirmPassword: "",
   });
+  const [passwordPolicy, setPasswordPolicy] = useState<PasswordPolicy>(
+    DEFAULT_PASSWORD_POLICY,
+  );
+  const [passwordViolations, setPasswordViolations] = useState<string[]>([]);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetchPasswordPolicy().then((fetched) => {
+      if (!cancelled) {
+        setPasswordPolicy(fetched);
+      }
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   // Edit mode state
   const [isEditing, setIsEditing] = useState(false);
@@ -202,6 +226,8 @@ const UserDetails: React.FC = () => {
   const canCreateUsers = hasPermission('create_users');
   const canViewUserRoles = hasPermission('view_user_roles');
   const canManageUserRoles = hasPermission('manage_user_roles');
+  const canManageUserMfa = hasPermission('manage_user_mfa');
+  const [mfaResetLoading, setMfaResetLoading] = useState(false);
 
   // If user doesn't have read_users permission, don't show the page
   if (!canReadUsers) {
@@ -270,6 +296,9 @@ const UserDetails: React.FC = () => {
       ...prev,
       [name]: value,
     }));
+    if (name === "newPassword") {
+      setPasswordViolations(value ? validatePassword(value, passwordPolicy) : []);
+    }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -430,12 +459,14 @@ const UserDetails: React.FC = () => {
       return;
     }
 
-    if (passwordData.newPassword.length < 8) {
+    const violations = validatePassword(passwordData.newPassword, passwordPolicy);
+    if (violations.length > 0) {
+      setPasswordViolations(violations);
       dispatch(
         addAlert({
           type: "danger",
-          title: "Password Too Short",
-          message: "Password must be at least 8 characters long.",
+          title: "Password Policy",
+          message: violations.join("; "),
         }),
       );
       return;
@@ -456,6 +487,7 @@ const UserDetails: React.FC = () => {
         }),
       );
       setPasswordData({ newPassword: "", confirmPassword: "" });
+      setPasswordViolations([]);
     } catch (err) {
       dispatch(
         addAlert({
@@ -497,6 +529,64 @@ const UserDetails: React.FC = () => {
           message: err instanceof Error ? err.message : "Failed to send reset link.",
         }),
       );
+    }
+  };
+
+  const handleMfaReset = async () => {
+    if (
+      !window.confirm(
+        "Reset MFA for this user? TOTP and backup codes will be cleared; email OTP will revert to the system default.",
+      )
+    ) {
+      return;
+    }
+
+    if (!authToken) {
+      dispatch(
+        addAlert({
+          type: "danger",
+          title: "MFA Reset Failed",
+          message: "Authentication required.",
+        }),
+      );
+      return;
+    }
+
+    setMfaResetLoading(true);
+    try {
+      const response = await fetch(
+        buildApiUrl(API_CONFIG.ENDPOINTS.USERS.MFA_RESET(user.id)),
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+            Authorization: `Bearer ${authToken}`,
+          },
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to reset user MFA.");
+      }
+
+      dispatch(
+        addAlert({
+          type: "success",
+          title: "MFA Reset",
+          message: "User MFA settings have been reset successfully.",
+        }),
+      );
+    } catch (err: unknown) {
+      dispatch(
+        addAlert({
+          type: "danger",
+          title: "MFA Reset Failed",
+          message: err instanceof Error ? err.message : "Failed to reset user MFA.",
+        }),
+      );
+    } finally {
+      setMfaResetLoading(false);
     }
   };
 
@@ -899,7 +989,7 @@ const UserDetails: React.FC = () => {
 
             {/* Password Management Card - requires create_users (admin set password) */}
             {canCreateUsers && (
-              <div className="card rounded-4">
+              <div className="card rounded-4 mb-3">
                 <div className="card-body">
                   <div className="d-flex align-items-start justify-content-between mb-3">
                     <div className="">
@@ -937,6 +1027,7 @@ const UserDetails: React.FC = () => {
 
                   {/* Password Reset Form */}
                   <div className="mb-4">
+                    <p className="text-muted small">{formatPolicyHint(passwordPolicy)}</p>
                     <div className="row g-3">
                       <div className="col-12">
                         <label htmlFor="newPassword" className="form-label">
@@ -944,14 +1035,20 @@ const UserDetails: React.FC = () => {
                         </label>
                         <input
                           type="password"
-                          className="form-control"
+                          className={`form-control ${passwordViolations.length > 0 ? "is-invalid" : ""}`}
                           id="newPassword"
                           name="newPassword"
                           value={passwordData.newPassword}
                           onChange={handlePasswordChange}
-                          placeholder="Enter new password (min 8 characters)"
-                          minLength={8}
+                          placeholder="Enter new password"
                         />
+                        {passwordViolations.length > 0 && (
+                          <ul className="invalid-feedback d-block">
+                            {passwordViolations.map((violation) => (
+                              <li key={violation}>{violation}</li>
+                            ))}
+                          </ul>
+                        )}
                       </div>
                       <div className="col-12">
                         <label htmlFor="confirmPassword" className="form-label">
@@ -964,8 +1061,7 @@ const UserDetails: React.FC = () => {
                           name="confirmPassword"
                           value={passwordData.confirmPassword}
                           onChange={handlePasswordChange}
-                          placeholder="Confirm new password (min 8 characters)"
-                          minLength={8}
+                          placeholder="Confirm new password"
                         />
                       </div>
                     </div>
@@ -1002,6 +1098,42 @@ const UserDetails: React.FC = () => {
                       via email.
                     </small>
                   </div>
+                </div>
+              </div>
+            )}
+
+            {/* Admin MFA reset - requires manage_user_mfa */}
+            {canManageUserMfa && (
+              <div className="card rounded-4">
+                <div className="card-body">
+                  <h5 className="mb-0 fw-bold mb-3">MFA Reset</h5>
+                  <p className="text-muted small">
+                    Clear TOTP enrollment and backup codes. Email OTP will revert to
+                    the system default.
+                  </p>
+                  <button
+                    type="button"
+                    className="btn btn-grd-danger px-4 d-flex align-items-center justify-content-center gap-2"
+                    onClick={handleMfaReset}
+                    disabled={mfaResetLoading}
+                    data-testid="admin-mfa-reset"
+                  >
+                    {mfaResetLoading ? (
+                      <>
+                        <span
+                          className="spinner-border spinner-border-sm"
+                          role="status"
+                          aria-hidden="true"
+                        />
+                        Resetting...
+                      </>
+                    ) : (
+                      <>
+                        <i className="material-icons-outlined">phonelink_lock</i>
+                        Reset MFA
+                      </>
+                    )}
+                  </button>
                 </div>
               </div>
             )}
