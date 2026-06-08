@@ -86,6 +86,10 @@ export interface UpdateVisitPayload {
   notes?: string | null;
   check_in_at?: string;
   check_out_at?: string | null;
+  // Required when the update changes check_in_at or check_out_at; the backend
+  // writes this into the cic_visit_time_corrections audit table along with
+  // the previous and new timestamp values.
+  correction_note?: string;
 }
 
 interface VisitState {
