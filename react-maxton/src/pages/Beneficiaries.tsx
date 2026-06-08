@@ -7,7 +7,7 @@ import DataTableWrapper from "../components/DataTableWrapper";
 import NewBeneficiaryModal from "../components/NewBeneficiaryModal";
 import ImportBeneficiariesModal from "../components/ImportBeneficiariesModal";
 import FilterModal from "../components/FilterModal";
-import { fetchBeneficiaries, deleteBeneficiary, updateBeneficiary, clearError } from "../store/slices/beneficiarySlice";
+import { fetchBeneficiaries, deleteBeneficiary, updateBeneficiary, clearError, fetchBeneficiaryLookups } from "../store/slices/beneficiarySlice";
 import PermissionRoute from "../components/PermissionRoute";
 import { usePermissions } from "../hooks/usePermissions";
 import { escapeHtml } from "../utils/escapeHtml";
@@ -17,7 +17,7 @@ const DEFAULT_PER_PAGE = 50;
 const Beneficiaries: React.FC = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const { beneficiaries, loading, error } = useAppSelector((state) => state.beneficiaries);
+  const { beneficiaries, loading, error, lookups } = useAppSelector((state) => state.beneficiaries);
 
   const [showNewBeneficiaryModal, setShowNewBeneficiaryModal] = useState(false);
   const [showImportModal, setShowImportModal] = useState(false);
@@ -34,19 +34,24 @@ const Beneficiaries: React.FC = () => {
   // are only used for action lookups (toggle/delete confirmations).
   const memoizedBeneficiaries = useMemo(() => beneficiaries, [beneficiaries]);
 
-  // Define filter options
-  const filterOptions = useMemo(() => {
-    const organizationsSet = new Set(beneficiaries.map((b) => b.organization));
-    const districtsSet = new Set(beneficiaries.map((b) => b.district));
-    const programmesSet = new Set(beneficiaries.map((b) => b.programme));
-    return {
-      organization: Array.from(organizationsSet),
-      district: Array.from(districtsSet),
-      programme: Array.from(programmesSet),
-      status: ["active", "inactive"],
-      date_enrolled: [], // Date range filter
-    };
-  }, [beneficiaries]);
+  // Fetch master-table lookups once on mount so the FilterModal dropdowns are
+  // populated even before the user opens the create/edit modal.
+  useEffect(() => {
+    if (lookups === null) {
+      dispatch(fetchBeneficiaryLookups());
+    }
+  }, [dispatch, lookups]);
+
+  // Filter options sourced from master tables via the lookups endpoint, so the
+  // dropdowns match canonical districts / implementing_partners / interventions
+  // rather than free-text values present on the current page.
+  const filterOptions = useMemo(() => ({
+    organization: lookups?.organizations ?? [],
+    district: lookups?.districts ?? [],
+    programme: lookups?.programmes ?? [],
+    status: ["active", "inactive"],
+    date_enrolled: [], // Date range filter
+  }), [lookups]);
 
 
   const dtColumns = useMemo(() => [
