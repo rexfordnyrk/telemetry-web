@@ -116,6 +116,8 @@ const CicVisits: React.FC = () => {
       const page = Math.floor(start / length) + 1;
       const params: Record<string, unknown> = { page, limit: length };
       if (selectedCic) params.cic_id = selectedCic;
+      const searchValue = (requestData.search?.value ?? "").trim();
+      if (searchValue) params.search = searchValue;
       dispatch(fetchVisits(params as any))
         .unwrap()
         .then(({ visits: data, pagination }) => {

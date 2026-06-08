@@ -51,6 +51,7 @@ export interface VisitFetchParams {
   cic_id?: string;
   beneficiary_id?: string;
   intervention_id?: string;
+  search?: string;
 }
 
 export interface CreateVisitPayload {
