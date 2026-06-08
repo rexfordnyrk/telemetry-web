@@ -24,6 +24,7 @@ const Beneficiaries: React.FC = () => {
   const [showModal, setShowModal] = useState(false);
   const [modalAction, setModalAction] = useState<"disable" | "delete">("disable");
   const [targetBeneficiary, setTargetBeneficiary] = useState<any>(null);
+  const [confirming, setConfirming] = useState(false);
   const [showFilterModal, setShowFilterModal] = useState(false);
   const [activeFilters, setActiveFilters] = useState<{ [key: string]: any }>({});
 
@@ -259,33 +260,28 @@ const Beneficiaries: React.FC = () => {
     }
   };
 
-  // Handle confirm action (delete/disable)
-  const handleConfirmAction = () => {
-    if (modalAction === 'delete' && targetBeneficiary?.id) {
-      dispatch(deleteBeneficiary(targetBeneficiary.id))
-        .unwrap()
-        .then(() => {
-          dispatch(addAlert({ type: 'success', title: 'Success', message: `Beneficiary "${targetBeneficiary.name}" deleted.` }));
-          reloadDataTable();
-        })
-        .catch((err: any) => {
-          dispatch(addAlert({ type: 'danger', title: 'Error', message: err?.message || 'Delete failed' }));
-        });
-    } else if (targetBeneficiary?.id) {
-      const newActive = !targetBeneficiary.is_active;
-      const newStatus = newActive ? 'activated' : 'deactivated';
-      dispatch(updateBeneficiary({ id: targetBeneficiary.id, is_active: newActive }))
-        .unwrap()
-        .then(() => {
-          dispatch(addAlert({ type: 'success', title: 'Success', message: `Beneficiary "${targetBeneficiary.name}" ${newStatus}.` }));
-          reloadDataTable();
-        })
-        .catch((err: any) => {
-          dispatch(addAlert({ type: 'danger', title: 'Error', message: err?.message || 'Update failed' }));
-        });
+  // Handle confirm action (delete/disable) — keeps modal open until async completes
+  const handleConfirmAction = async () => {
+    if (!targetBeneficiary?.id || confirming) return;
+    setConfirming(true);
+    try {
+      if (modalAction === 'delete') {
+        await dispatch(deleteBeneficiary(targetBeneficiary.id)).unwrap();
+        dispatch(addAlert({ type: 'success', title: 'Success', message: `Beneficiary "${targetBeneficiary.name}" deleted.` }));
+      } else {
+        const newActive = !targetBeneficiary.is_active;
+        await dispatch(updateBeneficiary({ id: targetBeneficiary.id, is_active: newActive })).unwrap();
+        dispatch(addAlert({ type: 'success', title: 'Success', message: `Beneficiary "${targetBeneficiary.name}" ${newActive ? 'activated' : 'deactivated'}.` }));
+      }
+      reloadDataTable();
+      setShowModal(false);
+      setTargetBeneficiary(null);
+    } catch (err: any) {
+      dispatch(addAlert({ type: 'danger', title: 'Error', message: err?.message || err || 'Action failed' }));
+      // Do NOT close modal on error — user can see the error and retry
+    } finally {
+      setConfirming(false);
     }
-    setShowModal(false);
-    setTargetBeneficiary(null);
   };
 
   return (
@@ -387,7 +383,7 @@ const Beneficiaries: React.FC = () => {
           className="modal fade show d-block"
           tabIndex={-1}
           style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
-          onClick={() => setShowModal(false)}
+          onClick={() => { if (!confirming) setShowModal(false); }}
         >
           <div className="modal-dialog">
             <div
@@ -398,17 +394,18 @@ const Beneficiaries: React.FC = () => {
                 <h5
                   className={`mb-0 ${modalAction === "delete" ? "text-danger" : "text-warning"}`}
                 >
-                    Confirm {modalAction === "delete" ? "Delete" : "Deactivate"} Beneficiary
+                  Confirm {modalAction === "delete" ? "Delete" : (targetBeneficiary?.is_active ? "Deactivate" : "Activate")} Beneficiary
                 </h5>
                 <button
                   type="button"
                   className="btn-close"
-                  onClick={() => setShowModal(false)}
+                  disabled={confirming}
+                  onClick={() => { if (!confirming) setShowModal(false); }}
                 ></button>
               </div>
               <div className="card-body p-4">
                 <p>
-                    Are you sure you want to {modalAction === "delete" ? "delete" : "deactivate"} beneficiary <strong>{targetBeneficiary?.name}</strong>?
+                  Are you sure you want to {modalAction === "delete" ? "delete" : (targetBeneficiary?.is_active ? "deactivate" : "activate")} beneficiary <strong>{targetBeneficiary?.name}</strong>?
                   {modalAction === "delete" && (
                     <span className="text-danger d-block mt-2">
                       This action cannot be undone.
@@ -419,16 +416,25 @@ const Beneficiaries: React.FC = () => {
                   <button
                     type="button"
                     className="btn btn-grd-royal px-4 rounded-0"
-                    onClick={() => setShowModal(false)}
+                    disabled={confirming}
+                    onClick={() => { if (!confirming) setShowModal(false); }}
                   >
                     Cancel
                   </button>
                   <button
                     type="button"
                     className={`btn ${modalAction === "delete" ? "btn-grd-danger" : "btn-grd-warning"} px-4 rounded-0`}
+                    disabled={confirming}
                     onClick={handleConfirmAction}
                   >
-                      {modalAction === "delete" ? "Delete" : "Deactivate"} Beneficiary
+                    {confirming ? (
+                      <span>
+                        <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true" />
+                        Working…
+                      </span>
+                    ) : (
+                      `${modalAction === "delete" ? "Delete" : (targetBeneficiary?.is_active ? "Deactivate" : "Activate")} Beneficiary`
+                    )}
                   </button>
                 </div>
               </div>
