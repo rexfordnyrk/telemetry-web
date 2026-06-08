@@ -2,16 +2,16 @@ import React, { useEffect, useMemo, useCallback, useRef, useState } from "react"
 import { Modal, Form, Row, Col, Table, Alert } from "react-bootstrap";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import ImportJobProgressModal, { ImportJobStatus } from "./ImportJobProgressModal";
+import CsvImportReportModal from "./CsvImportReportModal";
 import { addAlert } from "../store/slices/alertSlice";
-import { Beneficiary } from "../store/slices/beneficiarySlice";
-import { addBeneficiaries } from "../store/slices/beneficiarySlice";
+import { importBeneficiariesCSV, CSVImportRow, CSVImportResult } from "../store/slices/beneficiarySlice";
 import { buildApiUrl, getAuthHeaders, API_CONFIG } from "../config/api";
-import { fetchBeneficiaries } from "../store/slices/beneficiarySlice";
 
 interface ImportBeneficiariesModalProps {
   show: boolean;
   onHide: () => void;
   filters: { [key: string]: any };
+  onCompleted?: () => void;
 }
 
 type ParsedRow = Record<string, string>;
@@ -78,12 +78,14 @@ const parseCSV = (text: string): { headers: string[]; rows: string[][] } => {
 
 const normalizeKey = (key: string) => key.toLowerCase().replace(/\s+/g, "_").replace(/[^a-z0-9_]/g, "");
 
-const ImportBeneficiariesModal: React.FC<ImportBeneficiariesModalProps> = ({ show, onHide, filters }) => {
+const ImportBeneficiariesModal: React.FC<ImportBeneficiariesModalProps> = ({ show, onHide, filters, onCompleted }) => {
   const dispatch = useAppDispatch();
   const token = useAppSelector((state) => state.auth.token);
 
   const [importSource, setImportSource] = useState<ImportSource>("csv");
   const [isImporting, setIsImporting] = useState(false);
+  const [csvReport, setCsvReport] = useState<CSVImportResult | null>(null);
+  const [showReport, setShowReport] = useState(false);
   const [pageSize, setPageSize] = useState(200);
   const [jobId, setJobId] = useState<string | null>(null);
   const [jobStatus, setJobStatus] = useState<any>(null);
@@ -188,43 +190,37 @@ const ImportBeneficiariesModal: React.FC<ImportBeneficiariesModalProps> = ({ sho
     }
   }, [requiredKeys]);
 
-  const importFromCSV = useCallback(() => {
+  const importFromCSV = useCallback(async () => {
     if (parsedRows.length === 0) {
       setError("No rows to import. Please select a valid CSV file.");
       return;
     }
 
-    const now = new Date().toISOString();
-    const toBeneficiaries: Beneficiary[] = parsedRows.map((row) => {
-      const dateEnrolled = row["date_enrolled"] || now;
-      const isActive = (row["is_active"] || "true").toLowerCase() !== "false";
-      return {
-        id: crypto.randomUUID(),
+    setIsImporting(true);
+    setError(null);
+
+    try {
+      const rows: CSVImportRow[] = parsedRows.map((row) => ({
         name: row["name"] || "",
         email: row["email"] || "",
         phone: row["phone"] || "",
         organization: row["organization"] || "",
         district: row["district"] || "",
         programme: row["programme"] || "",
-        date_enrolled: dateEnrolled,
-        is_active: isActive,
-        current_device_id: null,
-        current_device: null,
-        created_at: now,
-        updated_at: now,
-        deleted_at: null,
-      };
-    });
+        date_enrolled: row["date_enrolled"] ? row["date_enrolled"] : null,
+        is_active: row["is_active"] ? row["is_active"].toLowerCase() !== "false" : undefined,
+      }));
 
-    dispatch(addBeneficiaries(toBeneficiaries));
-    dispatch(addAlert({
-      type: "success",
-      title: "Import Successful",
-      message: `${toBeneficiaries.length} beneficiaries have been added from ${fileName}.`,
-    }));
-
-    resetState();
-  }, [dispatch, parsedRows, fileName, resetState]);
+      const result = await dispatch(importBeneficiariesCSV(rows)).unwrap();
+      setCsvReport(result);
+      setShowReport(true);
+      resetState();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "CSV import failed");
+    } finally {
+      setIsImporting(false);
+    }
+  }, [dispatch, parsedRows, resetState]);
 
   const importFromPMS = useCallback(async () => {
     if (!token) {
@@ -558,12 +554,12 @@ const ImportBeneficiariesModal: React.FC<ImportBeneficiariesModalProps> = ({ sho
       <ImportJobProgressModal
         show={showProgress}
         status={jobStatus as ImportJobStatus}
-        onClose={async () => {
+        onClose={() => {
           setShowProgress(false);
           if (jobCompleted) {
-            await dispatch(fetchBeneficiaries({}));
             setJobCompleted(false);
             resetState();
+            onCompleted?.();
           }
         }}
         onBackground={() => setShowProgress(false)}
@@ -574,6 +570,17 @@ const ImportBeneficiariesModal: React.FC<ImportBeneficiariesModalProps> = ({ sho
           } catch (e) {
             // ignore
           }
+        }}
+      />
+
+      {/* CSV Import Report Modal */}
+      <CsvImportReportModal
+        show={showReport}
+        result={csvReport}
+        onClose={() => {
+          setShowReport(false);
+          setCsvReport(null);
+          onCompleted?.();
         }}
       />
     </Modal>
