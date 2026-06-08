@@ -10,6 +10,7 @@ import FilterModal from "../components/FilterModal";
 import { fetchBeneficiaries } from "../store/slices/beneficiarySlice";
 import PermissionRoute from "../components/PermissionRoute";
 import { usePermissions } from "../hooks/usePermissions";
+import { escapeHtml } from "../utils/escapeHtml";
 
 const DEFAULT_PER_PAGE = 50;
 
@@ -73,7 +74,8 @@ const Beneficiaries: React.FC = () => {
           .map((n: string) => n[0])
           .join('')
           .toUpperCase();
-        const email = row.email || '';
+        const escapedName = escapeHtml(row.name || '');
+        const escapedEmail = escapeHtml(row.email || '');
         return `
           <div class="d-flex align-items-center gap-3">
             <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center" style="width:40px;height:40px;font-size:14px;">
@@ -81,9 +83,9 @@ const Beneficiaries: React.FC = () => {
             </div>
             <div>
               <a href="#" class="text-decoration-none fw-bold" data-action="view-beneficiary" data-id="${row.id}">
-                ${row.name || ''}
+                ${escapedName}
               </a>
-              <div class="text-muted small">${email}</div>
+              <div class="text-muted small">${escapedEmail}</div>
             </div>
           </div>`;
       }
@@ -105,7 +107,7 @@ const Beneficiaries: React.FC = () => {
       render: (_: any, __: any, row: any) => {
         if (row.current_device) {
           const id = row.current_device.id;
-          const name = row.current_device.device_name || 'Device';
+          const name = escapeHtml(row.current_device.device_name || 'Device');
           return `<a href="#" class="text-decoration-none fw-bold text-primary" data-action="view-device" data-id="${id}" title="Device ID: ${id}">${name}</a>`;
         }
         return '<span class="text-muted">Unassigned</span>';

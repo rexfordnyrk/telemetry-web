@@ -355,7 +355,6 @@ function validateProgramme(programme: string, required: boolean): string {
 
 // Unicode category check functions
 function isLetter(char: string): boolean {
-  const code = char.charCodeAt(0);
   // Simple check: ASCII and common Unicode ranges
   // This matches unicode.IsLetter in Go
   return /[a-zA-ZĀ-￿]/.test(char);
