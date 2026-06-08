@@ -62,6 +62,8 @@ interface BeneficiaryState {
   // Single beneficiary state for details page
   loadingSingle: boolean;
   singleError: string | null;
+  // Currently viewed/edited beneficiary
+  currentBeneficiary: Beneficiary | null;
 }
 
 const initialState: BeneficiaryState = {
@@ -73,6 +75,7 @@ const initialState: BeneficiaryState = {
   unassignedError: null,
   loadingSingle: false,
   singleError: null,
+  currentBeneficiary: null,
 };
 
 /**
@@ -220,6 +223,118 @@ export const fetchUnassignedBeneficiaries = createAsyncThunk(
   }
 );
 
+/**
+ * Async thunk to create a new beneficiary via the API.
+ */
+export const createBeneficiary = createAsyncThunk(
+  'beneficiaries/createBeneficiary',
+  async (payload: Partial<Beneficiary>, { getState, rejectWithValue, dispatch }) => {
+    try {
+      const state = getState() as RootState;
+      const token = state.auth.token;
+      if (!token) {
+        throw new Error('No authentication token available');
+      }
+
+      const url = buildApiUrl('/api/v1/beneficiaries');
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          ...getAuthHeaders(token),
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        const errorMessage = await handleApiError(response, 'Failed to create beneficiary', dispatch);
+        throw new Error(errorMessage);
+      }
+
+      const data = await response.json();
+      return data.data || data;
+    } catch (error) {
+      return rejectWithValue(error instanceof Error ? error.message : 'Failed to create beneficiary');
+    }
+  }
+);
+
+/**
+ * Async thunk to update an existing beneficiary via the API.
+ */
+export const updateBeneficiary = createAsyncThunk(
+  'beneficiaries/updateBeneficiary',
+  async ({ id, ...payload }: { id: string } & Partial<Beneficiary>, { getState, rejectWithValue, dispatch }) => {
+    try {
+      const state = getState() as RootState;
+      const token = state.auth.token;
+      if (!token) {
+        throw new Error('No authentication token available');
+      }
+
+      const url = buildApiUrl(`/api/v1/beneficiaries/${id}`);
+      const response = await fetch(url, {
+        method: 'PUT',
+        headers: {
+          ...getAuthHeaders(token),
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        const errorMessage = await handleApiError(response, 'Failed to update beneficiary', dispatch);
+        throw new Error(errorMessage);
+      }
+
+      const data = await response.json();
+      return data.data || data;
+    } catch (error) {
+      return rejectWithValue(error instanceof Error ? error.message : 'Failed to update beneficiary');
+    }
+  }
+);
+
+/**
+ * Async thunk to fetch similar beneficiaries by phone/email.
+ */
+export const fetchSimilarBeneficiaries = createAsyncThunk(
+  'beneficiaries/fetchSimilarBeneficiaries',
+  async (params: { phone?: string; email?: string; limit?: number }, { getState, rejectWithValue, dispatch }) => {
+    try {
+      const state = getState() as RootState;
+      const token = state.auth.token;
+      if (!token) {
+        throw new Error('No authentication token available');
+      }
+
+      const queryParams = new URLSearchParams();
+      if (params.phone) queryParams.append('phone', params.phone);
+      if (params.email) queryParams.append('email', params.email);
+      if (params.limit !== undefined) queryParams.append('limit', String(params.limit));
+
+      const url = buildApiUrl(`/api/v1/beneficiaries/similar?${queryParams.toString()}`);
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: getAuthHeaders(token),
+      });
+
+      if (!response.ok) {
+        const errorMessage = await handleApiError(response, 'Failed to fetch similar beneficiaries', dispatch);
+        throw new Error(errorMessage);
+      }
+
+      const data = await response.json();
+      if (data && Array.isArray(data.data)) {
+        return data.data as Beneficiary[];
+      }
+      return [] as Beneficiary[];
+    } catch (error) {
+      return rejectWithValue(error instanceof Error ? error.message : 'Failed to fetch similar beneficiaries');
+    }
+  }
+);
+
 // Create the beneficiaries slice
 const beneficiarySlice = createSlice({
   name: 'beneficiaries',
@@ -261,6 +376,7 @@ const beneficiarySlice = createSlice({
       })
       .addCase(fetchBeneficiaryById.fulfilled, (state, action) => {
         state.loadingSingle = false;
+        state.currentBeneficiary = action.payload;
         // Add or update the beneficiary in the list if not already present
         const existingIndex = state.beneficiaries.findIndex(b => b.id === action.payload.id);
         if (existingIndex >= 0) {
@@ -285,9 +401,35 @@ const beneficiarySlice = createSlice({
       .addCase(fetchUnassignedBeneficiaries.rejected, (state, action) => {
         state.unassignedLoading = false;
         state.unassignedError = action.payload as string;
+      })
+      // Handle createBeneficiary
+      .addCase(createBeneficiary.fulfilled, (state, action) => {
+        state.beneficiaries.push(action.payload);
+      })
+      .addCase(createBeneficiary.rejected, (state, action) => {
+        state.error = action.payload as string;
+      })
+      // Handle updateBeneficiary
+      .addCase(updateBeneficiary.fulfilled, (state, action) => {
+        const updated = action.payload;
+        const index = state.beneficiaries.findIndex(b => b.id === updated.id);
+        if (index >= 0) {
+          state.beneficiaries[index] = updated;
+        }
+        if (state.currentBeneficiary && state.currentBeneficiary.id === updated.id) {
+          state.currentBeneficiary = updated;
+        }
+      })
+      .addCase(updateBeneficiary.rejected, (state, action) => {
+        state.error = action.payload as string;
+      })
+      // fetchSimilarBeneficiaries: callers consume return value; no state mutation needed
+      .addCase(fetchSimilarBeneficiaries.rejected, (state, action) => {
+        state.error = action.payload as string;
       });
   },
 });
 
 export const { clearSingleError, addBeneficiaries } = beneficiarySlice.actions;
 export default beneficiarySlice.reducer;
+
