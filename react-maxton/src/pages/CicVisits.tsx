@@ -406,52 +406,65 @@ const CicVisits: React.FC = () => {
 
       {showModal && (
         <div
-          className="modal fade show d-block"
-          tabIndex={-1}
-          style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
-          onClick={() => handleCloseModal()}
+          style={{
+            position: "fixed",
+            inset: 0,
+            zIndex: 10000,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: 16,
+          }}
         >
-          <div className="modal-dialog">
-            <div className={`card border-top border-3 border-danger rounded-0`} onClick={(e) => e.stopPropagation()}>
-              <div className="card-header py-3 px-4">
-                <h5 className="mb-0 text-danger">Confirm Delete</h5>
-                <button type="button" className="btn-close" onClick={() => handleCloseModal()} disabled={deleteSubmitting}></button>
-              </div>
-              <div className="card-body p-4">
-                {deleteError && (
-                  <div className="alert alert-danger" role="alert">
-                    {deleteError}
-                  </div>
-                )}
-                <p>
-                  Are you sure you want to delete the visit for <strong>{targetVisit?.beneficiary_name || "this beneficiary"}</strong>?
-                  <span className="text-danger d-block mt-2">This action cannot be undone.</span>
-                </p>
-                <div className="d-md-flex d-grid align-items-center gap-3 mt-3">
-                  <button
-                    type="button"
-                    className="btn btn-grd-royal px-4 rounded-0"
-                    onClick={() => handleCloseModal()}
-                    disabled={deleteSubmitting}
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="button"
-                    className="btn btn-grd-danger px-4 rounded-0"
-                    onClick={handleConfirmAction}
-                    disabled={deleteSubmitting}
-                  >
-                    {deleteSubmitting ? (
-                      <span className="d-inline-flex align-items-center gap-2">
-                        <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                        Deleting...
-                      </span>
-                    ) : (
-                      "Delete Visit"
-                    )}
-                  </button>
+          <div
+            style={{ position: "fixed", inset: 0, backgroundColor: "rgba(0,0,0,0.5)", zIndex: 10000 }}
+            onClick={() => { if (!deleteSubmitting) handleCloseModal(); }}
+            aria-hidden="true"
+          />
+          <div
+            role="dialog"
+            aria-modal="true"
+            className="card border-top border-3 border-danger rounded-0"
+            style={{ position: "relative", zIndex: 10001, width: "100%", maxWidth: 480 }}
+          >
+            <div className="card-header py-3 px-4 d-flex align-items-center justify-content-between">
+              <h5 className="mb-0 text-danger">Confirm Delete</h5>
+              <button type="button" className="btn-close" onClick={() => handleCloseModal()} disabled={deleteSubmitting} aria-label="Close"></button>
+            </div>
+            <div className="card-body p-4">
+              {deleteError && (
+                <div className="alert alert-danger" role="alert">
+                  {deleteError}
                 </div>
+              )}
+              <p>
+                Are you sure you want to delete the visit for <strong>{targetVisit?.beneficiary_name || "this beneficiary"}</strong>?
+                <span className="text-danger d-block mt-2">This action cannot be undone.</span>
+              </p>
+              <div className="d-md-flex d-grid align-items-center gap-3 mt-3">
+                <button
+                  type="button"
+                  className="btn btn-grd-royal px-4 rounded-0"
+                  onClick={() => handleCloseModal()}
+                  disabled={deleteSubmitting}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-grd-danger px-4 rounded-0"
+                  onClick={handleConfirmAction}
+                  disabled={deleteSubmitting}
+                >
+                  {deleteSubmitting ? (
+                    <span className="d-inline-flex align-items-center gap-2">
+                      <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                      Deleting...
+                    </span>
+                  ) : (
+                    "Delete Visit"
+                  )}
+                </button>
               </div>
             </div>
           </div>
