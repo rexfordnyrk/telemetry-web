@@ -519,5 +519,10 @@ const beneficiarySlice = createSlice({
 });
 
 export const { clearSingleError, addBeneficiaries } = beneficiarySlice.actions;
+
+// Selectors
+export const selectBeneficiaryPagination = (state: { beneficiaries: { pagination: BeneficiaryPagination | null } }) =>
+  state.beneficiaries.pagination;
+
 export default beneficiarySlice.reducer;
 
