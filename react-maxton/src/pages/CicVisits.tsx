@@ -6,6 +6,7 @@ import DataTableWrapper from "../components/DataTableWrapper";
 import ImportVisitsModal from "../components/ImportVisitsModal";
 import CheckInModal from "../components/CheckInModal";
 import { checkoutVisit, deleteVisit, fetchVisits, updateVisit, Visit, UpdateVisitPayload } from "../store/slices/visitSlice";
+import { escapeHtml } from "../utils/escapeHtml";
 
 const DEFAULT_PER_PAGE = 50;
 
@@ -54,12 +55,12 @@ const CicVisits: React.FC = () => {
 
 
   const dtColumns = useMemo(() => [
-    { title: 'CIC', data: 'cic_name', render: (d: any) => d || '-' },
-    { title: 'Beneficiary', data: 'beneficiary_name', render: (d: any) => d || '-' },
-    { title: 'Intervention', data: 'intervention_name', render: (d: any) => d || '-' },
-    { title: 'Activity', data: 'activity_name', render: (d: any) => d || '-' },
-    { title: 'Assisted By', data: 'assisted_by', render: (d: any) => d || '-' },
-    { title: 'Notes / Follow Up', data: 'notes', render: (d: any) => d || '-' },
+    { title: 'CIC', data: 'cic_name', render: (d: any) => escapeHtml(d) || '-' },
+    { title: 'Beneficiary', data: 'beneficiary_name', render: (d: any) => escapeHtml(d) || '-' },
+    { title: 'Intervention', data: 'intervention_name', render: (d: any) => escapeHtml(d) || '-' },
+    { title: 'Activity', data: 'activity_name', render: (d: any) => escapeHtml(d) || '-' },
+    { title: 'Assisted By', data: 'assisted_by', render: (d: any) => escapeHtml(d) || '-' },
+    { title: 'Notes / Follow Up', data: 'notes', render: (d: any) => escapeHtml(d) || '-' },
     { title: 'Check-In', data: 'check_in_at', render: (d: any) => d ? new Date(d).toLocaleString() : '-' },
     { title: 'Check-Out', data: 'check_out_at', render: (d: any) => d ? new Date(d).toLocaleString() : '-' },
     { title: 'Duration', data: 'duration_minutes', render: (mins: any) => {
