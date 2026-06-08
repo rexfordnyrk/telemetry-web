@@ -382,6 +382,67 @@ describe('beneficiarySlice — importBeneficiariesCSV thunk', () => {
   });
 });
 
+describe('beneficiarySlice — combined filter regression (§7.2 phase-4)', () => {
+  beforeEach(() => {
+    mockFetch.mockReset();
+  });
+
+  it('calls GET /api/v1/beneficiaries with all combined filter params in the URL', async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ data: [], pagination: { page: 1, limit: 25, total: 0 } }),
+    });
+
+    const store = createStore();
+    await store.dispatch(
+      fetchBeneficiaries({
+        page: 1,
+        limit: 25,
+        district: 'Accra',
+        date_enrolled_from: '2024-01-01',
+        date_enrolled_to: '2024-12-31',
+        search: 'john',
+      }),
+    );
+
+    const calledUrl: string = mockFetch.mock.calls[0][0];
+    expect(calledUrl).toContain('district=Accra');
+    expect(calledUrl).toContain('date_enrolled_from=2024-01-01');
+    expect(calledUrl).toContain('date_enrolled_to=2024-12-31');
+    expect(calledUrl).toContain('search=john');
+    expect(calledUrl).toContain('page=1');
+    expect(calledUrl).toContain('limit=25');
+  });
+
+  it('omits date_enrolled_from/to when not provided', async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ data: [], pagination: null }),
+    });
+
+    const store = createStore();
+    await store.dispatch(fetchBeneficiaries({ page: 1, limit: 25, district: 'Accra' }));
+
+    const calledUrl: string = mockFetch.mock.calls[0][0];
+    expect(calledUrl).not.toContain('date_enrolled_from');
+    expect(calledUrl).not.toContain('date_enrolled_to');
+    expect(calledUrl).toContain('district=Accra');
+  });
+
+  it('passes is_active boolean as string param when provided', async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ data: [], pagination: null }),
+    });
+
+    const store = createStore();
+    await store.dispatch(fetchBeneficiaries({ is_active: false }));
+
+    const calledUrl: string = mockFetch.mock.calls[0][0];
+    expect(calledUrl).toContain('is_active=false');
+  });
+});
+
 describe('beneficiarySlice — Redux list hygiene (Task 4)', () => {
   it('fetchBeneficiaries.fulfilled replaces list, not appends', () => {
     const old1 = makeBeneficiary({ id: 'old-1' });
