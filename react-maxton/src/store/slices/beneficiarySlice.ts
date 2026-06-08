@@ -2,6 +2,7 @@ import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { RootState } from '../index';
 import { buildApiUrl, getAuthHeaders } from '../../config/api';
 import { handleApiError } from '../../utils/apiUtils';
+import { normalizeDateForApi } from '../../utils/dateNormalize';
 
 // Define the Beneficiary type (adjust fields as needed)
 export interface Beneficiary {
@@ -84,6 +85,13 @@ export interface BeneficiaryPagination {
   total: number;
 }
 
+// Lookups for district / organization / programme dropdowns
+export interface BeneficiaryLookups {
+  districts: string[];
+  organizations: string[];
+  programmes: string[];
+}
+
 // Define the state shape for beneficiaries
 interface BeneficiaryState {
   beneficiaries: Beneficiary[];
@@ -99,6 +107,9 @@ interface BeneficiaryState {
   currentBeneficiary: Beneficiary | null;
   // Pagination metadata from the last fetchBeneficiaries call
   pagination: BeneficiaryPagination | null;
+  // Dropdown option lists fetched from /api/v1/beneficiaries/lookups
+  lookups: BeneficiaryLookups | null;
+  lookupsLoading: boolean;
 }
 
 const initialState: BeneficiaryState = {
@@ -112,6 +123,8 @@ const initialState: BeneficiaryState = {
   singleError: null,
   currentBeneficiary: null,
   pagination: null,
+  lookups: null,
+  lookupsLoading: false,
 };
 
 /**
@@ -269,13 +282,17 @@ export const createBeneficiary = createAsyncThunk(
       }
 
       const url = buildApiUrl('/api/v1/beneficiaries');
+      const body: any = { ...payload };
+      if ('date_enrolled' in body) {
+        body.date_enrolled = normalizeDateForApi(body.date_enrolled as any);
+      }
       const response = await fetch(url, {
         method: 'POST',
         headers: {
           ...getAuthHeaders(token),
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(payload),
+        body: JSON.stringify(body),
       });
 
       if (!response.ok) {
@@ -305,13 +322,17 @@ export const updateBeneficiary = createAsyncThunk(
       }
 
       const url = buildApiUrl(`/api/v1/beneficiaries/${id}`);
+      const body: any = { ...payload };
+      if ('date_enrolled' in body) {
+        body.date_enrolled = normalizeDateForApi(body.date_enrolled as any);
+      }
       const response = await fetch(url, {
         method: 'PUT',
         headers: {
           ...getAuthHeaders(token),
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(payload),
+        body: JSON.stringify(body),
       });
 
       if (!response.ok) {
@@ -410,11 +431,42 @@ export const importBeneficiariesCSV = createAsyncThunk<CSVImportResult, CSVImpor
   }
 );
 
+/**
+ * Async thunk to fetch lookup lists (districts, organizations, programmes) from the API.
+ * Used to populate dropdowns in Create / Edit beneficiary forms.
+ */
+export const fetchBeneficiaryLookups = createAsyncThunk<BeneficiaryLookups>(
+  'beneficiaries/fetchBeneficiaryLookups',
+  async (_, { getState, rejectWithValue, dispatch }) => {
+    const state = getState() as RootState;
+    const token = state.auth.token;
+    if (!token) throw new Error('No authentication token available');
+    const res = await fetch(buildApiUrl('/api/v1/beneficiaries/lookups'), {
+      method: 'GET',
+      headers: getAuthHeaders(token),
+    });
+    if (!res.ok) {
+      const msg = await handleApiError(res, 'Failed to fetch lookups', dispatch);
+      throw new Error(msg);
+    }
+    const json = await res.json();
+    return {
+      districts: Array.isArray(json.districts) ? json.districts : [],
+      organizations: Array.isArray(json.organizations) ? json.organizations : [],
+      programmes: Array.isArray(json.programmes) ? json.programmes : [],
+    };
+  }
+);
+
 // Create the beneficiaries slice
 const beneficiarySlice = createSlice({
   name: 'beneficiaries',
   initialState,
   reducers: {
+    // Clear list-level error (table alert banner)
+    clearError: (state) => {
+      state.error = null;
+    },
     // Clear single beneficiary error
     clearSingleError: (state) => {
       state.singleError = null;
@@ -516,11 +568,22 @@ const beneficiarySlice = createSlice({
       // fetchSimilarBeneficiaries: callers consume return value; no state mutation needed
       .addCase(fetchSimilarBeneficiaries.rejected, (state, action) => {
         state.error = action.payload as string;
+      })
+      // Handle fetchBeneficiaryLookups
+      .addCase(fetchBeneficiaryLookups.pending, (state) => {
+        state.lookupsLoading = true;
+      })
+      .addCase(fetchBeneficiaryLookups.fulfilled, (state, action) => {
+        state.lookupsLoading = false;
+        state.lookups = action.payload;
+      })
+      .addCase(fetchBeneficiaryLookups.rejected, (state) => {
+        state.lookupsLoading = false;
       });
   },
 });
 
-export const { clearSingleError, addBeneficiaries } = beneficiarySlice.actions;
+export const { clearError, clearSingleError, addBeneficiaries } = beneficiarySlice.actions;
 
 // Selectors
 export const selectBeneficiaryPagination = (state: { beneficiaries: { pagination: BeneficiaryPagination | null } }) =>

@@ -1,12 +1,15 @@
 import { configureStore } from '@reduxjs/toolkit';
 import beneficiaryReducer, {
+  clearError,
   createBeneficiary,
   updateBeneficiary,
   fetchSimilarBeneficiaries,
   fetchBeneficiaries,
+  fetchBeneficiaryLookups,
   deleteBeneficiary,
   importBeneficiariesCSV,
   Beneficiary,
+  BeneficiaryLookups,
   CSVImportResult,
 } from '../beneficiarySlice';
 import authReducer from '../authSlice';
@@ -52,6 +55,8 @@ const makeInitialBeneficiaryState = (beneficiaries: Beneficiary[] = []) => ({
   singleError: null,
   currentBeneficiary: null,
   pagination: null,
+  lookups: null,
+  lookupsLoading: false,
 });
 
 const createStore = (preloadedBeneficiaries: Beneficiary[] = []) =>
@@ -466,5 +471,84 @@ describe('beneficiarySlice — Redux list hygiene (Task 4)', () => {
       addBeneficiariesAction([b2])
     );
     expect(state.beneficiaries).toHaveLength(2);
+  });
+});
+
+// ─── Bug 1: date normalization (§7.2) ────────────────────────────────────────
+describe('beneficiarySlice — Bug 1: date_enrolled normalization (§7.2)', () => {
+  beforeEach(() => {
+    mockFetch.mockReset();
+  });
+
+  it('updateBeneficiary with date_enrolled YYYY-MM-DD sends ISO timestamp in body', async () => {
+    const updated = makeBeneficiary({ date_enrolled: '2026-06-09T00:00:00Z' });
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ data: updated }),
+    });
+
+    const store = createStore([makeBeneficiary()]);
+    await store.dispatch(updateBeneficiary({ id: 'b-1', date_enrolled: '2026-06-09' }));
+
+    const call = mockFetch.mock.calls[0];
+    const body = JSON.parse(call[1].body);
+    expect(body.date_enrolled).toBe('2026-06-09T00:00:00Z');
+  });
+
+  it('updateBeneficiary with empty date_enrolled sends null in body', async () => {
+    const updated = makeBeneficiary({ date_enrolled: '' });
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ data: updated }),
+    });
+
+    const store = createStore([makeBeneficiary()]);
+    await store.dispatch(updateBeneficiary({ id: 'b-1', date_enrolled: '' }));
+
+    const call = mockFetch.mock.calls[0];
+    const body = JSON.parse(call[1].body);
+    expect(body.date_enrolled).toBeNull();
+  });
+});
+
+// ─── Bug 2: clearError reducer (§7.2) ────────────────────────────────────────
+describe('beneficiarySlice — Bug 2: clearError reducer (§7.2)', () => {
+  it('clearError sets state.error to null', () => {
+    const stateWithError = { ...makeInitialBeneficiaryState(), error: 'Some fetch error' };
+    const state = beneficiaryReducer(stateWithError, clearError());
+    expect(state.error).toBeNull();
+  });
+});
+
+// ─── Bug 3: fetchBeneficiaryLookups (§7.2) ───────────────────────────────────
+describe('beneficiarySlice — Bug 3: fetchBeneficiaryLookups (§7.2)', () => {
+  beforeEach(() => {
+    mockFetch.mockReset();
+  });
+
+  it('fetchBeneficiaryLookups.fulfilled sets state.lookups', () => {
+    const payload: BeneficiaryLookups = {
+      districts: ['Accra', 'Kumasi'],
+      organizations: ['Org A'],
+      programmes: ['DARE'],
+    };
+    const state = beneficiaryReducer(
+      makeInitialBeneficiaryState(),
+      fetchBeneficiaryLookups.fulfilled(payload, '')
+    );
+    expect(state.lookups).toEqual(payload);
+    expect(state.lookupsLoading).toBe(false);
+  });
+
+  it('calls GET /api/v1/beneficiaries/lookups with auth header', async () => {
+    const payload: BeneficiaryLookups = { districts: [], organizations: [], programmes: [] };
+    mockFetch.mockResolvedValueOnce({ ok: true, json: async () => payload });
+
+    const store = createStore();
+    await store.dispatch(fetchBeneficiaryLookups());
+
+    const calledUrl: string = mockFetch.mock.calls[0][0];
+    expect(calledUrl).toContain('/beneficiaries/lookups');
+    expect(mockFetch.mock.calls[0][1]).toMatchObject({ method: 'GET' });
   });
 });
