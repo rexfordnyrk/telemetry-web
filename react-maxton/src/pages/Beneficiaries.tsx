@@ -377,66 +377,104 @@ const Beneficiaries: React.FC = () => {
             </div>
           </div>
         </div>
-      {/* Confirmation Modal */}
+      {/* Confirmation Modal (sibling backdrop + dialog pattern from RolesPermissions) */}
       {showModal && (
         <div
-          className="modal fade show d-block"
-          tabIndex={-1}
-          style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
-          onClick={() => { if (!confirming) setShowModal(false); }}
+          style={{
+            position: "fixed",
+            inset: 0,
+            zIndex: 10000,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: 16,
+            boxSizing: "border-box",
+          }}
         >
-          <div className="modal-dialog">
-            <div
-              className={`card border-top border-3 ${modalAction === "delete" ? "border-danger" : "border-warning"} rounded-0`}
-              onClick={(e) => e.stopPropagation()}
-            >
-              <div className="card-header py-3 px-4">
-                <h5
-                  className={`mb-0 ${modalAction === "delete" ? "text-danger" : "text-warning"}`}
-                >
-                  Confirm {modalAction === "delete" ? "Delete" : (targetBeneficiary?.is_active ? "Deactivate" : "Activate")} Beneficiary
-                </h5>
+          <div
+            style={{
+              position: "fixed",
+              inset: 0,
+              backgroundColor: "rgba(0, 0, 0, 0.5)",
+              zIndex: 10000,
+            }}
+            onClick={() => { if (!confirming) setShowModal(false); }}
+            aria-hidden="true"
+          />
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="confirm-beneficiary-action-title"
+            className={`card border-top border-3 ${modalAction === "delete" ? "border-danger" : "border-warning"} rounded-0`}
+            style={{
+              position: "relative",
+              zIndex: 10001,
+              width: "100%",
+              maxWidth: 480,
+            }}
+          >
+            <div className="card-header py-3 px-4 d-flex justify-content-between align-items-center">
+              <h5
+                id="confirm-beneficiary-action-title"
+                className={`mb-0 ${modalAction === "delete" ? "text-danger" : "text-warning"}`}
+              >
+                Confirm {modalAction === "delete" ? "Delete" : (targetBeneficiary?.is_active ? "Deactivate" : "Activate")} Beneficiary
+              </h5>
+              <button
+                type="button"
+                className="btn-close"
+                disabled={confirming}
+                onClick={() => { if (!confirming) setShowModal(false); }}
+                aria-label="Close"
+              />
+            </div>
+            <div className="card-body p-4">
+              <p>
+                Are you sure you want to {modalAction === "delete" ? "delete" : (targetBeneficiary?.is_active ? "deactivate" : "activate")} beneficiary <strong>{targetBeneficiary?.name}</strong>?
+              </p>
+              {modalAction === "delete" && (
+                <p className="text-danger d-block mt-2">
+                  <i
+                    className="material-icons-outlined me-1"
+                    style={{ fontSize: "16px", verticalAlign: "middle" }}
+                  >
+                    warning
+                  </i>
+                  This action cannot be undone.
+                </p>
+              )}
+              <div
+                style={{
+                  display: "flex",
+                  gap: 12,
+                  justifyContent: "flex-end",
+                  flexWrap: "wrap",
+                  marginTop: 16,
+                }}
+              >
                 <button
                   type="button"
-                  className="btn-close"
+                  className="btn btn-grd-royal px-4 rounded-0"
                   disabled={confirming}
                   onClick={() => { if (!confirming) setShowModal(false); }}
-                ></button>
-              </div>
-              <div className="card-body p-4">
-                <p>
-                  Are you sure you want to {modalAction === "delete" ? "delete" : (targetBeneficiary?.is_active ? "deactivate" : "activate")} beneficiary <strong>{targetBeneficiary?.name}</strong>?
-                  {modalAction === "delete" && (
-                    <span className="text-danger d-block mt-2">
-                      This action cannot be undone.
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  className={`btn ${modalAction === "delete" ? "btn-grd-danger" : "btn-grd-warning"} px-4 rounded-0`}
+                  disabled={confirming}
+                  onClick={handleConfirmAction}
+                >
+                  {confirming ? (
+                    <span>
+                      <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true" />
+                      Working…
                     </span>
+                  ) : (
+                    `${modalAction === "delete" ? "Delete" : (targetBeneficiary?.is_active ? "Deactivate" : "Activate")} Beneficiary`
                   )}
-                </p>
-                <div className="d-md-flex d-grid align-items-center gap-3 mt-3">
-                  <button
-                    type="button"
-                    className="btn btn-grd-royal px-4 rounded-0"
-                    disabled={confirming}
-                    onClick={() => { if (!confirming) setShowModal(false); }}
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="button"
-                    className={`btn ${modalAction === "delete" ? "btn-grd-danger" : "btn-grd-warning"} px-4 rounded-0`}
-                    disabled={confirming}
-                    onClick={handleConfirmAction}
-                  >
-                    {confirming ? (
-                      <span>
-                        <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true" />
-                        Working…
-                      </span>
-                    ) : (
-                      `${modalAction === "delete" ? "Delete" : (targetBeneficiary?.is_active ? "Deactivate" : "Activate")} Beneficiary`
-                    )}
-                  </button>
-                </div>
+                </button>
               </div>
             </div>
           </div>
