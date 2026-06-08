@@ -1,6 +1,21 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { ApiService } from "../../services/apiService";
 import { API_CONFIG } from "../../config/api";
+import type { CSVImportResult } from "../../types/csvImport";
+
+export type { CSVImportResult };
+
+export interface ImportVisitsCSVRow {
+  cic_name: string;
+  beneficiary_name: string;
+  activity_name: string;
+  check_in_at: string;
+  assisted_by?: string;
+  notes?: string;
+  intervention_name?: string;
+  check_out_at?: string;
+  duration_minutes?: number | null;
+}
 
 export interface Visit {
   id: string;
@@ -192,6 +207,21 @@ export const deleteVisit = createAsyncThunk(
       return rejectWithValue(error instanceof Error ? error.message : "Failed to delete visit");
     }
   }
+);
+
+export const importVisitsCSV = createAsyncThunk<CSVImportResult, ImportVisitsCSVRow[]>(
+  "visits/importVisitsCSV",
+  async (rows, { rejectWithValue }) => {
+    try {
+      const res = await ApiService.post<CSVImportResult>(
+        `${API_CONFIG.ENDPOINTS.VISITS.LIST}/import/csv`,
+        { rows },
+      );
+      return res;
+    } catch (error) {
+      return rejectWithValue(error instanceof Error ? error.message : "Failed to import CIC visits");
+    }
+  },
 );
 
 const visitSlice = createSlice({

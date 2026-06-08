@@ -66,17 +66,12 @@ export interface CSVImportRow {
   is_active?: boolean;
 }
 
-export interface CSVImportError {
-  row: number;
-  reason: string;
-  fields?: Record<string, string>;
-}
-
-export interface CSVImportResult {
-  created: number;
-  skipped: number;
-  errors: CSVImportError[];
-}
+// Re-export shared CSV import contract so existing imports of these types
+// from this slice keep working while the CIC-visit importer (§7.3) uses the
+// same shape from src/types/csvImport.ts.
+import type { CSVImportError as SharedCSVImportError, CSVImportResult as SharedCSVImportResult } from "../../types/csvImport";
+export type CSVImportError = SharedCSVImportError;
+export type CSVImportResult = SharedCSVImportResult;
 
 // Pagination metadata
 export interface BeneficiaryPagination {

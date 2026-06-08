@@ -1,6 +1,6 @@
 import React from 'react';
 import { Modal, Table, Badge } from 'react-bootstrap';
-import { CSVImportResult } from '../store/slices/beneficiarySlice';
+import { CSVImportResult } from '../types/csvImport';
 
 interface CsvImportReportModalProps {
   show: boolean;
