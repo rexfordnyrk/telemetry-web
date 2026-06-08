@@ -49,6 +49,8 @@ export interface BeneficiaryFetchParams {
   programme?: string;
   district?: string;
   is_active?: boolean;
+  date_enrolled_from?: string;
+  date_enrolled_to?: string;
 }
 
 // CSV import types

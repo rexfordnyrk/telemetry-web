@@ -6,6 +6,8 @@ interface FilterModalProps {
   filterOptions: { [key: string]: any[] };
   onApplyFilters: (filters: { [key: string]: any }) => void;
   title: string;
+  /** Optional callback to clear the DataTables search box when Clear All is triggered */
+  onClearSearch?: () => void;
 }
 
 const FilterModal: React.FC<FilterModalProps> = ({
@@ -14,6 +16,7 @@ const FilterModal: React.FC<FilterModalProps> = ({
   filterOptions,
   onApplyFilters,
   title,
+  onClearSearch,
 }) => {
   const [filters, setFilters] = useState<{ [key: string]: any }>({});
 
@@ -32,6 +35,7 @@ const FilterModal: React.FC<FilterModalProps> = ({
   const handleClear = () => {
     setFilters({});
     onApplyFilters({});
+    if (onClearSearch) onClearSearch();
     onClose();
   };
 

@@ -29,25 +29,9 @@ const Beneficiaries: React.FC = () => {
 
   const permissions = usePermissions();
 
-  // Client-side filter for date range only; rest is server-side via ajax params
-  const filteredBeneficiaries = useMemo(() => {
-    if (!activeFilters.date_enrolled_from && !activeFilters.date_enrolled_to) return beneficiaries;
-    return beneficiaries.filter((beneficiary) => {
-      if (activeFilters.date_enrolled_from) {
-        const beneficiaryDate = new Date(beneficiary.date_enrolled);
-        const fromDate = new Date(activeFilters.date_enrolled_from);
-        if (beneficiaryDate < fromDate) return false;
-      }
-      if (activeFilters.date_enrolled_to) {
-        const beneficiaryDate = new Date(beneficiary.date_enrolled);
-        const toDate = new Date(activeFilters.date_enrolled_to);
-        if (beneficiaryDate > toDate) return false;
-      }
-      return true;
-    });
-  }, [beneficiaries, activeFilters.date_enrolled_from, activeFilters.date_enrolled_to]);
-
-  const memoizedBeneficiaries = useMemo(() => filteredBeneficiaries, [filteredBeneficiaries]);
+  // Server-side filtering — no client-side date range needed; beneficiaries from Redux
+  // are only used for action lookups (toggle/delete confirmations).
+  const memoizedBeneficiaries = useMemo(() => beneficiaries, [beneficiaries]);
 
   // Define filter options
   const filterOptions = useMemo(() => {
@@ -156,6 +140,10 @@ const Beneficiaries: React.FC = () => {
       if (activeFilters.district) params.district = activeFilters.district;
       if (activeFilters.programme) params.programme = activeFilters.programme;
       if (activeFilters.status) params.is_active = activeFilters.status === "active";
+      if (activeFilters.date_enrolled_from) params.date_enrolled_from = activeFilters.date_enrolled_from;
+      if (activeFilters.date_enrolled_to) params.date_enrolled_to = activeFilters.date_enrolled_to;
+      const searchValue = requestData.search?.value;
+      if (searchValue) params.search = searchValue;
       dispatch(fetchBeneficiaries(params as any))
         .unwrap()
         .then((result: { data: any[]; pagination: { total: number } | null }) => {
@@ -249,6 +237,18 @@ const Beneficiaries: React.FC = () => {
   // Handle filter modal apply; table re-inits (via key) and refetches with new filters
   const handleApplyFilters = (filters: { [key: string]: any }) => {
     setActiveFilters(filters);
+  };
+
+  // Clear DataTables search box so a subsequent ajax reload runs without stale search
+  const handleClearSearch = () => {
+    if (window.$) {
+      try {
+        const dt = window.$('#beneficiaries-datatable').DataTable();
+        if (dt && dt.search) dt.search('').draw();
+      } catch (_) {
+        // DataTable may not be initialized yet — safe to ignore
+      }
+    }
   };
 
   // Reload DataTables ajax without resetting pagination position
@@ -451,6 +451,7 @@ const Beneficiaries: React.FC = () => {
         onClose={() => setShowFilterModal(false)}
         filterOptions={filterOptions}
         onApplyFilters={handleApplyFilters}
+        onClearSearch={handleClearSearch}
         title="Beneficiaries"
       />
       <ImportBeneficiariesModal
