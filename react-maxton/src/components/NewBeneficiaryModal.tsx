@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Modal, Form, Row, Col } from "react-bootstrap";
 import { useAppDispatch } from "../store/hooks";
 import { addAlert } from "../store/slices/alertSlice";
+import { validateBeneficiaryCreate } from "../utils/beneficiaryValidation";
 
 interface NewBeneficiaryModalProps {
   show: boolean;
@@ -46,36 +47,9 @@ const NewBeneficiaryModal: React.FC<NewBeneficiaryModalProps> = ({
   };
 
   const validateForm = () => {
-    const newErrors: { [key: string]: string } = {};
-
-    if (!formData.name.trim()) {
-      newErrors.name = "Full name is required";
-    }
-
-    if (!formData.email.trim()) {
-      newErrors.email = "Email is required";
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = "Please enter a valid email address";
-    }
-
-    if (!formData.phone.trim()) {
-      newErrors.phone = "Phone number is required";
-    }
-
-    if (!formData.organization.trim()) {
-      newErrors.organization = "Organization is required";
-    }
-
-    if (!formData.district.trim()) {
-      newErrors.district = "District is required";
-    }
-
-    if (!formData.programme.trim()) {
-      newErrors.programme = "Programme is required";
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+    const validationErrors = validateBeneficiaryCreate(formData);
+    setErrors(validationErrors);
+    return Object.keys(validationErrors).length === 0;
   };
 
   const handleSubmit = (e: React.FormEvent) => {

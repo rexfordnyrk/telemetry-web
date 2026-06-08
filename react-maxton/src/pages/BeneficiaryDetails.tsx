@@ -5,6 +5,7 @@ import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { addAlert } from "../store/slices/alertSlice";
 import { fetchBeneficiaryById, clearSingleError } from "../store/slices/beneficiarySlice";
 import { usePermissions } from "../hooks/usePermissions";
+import { validateBeneficiaryUpdate } from "../utils/beneficiaryValidation";
 
 const BeneficiaryDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -32,6 +33,7 @@ const BeneficiaryDetails: React.FC = () => {
     programme: beneficiary?.programme || "",
     is_active: beneficiary?.is_active || false,
   });
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
   // Fetch beneficiary data when component mounts or ID changes
   useEffect(() => {
@@ -136,10 +138,33 @@ const BeneficiaryDetails: React.FC = () => {
       [name]:
         type === "checkbox" ? (e.target as HTMLInputElement).checked : value,
     }));
+
+    // Clear error when user starts typing
+    if (errors[name]) {
+      setErrors((prev) => ({
+        ...prev,
+        [name]: "",
+      }));
+    }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Validate form using updateBeneficiary validator (allows empty fields)
+    const validationErrors = validateBeneficiaryUpdate({
+      name: formData.name,
+      email: formData.email,
+      phone: formData.phone,
+      organization: formData.organization,
+      district: formData.district,
+      programme: formData.programme,
+    });
+
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      return;
+    }
 
     // TODO: Implement updateBeneficiary action
     dispatch(
@@ -162,6 +187,7 @@ const BeneficiaryDetails: React.FC = () => {
       programme: beneficiary.programme,
       is_active: beneficiary.is_active,
     });
+    setErrors({});
     setIsEditing(false);
   };
 
@@ -282,13 +308,18 @@ const BeneficiaryDetails: React.FC = () => {
                     </label>
                     <input
                       type="text"
-                      className="form-control"
+                      className={`form-control ${errors.name ? "is-invalid" : ""}`}
                       id="name"
                       name="name"
                       value={formData.name}
                       onChange={handleInputChange}
                       disabled={!isEditing}
                     />
+                    {errors.name && (
+                      <div className="invalid-feedback d-block">
+                        {errors.name}
+                      </div>
+                    )}
                   </div>
 
                   <div className="col-md-6">
@@ -297,13 +328,18 @@ const BeneficiaryDetails: React.FC = () => {
                     </label>
                     <input
                       type="email"
-                      className="form-control"
+                      className={`form-control ${errors.email ? "is-invalid" : ""}`}
                       id="email"
                       name="email"
                       value={formData.email}
                       onChange={handleInputChange}
                       disabled={!isEditing}
                     />
+                    {errors.email && (
+                      <div className="invalid-feedback d-block">
+                        {errors.email}
+                      </div>
+                    )}
                   </div>
 
                   <div className="col-md-6">
@@ -312,13 +348,18 @@ const BeneficiaryDetails: React.FC = () => {
                     </label>
                     <input
                       type="text"
-                      className="form-control"
+                      className={`form-control ${errors.phone ? "is-invalid" : ""}`}
                       id="phone"
                       name="phone"
                       value={formData.phone}
                       onChange={handleInputChange}
                       disabled={!isEditing}
                     />
+                    {errors.phone && (
+                      <div className="invalid-feedback d-block">
+                        {errors.phone}
+                      </div>
+                    )}
                   </div>
 
                   <div className="col-md-6">
@@ -327,13 +368,18 @@ const BeneficiaryDetails: React.FC = () => {
                     </label>
                     <input
                       type="text"
-                      className="form-control"
+                      className={`form-control ${errors.district ? "is-invalid" : ""}`}
                       id="district"
                       name="district"
                       value={formData.district}
                       onChange={handleInputChange}
                       disabled={!isEditing}
                     />
+                    {errors.district && (
+                      <div className="invalid-feedback d-block">
+                        {errors.district}
+                      </div>
+                    )}
                   </div>
 
                   <div className="col-md-6">
@@ -342,13 +388,18 @@ const BeneficiaryDetails: React.FC = () => {
                     </label>
                     <input
                       type="text"
-                      className="form-control"
+                      className={`form-control ${errors.organization ? "is-invalid" : ""}`}
                       id="organization"
                       name="organization"
                       value={formData.organization}
                       onChange={handleInputChange}
                       disabled={!isEditing}
                     />
+                    {errors.organization && (
+                      <div className="invalid-feedback d-block">
+                        {errors.organization}
+                      </div>
+                    )}
                   </div>
 
                   <div className="col-md-6">
@@ -357,13 +408,18 @@ const BeneficiaryDetails: React.FC = () => {
                     </label>
                     <input
                       type="text"
-                      className="form-control"
+                      className={`form-control ${errors.programme ? "is-invalid" : ""}`}
                       id="programme"
                       name="programme"
                       value={formData.programme}
                       onChange={handleInputChange}
                       disabled={!isEditing}
                     />
+                    {errors.programme && (
+                      <div className="invalid-feedback d-block">
+                        {errors.programme}
+                      </div>
+                    )}
                   </div>
 
                   <div className="col-md-12 d-flex align-items-end">
