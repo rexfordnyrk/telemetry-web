@@ -450,10 +450,11 @@ export const fetchBeneficiaryLookups = createAsyncThunk<BeneficiaryLookups>(
       throw new Error(msg);
     }
     const json = await res.json();
+    const payload = json?.data ?? json;
     return {
-      districts: Array.isArray(json.districts) ? json.districts : [],
-      organizations: Array.isArray(json.organizations) ? json.organizations : [],
-      programmes: Array.isArray(json.programmes) ? json.programmes : [],
+      districts: Array.isArray(payload?.districts) ? payload.districts : [],
+      organizations: Array.isArray(payload?.organizations) ? payload.organizations : [],
+      programmes: Array.isArray(payload?.programmes) ? payload.programmes : [],
     };
   }
 );
