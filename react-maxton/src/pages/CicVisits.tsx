@@ -471,7 +471,11 @@ const CicVisits: React.FC = () => {
         </div>
       )}
 
-      <CheckInModal show={showCheckInModal} onHide={() => setShowCheckInModal(false)} />
+      <CheckInModal
+        show={showCheckInModal}
+        onHide={() => setShowCheckInModal(false)}
+        onSuccess={refreshTable}
+      />
       <ImportVisitsModal show={showImportModal} onHide={() => setShowImportModal(false)} />
 
       {/* Edit Visit Modal */}

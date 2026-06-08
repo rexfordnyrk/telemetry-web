@@ -10,7 +10,10 @@ import { handleApiError } from "../utils/apiUtils";
 interface CheckInModalProps {
   show: boolean;
   onHide: () => void;
+  onSuccess?: () => void;
 }
+
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 interface BeneficiaryOption {
   id: string;
@@ -89,7 +92,7 @@ const toIso = (local: string) => {
   return Number.isNaN(parsed.getTime()) ? new Date().toISOString() : parsed.toISOString();
 };
 
-const CheckInModal: React.FC<CheckInModalProps> = ({ show, onHide }) => {
+const CheckInModal: React.FC<CheckInModalProps> = ({ show, onHide, onSuccess }) => {
   const dispatch = useAppDispatch();
   const token = useAppSelector((state) => state.auth.token);
 
@@ -523,9 +526,18 @@ const CheckInModal: React.FC<CheckInModalProps> = ({ show, onHide }) => {
 
   const validate = () => {
     const nextErrors: Record<string, string> = {};
-    if (!formData.cic_id.trim()) nextErrors.cic_id = "CIC is required";
-    if (!formData.beneficiary_id.trim()) nextErrors.beneficiary_id = "Beneficiary is required";
+    if (!formData.cic_id.trim()) {
+      nextErrors.cic_id = "CIC is required";
+    } else if (!UUID_RE.test(formData.cic_id.trim())) {
+      nextErrors.cic_id = "Please select a CIC from the list.";
+    }
+    if (!formData.beneficiary_id.trim()) {
+      nextErrors.beneficiary_id = "Beneficiary is required";
+    } else if (!UUID_RE.test(formData.beneficiary_id.trim())) {
+      nextErrors.beneficiary_id = "Please select a beneficiary from the search results.";
+    }
     if (!formData.activity_name.trim()) nextErrors.activity_name = "Activity is required";
+    if (!formData.assisted_by.trim()) nextErrors.assisted_by = "Assisted By is required";
     if (!formData.check_in_at.trim()) nextErrors.check_in_at = "Check-In is required";
     setErrors(nextErrors);
     return Object.keys(nextErrors).length === 0;
@@ -575,8 +587,14 @@ const CheckInModal: React.FC<CheckInModalProps> = ({ show, onHide }) => {
         })
       );
       onHide();
+      onSuccess?.();
     } catch (error) {
-      setFormGeneralError(error instanceof Error ? error.message : "Unable to save CIC visit.");
+      const message = error instanceof Error ? error.message : "Unable to save CIC visit.";
+      if (message.toLowerCase().includes("already checked in")) {
+        setFormGeneralError("This beneficiary is already checked in at this CIC. Check them out first.");
+      } else {
+        setFormGeneralError(message);
+      }
     } finally {
       setFormSubmitting(false);
     }
@@ -609,6 +627,11 @@ const CheckInModal: React.FC<CheckInModalProps> = ({ show, onHide }) => {
       </Modal.Header>
       <Modal.Body className="p-4">
         <Form onSubmit={handleFormSubmit}>
+          {formGeneralError && (
+            <div className="alert alert-danger" role="alert">
+              {formGeneralError}
+            </div>
+          )}
           <Row className="g-3">
             <Col md={6}>
               <Form.Group>
@@ -763,15 +786,19 @@ const CheckInModal: React.FC<CheckInModalProps> = ({ show, onHide }) => {
             </Col>
             <Col md={6}>
               <Form.Group>
-                <Form.Label>Assisted By</Form.Label>
+                <Form.Label>
+                  Assisted By <span className="text-danger">*</span>
+                </Form.Label>
                 <Form.Control
                   type="text"
                   name="assisted_by"
                   value={formData.assisted_by}
                   onChange={handleStandardInputChange}
                   placeholder="Enter staff name"
+                  isInvalid={!!errors.assisted_by}
                   disabled={formSubmitting}
                 />
+                <Form.Control.Feedback type="invalid">{errors.assisted_by}</Form.Control.Feedback>
               </Form.Group>
             </Col>
             <Col md={6}>
