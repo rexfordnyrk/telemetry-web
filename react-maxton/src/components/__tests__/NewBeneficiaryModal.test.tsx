@@ -22,20 +22,23 @@ jest.mock('../../utils/apiUtils', () => ({
 jest.mock('../../store/slices/beneficiarySlice', () => {
   const actual = jest.requireActual('../../store/slices/beneficiarySlice');
   return {
+    __esModule: true,
     ...actual,
     fetchSimilarBeneficiaries: jest.fn(),
     createBeneficiary: jest.fn(),
+    fetchBeneficiaryLookups: jest.fn(),
   };
 });
 
 import {
   fetchSimilarBeneficiaries,
   createBeneficiary,
+  fetchBeneficiaryLookups,
 } from '../../store/slices/beneficiarySlice';
 
 global.fetch = jest.fn();
 
-const createStore = () =>
+const createStore = (lookups: any = null) =>
   configureStore({
     reducer: {
       auth: authReducer,
@@ -54,8 +57,28 @@ const createStore = () =>
         initialized: true,
         formData: { email: '', password: '', rememberMe: false },
       },
-    },
+      beneficiaries: {
+        beneficiaries: [],
+        unassignedBeneficiaries: [],
+        loading: false,
+        unassignedLoading: false,
+        error: null,
+        unassignedError: null,
+        loadingSingle: false,
+        singleError: null,
+        currentBeneficiary: null,
+        pagination: null,
+        lookups,
+        lookupsLoading: false,
+      },
+    } as any,
   });
+
+const MOCK_LOOKUPS = {
+  districts: ['Accra', 'Kumasi'],
+  organizations: ['Test Org', 'Org B'],
+  programmes: ['DARE', 'Other'],
+};
 
 const fillValidForm = () => {
   fireEvent.change(screen.getByPlaceholderText('Enter full name'), {
@@ -67,21 +90,25 @@ const fillValidForm = () => {
   fireEvent.change(screen.getByPlaceholderText('Enter phone number'), {
     target: { name: 'phone', value: '0551234567' },
   });
-  fireEvent.change(screen.getByPlaceholderText('Enter district'), {
-    target: { name: 'district', value: 'Accra' },
-  });
-  fireEvent.change(screen.getByPlaceholderText('Enter partner organization'), {
-    target: { name: 'organization', value: 'Test Org' },
-  });
-  fireEvent.change(screen.getByPlaceholderText('Enter intervention programme'), {
-    target: { name: 'programme', value: 'DARE' },
-  });
+  // district, organization, programme are now <select> elements; query by name attribute
+  const dSel = document.querySelector('select[name="district"]') as HTMLSelectElement;
+  const oSel = document.querySelector('select[name="organization"]') as HTMLSelectElement;
+  const pSel = document.querySelector('select[name="programme"]') as HTMLSelectElement;
+  if (dSel) fireEvent.change(dSel, { target: { value: 'Accra' } });
+  if (oSel) fireEvent.change(oSel, { target: { value: 'Test Org' } });
+  if (pSel) fireEvent.change(pSel, { target: { value: 'DARE' } });
 };
 
 describe('NewBeneficiaryModal', () => {
   beforeEach(() => {
     (fetchSimilarBeneficiaries as jest.Mock).mockReset();
     (createBeneficiary as jest.Mock).mockReset();
+    (fetchBeneficiaryLookups as jest.Mock).mockReset();
+    // Provide a default no-op so useEffect dispatch doesn't throw
+    (fetchBeneficiaryLookups as jest.Mock).mockReturnValue({
+      type: 'beneficiaries/fetchBeneficiaryLookups',
+      unwrap: async () => ({ districts: [], organizations: [], programmes: [] }),
+    });
   });
 
   it('renders the modal when show is true', () => {
@@ -117,7 +144,7 @@ describe('NewBeneficiaryModal', () => {
     }));
 
     render(
-      <Provider store={createStore()}>
+      <Provider store={createStore(MOCK_LOOKUPS)}>
         <NewBeneficiaryModal show={true} onHide={jest.fn()} />
       </Provider>
     );
@@ -157,7 +184,7 @@ describe('NewBeneficiaryModal', () => {
     }));
 
     render(
-      <Provider store={createStore()}>
+      <Provider store={createStore(MOCK_LOOKUPS)}>
         <NewBeneficiaryModal show={true} onHide={jest.fn()} />
       </Provider>
     );

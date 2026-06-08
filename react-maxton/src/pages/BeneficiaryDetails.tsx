@@ -3,7 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import MainLayout from "../layouts/MainLayout";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { addAlert } from "../store/slices/alertSlice";
-import { fetchBeneficiaryById, clearSingleError, updateBeneficiary } from "../store/slices/beneficiarySlice";
+import { fetchBeneficiaryById, clearSingleError, updateBeneficiary, fetchBeneficiaryLookups } from "../store/slices/beneficiarySlice";
 import { formatDateEnrolled } from "../utils/formatDate";
 import { usePermissions } from "../hooks/usePermissions";
 import { validateBeneficiaryUpdate } from "../utils/beneficiaryValidation";
@@ -15,7 +15,7 @@ const BeneficiaryDetails: React.FC = () => {
   const permissions = usePermissions();
 
   // Get beneficiaries and loading state from Redux store with defensive defaults
-  const { beneficiaries = [], loadingSingle = false, singleError = null } = useAppSelector((state) => state.beneficiaries || {});
+  const { beneficiaries = [], loadingSingle = false, singleError = null, lookups = null } = useAppSelector((state) => state.beneficiaries || {});
 
   // Find beneficiary by ID from the store
   const beneficiary = useMemo(() => {
@@ -66,6 +66,13 @@ const BeneficiaryDetails: React.FC = () => {
       });
     }
   }, [beneficiary]);
+
+  // Fetch lookups when entering edit mode (if not already loaded)
+  useEffect(() => {
+    if (isEditing && lookups === null) {
+      dispatch(fetchBeneficiaryLookups());
+    }
+  }, [isEditing, lookups, dispatch]);
 
   // Show loading state while fetching beneficiary
   if (loadingSingle && !beneficiary) {
@@ -391,15 +398,30 @@ const BeneficiaryDetails: React.FC = () => {
                     <label htmlFor="district" className="form-label">
                       District
                     </label>
-                    <input
-                      type="text"
-                      className={`form-control ${errors.district ? "is-invalid" : ""}`}
-                      id="district"
-                      name="district"
-                      value={formData.district}
-                      onChange={handleInputChange}
-                      disabled={!isEditing}
-                    />
+                    {isEditing ? (
+                      <select
+                        className={`form-select ${errors.district ? "is-invalid" : ""}`}
+                        id="district"
+                        name="district"
+                        value={formData.district}
+                        onChange={handleInputChange}
+                      >
+                        <option value="">Select district…</option>
+                        {(lookups?.districts ?? []).map((d) => (
+                          <option key={d} value={d}>{d}</option>
+                        ))}
+                      </select>
+                    ) : (
+                      <input
+                        type="text"
+                        className="form-control"
+                        id="district"
+                        name="district"
+                        value={formData.district}
+                        onChange={handleInputChange}
+                        disabled
+                      />
+                    )}
                     {errors.district && (
                       <div className="invalid-feedback d-block">
                         {errors.district}
@@ -411,15 +433,30 @@ const BeneficiaryDetails: React.FC = () => {
                     <label htmlFor="organization" className="form-label">
                       Partner Organization
                     </label>
-                    <input
-                      type="text"
-                      className={`form-control ${errors.organization ? "is-invalid" : ""}`}
-                      id="organization"
-                      name="organization"
-                      value={formData.organization}
-                      onChange={handleInputChange}
-                      disabled={!isEditing}
-                    />
+                    {isEditing ? (
+                      <select
+                        className={`form-select ${errors.organization ? "is-invalid" : ""}`}
+                        id="organization"
+                        name="organization"
+                        value={formData.organization}
+                        onChange={handleInputChange}
+                      >
+                        <option value="">Select organization…</option>
+                        {(lookups?.organizations ?? []).map((o) => (
+                          <option key={o} value={o}>{o}</option>
+                        ))}
+                      </select>
+                    ) : (
+                      <input
+                        type="text"
+                        className="form-control"
+                        id="organization"
+                        name="organization"
+                        value={formData.organization}
+                        onChange={handleInputChange}
+                        disabled
+                      />
+                    )}
                     {errors.organization && (
                       <div className="invalid-feedback d-block">
                         {errors.organization}
@@ -431,15 +468,30 @@ const BeneficiaryDetails: React.FC = () => {
                     <label htmlFor="programme" className="form-label">
                       Intervention Programme
                     </label>
-                    <input
-                      type="text"
-                      className={`form-control ${errors.programme ? "is-invalid" : ""}`}
-                      id="programme"
-                      name="programme"
-                      value={formData.programme}
-                      onChange={handleInputChange}
-                      disabled={!isEditing}
-                    />
+                    {isEditing ? (
+                      <select
+                        className={`form-select ${errors.programme ? "is-invalid" : ""}`}
+                        id="programme"
+                        name="programme"
+                        value={formData.programme}
+                        onChange={handleInputChange}
+                      >
+                        <option value="">Select programme…</option>
+                        {(lookups?.programmes ?? []).map((p) => (
+                          <option key={p} value={p}>{p}</option>
+                        ))}
+                      </select>
+                    ) : (
+                      <input
+                        type="text"
+                        className="form-control"
+                        id="programme"
+                        name="programme"
+                        value={formData.programme}
+                        onChange={handleInputChange}
+                        disabled
+                      />
+                    )}
                     {errors.programme && (
                       <div className="invalid-feedback d-block">
                         {errors.programme}

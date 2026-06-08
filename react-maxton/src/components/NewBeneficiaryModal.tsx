@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Modal, Form, Row, Col } from "react-bootstrap";
-import { useAppDispatch } from "../store/hooks";
+import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { addAlert } from "../store/slices/alertSlice";
 import {
   createBeneficiary,
+  fetchBeneficiaryLookups,
   fetchSimilarBeneficiaries,
   Beneficiary,
 } from "../store/slices/beneficiarySlice";
@@ -22,6 +23,14 @@ const NewBeneficiaryModal: React.FC<NewBeneficiaryModalProps> = ({
   onCreated,
 }) => {
   const dispatch = useAppDispatch();
+  const lookups = useAppSelector((s) => s.beneficiaries?.lookups ?? null);
+
+  // Fetch lookups when the modal opens (if not already loaded)
+  useEffect(() => {
+    if (show && lookups === null) {
+      dispatch(fetchBeneficiaryLookups());
+    }
+  }, [show, lookups, dispatch]);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -228,14 +237,17 @@ const NewBeneficiaryModal: React.FC<NewBeneficiaryModalProps> = ({
                   <Form.Label>
                     District <span className="text-danger">*</span>
                   </Form.Label>
-                  <Form.Control
-                    type="text"
+                  <Form.Select
                     name="district"
                     value={formData.district}
                     onChange={handleInputChange}
-                    placeholder="Enter district"
                     isInvalid={!!errors.district}
-                  />
+                  >
+                    <option value="">Select district…</option>
+                    {(lookups?.districts ?? []).map((d) => (
+                      <option key={d} value={d}>{d}</option>
+                    ))}
+                  </Form.Select>
                   <Form.Control.Feedback type="invalid">
                     {errors.district}
                   </Form.Control.Feedback>
@@ -247,14 +259,17 @@ const NewBeneficiaryModal: React.FC<NewBeneficiaryModalProps> = ({
                   <Form.Label>
                     Partner Organization <span className="text-danger">*</span>
                   </Form.Label>
-                  <Form.Control
-                    type="text"
+                  <Form.Select
                     name="organization"
                     value={formData.organization}
                     onChange={handleInputChange}
-                    placeholder="Enter partner organization"
                     isInvalid={!!errors.organization}
-                  />
+                  >
+                    <option value="">Select organization…</option>
+                    {(lookups?.organizations ?? []).map((o) => (
+                      <option key={o} value={o}>{o}</option>
+                    ))}
+                  </Form.Select>
                   <Form.Control.Feedback type="invalid">
                     {errors.organization}
                   </Form.Control.Feedback>
@@ -266,14 +281,17 @@ const NewBeneficiaryModal: React.FC<NewBeneficiaryModalProps> = ({
                   <Form.Label>
                     Intervention Programme <span className="text-danger">*</span>
                   </Form.Label>
-                  <Form.Control
-                    type="text"
+                  <Form.Select
                     name="programme"
                     value={formData.programme}
                     onChange={handleInputChange}
-                    placeholder="Enter intervention programme"
                     isInvalid={!!errors.programme}
-                  />
+                  >
+                    <option value="">Select programme…</option>
+                    {(lookups?.programmes ?? []).map((p) => (
+                      <option key={p} value={p}>{p}</option>
+                    ))}
+                  </Form.Select>
                   <Form.Control.Feedback type="invalid">
                     {errors.programme}
                   </Form.Control.Feedback>
