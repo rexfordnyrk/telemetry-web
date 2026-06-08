@@ -6,6 +6,7 @@ import { createVisit, CreateVisitPayload } from "../store/slices/visitSlice";
 import { API_CONFIG, buildApiUrl, getAuthHeaders } from "../config/api";
 import { interventionService } from "../services/interventionService";
 import { handleApiError } from "../utils/apiUtils";
+import { validateCICVisitCreate } from "../utils/cicVisitValidation";
 
 interface CheckInModalProps {
   show: boolean;
@@ -536,9 +537,18 @@ const CheckInModal: React.FC<CheckInModalProps> = ({ show, onHide, onSuccess }) 
     } else if (!UUID_RE.test(formData.beneficiary_id.trim())) {
       nextErrors.beneficiary_id = "Please select a beneficiary from the search results.";
     }
-    if (!formData.activity_name.trim()) nextErrors.activity_name = "Activity is required";
-    if (!formData.assisted_by.trim()) nextErrors.assisted_by = "Assisted By is required";
     if (!formData.check_in_at.trim()) nextErrors.check_in_at = "Check-In is required";
+
+    // Backend-mirrored text-field rules (activity_name, assisted_by, notes).
+    const fieldErrs = validateCICVisitCreate({
+      activityName: formData.activity_name,
+      assistedBy: formData.assisted_by,
+      notes: formData.notes,
+    });
+    if (fieldErrs.activity_name) nextErrors.activity_name = fieldErrs.activity_name;
+    if (fieldErrs.assisted_by) nextErrors.assisted_by = fieldErrs.assisted_by;
+    if (fieldErrs.notes) nextErrors.notes = fieldErrs.notes;
+
     setErrors(nextErrors);
     return Object.keys(nextErrors).length === 0;
   };
