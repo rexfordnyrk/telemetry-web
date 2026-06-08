@@ -49,11 +49,6 @@ interface FormState {
 const MIN_BENEFICIARY_QUERY_LENGTH = 2;
 const BENEFICIARY_FETCH_LIMIT = 10;
 
-const formatDateTimeLocal = (date: Date): string => {
-  const pad = (value: number) => value.toString().padStart(2, "0");
-  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
-};
-
 const generateIdFromValue = (value: string, prefix: string) => {
   const trimmed = value.trim();
   if (!trimmed) {
@@ -73,7 +68,7 @@ const createInitialFormState = (): FormState => ({
   activity_name: "",
   assisted_by: "",
   notes: "",
-  check_in_at: formatDateTimeLocal(new Date()),
+  check_in_at: "",
 });
 
 function useDebouncedValue<T>(value: T, delay: number): T {
@@ -86,12 +81,6 @@ function useDebouncedValue<T>(value: T, delay: number): T {
 
   return debouncedValue;
 }
-
-const toIso = (local: string) => {
-  if (!local) return new Date().toISOString();
-  const parsed = new Date(local);
-  return Number.isNaN(parsed.getTime()) ? new Date().toISOString() : parsed.toISOString();
-};
 
 const CheckInModal: React.FC<CheckInModalProps> = ({ show, onHide, onSuccess }) => {
   const dispatch = useAppDispatch();
@@ -537,8 +526,6 @@ const CheckInModal: React.FC<CheckInModalProps> = ({ show, onHide, onSuccess }) 
     } else if (!UUID_RE.test(formData.beneficiary_id.trim())) {
       nextErrors.beneficiary_id = "Please select a beneficiary from the search results.";
     }
-    if (!formData.check_in_at.trim()) nextErrors.check_in_at = "Check-In is required";
-
     // Backend-mirrored text-field rules (activity_name, assisted_by, notes).
     const fieldErrs = validateCICVisitCreate({
       activityName: formData.activity_name,
@@ -554,10 +541,13 @@ const CheckInModal: React.FC<CheckInModalProps> = ({ show, onHide, onSuccess }) 
   };
 
   const buildPayload = (): CreateVisitPayload => {
+    // Server stamps check_in_at on create (§7.3 phase-3 DEF-267); we still
+    // send the current ISO time so older backends that haven't been
+    // re-deployed yet receive a sensible value.
     const payload: CreateVisitPayload = {
       cic_id: formData.cic_id,
       beneficiary_id: formData.beneficiary_id,
-      check_in_at: toIso(formData.check_in_at),
+      check_in_at: new Date().toISOString(),
     };
 
     if (formData.intervention_id) {
@@ -813,18 +803,16 @@ const CheckInModal: React.FC<CheckInModalProps> = ({ show, onHide, onSuccess }) 
             </Col>
             <Col md={6}>
               <Form.Group>
-                <Form.Label>
-                  Check-In <span className="text-danger">*</span>
-                </Form.Label>
+                <Form.Label>Check-In</Form.Label>
                 <Form.Control
-                  type="datetime-local"
-                  name="check_in_at"
-                  value={formData.check_in_at}
-                  onChange={handleStandardInputChange}
-                  isInvalid={!!errors.check_in_at}
-                  disabled={formSubmitting}
+                  type="text"
+                  value={new Date().toLocaleString()}
+                  readOnly
+                  disabled
                 />
-                <Form.Control.Feedback type="invalid">{errors.check_in_at}</Form.Control.Feedback>
+                <Form.Text className="text-muted">
+                  Set automatically when you submit (server time).
+                </Form.Text>
               </Form.Group>
             </Col>
             <Col md={12}>
