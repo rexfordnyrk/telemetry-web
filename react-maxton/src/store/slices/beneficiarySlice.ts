@@ -51,6 +51,37 @@ export interface BeneficiaryFetchParams {
   is_active?: boolean;
 }
 
+// CSV import types
+export interface CSVImportRow {
+  name: string;
+  email: string;
+  phone: string;
+  organization: string;
+  district: string;
+  programme: string;
+  date_enrolled?: string | null;
+  is_active?: boolean;
+}
+
+export interface CSVImportError {
+  row: number;
+  reason: string;
+  fields?: Record<string, string>;
+}
+
+export interface CSVImportResult {
+  created: number;
+  skipped: number;
+  errors: CSVImportError[];
+}
+
+// Pagination metadata
+export interface BeneficiaryPagination {
+  page: number;
+  limit: number;
+  total: number;
+}
+
 // Define the state shape for beneficiaries
 interface BeneficiaryState {
   beneficiaries: Beneficiary[];
@@ -64,6 +95,8 @@ interface BeneficiaryState {
   singleError: string | null;
   // Currently viewed/edited beneficiary
   currentBeneficiary: Beneficiary | null;
+  // Pagination metadata from the last fetchBeneficiaries call
+  pagination: BeneficiaryPagination | null;
 }
 
 const initialState: BeneficiaryState = {
@@ -76,6 +109,7 @@ const initialState: BeneficiaryState = {
   loadingSingle: false,
   singleError: null,
   currentBeneficiary: null,
+  pagination: null,
 };
 
 /**
@@ -163,14 +197,10 @@ export const fetchBeneficiaries = createAsyncThunk(
         const errorMessage = await handleApiError(response, 'Failed to fetch beneficiaries', dispatch);
         throw new Error(errorMessage);
       }
-      const data = await response.json();
-      // The API returns an object with a 'data' property containing the array
-      if (data && Array.isArray(data.data)) {
-        return data.data;
-      } else {
-        // If the response is not as expected, return an empty array
-        return [];
-      }
+      const json = await response.json();
+      const dataArr: Beneficiary[] = Array.isArray(json.data) ? json.data : [];
+      const pagination: BeneficiaryPagination | null = json.pagination ?? null;
+      return { data: dataArr, pagination };
     } catch (error) {
       return rejectWithValue(error instanceof Error ? error.message : 'Failed to fetch beneficiaries');
     }
@@ -335,6 +365,49 @@ export const fetchSimilarBeneficiaries = createAsyncThunk(
   }
 );
 
+/**
+ * Async thunk to delete a beneficiary by ID.
+ */
+export const deleteBeneficiary = createAsyncThunk(
+  'beneficiaries/deleteBeneficiary',
+  async (id: string, { getState, rejectWithValue, dispatch }) => {
+    const state = getState() as RootState;
+    const token = state.auth.token;
+    if (!token) throw new Error('No authentication token available');
+    const res = await fetch(buildApiUrl(`/api/v1/beneficiaries/${id}`), {
+      method: 'DELETE',
+      headers: getAuthHeaders(token),
+    });
+    if (!res.ok) {
+      const msg = await handleApiError(res, 'Failed to delete beneficiary', dispatch);
+      throw new Error(msg);
+    }
+    return id;
+  }
+);
+
+/**
+ * Async thunk to bulk import beneficiaries from CSV via backend endpoint.
+ */
+export const importBeneficiariesCSV = createAsyncThunk<CSVImportResult, CSVImportRow[]>(
+  'beneficiaries/importBeneficiariesCSV',
+  async (rows, { getState, rejectWithValue, dispatch }) => {
+    const state = getState() as RootState;
+    const token = state.auth.token;
+    if (!token) throw new Error('No authentication token available');
+    const res = await fetch(buildApiUrl('/api/v1/beneficiaries/import/csv'), {
+      method: 'POST',
+      headers: { ...getAuthHeaders(token), 'Content-Type': 'application/json' },
+      body: JSON.stringify({ rows }),
+    });
+    if (!res.ok) {
+      const msg = await handleApiError(res, 'CSV import failed', dispatch);
+      throw new Error(msg);
+    }
+    return await res.json() as CSVImportResult;
+  }
+);
+
 // Create the beneficiaries slice
 const beneficiarySlice = createSlice({
   name: 'beneficiaries',
@@ -344,7 +417,9 @@ const beneficiarySlice = createSlice({
     clearSingleError: (state) => {
       state.singleError = null;
     },
-    // Add multiple beneficiaries to the store (e.g., after CSV import)
+    /**
+     * @deprecated CSV import now hits backend; this remains only for legacy unit tests.
+     */
     addBeneficiaries: (state, action: PayloadAction<Beneficiary[]>) => {
       const incoming = action.payload;
       // Merge by id, preferring incoming over existing
@@ -363,7 +438,9 @@ const beneficiarySlice = createSlice({
       })
       .addCase(fetchBeneficiaries.fulfilled, (state, action) => {
         state.loading = false;
-        state.beneficiaries = action.payload;
+        // Replace (never append) to avoid stale duplicates
+        state.beneficiaries = action.payload.data;
+        state.pagination = action.payload.pagination;
       })
       .addCase(fetchBeneficiaries.rejected, (state, action) => {
         state.loading = false;
@@ -422,6 +499,17 @@ const beneficiarySlice = createSlice({
       })
       .addCase(updateBeneficiary.rejected, (state, action) => {
         state.error = action.payload as string;
+      })
+      // Handle deleteBeneficiary
+      .addCase(deleteBeneficiary.fulfilled, (state, action) => {
+        const id = action.payload;
+        state.beneficiaries = state.beneficiaries.filter(b => b.id !== id);
+        if (state.currentBeneficiary?.id === id) {
+          state.currentBeneficiary = null;
+        }
+      })
+      .addCase(deleteBeneficiary.rejected, (state, action) => {
+        state.error = action.error.message ?? 'Failed to delete beneficiary';
       })
       // fetchSimilarBeneficiaries: callers consume return value; no state mutation needed
       .addCase(fetchSimilarBeneficiaries.rejected, (state, action) => {

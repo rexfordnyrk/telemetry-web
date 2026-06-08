@@ -7,7 +7,7 @@ import DataTableWrapper from "../components/DataTableWrapper";
 import NewBeneficiaryModal from "../components/NewBeneficiaryModal";
 import ImportBeneficiariesModal from "../components/ImportBeneficiariesModal";
 import FilterModal from "../components/FilterModal";
-import { fetchBeneficiaries } from "../store/slices/beneficiarySlice";
+import { fetchBeneficiaries, deleteBeneficiary, updateBeneficiary } from "../store/slices/beneficiarySlice";
 import PermissionRoute from "../components/PermissionRoute";
 import { usePermissions } from "../hooks/usePermissions";
 import { escapeHtml } from "../utils/escapeHtml";
@@ -158,9 +158,9 @@ const Beneficiaries: React.FC = () => {
       if (activeFilters.status) params.is_active = activeFilters.status === "active";
       dispatch(fetchBeneficiaries(params as any))
         .unwrap()
-        .then((data: any[]) => {
-          const total = start + data.length + (data.length >= length ? 1 : 0);
-          callback({ draw: requestData.draw, data, recordsTotal: total, recordsFiltered: total });
+        .then((result: { data: any[]; pagination: { total: number } | null }) => {
+          const total = result.pagination?.total ?? result.data.length;
+          callback({ draw: requestData.draw, data: result.data, recordsTotal: total, recordsFiltered: total });
         })
         .catch(() => {
           callback({ draw: requestData.draw, data: [], recordsTotal: 0, recordsFiltered: 0 });
@@ -251,25 +251,38 @@ const Beneficiaries: React.FC = () => {
     setActiveFilters(filters);
   };
 
+  // Reload DataTables ajax without resetting pagination position
+  const reloadDataTable = () => {
+    if (window.$) {
+      const dt = window.$('#beneficiaries-datatable').DataTable();
+      if (dt && dt.ajax) dt.ajax.reload(null, false);
+    }
+  };
+
   // Handle confirm action (delete/disable)
   const handleConfirmAction = () => {
-    if (modalAction === "delete") {
-      dispatch(
-        addAlert({
-          type: "success",
-          title: "Success",
-          message: `Beneficiary "${targetBeneficiary?.name}" has been deleted.`,
+    if (modalAction === 'delete' && targetBeneficiary?.id) {
+      dispatch(deleteBeneficiary(targetBeneficiary.id))
+        .unwrap()
+        .then(() => {
+          dispatch(addAlert({ type: 'success', title: 'Success', message: `Beneficiary "${targetBeneficiary.name}" deleted.` }));
+          reloadDataTable();
         })
-      );
-    } else {
-      const newStatus = !targetBeneficiary?.is_active ? "activated" : "deactivated";
-      dispatch(
-        addAlert({
-          type: "success",
-          title: "Success",
-          message: `Beneficiary "${targetBeneficiary?.name}" has been ${newStatus}.`,
+        .catch((err: any) => {
+          dispatch(addAlert({ type: 'danger', title: 'Error', message: err?.message || 'Delete failed' }));
+        });
+    } else if (targetBeneficiary?.id) {
+      const newActive = !targetBeneficiary.is_active;
+      const newStatus = newActive ? 'activated' : 'deactivated';
+      dispatch(updateBeneficiary({ id: targetBeneficiary.id, is_active: newActive }))
+        .unwrap()
+        .then(() => {
+          dispatch(addAlert({ type: 'success', title: 'Success', message: `Beneficiary "${targetBeneficiary.name}" ${newStatus}.` }));
+          reloadDataTable();
         })
-      );
+        .catch((err: any) => {
+          dispatch(addAlert({ type: 'danger', title: 'Error', message: err?.message || 'Update failed' }));
+        });
     }
     setShowModal(false);
     setTargetBeneficiary(null);
@@ -444,6 +457,10 @@ const Beneficiaries: React.FC = () => {
         show={showImportModal}
         onHide={() => setShowImportModal(false)}
         filters={activeFilters}
+        onCompleted={() => {
+          setShowImportModal(false);
+          reloadDataTable();
+        }}
       />
     </MainLayout>
     </PermissionRoute>

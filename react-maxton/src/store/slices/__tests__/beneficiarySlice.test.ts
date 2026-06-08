@@ -3,7 +3,11 @@ import beneficiaryReducer, {
   createBeneficiary,
   updateBeneficiary,
   fetchSimilarBeneficiaries,
+  fetchBeneficiaries,
+  deleteBeneficiary,
+  importBeneficiariesCSV,
   Beneficiary,
+  CSVImportResult,
 } from '../beneficiarySlice';
 import authReducer from '../authSlice';
 
@@ -37,6 +41,19 @@ const makeBeneficiary = (overrides: Partial<Beneficiary> = {}): Beneficiary => (
   ...overrides,
 });
 
+const makeInitialBeneficiaryState = (beneficiaries: Beneficiary[] = []) => ({
+  beneficiaries,
+  unassignedBeneficiaries: [],
+  loading: false,
+  unassignedLoading: false,
+  error: null,
+  unassignedError: null,
+  loadingSingle: false,
+  singleError: null,
+  currentBeneficiary: null,
+  pagination: null,
+});
+
 const createStore = (preloadedBeneficiaries: Beneficiary[] = []) =>
   configureStore({
     reducer: {
@@ -55,17 +72,7 @@ const createStore = (preloadedBeneficiaries: Beneficiary[] = []) =>
         initialized: true,
         formData: { email: '', password: '', rememberMe: false },
       },
-      beneficiaries: {
-        beneficiaries: preloadedBeneficiaries,
-        unassignedBeneficiaries: [],
-        loading: false,
-        unassignedLoading: false,
-        error: null,
-        unassignedError: null,
-        loadingSingle: false,
-        singleError: null,
-        currentBeneficiary: null,
-      },
+      beneficiaries: makeInitialBeneficiaryState(preloadedBeneficiaries),
     },
   });
 
@@ -212,17 +219,7 @@ describe('beneficiarySlice — reducer', () => {
   it('createBeneficiary.fulfilled adds beneficiary to list', () => {
     const newBeneficiary = makeBeneficiary({ id: 'b-new' });
     const state = beneficiaryReducer(
-      {
-        beneficiaries: [makeBeneficiary()],
-        unassignedBeneficiaries: [],
-        loading: false,
-        unassignedLoading: false,
-        error: null,
-        unassignedError: null,
-        loadingSingle: false,
-        singleError: null,
-        currentBeneficiary: null,
-      },
+      makeInitialBeneficiaryState([makeBeneficiary()]),
       createBeneficiary.fulfilled(newBeneficiary, '', {})
     );
     expect(state.beneficiaries).toHaveLength(2);
@@ -233,17 +230,7 @@ describe('beneficiarySlice — reducer', () => {
     const original = makeBeneficiary({ id: 'b-1', name: 'Original' });
     const updated = makeBeneficiary({ id: 'b-1', name: 'Updated' });
     const state = beneficiaryReducer(
-      {
-        beneficiaries: [original],
-        unassignedBeneficiaries: [],
-        loading: false,
-        unassignedLoading: false,
-        error: null,
-        unassignedError: null,
-        loadingSingle: false,
-        singleError: null,
-        currentBeneficiary: original,
-      },
+      { ...makeInitialBeneficiaryState([original]), currentBeneficiary: original },
       updateBeneficiary.fulfilled(updated, '', { id: 'b-1' })
     );
     expect(state.beneficiaries[0].name).toBe('Updated');
@@ -254,19 +241,143 @@ describe('beneficiarySlice — reducer', () => {
     const original = makeBeneficiary({ id: 'b-1', name: 'Original' });
     const updated = makeBeneficiary({ id: 'b-1', name: 'Updated' });
     const state = beneficiaryReducer(
-      {
-        beneficiaries: [],
-        unassignedBeneficiaries: [],
-        loading: false,
-        unassignedLoading: false,
-        error: null,
-        unassignedError: null,
-        loadingSingle: false,
-        singleError: null,
-        currentBeneficiary: original,
-      },
+      { ...makeInitialBeneficiaryState([]), currentBeneficiary: original },
       updateBeneficiary.fulfilled(updated, '', { id: 'b-1' })
     );
     expect(state.currentBeneficiary?.name).toBe('Updated');
+  });
+
+  it('fetchBeneficiaries.fulfilled replaces list and stores pagination', () => {
+    const existing = makeBeneficiary({ id: 'old' });
+    const incoming = makeBeneficiary({ id: 'new' });
+    const pagination = { page: 2, limit: 25, total: 100 };
+    const state = beneficiaryReducer(
+      makeInitialBeneficiaryState([existing]),
+      fetchBeneficiaries.fulfilled({ data: [incoming], pagination }, '', {})
+    );
+    expect(state.beneficiaries).toHaveLength(1);
+    expect(state.beneficiaries[0].id).toBe('new');
+    expect(state.pagination).toEqual(pagination);
+  });
+
+  it('fetchBeneficiaries.fulfilled stores null pagination when absent', () => {
+    const incoming = makeBeneficiary({ id: 'new' });
+    const state = beneficiaryReducer(
+      makeInitialBeneficiaryState([]),
+      fetchBeneficiaries.fulfilled({ data: [incoming], pagination: null }, '', {})
+    );
+    expect(state.pagination).toBeNull();
+  });
+
+  it('deleteBeneficiary.fulfilled removes beneficiary from list', () => {
+    const b1 = makeBeneficiary({ id: 'b-1' });
+    const b2 = makeBeneficiary({ id: 'b-2' });
+    const state = beneficiaryReducer(
+      makeInitialBeneficiaryState([b1, b2]),
+      deleteBeneficiary.fulfilled('b-1', '', 'b-1')
+    );
+    expect(state.beneficiaries).toHaveLength(1);
+    expect(state.beneficiaries[0].id).toBe('b-2');
+  });
+
+  it('deleteBeneficiary.fulfilled clears currentBeneficiary when id matches', () => {
+    const b1 = makeBeneficiary({ id: 'b-1' });
+    const state = beneficiaryReducer(
+      { ...makeInitialBeneficiaryState([b1]), currentBeneficiary: b1 },
+      deleteBeneficiary.fulfilled('b-1', '', 'b-1')
+    );
+    expect(state.currentBeneficiary).toBeNull();
+  });
+
+  it('deleteBeneficiary.fulfilled does not clear currentBeneficiary when id differs', () => {
+    const b1 = makeBeneficiary({ id: 'b-1' });
+    const b2 = makeBeneficiary({ id: 'b-2' });
+    const state = beneficiaryReducer(
+      { ...makeInitialBeneficiaryState([b1, b2]), currentBeneficiary: b2 },
+      deleteBeneficiary.fulfilled('b-1', '', 'b-1')
+    );
+    expect(state.currentBeneficiary?.id).toBe('b-2');
+  });
+});
+
+describe('beneficiarySlice — deleteBeneficiary thunk', () => {
+  beforeEach(() => {
+    mockFetch.mockReset();
+  });
+
+  it('calls DELETE /api/v1/beneficiaries/:id with auth header', async () => {
+    mockFetch.mockResolvedValueOnce({ ok: true, json: async () => ({}) });
+
+    const store = createStore([makeBeneficiary({ id: 'b-1' })]);
+    await store.dispatch(deleteBeneficiary('b-1'));
+
+    expect(mockFetch).toHaveBeenCalledWith(
+      'http://localhost:8080/api/v1/beneficiaries/b-1',
+      expect.objectContaining({ method: 'DELETE' })
+    );
+  });
+
+  it('removes beneficiary from store on success', async () => {
+    mockFetch.mockResolvedValueOnce({ ok: true, json: async () => ({}) });
+
+    const store = createStore([makeBeneficiary({ id: 'b-1' }), makeBeneficiary({ id: 'b-2' })]);
+    await store.dispatch(deleteBeneficiary('b-1'));
+
+    const { beneficiaries } = store.getState().beneficiaries;
+    expect(beneficiaries).toHaveLength(1);
+    expect(beneficiaries[0].id).toBe('b-2');
+  });
+
+  it('rejects on API failure', async () => {
+    mockFetch.mockResolvedValueOnce({ ok: false, status: 500 });
+
+    const store = createStore([makeBeneficiary({ id: 'b-1' })]);
+    const result = await store.dispatch(deleteBeneficiary('b-1'));
+    expect(result.type).toBe('beneficiaries/deleteBeneficiary/rejected');
+  });
+});
+
+describe('beneficiarySlice — importBeneficiariesCSV thunk', () => {
+  beforeEach(() => {
+    mockFetch.mockReset();
+  });
+
+  it('calls POST /api/v1/beneficiaries/import/csv with rows', async () => {
+    const importResult: CSVImportResult = { created: 2, skipped: 1, errors: [] };
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => importResult,
+    });
+
+    const store = createStore();
+    const rows = [
+      { name: 'Alice', email: 'a@a.com', phone: '111', organization: 'Org', district: 'D', programme: 'P' },
+    ];
+    await store.dispatch(importBeneficiariesCSV(rows));
+
+    expect(mockFetch).toHaveBeenCalledWith(
+      'http://localhost:8080/api/v1/beneficiaries/import/csv',
+      expect.objectContaining({
+        method: 'POST',
+        body: JSON.stringify({ rows }),
+      })
+    );
+  });
+
+  it('returns created/skipped/errors from API', async () => {
+    const importResult: CSVImportResult = { created: 3, skipped: 0, errors: [] };
+    mockFetch.mockResolvedValueOnce({ ok: true, json: async () => importResult });
+
+    const store = createStore();
+    const result = await store.dispatch(importBeneficiariesCSV([]));
+    expect((result as any).payload).toEqual(importResult);
+  });
+
+  it('rejects on API failure', async () => {
+    mockFetch.mockResolvedValueOnce({ ok: false, status: 400 });
+
+    const store = createStore();
+    const result = await store.dispatch(importBeneficiariesCSV([]));
+    expect(result.type).toBe('beneficiaries/importBeneficiariesCSV/rejected');
   });
 });
