@@ -381,3 +381,29 @@ describe('beneficiarySlice — importBeneficiariesCSV thunk', () => {
     expect(result.type).toBe('beneficiaries/importBeneficiariesCSV/rejected');
   });
 });
+
+describe('beneficiarySlice — Redux list hygiene (Task 4)', () => {
+  it('fetchBeneficiaries.fulfilled replaces list, not appends', () => {
+    const old1 = makeBeneficiary({ id: 'old-1' });
+    const old2 = makeBeneficiary({ id: 'old-2' });
+    const fresh = makeBeneficiary({ id: 'fresh-1' });
+    // Two consecutive fetches: second should replace, not accumulate
+    const after1st = beneficiaryReducer(
+      makeInitialBeneficiaryState([old1, old2]),
+      fetchBeneficiaries.fulfilled({ data: [fresh], pagination: null }, '', {})
+    );
+    expect(after1st.beneficiaries).toHaveLength(1);
+    expect(after1st.beneficiaries[0].id).toBe('fresh-1');
+  });
+
+  it('addBeneficiaries (deprecated) still merges without throwing', () => {
+    const b1 = makeBeneficiary({ id: 'b-1' });
+    const b2 = makeBeneficiary({ id: 'b-2', name: 'Override' });
+    const { addBeneficiaries: addBeneficiariesAction } = require('../beneficiarySlice');
+    const state = beneficiaryReducer(
+      makeInitialBeneficiaryState([b1]),
+      addBeneficiariesAction([b2])
+    );
+    expect(state.beneficiaries).toHaveLength(2);
+  });
+});
