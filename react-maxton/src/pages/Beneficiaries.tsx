@@ -7,7 +7,7 @@ import DataTableWrapper from "../components/DataTableWrapper";
 import NewBeneficiaryModal from "../components/NewBeneficiaryModal";
 import ImportBeneficiariesModal from "../components/ImportBeneficiariesModal";
 import FilterModal from "../components/FilterModal";
-import { fetchBeneficiaries, deleteBeneficiary, updateBeneficiary } from "../store/slices/beneficiarySlice";
+import { fetchBeneficiaries, deleteBeneficiary, updateBeneficiary, clearError } from "../store/slices/beneficiarySlice";
 import PermissionRoute from "../components/PermissionRoute";
 import { usePermissions } from "../hooks/usePermissions";
 import { escapeHtml } from "../utils/escapeHtml";
@@ -363,7 +363,7 @@ const Beneficiaries: React.FC = () => {
               <button
                 type="button"
                 className="btn-close"
-                onClick={() => dispatch({ type: 'beneficiaries/clearError' })}
+                onClick={() => dispatch(clearError())}
               ></button>
             </div>
           )}
