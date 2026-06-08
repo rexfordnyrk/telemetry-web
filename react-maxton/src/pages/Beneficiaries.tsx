@@ -31,21 +31,21 @@ const Beneficiaries: React.FC = () => {
 
   // Client-side filter for date range only; rest is server-side via ajax params
   const filteredBeneficiaries = useMemo(() => {
-    if (!activeFilters.created_at_from && !activeFilters.created_at_to) return beneficiaries;
+    if (!activeFilters.date_enrolled_from && !activeFilters.date_enrolled_to) return beneficiaries;
     return beneficiaries.filter((beneficiary) => {
-      if (activeFilters.created_at_from) {
-        const beneficiaryDate = new Date(beneficiary.created_at);
-        const fromDate = new Date(activeFilters.created_at_from);
+      if (activeFilters.date_enrolled_from) {
+        const beneficiaryDate = new Date(beneficiary.date_enrolled);
+        const fromDate = new Date(activeFilters.date_enrolled_from);
         if (beneficiaryDate < fromDate) return false;
       }
-      if (activeFilters.created_at_to) {
-        const beneficiaryDate = new Date(beneficiary.created_at);
-        const toDate = new Date(activeFilters.created_at_to);
+      if (activeFilters.date_enrolled_to) {
+        const beneficiaryDate = new Date(beneficiary.date_enrolled);
+        const toDate = new Date(activeFilters.date_enrolled_to);
         if (beneficiaryDate > toDate) return false;
       }
       return true;
     });
-  }, [beneficiaries, activeFilters.created_at_from, activeFilters.created_at_to]);
+  }, [beneficiaries, activeFilters.date_enrolled_from, activeFilters.date_enrolled_to]);
 
   const memoizedBeneficiaries = useMemo(() => filteredBeneficiaries, [filteredBeneficiaries]);
 
@@ -59,7 +59,7 @@ const Beneficiaries: React.FC = () => {
       district: Array.from(districtsSet),
       programme: Array.from(programmesSet),
       status: ["active", "inactive"],
-      created_at: [], // Date range filter
+      date_enrolled: [], // Date range filter
     };
   }, [beneficiaries]);
 
@@ -427,6 +427,10 @@ const Beneficiaries: React.FC = () => {
       <NewBeneficiaryModal
         show={showNewBeneficiaryModal}
         onHide={() => setShowNewBeneficiaryModal(false)}
+        onCreated={() => {
+          setShowNewBeneficiaryModal(false);
+          dispatch(fetchBeneficiaries({}));
+        }}
       />
       {/* Filter Modal */}
       <FilterModal
