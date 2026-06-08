@@ -3,7 +3,8 @@ import { useParams, useNavigate } from "react-router-dom";
 import MainLayout from "../layouts/MainLayout";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { addAlert } from "../store/slices/alertSlice";
-import { fetchBeneficiaryById, clearSingleError } from "../store/slices/beneficiarySlice";
+import { fetchBeneficiaryById, clearSingleError, updateBeneficiary } from "../store/slices/beneficiarySlice";
+import { formatDateEnrolled } from "../utils/formatDate";
 import { usePermissions } from "../hooks/usePermissions";
 import { validateBeneficiaryUpdate } from "../utils/beneficiaryValidation";
 
@@ -32,6 +33,7 @@ const BeneficiaryDetails: React.FC = () => {
     district: beneficiary?.district || "",
     programme: beneficiary?.programme || "",
     is_active: beneficiary?.is_active || false,
+    date_enrolled: beneficiary?.date_enrolled || "",
   });
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
@@ -60,6 +62,7 @@ const BeneficiaryDetails: React.FC = () => {
         district: beneficiary.district,
         programme: beneficiary.programme,
         is_active: beneficiary.is_active,
+        date_enrolled: beneficiary.date_enrolled || "",
       });
     }
   }, [beneficiary]);
@@ -166,15 +169,36 @@ const BeneficiaryDetails: React.FC = () => {
       return;
     }
 
-    // TODO: Implement updateBeneficiary action
-    dispatch(
-      addAlert({
-        type: "success",
-        title: "Profile Updated",
-        message: "Beneficiary profile has been updated successfully.",
-      }),
-    );
-    setIsEditing(false);
+    dispatch(updateBeneficiary({
+      id: beneficiary.id,
+      name: formData.name,
+      email: formData.email,
+      phone: formData.phone,
+      organization: formData.organization,
+      district: formData.district,
+      programme: formData.programme,
+      is_active: formData.is_active,
+      date_enrolled: formData.date_enrolled,
+    })).unwrap()
+      .then(() => {
+        dispatch(
+          addAlert({
+            type: "success",
+            title: "Profile Updated",
+            message: "Beneficiary profile has been updated successfully.",
+          }),
+        );
+        setIsEditing(false);
+      })
+      .catch((err: string) => {
+        dispatch(
+          addAlert({
+            type: "danger",
+            title: "Update Failed",
+            message: err || "Update failed",
+          }),
+        );
+      });
   };
 
   const handleCancel = () => {
@@ -186,6 +210,7 @@ const BeneficiaryDetails: React.FC = () => {
       district: beneficiary.district,
       programme: beneficiary.programme,
       is_active: beneficiary.is_active,
+      date_enrolled: beneficiary.date_enrolled || "",
     });
     setErrors({});
     setIsEditing(false);
@@ -422,7 +447,22 @@ const BeneficiaryDetails: React.FC = () => {
                     )}
                   </div>
 
-                  <div className="col-md-12 d-flex align-items-end">
+                  <div className="col-md-6">
+                    <label htmlFor="date_enrolled" className="form-label">
+                      Date Enrolled
+                    </label>
+                    <input
+                      type="date"
+                      className="form-control"
+                      id="date_enrolled"
+                      name="date_enrolled"
+                      value={formData.date_enrolled ?? ""}
+                      onChange={handleInputChange}
+                      disabled={!isEditing}
+                    />
+                  </div>
+
+                  <div className="col-md-6 d-flex align-items-end">
                     <div className="form-check">
                       <input
                         className="form-check-input"
@@ -550,7 +590,7 @@ const BeneficiaryDetails: React.FC = () => {
                 <div className="mb-3">
                   <span className="text-muted">Date Enrolled:</span>
                   <p className="mb-0 mt-1">
-                    {new Date(beneficiary.date_enrolled).toLocaleDateString()}
+                    {formatDateEnrolled(beneficiary.date_enrolled)}
                   </p>
                 </div>
                 <div className="mb-3">
