@@ -39,6 +39,14 @@ const CicVisits: React.FC = () => {
   const [editSubmitting, setEditSubmitting] = useState(false);
   const [editError, setEditError] = useState<string | null>(null);
 
+  // Correction sub-state for retroactive time edits (§7.3 phase-3 DEF-267).
+  const [correctionMode, setCorrectionMode] = useState(false);
+  const [correctionNote, setCorrectionNote] = useState("");
+  const [originalTimes, setOriginalTimes] = useState<{ checkIn: string; checkOut: string | null }>({
+    checkIn: "",
+    checkOut: null,
+  });
+
   const availableCics = useMemo(() => {
     const map = new Map<string, string>();
     visits.forEach((visit) => {
@@ -246,12 +254,16 @@ const CicVisits: React.FC = () => {
       check_in_at: visit.check_in_at,
       check_out_at: visit.check_out_at,
     });
+    setOriginalTimes({ checkIn: visit.check_in_at, checkOut: visit.check_out_at });
+    setCorrectionMode(false);
+    setCorrectionNote("");
     setEditError(null);
     setEditSubmitting(false);
     setShowEditModal(true);
   };
 
   const handleCloseEditModal = () => {
+    if (editSubmitting) return;
     setShowEditModal(false);
     setEditingVisit(null);
     setEditFormData({
@@ -262,6 +274,9 @@ const CicVisits: React.FC = () => {
       check_in_at: undefined,
       check_out_at: null,
     });
+    setOriginalTimes({ checkIn: "", checkOut: null });
+    setCorrectionMode(false);
+    setCorrectionNote("");
     setEditError(null);
     setEditSubmitting(false);
   };
@@ -278,11 +293,33 @@ const CicVisits: React.FC = () => {
     e.preventDefault();
     if (!editingVisit || editSubmitting) return;
 
+    const newCheckIn = editFormData.check_in_at ?? "";
+    const newCheckOut = editFormData.check_out_at ?? null;
+    const timesChanged =
+      newCheckIn !== originalTimes.checkIn || newCheckOut !== originalTimes.checkOut;
+
+    if (timesChanged && correctionNote.trim().length < 10) {
+      setEditError("A correction note of at least 10 characters is required when changing visit times.");
+      return;
+    }
+
+    const payload: UpdateVisitPayload = {
+      intervention_id: editFormData.intervention_id ?? null,
+      activity_name: editFormData.activity_name ?? null,
+      assisted_by: editFormData.assisted_by ?? null,
+      notes: editFormData.notes ?? null,
+    };
+    if (timesChanged) {
+      payload.check_in_at = newCheckIn;
+      payload.check_out_at = newCheckOut;
+      payload.correction_note = correctionNote.trim();
+    }
+
     setEditSubmitting(true);
     setEditError(null);
 
     try {
-      await dispatch(updateVisit({ id: editingVisit.id, payload: editFormData })).unwrap();
+      await dispatch(updateVisit({ id: editingVisit.id, payload })).unwrap();
       dispatch(
         addAlert({
           type: "success",
@@ -290,11 +327,11 @@ const CicVisits: React.FC = () => {
           message: `Visit for "${editingVisit.beneficiary_name || "Beneficiary"}" has been updated successfully.`,
         })
       );
+      setEditSubmitting(false);
       handleCloseEditModal();
       refreshTable();
     } catch (error) {
       setEditError(error instanceof Error ? error.message : "Failed to update visit.");
-    } finally {
       setEditSubmitting(false);
     }
   };
@@ -485,141 +522,234 @@ const CicVisits: React.FC = () => {
         onImportSuccess={refreshTable}
       />
 
-      {/* Edit Visit Modal */}
+      {/* Edit Visit Modal (sibling backdrop pattern + correction UI — §7.3 phase-3) */}
       {showEditModal && (
         <div
-          className="modal fade show d-block"
-          tabIndex={-1}
-          style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
-          onClick={() => handleCloseEditModal()}
+          style={{
+            position: "fixed",
+            inset: 0,
+            zIndex: 10000,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: 16,
+          }}
         >
-          <div className="modal-dialog modal-lg">
-            <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-              <div className="modal-header">
-                <h5 className="modal-title">Edit Visit</h5>
-                <button
-                  type="button"
-                  className="btn-close"
-                  onClick={() => handleCloseEditModal()}
-                  disabled={editSubmitting}
-                ></button>
-              </div>
-              <form onSubmit={handleEditSubmit}>
-                <div className="modal-body">
-                  {editError && (
-                    <div className="alert alert-danger" role="alert">
-                      {editError}
-                    </div>
-                  )}
-                  
-                  <div className="row g-3">
-                    <div className="col-md-6">
-                      <label htmlFor="editBeneficiary" className="form-label">Beneficiary</label>
-                      <input
-                        type="text"
-                        className="form-control"
-                        id="editBeneficiary"
-                        value={editingVisit?.beneficiary_name || ""}
-                        disabled
-                      />
-                    </div>
-                    <div className="col-md-6">
-                      <label htmlFor="editCic" className="form-label">CIC</label>
-                      <input
-                        type="text"
-                        className="form-control"
-                        id="editCic"
-                        value={editingVisit?.cic_name || ""}
-                        disabled
-                      />
-                    </div>
-                    <div className="col-md-6">
-                      <label htmlFor="editIntervention" className="form-label">Intervention</label>
-                      <input
-                        type="text"
-                        className="form-control"
-                        id="editIntervention"
-                        name="intervention_id"
-                        value={editFormData.intervention_id || ""}
-                        onChange={handleEditFormChange}
-                        placeholder="Enter intervention"
-                      />
-                    </div>
-                    <div className="col-md-6">
-                      <label htmlFor="editActivity" className="form-label">Activity</label>
-                      <input
-                        type="text"
-                        className="form-control"
-                        id="editActivity"
-                        name="activity_name"
-                        value={editFormData.activity_name || ""}
-                        onChange={handleEditFormChange}
-                        placeholder="Enter activity name"
-                      />
-                    </div>
-                    <div className="col-md-6">
-                      <label htmlFor="editAssistedBy" className="form-label">Assisted By</label>
-                      <input
-                        type="text"
-                        className="form-control"
-                        id="editAssistedBy"
-                        name="assisted_by"
-                        value={editFormData.assisted_by || ""}
-                        onChange={handleEditFormChange}
-                        placeholder="Enter assistant name"
-                      />
-                    </div>
-                    <div className="col-md-6">
-                      <label htmlFor="editCheckIn" className="form-label">Check-In Time</label>
-                      <input
-                        type="datetime-local"
-                        className="form-control"
-                        id="editCheckIn"
-                        name="check_in_at"
-                        value={editFormData.check_in_at ? new Date(editFormData.check_in_at).toISOString().slice(0, 16) : ""}
-                        onChange={handleEditFormChange}
-                      />
-                    </div>
-                    <div className="col-12">
-                      <label htmlFor="editNotes" className="form-label">Notes / Follow Up</label>
-                      <textarea
-                        className="form-control"
-                        id="editNotes"
-                        name="notes"
-                        rows={3}
-                        value={editFormData.notes || ""}
-                        onChange={handleEditFormChange}
-                        placeholder="Enter notes or follow-up information"
-                      ></textarea>
-                    </div>
+          <div
+            style={{ position: "fixed", inset: 0, backgroundColor: "rgba(0,0,0,0.5)", zIndex: 10000 }}
+            onClick={() => { if (!editSubmitting) handleCloseEditModal(); }}
+            aria-hidden="true"
+          />
+          <div
+            role="dialog"
+            aria-modal="true"
+            className="card border-top border-3 border-primary rounded-0"
+            style={{ position: "relative", zIndex: 10001, width: "100%", maxWidth: 720, maxHeight: "90vh", overflowY: "auto" }}
+          >
+            <div className="card-header py-3 px-4 d-flex align-items-center justify-content-between">
+              <h5 className="mb-0 text-primary">Edit Visit</h5>
+              <button
+                type="button"
+                className="btn-close"
+                onClick={() => handleCloseEditModal()}
+                disabled={editSubmitting}
+                aria-label="Close"
+              ></button>
+            </div>
+            <form onSubmit={handleEditSubmit}>
+              <div className="card-body p-4">
+                {editError && (
+                  <div className="alert alert-danger" role="alert">
+                    {editError}
+                  </div>
+                )}
+
+                <div className="row g-3">
+                  <div className="col-md-6">
+                    <label htmlFor="editBeneficiary" className="form-label">Beneficiary</label>
+                    <input type="text" className="form-control" id="editBeneficiary" value={editingVisit?.beneficiary_name || ""} disabled />
+                  </div>
+                  <div className="col-md-6">
+                    <label htmlFor="editCic" className="form-label">CIC</label>
+                    <input type="text" className="form-control" id="editCic" value={editingVisit?.cic_name || ""} disabled />
+                  </div>
+                  <div className="col-md-6">
+                    <label htmlFor="editIntervention" className="form-label">Intervention</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      id="editIntervention"
+                      name="intervention_id"
+                      value={editFormData.intervention_id || ""}
+                      onChange={handleEditFormChange}
+                      placeholder="Enter intervention"
+                    />
+                  </div>
+                  <div className="col-md-6">
+                    <label htmlFor="editActivity" className="form-label">Activity</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      id="editActivity"
+                      name="activity_name"
+                      value={editFormData.activity_name || ""}
+                      onChange={handleEditFormChange}
+                      placeholder="Enter activity name"
+                    />
+                  </div>
+                  <div className="col-md-6">
+                    <label htmlFor="editAssistedBy" className="form-label">Assisted By</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      id="editAssistedBy"
+                      name="assisted_by"
+                      value={editFormData.assisted_by || ""}
+                      onChange={handleEditFormChange}
+                      placeholder="Enter assistant name"
+                    />
+                  </div>
+                  <div className="col-12">
+                    <label htmlFor="editNotes" className="form-label">Notes / Follow Up</label>
+                    <textarea
+                      className="form-control"
+                      id="editNotes"
+                      name="notes"
+                      rows={3}
+                      value={editFormData.notes || ""}
+                      onChange={handleEditFormChange}
+                      placeholder="Enter notes or follow-up information"
+                    ></textarea>
                   </div>
                 </div>
-                <div className="modal-footer">
-                  <button
-                    type="button"
-                    className="btn btn-secondary"
-                    onClick={() => handleCloseEditModal()}
-                    disabled={editSubmitting}
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    className="btn btn-primary"
-                    disabled={editSubmitting}
-                  >
-                    {editSubmitting ? (
-                      <span className="d-inline-flex align-items-center gap-2">
-                        <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                        Updating...
-                      </span>
-                    ) : (
-                      "Update Visit"
-                    )}
-                  </button>
+
+                {/* Visit times — read-only by default, editable only after the
+                    user enters correction mode and supplies a note. */}
+                <hr className="my-4" />
+                <div className="d-flex align-items-center justify-content-between mb-2">
+                  <h6 className="mb-0">Visit Times</h6>
+                  {!correctionMode && (
+                    <button
+                      type="button"
+                      className="btn btn-sm btn-link p-0"
+                      onClick={() => setCorrectionMode(true)}
+                      disabled={editSubmitting}
+                    >
+                      <i className="material-icons-outlined me-1 align-middle" style={{ fontSize: 16 }}>edit</i>
+                      Correct check-in or check-out times
+                    </button>
+                  )}
                 </div>
-              </form>
-            </div>
+
+                {!correctionMode && (
+                  <div className="row g-3">
+                    <div className="col-md-6">
+                      <label className="form-label">Check-In</label>
+                      <div className="form-control bg-light">
+                        {originalTimes.checkIn ? new Date(originalTimes.checkIn).toLocaleString() : "—"}
+                      </div>
+                    </div>
+                    <div className="col-md-6">
+                      <label className="form-label">Check-Out</label>
+                      <div className="form-control bg-light">
+                        {originalTimes.checkOut ? new Date(originalTimes.checkOut).toLocaleString() : "—"}
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {correctionMode && (
+                  <>
+                    <div className="row g-3">
+                      <div className="col-md-6">
+                        <label htmlFor="editCheckIn" className="form-label">Check-In Time</label>
+                        <input
+                          type="datetime-local"
+                          className="form-control"
+                          id="editCheckIn"
+                          name="check_in_at"
+                          value={editFormData.check_in_at ? new Date(editFormData.check_in_at).toISOString().slice(0, 16) : ""}
+                          onChange={handleEditFormChange}
+                          disabled={editSubmitting}
+                        />
+                      </div>
+                      <div className="col-md-6">
+                        <label htmlFor="editCheckOut" className="form-label">Check-Out Time</label>
+                        <input
+                          type="datetime-local"
+                          className="form-control"
+                          id="editCheckOut"
+                          name="check_out_at"
+                          value={editFormData.check_out_at ? new Date(editFormData.check_out_at).toISOString().slice(0, 16) : ""}
+                          onChange={handleEditFormChange}
+                          disabled={editSubmitting}
+                        />
+                      </div>
+                      <div className="col-12">
+                        <label htmlFor="editCorrectionNote" className="form-label">
+                          Correction Note <span className="text-danger">*</span>
+                        </label>
+                        <textarea
+                          className="form-control"
+                          id="editCorrectionNote"
+                          rows={2}
+                          value={correctionNote}
+                          onChange={(e) => setCorrectionNote(e.target.value)}
+                          placeholder="Why were these times corrected? (min 10 characters)"
+                          disabled={editSubmitting}
+                        />
+                        <div className="form-text">
+                          A correction note of at least 10 characters is required when changing visit times.
+                          The note is stored in the audit trail along with the previous and new values.
+                        </div>
+                      </div>
+                      <div className="col-12">
+                        <button
+                          type="button"
+                          className="btn btn-sm btn-link p-0"
+                          onClick={() => {
+                            setCorrectionMode(false);
+                            setCorrectionNote("");
+                            setEditFormData((prev) => ({
+                              ...prev,
+                              check_in_at: originalTimes.checkIn,
+                              check_out_at: originalTimes.checkOut,
+                            }));
+                          }}
+                          disabled={editSubmitting}
+                        >
+                          Cancel time correction
+                        </button>
+                      </div>
+                    </div>
+                  </>
+                )}
+              </div>
+              <div className="card-footer d-flex justify-content-end gap-2 py-3 px-4">
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  onClick={() => handleCloseEditModal()}
+                  disabled={editSubmitting}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="btn btn-primary"
+                  disabled={editSubmitting}
+                >
+                  {editSubmitting ? (
+                    <span className="d-inline-flex align-items-center gap-2">
+                      <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                      Updating...
+                    </span>
+                  ) : (
+                    "Update Visit"
+                  )}
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}
