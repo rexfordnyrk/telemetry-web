@@ -108,18 +108,34 @@ const CicVisits: React.FC = () => {
     {
       title: 'Duration', data: null, orderable: false,
       render: (_: any, __: any, row: Visit) => {
-        // Prefer the backend-computed value; fall back to check_out - check_in
-        // when the row carries times but no precomputed duration (legacy data
-        // or third-party imports that bypassed the dedicated checkout flow).
-        let m = Number(row.duration_minutes);
-        if ((!m || m <= 0) && row.check_in_at && row.check_out_at) {
-          const ms = new Date(row.check_out_at).getTime() - new Date(row.check_in_at).getTime();
-          if (Number.isFinite(ms) && ms > 0) m = Math.round(ms / 60000);
+        // Prefer the backend-stored minutes value when it's positive.
+        const backendMins = Number(row.duration_minutes);
+        if (Number.isFinite(backendMins) && backendMins > 0) {
+          const h = Math.floor(backendMins / 60);
+          const r = backendMins % 60;
+          return h > 0 ? `${h}h ${r}m` : `${r}m`;
         }
-        if (!m || m <= 0) return '-';
-        const h = Math.floor(m / 60);
-        const r = m % 60;
-        return h > 0 ? `${h}h ${r}m` : `${r}m`;
+
+        // Otherwise compute from the visit's own timestamps. Covers (a) rows
+        // where the backend truncated a sub-minute duration to 0, (b) legacy
+        // visits never put through the checkout flow, and (c) CSV-imported
+        // rows that came in with check_out_at but no duration.
+        if (row.check_in_at && row.check_out_at) {
+          const ms = new Date(row.check_out_at).getTime() - new Date(row.check_in_at).getTime();
+          if (Number.isFinite(ms) && ms > 0) {
+            if (ms < 60_000) {
+              // Sub-minute visits — show seconds so quick test check-ins
+              // don't render as "-" and look broken.
+              return `${Math.max(1, Math.round(ms / 1000))}s`;
+            }
+            const totalMins = Math.round(ms / 60_000);
+            const h = Math.floor(totalMins / 60);
+            const r = totalMins % 60;
+            return h > 0 ? `${h}h ${r}m` : `${r}m`;
+          }
+        }
+
+        return '-';
       },
     },
     {
