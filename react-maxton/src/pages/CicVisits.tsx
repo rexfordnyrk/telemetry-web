@@ -7,6 +7,7 @@ import ImportVisitsModal from "../components/ImportVisitsModal";
 import CheckInModal from "../components/CheckInModal";
 import { checkoutVisit, deleteVisit, fetchVisits, updateVisit, Visit, UpdateVisitPayload } from "../store/slices/visitSlice";
 import { escapeHtml } from "../utils/escapeHtml";
+import { interventionService } from "../services/interventionService";
 
 const DEFAULT_PER_PAGE = 50;
 
@@ -47,6 +48,39 @@ const CicVisits: React.FC = () => {
     checkOut: null,
   });
 
+  // Intervention options for the edit modal dropdown. Loaded once on mount so
+  // editing a visit shows the intervention by *name* instead of its UUID.
+  const [interventionOptions, setInterventionOptions] = useState<{ id: string; name: string }[]>([]);
+
+  useEffect(() => {
+    let cancelled = false;
+    const loadInterventions = async () => {
+      try {
+        const response = await interventionService.list({ limit: 200 });
+        const items = Array.isArray(response?.data) ? response.data : [];
+        const mapped = items
+          .map((item: any) => {
+            const id = item?.id ?? item?.uuid ?? null;
+            const name = item?.name ?? item?.title ?? "";
+            if (!id || !name) return null;
+            return { id: String(id), name: String(name) };
+          })
+          .filter((x: any): x is { id: string; name: string } => Boolean(x));
+        const unique = new Map<string, { id: string; name: string }>();
+        mapped.forEach((item) => unique.set(item.id, item));
+        if (!cancelled) {
+          setInterventionOptions(
+            Array.from(unique.values()).sort((a, b) => a.name.localeCompare(b.name)),
+          );
+        }
+      } catch {
+        // Non-fatal — the edit form falls back to the previously-selected name.
+      }
+    };
+    loadInterventions();
+    return () => { cancelled = true; };
+  }, []);
+
   const availableCics = useMemo(() => {
     const map = new Map<string, string>();
     visits.forEach((visit) => {
@@ -71,13 +105,23 @@ const CicVisits: React.FC = () => {
     { title: 'Notes / Follow Up', data: 'notes', render: (d: any) => escapeHtml(d) || '-' },
     { title: 'Check-In', data: 'check_in_at', render: (d: any) => d ? new Date(d).toLocaleString() : '-' },
     { title: 'Check-Out', data: 'check_out_at', render: (d: any) => d ? new Date(d).toLocaleString() : '-' },
-    { title: 'Duration', data: 'duration_minutes', render: (mins: any) => {
-      const m = Number(mins);
-      if (!m || m <= 0) return '-';
-      const h = Math.floor(m / 60);
-      const r = m % 60;
-      return h > 0 ? `${h}h ${r}m` : `${r}m`;
-    } },
+    {
+      title: 'Duration', data: null, orderable: false,
+      render: (_: any, __: any, row: Visit) => {
+        // Prefer the backend-computed value; fall back to check_out - check_in
+        // when the row carries times but no precomputed duration (legacy data
+        // or third-party imports that bypassed the dedicated checkout flow).
+        let m = Number(row.duration_minutes);
+        if ((!m || m <= 0) && row.check_in_at && row.check_out_at) {
+          const ms = new Date(row.check_out_at).getTime() - new Date(row.check_in_at).getTime();
+          if (Number.isFinite(ms) && ms > 0) m = Math.round(ms / 60000);
+        }
+        if (!m || m <= 0) return '-';
+        const h = Math.floor(m / 60);
+        const r = m % 60;
+        return h > 0 ? `${h}h ${r}m` : `${r}m`;
+      },
+    },
     {
       title: 'Actions', data: null, orderable: false, searchable: false,
       render: (_: any, __: any, row: Visit) => {
@@ -575,15 +619,32 @@ const CicVisits: React.FC = () => {
                   </div>
                   <div className="col-md-6">
                     <label htmlFor="editIntervention" className="form-label">Intervention</label>
-                    <input
-                      type="text"
-                      className="form-control"
+                    <select
+                      className="form-select"
                       id="editIntervention"
                       name="intervention_id"
                       value={editFormData.intervention_id || ""}
                       onChange={handleEditFormChange}
-                      placeholder="Enter intervention"
-                    />
+                      disabled={editSubmitting}
+                    >
+                      <option value="">— None —</option>
+                      {/*
+                        Keep the original intervention selectable even if the
+                        master list hasn't loaded or is missing this entry, so
+                        the form doesn't silently drop the visit's value.
+                      */}
+                      {editingVisit?.intervention_id &&
+                        !interventionOptions.some((o) => o.id === editingVisit.intervention_id) && (
+                          <option value={editingVisit.intervention_id}>
+                            {editingVisit.intervention_name || editingVisit.intervention_id}
+                          </option>
+                        )}
+                      {interventionOptions.map((opt) => (
+                        <option key={opt.id} value={opt.id}>
+                          {opt.name}
+                        </option>
+                      ))}
+                    </select>
                   </div>
                   <div className="col-md-6">
                     <label htmlFor="editActivity" className="form-label">Activity</label>
