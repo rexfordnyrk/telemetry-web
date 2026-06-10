@@ -5,7 +5,7 @@ import NewUserModal from "../components/NewUserModal";
 import FilterModal from "../components/FilterModal";
 import PermissionRoute from "../components/PermissionRoute";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
-import { deleteUserAsync, fetchUsers } from "../store/slices/userSlice";
+import { deleteUserAsync, fetchUsers, updateUserAsync } from "../store/slices/userSlice";
 import { addAlert } from "../store/slices/alertSlice";
 import { useNavigate } from "react-router-dom";
 import { useDataTable } from "../hooks/useDataTable";
@@ -411,14 +411,29 @@ const Users: React.FC = () => {
           );
         });
     } else if (modalAction === "disable" && user) {
-      // Handle disable/enable logic here (placeholder – no API yet)
-      dispatch(
-        addAlert({
-          type: "success",
-          title: "Success",
-          message: `User "${userName}" has been ${user.status === "disabled" ? "enabled" : "disabled"}.`,
-        }),
-      );
+      const newStatus = user.status === "disabled" ? "active" : "disabled";
+      dispatch(updateUserAsync({ id: user.id, userData: { status: newStatus } }))
+        .unwrap()
+        .then(() => {
+          dispatch(
+            addAlert({
+              type: "success",
+              title: "Success",
+              message: `User "${userName}" has been ${newStatus === "disabled" ? "disabled" : "enabled"}.`,
+            }),
+          );
+          refreshTable();
+        })
+        .catch((err: unknown) => {
+          dispatch(
+            addAlert({
+              type: "danger",
+              title: "Update Failed",
+              message:
+                err instanceof Error ? err.message : "Failed to update user status.",
+            }),
+          );
+        });
     }
   };
 

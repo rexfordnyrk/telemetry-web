@@ -5,11 +5,12 @@ import MainLayout from "../layouts/MainLayout";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import {
   fetchUserById,
-  updateUser,
+  updateUserAsync,
   assignRoleToUser,
   removeRoleFromUser,
   adminUpdatePassword,
   type Role,
+  type User,
 } from "../store/slices/userSlice";
 import { fetchRoles } from "../store/slices/rolesPermissionsSlice";
 import { addAlert } from "../store/slices/alertSlice";
@@ -301,32 +302,43 @@ const UserDetails: React.FC = () => {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!user?.id) return;
 
-    // Create updated user object, omitting photo if not provided
-    const updatedUserData = { ...formData };
-    delete (updatedUserData as any).photo; // Remove photo from form data
+    const userData: Partial<User> = {
+      first_name: formData.first_name,
+      last_name: formData.last_name,
+      username: formData.username,
+      email: formData.email,
+      phone: formData.phone,
+      designation: formData.designation,
+      organization: formData.organization,
+    };
+    if (photoPreview && photoPreview !== user.photo) {
+      (userData as any).photo = photoPreview;
+    }
 
-    const updatedUser = {
-      ...user,
-      ...updatedUserData,
-      ...(photoPreview && photoPreview !== user?.photo
-        ? { photo: photoPreview }
-        : {}),
-      updated_at: new Date().toISOString(),
-    } as any;
-
-    // @ts-ignore - Photo type issue
-    dispatch(updateUser(updatedUser));
-    dispatch(
-      addAlert({
-        type: "success",
-        title: "Profile Updated",
-        message: "User profile has been updated successfully.",
-      }),
-    );
-    setIsEditing(false);
+    try {
+      await dispatch(updateUserAsync({ id: user.id, userData })).unwrap();
+      dispatch(
+        addAlert({
+          type: "success",
+          title: "Profile Updated",
+          message: "User profile has been updated successfully.",
+        }),
+      );
+      setIsEditing(false);
+    } catch (err) {
+      dispatch(
+        addAlert({
+          type: "danger",
+          title: "Update Failed",
+          message:
+            err instanceof Error ? err.message : "Failed to update user profile.",
+        }),
+      );
+    }
   };
 
   const handleReset = () => {
