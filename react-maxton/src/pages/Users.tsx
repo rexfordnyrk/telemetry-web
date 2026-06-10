@@ -209,9 +209,11 @@ const Users: React.FC = () => {
       { title: "Email", data: "email", orderable: true },
       { title: "Organization", data: "organization", orderable: true },
       {
+        // Role column is computed from a related table, so server-side sort is
+        // not supported. Filtering still works via the Filters modal.
         title: "Role",
         data: "roles",
-        orderable: true,
+        orderable: false,
         render(data: any[], type: string) {
           if (type !== "display" || !Array.isArray(data)) return "";
           return data.map((r: any) => r.name).join(", ");
@@ -281,15 +283,39 @@ const Users: React.FC = () => {
         const start = requestData.start ?? requestData.iDisplayStart ?? 0;
         const length = requestData.length ?? requestData.iDisplayLength ?? DEFAULT_PER_PAGE;
         const page = Math.floor(start / length) + 1;
+
+        // Column index → backend sortable column. Role column (index 3) is
+        // omitted because it sorts via a related table — left unset on the
+        // server, the default created_at DESC kicks in.
+        const sortColumn: Record<number, string> = {
+          0: 'first_name',
+          1: 'email',
+          2: 'organization',
+          4: 'status',
+          5: 'created_at',
+        };
+
         const params: Record<string, unknown> = { page, limit: length };
+        const searchVal = (requestData.search?.value ?? '').toString().trim();
+        if (searchVal) params.search = searchVal;
+        const order = Array.isArray(requestData.order) ? requestData.order[0] : undefined;
+        if (order && typeof order.column === 'number') {
+          const col = sortColumn[order.column];
+          if (col) {
+            params.sort_by = col;
+            params.sort_order = order.dir === 'asc' ? 'asc' : 'desc';
+          }
+        }
         if (activeFilters.role) params.role = activeFilters.role;
         if (activeFilters.status) params.status = activeFilters.status;
         if (activeFilters.organization) params.organization = activeFilters.organization;
+
         dispatch(fetchUsers(params as any))
           .unwrap()
-          .then((data: any[]) => {
-            const total = start + data.length + (data.length >= length ? 1 : 0);
-            callback({ draw: requestData.draw, data, recordsTotal: total, recordsFiltered: total });
+          .then((result: any) => {
+            const list = result?.data ?? [];
+            const total = Number(result?.pagination?.total ?? list.length);
+            callback({ draw: requestData.draw, data: list, recordsTotal: total, recordsFiltered: total });
           })
           .catch(() => {
             callback({ draw: requestData.draw, data: [], recordsTotal: 0, recordsFiltered: 0 });

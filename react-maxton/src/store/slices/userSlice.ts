@@ -29,6 +29,12 @@ export interface User {
   deleted_at?: string;
 }
 
+export interface UserListPagination {
+  total: number;
+  page: number;
+  limit: number;
+}
+
 interface UserState {
   users: User[];
   selectedUser: User | null;
@@ -40,6 +46,7 @@ interface UserState {
   assignRoleLoading: boolean;
   removeRoleLoading: boolean;
   adminPasswordLoading: boolean;
+  listPagination: UserListPagination | null;
 }
 
 const initialState: UserState = {
@@ -82,15 +89,25 @@ const initialState: UserState = {
   assignRoleLoading: false,
   removeRoleLoading: false,
   adminPasswordLoading: false,
+  listPagination: null,
 };
 
-/** Params for fetching users list (pagination and filters) */
+/** Params for fetching users list (pagination, filters, search, sort) */
 export interface UserFetchParams {
   page?: number;
   limit?: number;
+  search?: string;
+  sort_by?: string;
+  sort_order?: 'asc' | 'desc';
   role?: string;
   status?: string;
   organization?: string;
+}
+
+/** Shape returned by fetchUsers — list of users plus server pagination meta. */
+export interface UsersListResult {
+  data: User[];
+  pagination: UserListPagination;
 }
 
 /**
@@ -100,9 +117,9 @@ export interface UserFetchParams {
  * in the Authorization header for authentication.
  * Supports pagination (page, limit) and optional filters.
  */
-export const fetchUsers = createAsyncThunk(
+export const fetchUsers = createAsyncThunk<UsersListResult, UserFetchParams | undefined>(
   'users/fetchUsers',
-  async (params: UserFetchParams = {}, { getState, rejectWithValue, dispatch }) => {
+  async (params = {}, { getState, rejectWithValue, dispatch }) => {
     try {
       const state = getState() as RootState;
       const token = state.auth.token;
@@ -112,13 +129,11 @@ export const fetchUsers = createAsyncThunk(
       }
 
       const queryParams = new URLSearchParams();
-      if (params) {
-        Object.entries(params).forEach(([key, value]) => {
-          if (value !== undefined && value !== null && value !== '') {
-            queryParams.append(key, value.toString());
-          }
-        });
-      }
+      Object.entries(params ?? {}).forEach(([key, value]) => {
+        if (value !== undefined && value !== null && value !== '') {
+          queryParams.append(key, String(value));
+        }
+      });
       const url = queryParams.toString()
         ? buildApiUrl(`/api/v1/users?${queryParams.toString()}`)
         : buildApiUrl('/api/v1/users');
@@ -133,15 +148,21 @@ export const fetchUsers = createAsyncThunk(
         throw new Error(errorMessage);
       }
 
-      const data = await response.json();
-      const usersArray = Array.isArray(data)
-        ? data
-        : data?.data && Array.isArray(data.data)
-          ? data.data
-          : data?.users && Array.isArray(data.users)
-            ? data.users
+      const json = await response.json();
+      const usersArray: User[] = Array.isArray(json)
+        ? json
+        : Array.isArray(json?.data)
+          ? json.data
+          : Array.isArray(json?.users)
+            ? json.users
             : [];
-      return usersArray;
+      const total = typeof json?.total === 'number' ? json.total : usersArray.length;
+      const page = typeof json?.page === 'number' ? json.page : params?.page ?? 1;
+      const limit = typeof json?.limit === 'number' ? json.limit : params?.limit ?? usersArray.length;
+      return {
+        data: usersArray,
+        pagination: { total, page, limit },
+      };
     } catch (error) {
       console.error('Error fetching users:', error);
       return rejectWithValue(
@@ -514,7 +535,8 @@ const userSlice = createSlice({
       })
       .addCase(fetchUsers.fulfilled, (state, action) => {
         state.loading = false;
-        state.users = Array.isArray(action.payload) ? action.payload : [];
+        state.users = action.payload.data;
+        state.listPagination = action.payload.pagination;
         state.error = null;
       })
       .addCase(fetchUsers.rejected, (state, action) => {
@@ -569,12 +591,16 @@ const userSlice = createSlice({
       })
       .addCase(updateUserAsync.fulfilled, (state, action) => {
         state.loading = false;
-        // Update the user in the list
-        const updatedUser = action.payload;
+        // API returns { data: User } or User directly; tolerate both.
+        const payload: any = action.payload;
+        const updatedUser: User | undefined = payload?.data ?? payload;
         if (updatedUser && updatedUser.id) {
-          const index = state.users.findIndex(user => user.id === updatedUser.id);
+          const index = state.users.findIndex((user) => user.id === updatedUser.id);
           if (index !== -1) {
-            state.users[index] = updatedUser;
+            state.users[index] = { ...state.users[index], ...updatedUser };
+          }
+          if (state.selectedUser?.id === updatedUser.id) {
+            state.selectedUser = { ...state.selectedUser, ...updatedUser };
           }
         }
         state.error = null;
