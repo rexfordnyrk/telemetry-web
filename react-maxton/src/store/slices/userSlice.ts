@@ -595,12 +595,21 @@ const userSlice = createSlice({
         const payload: any = action.payload;
         const updatedUser: User | undefined = payload?.data ?? payload;
         if (updatedUser && updatedUser.id) {
+          // Drop null/undefined keys before merging so a partial response
+          // (e.g. status update that omits roles/photo) doesn't clobber
+          // fields the UI depends on with null.
+          const cleanedUser: Partial<User> = {};
+          (Object.entries(updatedUser) as Array<[keyof User, any]>).forEach(([key, value]) => {
+            if (value !== null && value !== undefined) {
+              (cleanedUser as any)[key] = value;
+            }
+          });
           const index = state.users.findIndex((user) => user.id === updatedUser.id);
           if (index !== -1) {
-            state.users[index] = { ...state.users[index], ...updatedUser };
+            state.users[index] = { ...state.users[index], ...cleanedUser } as User;
           }
           if (state.selectedUser?.id === updatedUser.id) {
-            state.selectedUser = { ...state.selectedUser, ...updatedUser };
+            state.selectedUser = { ...state.selectedUser, ...cleanedUser } as User;
           }
         }
         state.error = null;

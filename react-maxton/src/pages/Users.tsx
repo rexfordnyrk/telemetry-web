@@ -344,12 +344,7 @@ const Users: React.FC = () => {
     [dataTableColumns, activeFilters, dispatch],
   );
 
-  const { destroyDataTable } = useDataTable(
-    "users-datatable",
-    [],
-    dataTableOptions,
-    true,
-  );
+  useDataTable("users-datatable", [], dataTableOptions, true);
 
   const handleUserClick = useCallback(
     (userId: string) => {
@@ -400,9 +395,6 @@ const Users: React.FC = () => {
   const handleConfirmAction = () => {
     const user = targetUser;
     const userName = user ? `${user.first_name} ${user.last_name}` : "";
-
-    // Destroy DataTable before closing modal so React never reconciles DataTables-mutated DOM (fixes insertBefore crash)
-    destroyDataTable();
 
     setShowModal(false);
     setTargetUser(null);
@@ -460,7 +452,24 @@ const Users: React.FC = () => {
     setActiveFilters(filters);
   };
 
-  const refreshTable = useCallback(() => setRefreshKey((k) => k + 1), []);
+  // Reload DataTables ajax without resetting pagination position. Same
+  // pattern as Beneficiaries.tsx — calling destroyDataTable + bumping a
+  // refreshKey leaves the new <table> element un-initialised because the
+  // useDataTable hook's effect deps don't change with refreshKey.
+  const refreshTable = useCallback(() => {
+    if (typeof window !== "undefined" && window.$) {
+      try {
+        const dt = window.$("#users-datatable").DataTable();
+        if (dt && dt.ajax) {
+          dt.ajax.reload(null, false);
+          return;
+        }
+      } catch (_) {
+        // Fall through to the key-bump fallback below.
+      }
+    }
+    setRefreshKey((k) => k + 1);
+  }, []);
 
   return (
     <PermissionRoute requiredPermissions={['list_users']}>
@@ -557,7 +566,6 @@ const Users: React.FC = () => {
         <NewUserModal
           show={showNewUserModal}
           onClose={() => setShowNewUserModal(false)}
-          onBeforeSuccess={destroyDataTable}
           onSuccess={refreshTable}
         />
 

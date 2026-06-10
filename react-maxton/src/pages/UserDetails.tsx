@@ -706,7 +706,7 @@ const UserDetails: React.FC = () => {
               </div>
             </div>
             <div className="kewords d-flex align-items-center justify-content-center gap-3 mt-4 overflow-x-auto">
-              {user.roles.map((role, index) => (
+              {(user.roles ?? []).map((role, index) => (
                 <button
                   key={index}
                   type="button"
