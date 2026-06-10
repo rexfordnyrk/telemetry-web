@@ -9,6 +9,7 @@ import {
   PasswordPolicy,
   DEFAULT_PASSWORD_POLICY,
 } from "../utils/passwordPolicy";
+import { validateUserCreate } from "../utils/userValidation";
 
 interface NewUserModalProps {
   show: boolean;
@@ -73,21 +74,19 @@ const NewUserModal: React.FC<NewUserModalProps> = ({ show, onClose, onBeforeSucc
   };
 
   const validateForm = () => {
-    const errors: { [key: string]: string } = {};
-
-    if (!formData.first_name.trim()) {
-      errors.first_name = "First name is required";
-    }
-
-    if (!formData.last_name.trim()) {
-      errors.last_name = "Last name is required";
-    }
-
-    if (!formData.email.trim()) {
-      errors.email = "Email is required";
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      errors.email = "Please enter a valid email address";
-    }
+    // Mirror the backend rules (validation/user.go) for fast feedback;
+    // server still rejects on its own check.
+    const errors: Record<string, string> = {
+      ...validateUserCreate({
+        firstName: formData.first_name,
+        lastName: formData.last_name,
+        email: formData.email,
+        phone: formData.phone,
+        username: formData.username,
+        designation: formData.designation,
+        organization: formData.organization,
+      }),
+    };
 
     if (!formData.password.trim()) {
       errors.password = "Password is required";
@@ -100,10 +99,6 @@ const NewUserModal: React.FC<NewUserModalProps> = ({ show, onClose, onBeforeSucc
 
     if (!formData.username.trim()) {
       errors.username = "Username is required";
-    }
-
-    if (!formData.phone.trim()) {
-      errors.phone = "Phone number is required";
     }
 
     if (!formData.designation.trim()) {

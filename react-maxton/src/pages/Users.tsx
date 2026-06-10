@@ -8,6 +8,7 @@ import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { deleteUserAsync, fetchUsers, updateUserAsync } from "../store/slices/userSlice";
 import { addAlert } from "../store/slices/alertSlice";
 import { useNavigate } from "react-router-dom";
+import { escapeHtml } from "../utils/escapeHtml";
 import { useDataTable } from "../hooks/useDataTable";
 import { usePermissions } from "../hooks/usePermissions";
 
@@ -198,16 +199,34 @@ const Users: React.FC = () => {
           if (type !== "display") return data;
           const fn = row.first_name || "";
           const ln = row.last_name || "";
-          const initials = (fn.charAt(0) + ln.charAt(0)).toUpperCase();
-          const name = `${fn} ${ln}`.trim() || "—";
-          const photoHtml = row.photo
-            ? `<img src="${row.photo}" alt="" class="rounded-circle" width="40" height="40" />`
+          const initials = escapeHtml((fn.charAt(0) + ln.charAt(0)).toUpperCase());
+          const name = escapeHtml(`${fn} ${ln}`.trim()) || "—";
+          const photoSrc = row.photo ? escapeHtml(row.photo) : "";
+          const photoHtml = photoSrc
+            ? `<img src="${photoSrc}" alt="" class="rounded-circle" width="40" height="40" />`
             : `<div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center" style="width:40px;height:40px;font-size:14px">${initials}</div>`;
-          return `<div class="d-flex align-items-center gap-3">${photoHtml}<div><a href="#" class="text-decoration-none fw-bold users-table-name-link" data-user-id="${row.id}">${name}</a></div></div>`;
+          const userId = escapeHtml(row.id ?? "");
+          return `<div class="d-flex align-items-center gap-3">${photoHtml}<div><a href="#" class="text-decoration-none fw-bold users-table-name-link" data-user-id="${userId}">${name}</a></div></div>`;
         },
       },
-      { title: "Email", data: "email", orderable: true },
-      { title: "Organization", data: "organization", orderable: true },
+      {
+        title: "Email",
+        data: "email",
+        orderable: true,
+        render(data: string, type: string) {
+          if (type !== "display") return data;
+          return escapeHtml(data ?? "");
+        },
+      },
+      {
+        title: "Organization",
+        data: "organization",
+        orderable: true,
+        render(data: string, type: string) {
+          if (type !== "display") return data;
+          return escapeHtml(data ?? "");
+        },
+      },
       {
         // Role column is computed from a related table, so server-side sort is
         // not supported. Filtering still works via the Filters modal.
@@ -216,7 +235,7 @@ const Users: React.FC = () => {
         orderable: false,
         render(data: any[], type: string) {
           if (type !== "display" || !Array.isArray(data)) return "";
-          return data.map((r: any) => r.name).join(", ");
+          return data.map((r: any) => escapeHtml(r?.name ?? "")).join(", ");
         },
       },
       {

@@ -10,6 +10,7 @@ import {
 import { addAlert } from "../store/slices/alertSlice";
 import { usePermissions } from "../hooks/usePermissions";
 import { escapeHtml } from "../utils/escapeHtml";
+import { validateSelfProfileUpdate } from "../utils/userValidation";
 
 /**
  * MyProfile is the self-service profile page reachable from the navbar.
@@ -58,6 +59,7 @@ const MyProfile: React.FC = () => {
     phone: "",
   });
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
     if (user) {
@@ -100,6 +102,18 @@ const MyProfile: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user?.id || !canEditSelf || submitting) return;
+
+    // Client mirror of backend ValidateSelfProfileUpdate.
+    const localErrs = validateSelfProfileUpdate({
+      firstName: formData.first_name,
+      lastName: formData.last_name,
+      phone: formData.phone,
+    });
+    if (Object.keys(localErrs).length > 0) {
+      setFieldErrors(localErrs);
+      return;
+    }
+    setFieldErrors({});
 
     const payload: Partial<User> = {
       first_name: formData.first_name.trim(),
@@ -267,12 +281,15 @@ const MyProfile: React.FC = () => {
                   type="text"
                   id="myprofile-first-name"
                   name="first_name"
-                  className="form-control"
+                  className={`form-control ${fieldErrors.first_name ? "is-invalid" : ""}`}
                   value={formData.first_name}
                   onChange={handleFieldChange}
                   disabled={!isEditing || submitting}
                   maxLength={100}
                 />
+                {fieldErrors.first_name && (
+                  <div className="invalid-feedback">{fieldErrors.first_name}</div>
+                )}
               </div>
               <div className="col-md-6">
                 <label htmlFor="myprofile-last-name" className="form-label">
@@ -282,12 +299,15 @@ const MyProfile: React.FC = () => {
                   type="text"
                   id="myprofile-last-name"
                   name="last_name"
-                  className="form-control"
+                  className={`form-control ${fieldErrors.last_name ? "is-invalid" : ""}`}
                   value={formData.last_name}
                   onChange={handleFieldChange}
                   disabled={!isEditing || submitting}
                   maxLength={100}
                 />
+                {fieldErrors.last_name && (
+                  <div className="invalid-feedback">{fieldErrors.last_name}</div>
+                )}
               </div>
               <div className="col-md-6">
                 <label htmlFor="myprofile-phone" className="form-label">
@@ -297,12 +317,15 @@ const MyProfile: React.FC = () => {
                   type="tel"
                   id="myprofile-phone"
                   name="phone"
-                  className="form-control"
+                  className={`form-control ${fieldErrors.phone ? "is-invalid" : ""}`}
                   value={formData.phone}
                   onChange={handleFieldChange}
                   disabled={!isEditing || submitting}
                   maxLength={30}
                 />
+                {fieldErrors.phone && (
+                  <div className="invalid-feedback">{fieldErrors.phone}</div>
+                )}
               </div>
               <div className="col-md-6">
                 <label htmlFor="myprofile-photo" className="form-label">
