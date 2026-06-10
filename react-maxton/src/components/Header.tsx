@@ -334,7 +334,10 @@ const Header: React.FC<HeaderProps> = ({
                 </div>
               </Dropdown.Item>
               <Dropdown.Divider />
-              <Dropdown.Item className="d-flex align-items-center gap-2 py-2">
+              <Dropdown.Item
+                className="d-flex align-items-center gap-2 py-2"
+                onClick={() => navigate("/profile")}
+              >
                 <i className="material-icons-outlined">person_outline</i>Profile
               </Dropdown.Item>
               <Dropdown.Item className="d-flex align-items-center gap-2 py-2">

@@ -48,6 +48,7 @@ export const API_CONFIG = {
       UPDATE: (id: string) => `/api/v1/users/${id}`,     // Update specific user
       DELETE: (id: string) => `/api/v1/users/${id}`,     // Delete specific user
       ADMIN_PASSWORD: (id: string) => `/api/v1/users/${id}/admin-password`, // Admin set user password (requires create_users)
+      PASSWORD: (id: string) => `/api/v1/users/${id}/password`, // Self-service change password
       MFA_RESET: (id: string) => `/api/v1/users/${id}/mfa/reset`,
     },
     

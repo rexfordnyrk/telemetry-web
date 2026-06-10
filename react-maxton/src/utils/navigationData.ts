@@ -107,6 +107,12 @@ export const navigationData: NavigationItem[] = [
     icon: "person",
     children: [
       {
+        id: "profile-overview",
+        title: "My Profile",
+        path: "/profile",
+        icon: "arrow_right",
+      },
+      {
         id: "profile-security",
         title: "Security Settings",
         path: "/profile/security",

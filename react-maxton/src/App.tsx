@@ -56,6 +56,7 @@ import SettingsInterventions from "./pages/SettingsInterventions";
 import SettingsCics from "./pages/SettingsCics";
 import MfaChallenge from "./pages/MfaChallenge";
 import SecuritySettings from "./pages/SecuritySettings";
+import MyProfile from "./pages/MyProfile";
 import AuthAuditLog from "./pages/AuthAuditLog";
 import PermissionRoute from "./components/PermissionRoute";
 
@@ -335,6 +336,16 @@ function App() {
                       <PermissionRoute requiredPermissions={['read_auth_events']}>
                         <AuthAuditLog />
                       </PermissionRoute>
+                    </ProtectedRoute>
+                  }
+                />
+
+                {/* My profile (self-service) */}
+                <Route
+                  path="/profile"
+                  element={
+                    <ProtectedRoute>
+                      <MyProfile />
                     </ProtectedRoute>
                   }
                 />
