@@ -1,6 +1,7 @@
 import { configureStore } from '@reduxjs/toolkit';
 import deviceAssignmentReducer, {
   fetchAssignmentsPage,
+  unassignDevice,
   selectAssignmentsPageData,
   selectBasicStats,
   selectPagePagination,
@@ -8,12 +9,15 @@ import deviceAssignmentReducer, {
 } from '../deviceAssignmentSlice';
 import { RootState } from '../../index';
 
-// Mock the API configuration
+// Mock the API configuration. ApiService.post (used by unassignDevice
+// via deviceAssignmentsAPI) calls buildApiUrl(UNASSIGN(id)) so the
+// UNASSIGN endpoint factory must be present here too.
 jest.mock('../../../config/api', () => ({
   API_CONFIG: {
     ENDPOINTS: {
       DEVICE_ASSIGNMENTS: {
-        PAGE: '/api/v1/devices/assignments/page'
+        PAGE: '/api/v1/devices/assignments/page',
+        UNASSIGN: (id: string) => `/api/v1/devices/assignments/${id}/unassign`,
       }
     }
   },
@@ -134,6 +138,29 @@ describe('deviceAssignmentSlice - fetchAssignmentsPage', () => {
     
     expect(state.deviceAssignments.loading).toBe(false);
     expect(state.deviceAssignments.error).toBe(errorMessage);
+  });
+
+  it('unassignDevice posts to /assignments/:id/unassign with note', async () => {
+    // Phase 1: confirm the thunk routes through the correct endpoint
+    // factory. Before the fix the caller had to find the assignment
+    // ID from the (often-empty) assignments slice; now the page
+    // passes assignment_id directly.
+    (fetch as jest.Mock).mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ data: { message: 'Device unassigned successfully' } }),
+    });
+
+    const action = await store.dispatch(
+      unassignDevice({ assignmentId: 'uuid-1', note: 'returned damaged' }) as any
+    );
+
+    expect((action as any).type).toBe('deviceAssignments/unassignDevice/fulfilled');
+    const calledUrl = (fetch as jest.Mock).mock.calls[0][0] as string;
+    expect(calledUrl).toContain('/api/v1/devices/assignments/uuid-1/unassign');
+    const init = (fetch as jest.Mock).mock.calls[0][1] as RequestInit;
+    expect(init.method).toBe('POST');
+    expect(typeof init.body).toBe('string');
+    expect(JSON.parse(init.body as string)).toEqual({ note: 'returned damaged' });
   });
 
   it('should select assignments page data correctly', () => {

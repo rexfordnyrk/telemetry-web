@@ -61,6 +61,10 @@ const DeviceAssignments: React.FC = () => {
   const [showFilterModal, setShowFilterModal] = useState(false);
   const [selectedDevice, setSelectedDevice] = useState<Device | null>(null);
   const [selectedBeneficiary, setSelectedBeneficiary] = useState<Beneficiary | null>(null);
+  // assignment_id from the row — passed to the unassign modal so it can
+  // call POST /assignments/:id/unassign directly instead of scanning a
+  // possibly-empty `assignments` slice (DEF-033–034).
+  const [selectedAssignmentId, setSelectedAssignmentId] = useState<string | null>(null);
   const [quickSearch, setQuickSearch] = useState('');
 
   // Load data on component mount
@@ -147,6 +151,7 @@ const DeviceAssignments: React.FC = () => {
     
     setSelectedDevice(deviceObj as any);
     setSelectedBeneficiary(beneficiaryObj as any);
+    setSelectedAssignmentId(assignment.assignment_id);
     setShowUnassignModal(true);
   };
 
@@ -541,10 +546,14 @@ const DeviceAssignments: React.FC = () => {
         {/* Unassignment Modal */}
         <DeviceAssignmentModal
           show={showUnassignModal}
-          onHide={() => setShowUnassignModal(false)}
+          onHide={() => {
+            setShowUnassignModal(false);
+            setSelectedAssignmentId(null);
+          }}
           mode="unassign"
           device={selectedDevice}
           beneficiary={selectedBeneficiary}
+          assignmentId={selectedAssignmentId ?? undefined}
           onSuccess={handleAssignmentSuccess}
         />
 

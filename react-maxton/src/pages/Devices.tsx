@@ -5,7 +5,7 @@ import FilterModal from "../components/FilterModal";
 import DataTableWrapper from "../components/DataTableWrapper";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { addAlert } from "../store/slices/alertSlice";
-import { fetchDevices, deleteDevice } from "../store/slices/deviceSlice";
+import { fetchDevices, deleteDevice, updateDevice } from "../store/slices/deviceSlice";
 
 const DEFAULT_PER_PAGE = 50;
 
@@ -149,17 +149,37 @@ const Devices: React.FC = () => {
         );
       }
     } else {
-      const newStatus = !targetDevice?.is_active ? "activated" : "deactivated";
-      dispatch(
-        addAlert({
-          type: "success",
-          title: "Success",
-          message: `Device "${targetDevice?.device_name}" has been ${newStatus}.`,
-        })
-      );
-      
-      setShowModal(false);
-      setTargetDevice(null);
+      // Retire / re-activate persists is_active via the existing
+      // PUT /api/v1/devices/:id endpoint. Pre-fix, this branch only
+      // dispatched a success toast — the status never reached the DB
+      // (DEF-030–032).
+      try {
+        await dispatch(
+          updateDevice({
+            deviceId: targetDevice.id,
+            deviceData: { is_active: !targetDevice.is_active },
+          })
+        ).unwrap();
+        const newStatus = !targetDevice?.is_active ? "activated" : "retired";
+        dispatch(
+          addAlert({
+            type: "success",
+            title: "Success",
+            message: `Device "${targetDevice?.device_name}" has been ${newStatus}.`,
+          })
+        );
+        setShowModal(false);
+        setTargetDevice(null);
+        refreshTable();
+      } catch (error) {
+        dispatch(
+          addAlert({
+            type: "danger",
+            title: "Update Failed",
+            message: `Failed to update device: ${error}`,
+          })
+        );
+      }
     }
   };
 

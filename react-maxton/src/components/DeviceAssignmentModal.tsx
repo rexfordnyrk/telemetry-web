@@ -6,6 +6,7 @@ import { Beneficiary } from '../store/slices/beneficiarySlice';
 import { createDeviceAssignment, unassignDevice } from '../store/slices/deviceAssignmentSlice';
 import { fetchUnassignedDevices } from '../store/slices/deviceSlice';
 import { fetchUnassignedBeneficiaries } from '../store/slices/beneficiarySlice';
+import { addAlert } from '../store/slices/alertSlice';
 import SearchableDropdown from './SearchableDropdown';
 
 /**
@@ -17,6 +18,10 @@ interface DeviceAssignmentModalProps {
   mode: 'assign' | 'unassign';
   device?: Device | null;
   beneficiary?: Beneficiary | null;
+  // Caller-provided assignment_id for unassign mode. The previous flow
+  // looked this up from the assignments slice — which is often empty
+  // when navigating directly to the page — and silently no-op'd.
+  assignmentId?: string;
   onSuccess?: () => void;
 }
 
@@ -40,13 +45,14 @@ const DeviceAssignmentModal: React.FC<DeviceAssignmentModalProps> = ({
   mode,
   device,
   beneficiary,
+  assignmentId,
   onSuccess
 }) => {
   // Redux state and dispatch
   const dispatch = useAppDispatch();
   const { unassignedDevices, unassignedLoading: devicesLoading } = useAppSelector(state => state.devices);
   const { unassignedBeneficiaries, unassignedLoading: beneficiariesLoading } = useAppSelector(state => state.beneficiaries);
-  const { assignments, loading: assignmentLoading, error: assignmentError } = useAppSelector(state => state.deviceAssignments);
+  const { loading: assignmentLoading, error: assignmentError } = useAppSelector(state => state.deviceAssignments);
   const { user } = useAppSelector(state => state.auth);
 
   // Local state for form data
@@ -110,23 +116,36 @@ const DeviceAssignmentModal: React.FC<DeviceAssignmentModalProps> = ({
           assignedBy: user?.email || 'unknown@example.com',
           notes: notes.trim()
         })).unwrap();
-      } else if (mode === 'unassign' && device) {
-        // Find the assignment ID from the current assignment
-        const assignment = assignments.find(a => a.device_id === device.id && a.is_active);
-        if (assignment) {
-          await dispatch(unassignDevice({
-            assignmentId: assignment.id,
-            note: notes.trim()
-          })).unwrap();
-        }
+        dispatch(addAlert({
+          type: 'success',
+          title: 'Device Assigned',
+          message: `${selectedDevice.device_name} assigned to ${selectedBeneficiary.name}.`,
+        }));
+      } else if (mode === 'unassign' && assignmentId) {
+        await dispatch(unassignDevice({
+          assignmentId,
+          note: notes.trim()
+        })).unwrap();
+        dispatch(addAlert({
+          type: 'success',
+          title: 'Device Unassigned',
+          message: 'The device has been unassigned from the beneficiary.',
+        }));
+      } else if (mode === 'unassign') {
+        setValidationErrors({
+          general: 'Assignment ID missing. Please close and try again.',
+        });
+        return;
       }
 
-      // Call success callback and close modal
       onSuccess?.();
       onHide();
     } catch (error) {
-      // Error is handled by Redux state
-      console.error('Assignment operation failed:', error);
+      dispatch(addAlert({
+        type: 'danger',
+        title: mode === 'assign' ? 'Assignment Failed' : 'Unassignment Failed',
+        message: error instanceof Error ? error.message : String(error),
+      }));
     }
   };
 
@@ -156,6 +175,11 @@ const DeviceAssignmentModal: React.FC<DeviceAssignmentModalProps> = ({
           {assignmentError && (
             <Alert variant="danger" className="mb-3">
               {assignmentError}
+            </Alert>
+          )}
+          {validationErrors.general && (
+            <Alert variant="warning" className="mb-3">
+              {validationErrors.general}
             </Alert>
           )}
 
