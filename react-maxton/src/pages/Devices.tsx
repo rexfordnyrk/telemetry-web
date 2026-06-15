@@ -3,9 +3,12 @@ import { useNavigate } from "react-router-dom";
 import MainLayout from "../layouts/MainLayout";
 import FilterModal from "../components/FilterModal";
 import DataTableWrapper from "../components/DataTableWrapper";
+import DeviceComparePanel from "../components/DeviceComparePanel";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { addAlert } from "../store/slices/alertSlice";
 import { fetchDevices, deleteDevice, updateDevice } from "../store/slices/deviceSlice";
+import { fetchDeviceCompareRow, DeviceCompareRow } from "../utils/deviceCompare";
+import { escapeHtml } from "../utils/escapeHtml";
 
 const DEFAULT_PER_PAGE = 50;
 
@@ -13,6 +16,7 @@ const Devices: React.FC = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const { devices, loading, error } = useAppSelector((state) => state.devices);
+  const token = useAppSelector((state) => state.auth.token);
 
   const [showModal, setShowModal] = useState(false);
   const [modalAction, setModalAction] = useState<"disable" | "delete">("disable");
@@ -20,6 +24,14 @@ const Devices: React.FC = () => {
   const [showFilterModal, setShowFilterModal] = useState(false);
   const [activeFilters, setActiveFilters] = useState<{ [key: string]: any }>({});
   const [refreshKey, setRefreshKey] = useState(0);
+
+  // Comparison state — up to 3 device ids selected via checkbox column.
+  // Keep selection in React state so it survives DataTable redraws and
+  // can be enforced (no more than 3) without poking the DOM.
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [showCompare, setShowCompare] = useState(false);
+  const [compareRows, setCompareRows] = useState<DeviceCompareRow[]>([]);
+  const [compareLoading, setCompareLoading] = useState(false);
 
   const filterOptions = useMemo(() => {
     const organizationsSet = new Set(devices.map((d) => d.organization));
@@ -34,15 +46,45 @@ const Devices: React.FC = () => {
   const dtColumns = useMemo(
     () => [
       {
+        title: "",
+        data: null,
+        orderable: false,
+        searchable: false,
+        width: "30px",
+        // Checkbox column for the multi-device comparison panel
+        // (DEF-042). Selection state lives in React; this render
+        // only reflects it via data-* attrs.
+        render: (_: any, __: any, row: any) => {
+          const id = escapeHtml(row.id);
+          return `<input type="checkbox" class="form-check-input device-compare-cb" data-id="${id}" />`;
+        },
+      },
+      {
         title: "Device Name",
         data: "device_name",
         render: (_: any, __: any, row: any) =>
-          `<a href="#" class="text-decoration-none fw-bold" data-action="view-device" data-id="${row.id}">${row.device_name || ""}</a>`,
+          `<a href="#" class="text-decoration-none fw-bold" data-action="view-device" data-id="${escapeHtml(row.id)}">${escapeHtml(row.device_name)}</a>`,
       },
-      { title: "Android Version", data: "android_version" },
-      { title: "App Version", data: "app_version" },
-      { title: "Partner", data: "organization" },
-      { title: "Intervention", data: "programme" },
+      {
+        title: "Android Version",
+        data: "android_version",
+        render: (v: any) => escapeHtml(v),
+      },
+      {
+        title: "App Version",
+        data: "app_version",
+        render: (v: any) => escapeHtml(v),
+      },
+      {
+        title: "Partner",
+        data: "organization",
+        render: (v: any) => escapeHtml(v),
+      },
+      {
+        title: "Intervention",
+        data: "programme",
+        render: (v: any) => escapeHtml(v),
+      },
       {
         title: "Active",
         data: "is_active",
@@ -60,7 +102,7 @@ const Devices: React.FC = () => {
         render: (_: any, __: any, row: any) => {
           if (row.current_beneficiary) {
             const b = row.current_beneficiary;
-            return `<a href="#" class="text-decoration-none fw-bold text-primary" data-action="view-beneficiary" data-id="${b.id}">${b.name || ""}</a>`;
+            return `<a href="#" class="text-decoration-none fw-bold text-primary" data-action="view-beneficiary" data-id="${escapeHtml(b.id)}">${escapeHtml(b.name)}</a>`;
           }
           return '<span class="text-muted">Unassigned</span>';
         },
@@ -72,10 +114,11 @@ const Devices: React.FC = () => {
         searchable: false,
         render: (_: any, __: any, row: any) => {
           const icon = row.is_active ? "block" : "check_circle";
+          const id = escapeHtml(row.id);
           return `<div class="d-flex gap-1">
-            <button class="btn btn-sm p-1" title="Edit Device" data-action="edit" data-id="${row.id}" style="border:none;background:transparent"><i class="material-icons-outlined text-primary">edit</i></button>
-            <button class="btn btn-sm p-1" title="Retire/Activate" data-action="toggle" data-id="${row.id}" style="border:none;background:transparent"><i class="material-icons-outlined text-warning">${icon}</i></button>
-            <button class="btn btn-sm p-1" title="Delete Device" data-action="delete" data-id="${row.id}" style="border:none;background:transparent"><i class="material-icons-outlined text-danger">delete</i></button>
+            <button class="btn btn-sm p-1" title="Edit Device" data-action="edit" data-id="${id}" style="border:none;background:transparent"><i class="material-icons-outlined text-primary">edit</i></button>
+            <button class="btn btn-sm p-1" title="Retire/Activate" data-action="toggle" data-id="${id}" style="border:none;background:transparent"><i class="material-icons-outlined text-warning">${icon}</i></button>
+            <button class="btn btn-sm p-1" title="Delete Device" data-action="delete" data-id="${id}" style="border:none;background:transparent"><i class="material-icons-outlined text-danger">delete</i></button>
           </div>`;
         },
       },
@@ -198,6 +241,41 @@ const Devices: React.FC = () => {
     setRefreshKey((k) => k + 1);
   };
 
+  const toggleSelect = useCallback((id: string) => {
+    setSelectedIds((prev) => {
+      if (prev.includes(id)) return prev.filter((x) => x !== id);
+      // Cap at 3 — comparison stays readable with up to 3 columns.
+      if (prev.length >= 3) return prev;
+      return [...prev, id];
+    });
+  }, []);
+
+  // Re-sync checkbox checked state with selectedIds after every
+  // DataTables redraw (page change, search, filter). DT rebuilds
+  // <input> nodes from the template so React state would otherwise
+  // appear "lost" visually even though it's intact.
+  useEffect(() => {
+    if (!window.$) return;
+    const $table = window.$("#devices-datatable");
+    if ($table.length === 0) return;
+    $table.find("input.device-compare-cb").each(function (this: HTMLInputElement) {
+      const id = window.$(this).data("id");
+      this.checked = selectedIds.includes(String(id));
+    });
+  }, [selectedIds, devices, refreshKey]);
+
+  const handleCompare = useCallback(async () => {
+    if (!token || selectedIds.length < 2) return;
+    setShowCompare(true);
+    setCompareLoading(true);
+    setCompareRows([]);
+    const rows = await Promise.all(
+      selectedIds.map((id) => fetchDeviceCompareRow(id, token)),
+    );
+    setCompareRows(rows);
+    setCompareLoading(false);
+  }, [token, selectedIds]);
+
   useEffect(() => {
     if (!window.$) return;
     const $table = window.$("#devices-datatable");
@@ -229,16 +307,21 @@ const Devices: React.FC = () => {
       const device = devices.find((d: any) => d.id === id);
       if (device) handleActionClick(device, "delete");
     };
+    const onCheckbox = (e: any) => {
+      const id = window.$(e.currentTarget).data("id");
+      if (id) toggleSelect(String(id));
+    };
     $table.off(".dtActions");
     $table.on("click.dtActions", 'a[data-action="view-device"]', onViewDevice);
     $table.on("click.dtActions", 'a[data-action="view-beneficiary"]', onViewBeneficiary);
     $table.on("click.dtActions", 'button[data-action="edit"]', onEdit);
     $table.on("click.dtActions", 'button[data-action="toggle"]', onToggle);
     $table.on("click.dtActions", 'button[data-action="delete"]', onDelete);
+    $table.on("click.dtActions", "input.device-compare-cb", onCheckbox);
     return () => {
       if ($table && $table.off) $table.off(".dtActions");
     };
-  }, [navigate, devices, handleActionClick]);
+  }, [navigate, devices, handleActionClick, toggleSelect]);
 
   return (
     <MainLayout>
@@ -261,6 +344,21 @@ const Devices: React.FC = () => {
             </nav>
           </div>
           <div className="ms-auto d-flex gap-2">
+            <button
+              type="button"
+              className="btn btn-outline-primary px-4"
+              onClick={handleCompare}
+              disabled={loading || selectedIds.length < 2}
+              title={selectedIds.length < 2
+                ? "Select 2 or 3 devices to compare"
+                : `Compare ${selectedIds.length} devices`}
+            >
+              <i className="material-icons-outlined me-1">compare_arrows</i>
+              Compare
+              {selectedIds.length > 0 && (
+                <span className="badge bg-primary ms-2">{selectedIds.length}</span>
+              )}
+            </button>
             <button
               type="button"
               className="btn btn-outline-primary px-4"
@@ -395,6 +493,14 @@ const Devices: React.FC = () => {
         filterOptions={filterOptions}
         onApplyFilters={handleApplyFilters}
         title="Devices"
+      />
+
+      {/* Device Compare Panel */}
+      <DeviceComparePanel
+        show={showCompare}
+        onHide={() => setShowCompare(false)}
+        rows={compareRows}
+        loading={compareLoading}
       />
     </MainLayout>
   );

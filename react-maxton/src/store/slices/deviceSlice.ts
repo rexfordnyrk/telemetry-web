@@ -37,14 +37,6 @@ export interface Device {
 
 // Define the detailed Device interface for device details page
 export interface DeviceDetails extends Device {
-  // Device specifications
-  device_specs?: {
-    storage: string;
-    ram: string;
-    battery: string;
-    screen_size: string;
-  };
-  
   // Device identifiers
   imei?: string;
   serial_number?: string;

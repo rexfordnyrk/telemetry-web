@@ -465,47 +465,6 @@ const DeviceDetails: React.FC = () => {
           </div>
         </div>
 
-        {/* Device Specifications */}
-        <div className="card rounded-4 mt-4">
-          <div className="card-body p-4">
-            <h5 className="mb-3 fw-bold">Device Specifications</h5>
-            <div className="row g-3">
-              <div className="col-md-6">
-                <div className="d-flex justify-content-between">
-                  <span className="text-muted">Storage:</span>
-                  <span className="fw-semibold">
-                    {(device as any)?.device_specs?.storage || "N/A"}
-                  </span>
-                </div>
-              </div>
-              <div className="col-md-6">
-                <div className="d-flex justify-content-between">
-                  <span className="text-muted">RAM:</span>
-                  <span className="fw-semibold">
-                    {(device as any)?.device_specs?.ram || "N/A"}
-                  </span>
-                </div>
-              </div>
-              <div className="col-md-6">
-                <div className="d-flex justify-content-between">
-                  <span className="text-muted">Battery:</span>
-                  <span className="fw-semibold">
-                    {(device as any)?.device_specs?.battery || "N/A"}
-                  </span>
-                </div>
-              </div>
-              <div className="col-md-6">
-                <div className="d-flex justify-content-between">
-                  <span className="text-muted">Screen Size:</span>
-                  <span className="fw-semibold">
-                    {(device as any)?.device_specs?.screen_size || "N/A"}
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
         {/* Installed Apps */}
         <div className="d-flex justify-content-between align-items-center mb-3 mt-4">
           <h6 className="mb-0 text-uppercase">Installed Apps</h6>
