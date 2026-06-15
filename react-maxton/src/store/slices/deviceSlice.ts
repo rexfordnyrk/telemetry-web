@@ -132,11 +132,22 @@ export interface DeviceDetails extends Device {
   }>;
 }
 
+// Pagination metadata returned alongside the devices list. The
+// devices page uses `total` to drive DataTables paging; pre-fix the
+// callback estimated total from page size which made the last page
+// numbers wrong.
+export interface DeviceListPagination {
+  total: number;
+  page: number;
+  limit: number;
+}
+
 // Define the state shape for devices
 interface DeviceState {
   devices: Device[];
   unassignedDevices: Device[];
   deviceDetails: DeviceDetails | null;
+  listPagination: DeviceListPagination | null;
   loading: boolean;
   unassignedLoading: boolean;
   detailsLoading: boolean;
@@ -153,6 +164,7 @@ const initialState: DeviceState = {
   devices: [],
   unassignedDevices: [],
   deviceDetails: null,
+  listPagination: null,
   loading: false,
   unassignedLoading: false,
   detailsLoading: false,
@@ -174,6 +186,13 @@ export interface DeviceFetchParams {
   organization?: string;
   programme?: string;
   is_active?: boolean;
+}
+
+// Wrapper for fetchDevices' fulfilled payload. Carries the pagination
+// info the table needs so callers don't have to re-derive totals.
+export interface DevicesListResult {
+  data: Device[];
+  pagination: DeviceListPagination;
 }
 
 /**
@@ -214,13 +233,22 @@ export const fetchDevices = createAsyncThunk(
         throw new Error(errorMessage);
       }
       const data = await response.json();
-      // The API returns an object with a 'data' property containing the array
-      if (data && Array.isArray(data.data)) {
-        return data.data;
-      } else {
-        // If the response is not as expected, return an empty array
-        return [];
-      }
+      const devicesArray: Device[] = Array.isArray(data?.data) ? data.data : [];
+      // Backend ListDevices already returns { data, pagination: {page,limit,total} }.
+      // Fall back to deriving total from the page payload if the server
+      // ever omits it (older clients, tests).
+      const pagination: DeviceListPagination = data?.pagination
+        ? {
+            total: Number(data.pagination.total ?? devicesArray.length),
+            page: Number(data.pagination.page ?? params.page ?? 1),
+            limit: Number(data.pagination.limit ?? params.limit ?? devicesArray.length),
+          }
+        : {
+            total: devicesArray.length,
+            page: params.page ?? 1,
+            limit: params.limit ?? devicesArray.length,
+          };
+      return { data: devicesArray, pagination } as DevicesListResult;
     } catch (error) {
       return rejectWithValue(error instanceof Error ? error.message : 'Failed to fetch devices');
     }
@@ -391,7 +419,8 @@ const deviceSlice = createSlice({
       })
       .addCase(fetchDevices.fulfilled, (state, action) => {
         state.loading = false;
-        state.devices = action.payload;
+        state.devices = action.payload.data;
+        state.listPagination = action.payload.pagination;
       })
       .addCase(fetchDevices.rejected, (state, action) => {
         state.loading = false;

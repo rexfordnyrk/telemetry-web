@@ -2,23 +2,18 @@ import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Card, Button, Table, Badge, Alert, Spinner, Form, InputGroup, Pagination } from 'react-bootstrap';
 import MainLayout from '../layouts/MainLayout';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
-import { 
-  fetchDeviceAssignments, 
+import {
   fetchAssignmentsPage,
-  selectDeviceAssignments, 
-  selectDeviceAssignmentsLoading, 
+  selectDeviceAssignmentsLoading,
   selectDeviceAssignmentsError,
-  selectActiveDeviceAssignments,
   selectDeviceAssignmentsSearchParams,
-  selectDeviceAssignmentsPagination,
   selectAssignmentsPageData,
   selectBasicStats,
   selectPagePagination,
-  selectActivePageAssignments,
   clearSearchParams
 } from '../store/slices/deviceAssignmentSlice';
 import { fetchDevices, fetchUnassignedDevices } from '../store/slices/deviceSlice';
-import { fetchBeneficiaries, fetchUnassignedBeneficiaries } from '../store/slices/beneficiarySlice';
+import { fetchUnassignedBeneficiaries } from '../store/slices/beneficiarySlice';
 import DeviceAssignmentModal from '../components/DeviceAssignmentModal';
 import AssignmentFilterModal from '../components/AssignmentFilterModal';
 import { Device } from '../store/slices/deviceSlice';
@@ -43,17 +38,12 @@ import { AssignmentSearchParams } from '../store/slices/deviceAssignmentSlice';
 const DeviceAssignments: React.FC = () => {
   // Redux state and dispatch
   const dispatch = useAppDispatch();
-  const assignments = useAppSelector(selectDeviceAssignments);
   const pageData = useAppSelector(selectAssignmentsPageData);
   const basicStats = useAppSelector(selectBasicStats);
   const pagePagination = useAppSelector(selectPagePagination);
-  const activeAssignments = useAppSelector(selectActivePageAssignments);
   const loading = useAppSelector(selectDeviceAssignmentsLoading);
   const error = useAppSelector(selectDeviceAssignmentsError);
   const searchParams = useAppSelector(selectDeviceAssignmentsSearchParams);
-  const pagination = useAppSelector(selectDeviceAssignmentsPagination);
-  const { devices } = useAppSelector(state => state.devices);
-  const { beneficiaries } = useAppSelector(state => state.beneficiaries);
 
   // Local state
   const [showAssignModal, setShowAssignModal] = useState(false);
@@ -71,7 +61,6 @@ const DeviceAssignments: React.FC = () => {
   useEffect(() => {
     dispatch(fetchAssignmentsPage({ page: 1, limit: 100 }));
     dispatch(fetchDevices({}));
-    dispatch(fetchBeneficiaries({}));
     // Fetch unassigned devices and beneficiaries for assignment modal
     dispatch(fetchUnassignedDevices(''));
     dispatch(fetchUnassignedBeneficiaries(''));
@@ -79,33 +68,42 @@ const DeviceAssignments: React.FC = () => {
 
   /**
    * Handle quick search
+   *
+   * Routes through fetchAssignmentsPage so the table (which reads
+   * pageData) actually re-renders. Before the fix the search hit
+   * fetchDeviceAssignments which populated `assignments` — a
+   * different slice field — and the visible table stayed unchanged.
    */
   const handleQuickSearch = (searchTerm: string) => {
     setQuickSearch(searchTerm);
-    const params: AssignmentSearchParams = {
+    dispatch(fetchAssignmentsPage({
       ...searchParams,
       search: searchTerm || undefined,
-      page: 1 // Reset to first page when searching
-    };
-    dispatch(fetchDeviceAssignments(params));
+      page: 1,
+      limit: 100,
+    }));
   };
 
   /**
    * Handle advanced filters
    */
   const handleApplyFilters = (filters: AssignmentSearchParams) => {
-    const params: AssignmentSearchParams = {
+    dispatch(fetchAssignmentsPage({
       ...filters,
-      page: 1 // Reset to first page when applying filters
-    };
-    dispatch(fetchDeviceAssignments(params));
+      page: 1,
+      limit: 100,
+    }));
   };
 
   /**
    * Handle pagination
    */
   const handlePageChange = (page: number) => {
-    dispatch(fetchAssignmentsPage({ page, limit: 100 }));
+    dispatch(fetchAssignmentsPage({
+      ...searchParams,
+      page,
+      limit: 100,
+    }));
   };
 
   /**
@@ -162,7 +160,6 @@ const DeviceAssignments: React.FC = () => {
     // Refresh assignments data
     dispatch(fetchAssignmentsPage({ page: 1, limit: 100 }));
     dispatch(fetchDevices({}));
-    dispatch(fetchBeneficiaries({}));
     // Refresh unassigned data for assignment modal
     dispatch(fetchUnassignedDevices(''));
     dispatch(fetchUnassignedBeneficiaries(''));

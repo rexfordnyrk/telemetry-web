@@ -223,7 +223,11 @@ export const fetchDeviceAssignments = createAsyncThunk(
  */
 export const fetchAssignmentsPage = createAsyncThunk(
   'deviceAssignments/fetchAssignmentsPage',
-  async (params: { page?: number; limit?: number } = {}, { getState, rejectWithValue, dispatch }) => {
+  // Accept the full AssignmentSearchParams so quick search and the
+  // Advanced Filters modal both flow through this one endpoint.
+  // Pre-fix, the thunk only forwarded page/limit which made both
+  // search and filters look broken (DEF-029, DEF-036–037).
+  async (params: AssignmentSearchParams = {}, { getState, rejectWithValue, dispatch }) => {
     try {
       const state = getState() as RootState;
       const token = state.auth.token;
@@ -231,16 +235,14 @@ export const fetchAssignmentsPage = createAsyncThunk(
         throw new Error('No authentication token available');
       }
 
-      // Build query parameters
       const queryParams = new URLSearchParams();
-      if (params.page) {
-        queryParams.append('page', params.page.toString());
-      }
-      if (params.limit) {
-        queryParams.append('limit', params.limit.toString());
-      }
-      
-      const url = queryParams.toString() 
+      Object.entries(params).forEach(([key, value]) => {
+        if (value !== undefined && value !== null && value !== '') {
+          queryParams.append(key, value.toString());
+        }
+      });
+
+      const url = queryParams.toString()
         ? `${API_CONFIG.ENDPOINTS.DEVICE_ASSIGNMENTS.PAGE}?${queryParams.toString()}`
         : API_CONFIG.ENDPOINTS.DEVICE_ASSIGNMENTS.PAGE;
 
@@ -250,14 +252,13 @@ export const fetchAssignmentsPage = createAsyncThunk(
       });
 
       if (!response.ok) {
-        // Use global error handler for consistent error messages and session handling
         const errorMessage = await handleApiError(response, 'Failed to fetch assignments page data', dispatch);
         throw new Error(errorMessage);
       }
 
       const data = await response.json();
       return {
-        data: data.data, // Extract data from the response wrapper
+        data: data.data,
         searchParams: params || {}
       };
     } catch (error: any) {

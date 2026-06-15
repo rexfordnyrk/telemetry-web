@@ -140,6 +140,34 @@ describe('deviceAssignmentSlice - fetchAssignmentsPage', () => {
     expect(state.deviceAssignments.error).toBe(errorMessage);
   });
 
+  it('fetchAssignmentsPage forwards search and filter params in the URL', async () => {
+    // Phase 2: the page thunk must thread every filter through to the
+    // backend — pre-fix it forwarded only page/limit and made the
+    // quick search and Advanced Filters modal look inert.
+    (fetch as jest.Mock).mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({
+        data: { basic_stats: {}, assignments: [], pagination: {} },
+      }),
+    });
+
+    await store.dispatch(
+      fetchAssignmentsPage({
+        search: 'galaxy',
+        organization: 'GCL',
+        is_active: true,
+        page: 1,
+        limit: 100,
+      }) as any
+    );
+
+    const calledUrl = (fetch as jest.Mock).mock.calls[0][0] as string;
+    expect(calledUrl).toContain('search=galaxy');
+    expect(calledUrl).toContain('organization=GCL');
+    expect(calledUrl).toContain('is_active=true');
+    expect(calledUrl).toContain('page=1');
+  });
+
   it('unassignDevice posts to /assignments/:id/unassign with note', async () => {
     // Phase 1: confirm the thunk routes through the correct endpoint
     // factory. Before the fix the caller had to find the assignment

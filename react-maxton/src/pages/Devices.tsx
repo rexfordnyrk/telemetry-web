@@ -100,14 +100,22 @@ const Devices: React.FC = () => {
         const length = requestData.length ?? requestData.iDisplayLength ?? DEFAULT_PER_PAGE;
         const page = Math.floor(start / length) + 1;
         const params: Record<string, unknown> = { page, limit: length };
+        // Forward DataTables' built-in search box value so the backend
+        // can apply ILIKE filters across device fields (DEF-028 — search
+        // returned nothing before because we never sent the term).
+        const searchVal = requestData.search?.value?.trim?.();
+        if (searchVal) params.search = searchVal;
         if (activeFilters.organization) params.organization = activeFilters.organization;
         if (activeFilters.programme) params.programme = activeFilters.programme;
         if (activeFilters.is_active !== undefined) params.is_active = activeFilters.is_active;
         dispatch(fetchDevices(params as any))
           .unwrap()
-          .then((data: any[]) => {
-            const total = start + data.length + (data.length >= length ? 1 : 0);
-            callback({ draw: requestData.draw, data, recordsTotal: total, recordsFiltered: total });
+          .then((result: { data: any[]; pagination: { total: number } }) => {
+            // Use server-reported total so page numbers and result-count
+            // labels are correct on the last page (DEF-036–037 pagination
+            // inferred from QA).
+            const total = result.pagination?.total ?? result.data.length;
+            callback({ draw: requestData.draw, data: result.data, recordsTotal: total, recordsFiltered: total });
           })
           .catch(() => {
             callback({ draw: requestData.draw, data: [], recordsTotal: 0, recordsFiltered: 0 });
@@ -185,6 +193,9 @@ const Devices: React.FC = () => {
 
   const handleApplyFilters = (filters: { [key: string]: any }) => {
     setActiveFilters(filters);
+    // Bump refreshKey so the table re-keyed wrapper re-mounts the
+    // DataTable with the new ajax closure (which closes over filters).
+    setRefreshKey((k) => k + 1);
   };
 
   useEffect(() => {
