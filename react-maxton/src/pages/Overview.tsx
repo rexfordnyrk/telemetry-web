@@ -1146,9 +1146,11 @@ const Overview: React.FC = () => {
         <Col xxl={8} lg={12} className="d-flex align-items-stretch">
           {(() => {
             const beneficiaryActivityData = getWidgetData('beneficiaryActivity', fallbackData.beneficiaryActivity);
+            const rows = dashboardData?.beneficiary_activity_rows;
             return (
               <BeneficiaryActivityWidget
                 data={beneficiaryActivityData}
+                rows={rows}
                 showDropdown={beneficiaryActivityData.showDropdown}
               />
             );

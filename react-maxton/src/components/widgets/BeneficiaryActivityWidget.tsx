@@ -1,5 +1,6 @@
 import React from "react";
 import { Card, Dropdown, Table } from "react-bootstrap";
+import { BeneficiaryActivityRow } from "../../types/dashboard";
 
 interface BeneficiaryActivity {
   participant: string;
@@ -21,10 +22,43 @@ interface BeneficiaryActivityData {
   activities: BeneficiaryActivity[];
 }
 
-interface BeneficiaryActivityWidgetProps {
-  data?: BeneficiaryActivityData;
+interface BeneficiaryActivityTableProps {
+  rows?: BeneficiaryActivityRow[];
   showDropdown?: boolean;
 }
+
+interface BeneficiaryActivityWidgetProps {
+  data?: BeneficiaryActivityData;
+  rows?: BeneficiaryActivityRow[];
+  showDropdown?: boolean;
+}
+
+const EMPTY = "—";
+
+function relativeTime(d: Date): string {
+  const s = Math.round((Date.now() - d.getTime()) / 1000);
+  if (s < 60) return "just now";
+  if (s < 3600) return `${Math.floor(s / 60)}m ago`;
+  if (s < 86400) return `${Math.floor(s / 3600)}h ago`;
+  return `${Math.floor(s / 86400)}d ago`;
+}
+
+const renderLastSynced = (v: string | null) => {
+  if (!v) return EMPTY;
+  const d = new Date(v);
+  if (isNaN(d.getTime())) return EMPTY;
+  return <span title={d.toLocaleString()}>{relativeTime(d)}</span>;
+};
+
+const renderMostUsedApp = (a: { name: string; package: string } | null) => {
+  if (!a) return EMPTY;
+  return (
+    <>
+      <div>{a.name}</div>
+      <small className="text-muted">{a.package}</small>
+    </>
+  );
+};
 
 const defaultBeneficiaryData: BeneficiaryActivityData = {
   title: "Beneficiary Activity Overview",
@@ -116,11 +150,80 @@ const defaultBeneficiaryData: BeneficiaryActivityData = {
   ],
 };
 
-const BeneficiaryActivityWidget: React.FC<BeneficiaryActivityWidgetProps> = ({
-  data,
+export const BeneficiaryActivityTable: React.FC<BeneficiaryActivityTableProps> = ({
+  rows,
   showDropdown = true,
 }) => {
-  const activityData = data || defaultBeneficiaryData;
+  const activityData = defaultBeneficiaryData;
+
+  if (rows !== undefined) {
+    return (
+      <Card className="rounded-4 w-100">
+        <Card.Body>
+          <div className="d-flex align-items-start justify-content-between mb-3">
+            <div>
+              <h5 className="mb-0">{activityData.title}</h5>
+            </div>
+            {showDropdown && (
+              <Dropdown>
+                <Dropdown.Toggle
+                  variant="link"
+                  className="dropdown-toggle-nocaret options"
+                  as="button"
+                  style={{ border: "none", background: "none" }}
+                >
+                  <span className="material-icons-outlined fs-5">
+                    more_vert
+                  </span>
+                </Dropdown.Toggle>
+                <Dropdown.Menu>
+                  <Dropdown.Item onClick={() => console.log('Export Data')}>Export Data</Dropdown.Item>
+                  <Dropdown.Item onClick={() => console.log('View Details')}>View Details</Dropdown.Item>
+                  <Dropdown.Item onClick={() => console.log('Settings')}>Settings</Dropdown.Item>
+                </Dropdown.Menu>
+              </Dropdown>
+            )}
+          </div>
+          <div className="table-responsive">
+            <Table className="align-middle mb-0 table-striped">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Most Used App</th>
+                  <th>Last Synced</th>
+                </tr>
+              </thead>
+              <tbody>
+                {rows.length > 0 ? (
+                  rows.map((row, index) => (
+                    <tr key={index}>
+                      <td>
+                        <div>
+                          <h6 className="mb-0">{row.name}</h6>
+                        </div>
+                      </td>
+                      <td>
+                        <div>{renderMostUsedApp(row.most_used_app)}</div>
+                      </td>
+                      <td>
+                        <div>{renderLastSynced(row.last_synced_at)}</div>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan={3} className="text-center text-muted py-3">
+                      No beneficiary activity in this period.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </Table>
+          </div>
+        </Card.Body>
+      </Card>
+    );
+  }
 
   return (
     <Card className="rounded-4 w-100">
@@ -227,6 +330,14 @@ const BeneficiaryActivityWidget: React.FC<BeneficiaryActivityWidgetProps> = ({
       </Card.Body>
     </Card>
   );
+};
+
+const BeneficiaryActivityWidget: React.FC<BeneficiaryActivityWidgetProps> = ({
+  data,
+  rows,
+  showDropdown = true,
+}) => {
+  return <BeneficiaryActivityTable rows={rows} showDropdown={showDropdown} />;
 };
 
 export default BeneficiaryActivityWidget;

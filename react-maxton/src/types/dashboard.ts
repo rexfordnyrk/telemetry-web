@@ -185,6 +185,20 @@ export interface AppVsBackgroundUsageData {
   showDropdown: boolean;
 }
 
+export interface BeneficiaryActivityRow {
+  beneficiary_id: string;
+  name: string;
+  device_id: string | null;
+  mac_address: string | null;
+  programme: string | null;
+  organisation: string | null;
+  district: string | null;
+  last_synced_at: string | null;
+  most_used_app: { name: string; package: string } | null;
+  total_screentime_ms: number;
+  total_net_usage_bytes: number;
+}
+
 export interface BeneficiaryActivityData {
   title: string;
   activities: Array<{
@@ -220,6 +234,7 @@ export interface DashboardWidgets {
   deviceSyncStats: DeviceSyncStatsData;
   appVsBackgroundUsage: AppVsBackgroundUsageData;
   beneficiaryActivity: BeneficiaryActivityData;
+  beneficiary_activity_rows?: BeneficiaryActivityRow[];
 }
 
 // Main overview dashboard data structure
