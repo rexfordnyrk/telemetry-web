@@ -22,6 +22,13 @@ interface SearchableDropdownProps {
   displayKey?: string;
   subtitleKey?: string;
   className?: string;
+  // Optional server-side search hook. When provided, every keystroke
+  // (debounced) calls onSearch with the trimmed term so the parent
+  // can re-fetch matching items from the API. Local filtering is
+  // skipped in that mode — the parent owns `items` and is expected
+  // to refresh it in response to onSearch.
+  onSearch?: (term: string) => void;
+  searchDebounceMs?: number;
 }
 
 /**
@@ -52,7 +59,9 @@ const SearchableDropdown: React.FC<SearchableDropdownProps> = ({
   noResultsText = "No results found",
   displayKey = "name",
   subtitleKey = "subtitle",
-  className = ""
+  className = "",
+  onSearch,
+  searchDebounceMs = 250,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
@@ -60,8 +69,17 @@ const SearchableDropdown: React.FC<SearchableDropdownProps> = ({
   const dropdownRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // Filter items based on search term
+  // Filter items based on search term.
+  // In server-search mode (`onSearch` provided), the parent owns
+  // `items` and replaces it in response to the debounced callback —
+  // so we just mirror `items` and skip the local filter. Otherwise
+  // keep the original local-filter behaviour for callers that still
+  // pass a fully-materialised list.
   useEffect(() => {
+    if (onSearch) {
+      setFilteredItems(items);
+      return;
+    }
     if (!searchTerm.trim()) {
       setFilteredItems(items);
     } else {
@@ -73,7 +91,18 @@ const SearchableDropdown: React.FC<SearchableDropdownProps> = ({
       });
       setFilteredItems(filtered);
     }
-  }, [searchTerm, items, displayKey, subtitleKey]);
+  }, [searchTerm, items, displayKey, subtitleKey, onSearch]);
+
+  // Debounced server-search dispatch. Fire onSearch on the trailing
+  // edge so we don't flood the API while the user is mid-type.
+  // Empty string is still meaningful — it means "reset to all".
+  useEffect(() => {
+    if (!onSearch) return;
+    const id = window.setTimeout(() => {
+      onSearch(searchTerm.trim());
+    }, searchDebounceMs);
+    return () => window.clearTimeout(id);
+  }, [searchTerm, onSearch, searchDebounceMs]);
 
   // Handle click outside to close dropdown
   useEffect(() => {

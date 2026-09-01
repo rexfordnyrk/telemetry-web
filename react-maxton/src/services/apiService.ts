@@ -525,9 +525,12 @@ export const deviceAssignmentsAPI = {
       assigned_by: assignedBy,
       notes: notes || ''
     }),
-  unassignDevice: (assignmentId: string, note?: string) => 
+  unassignDevice: (assignmentId: string, note?: string) =>
+    // Backend's UnassignDeviceRequest binds the JSON tag
+    // "unassignment_note"; sending "note" was silently dropped, so
+    // user-provided notes never reached the audit trail (UAT bug 2).
     ApiService.post(API_CONFIG.ENDPOINTS.DEVICE_ASSIGNMENTS.UNASSIGN(assignmentId), {
-      note: note || ''
+      unassignment_note: note || ''
     }),
 };
 

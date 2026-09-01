@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useCallback, useState, useEffect } from 'react';
 import { Modal, Button, Form, Row, Col, Alert } from 'react-bootstrap';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
 import { Device } from '../store/slices/deviceSlice';
@@ -157,6 +157,25 @@ const DeviceAssignmentModal: React.FC<DeviceAssignmentModalProps> = ({
     onHide();
   };
 
+  // Server-side search hooks. The dropdowns call these (debounced)
+  // every keystroke so the user can find any device / beneficiary,
+  // not only the slice the modal happened to load on open.
+  // Before this, SearchableDropdown filtered only the in-memory list
+  // — and the modal only pre-loaded an empty-search response, so any
+  // unique term returned "No results" (UAT bug 1).
+  const handleDeviceSearch = useCallback(
+    (term: string) => {
+      dispatch(fetchUnassignedDevices(term));
+    },
+    [dispatch],
+  );
+  const handleBeneficiarySearch = useCallback(
+    (term: string) => {
+      dispatch(fetchUnassignedBeneficiaries(term));
+    },
+    [dispatch],
+  );
+
   // Use unassigned devices and beneficiaries directly
   const availableDevices = unassignedDevices;
   const availableBeneficiaries = unassignedBeneficiaries;
@@ -214,6 +233,7 @@ const DeviceAssignmentModal: React.FC<DeviceAssignmentModalProps> = ({
                     noResultsText="No available devices found"
                     displayKey="name"
                     subtitleKey="subtitle"
+                    onSearch={handleDeviceSearch}
                   />
                 </Form.Group>
               </Col>
@@ -237,6 +257,7 @@ const DeviceAssignmentModal: React.FC<DeviceAssignmentModalProps> = ({
                     noResultsText="No available beneficiaries found"
                     displayKey="name"
                     subtitleKey="subtitle"
+                    onSearch={handleBeneficiarySearch}
                   />
                 </Form.Group>
               </Col>

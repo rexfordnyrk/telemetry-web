@@ -168,14 +168,16 @@ describe('deviceAssignmentSlice - fetchAssignmentsPage', () => {
     expect(calledUrl).toContain('page=1');
   });
 
-  it('unassignDevice posts to /assignments/:id/unassign with note', async () => {
-    // Phase 1: confirm the thunk routes through the correct endpoint
-    // factory. Before the fix the caller had to find the assignment
-    // ID from the (often-empty) assignments slice; now the page
-    // passes assignment_id directly.
+  it('unassignDevice posts to /assignments/:id/unassign with the note under unassignment_note', async () => {
+    // UAT bug 2: the backend's UnassignDeviceRequest binds JSON tag
+    // "unassignment_note". The frontend used to send "note" which
+    // was silently dropped — the audit row had no note. Verify the
+    // body shape and the assignmentId-in-payload contract the
+    // reducer now relies on (it used to dereference .device_id on
+    // an undefined payload and crash the table loading state).
     (fetch as jest.Mock).mockResolvedValueOnce({
       ok: true,
-      json: async () => ({ data: { message: 'Device unassigned successfully' } }),
+      json: async () => ({ message: 'Device unassigned successfully' }),
     });
 
     const action = await store.dispatch(
@@ -183,12 +185,52 @@ describe('deviceAssignmentSlice - fetchAssignmentsPage', () => {
     );
 
     expect((action as any).type).toBe('deviceAssignments/unassignDevice/fulfilled');
+    expect((action as any).payload).toEqual({ assignmentId: 'uuid-1' });
     const calledUrl = (fetch as jest.Mock).mock.calls[0][0] as string;
     expect(calledUrl).toContain('/api/v1/devices/assignments/uuid-1/unassign');
     const init = (fetch as jest.Mock).mock.calls[0][1] as RequestInit;
     expect(init.method).toBe('POST');
     expect(typeof init.body).toBe('string');
-    expect(JSON.parse(init.body as string)).toEqual({ note: 'returned damaged' });
+    expect(JSON.parse(init.body as string)).toEqual({ unassignment_note: 'returned damaged' });
+  });
+
+  it('unassignDevice.fulfilled clears loading and flips the row inactive', async () => {
+    // UAT bug 2 regression: prior fulfilled reducer accessed
+    // action.payload.device_id on an undefined payload, threw, and
+    // Immer rolled back the entire reducer including loading=false —
+    // leaving the table stuck on its spinner.
+    (fetch as jest.Mock).mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ message: 'Device unassigned successfully' }),
+    });
+
+    // Seed page data so we can prove the row was mutated.
+    store.dispatch({
+      type: 'deviceAssignments/fetchAssignmentsPage/fulfilled',
+      payload: {
+        data: {
+          basic_stats: {},
+          assignments: [
+            { assignment_id: 'uuid-1', assignment_is_active: true, device_name: 'A' },
+            { assignment_id: 'uuid-2', assignment_is_active: true, device_name: 'B' },
+          ],
+          pagination: {},
+        },
+        searchParams: {},
+      },
+    });
+
+    await store.dispatch(unassignDevice({ assignmentId: 'uuid-1', note: '' }) as any);
+
+    const state = store.getState() as RootState;
+    expect(state.deviceAssignments.loading).toBe(false);
+    expect(state.deviceAssignments.error).toBeNull();
+    const target = state.deviceAssignments.pageData.find((r: any) => r.assignment_id === 'uuid-1');
+    expect(target?.assignment_is_active).toBe(false);
+    expect(target?.unassigned_at).toBeTruthy();
+    // Untouched row stays active.
+    const other = state.deviceAssignments.pageData.find((r: any) => r.assignment_id === 'uuid-2');
+    expect(other?.assignment_is_active).toBe(true);
   });
 
   it('should select assignments page data correctly', () => {

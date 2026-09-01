@@ -296,11 +296,18 @@ export const unassignDevice = createAsyncThunk(
   'deviceAssignments/unassignDevice',
   async (unassignData: { assignmentId: string; note?: string }, { rejectWithValue }) => {
     try {
-      const response = await deviceAssignmentsAPI.unassignDevice(
+      // Backend returns { message: "Device unassigned successfully" } —
+      // no `data` wrapper. Previously the thunk returned
+      // `(response as any).data` which produced an undefined payload,
+      // the .fulfilled reducer then crashed on `action.payload.device_id`
+      // and Immer rolled back the loading=false change so the table
+      // spinner stayed stuck (UAT bug 2). Return the assignmentId we
+      // already know so the reducer has a stable identifier.
+      await deviceAssignmentsAPI.unassignDevice(
         unassignData.assignmentId,
         unassignData.note
       );
-      return (response as any).data;
+      return { assignmentId: unassignData.assignmentId };
     } catch (error: any) {
       return rejectWithValue(error.message || 'Failed to unassign device');
     }
@@ -430,15 +437,21 @@ const deviceAssignmentSlice = createSlice({
         state.error = null;
       })
       .addCase(unassignDevice.fulfilled, (state, action) => {
+        // Mark the row inactive in the page view so the table reflects
+        // the change immediately. The parent page also re-fetches via
+        // onSuccess so cross-row counters (basic_stats) stay correct.
         state.loading = false;
-        // Update the assignment in the list
-        const index = state.assignments.findIndex(
-          assignment => assignment.device_id === action.payload.device_id
-        );
-        if (index !== -1) {
-          state.assignments[index] = action.payload;
-        }
         state.error = null;
+        const assignmentId = action.payload?.assignmentId;
+        if (assignmentId) {
+          const pageIndex = state.pageData.findIndex(
+            (row) => row.assignment_id === assignmentId
+          );
+          if (pageIndex !== -1) {
+            state.pageData[pageIndex].assignment_is_active = false;
+            state.pageData[pageIndex].unassigned_at = new Date().toISOString();
+          }
+        }
       })
       .addCase(unassignDevice.rejected, (state, action) => {
         state.loading = false;
