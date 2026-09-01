@@ -9,6 +9,8 @@ export interface GlobalFilters {
   selectedProgramme: string;
   availablePeriods: string[];
   availableProgrammes: string[];
+  availableOrganisations?: string[];
+  availableDistricts?: string[];
 }
 
 // Individual widget data structures

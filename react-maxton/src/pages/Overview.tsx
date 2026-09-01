@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { Row, Col, Form } from "react-bootstrap";
+import { Row, Col } from "react-bootstrap";
 import { useSelector } from "react-redux";
 import MainLayout from "../layouts/MainLayout";
 import SafeApexChart from "../components/SafeApexChart";
 import { RootState } from "../store";
+import { useAppDispatch, useAppSelector } from "../store/hooks";
+import { setAvailableValues } from "../store/slices/globalFiltersSlice";
 import { buildApiUrl, getAuthHeaders } from "../config/api";
 import { OverviewDashboardApiResponse, DashboardWidgets, GlobalFilters } from "../types/dashboard";
 
@@ -29,100 +31,19 @@ import {
   DataConsumerAppsWidget,
 } from "../components/widgets";
 
-// Filter Controls Component Props
-interface FilterControlsProps {
-  token: string | null;
-  globalFilters: GlobalFilters | null;
-  setDashboardData: React.Dispatch<React.SetStateAction<DashboardWidgets | null>>;
-  setGlobalFilters: React.Dispatch<React.SetStateAction<GlobalFilters | null>>;
-  setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
-  setError: React.Dispatch<React.SetStateAction<string | null>>;
-}
+const Overview: React.FC = () => {
+  const { user, token } = useSelector((state: RootState) => state.auth);
+  const dispatch = useAppDispatch();
+  const filters = useAppSelector((s) => s.globalFilters);
 
-// Filter Controls Component
-const FilterControls: React.FC<FilterControlsProps> = ({
-  token,
-  globalFilters,
-  setDashboardData,
-  setGlobalFilters,
-  setIsLoading,
-  setError
-}) => {
-  const [selectedPeriod, setSelectedPeriod] = useState(globalFilters?.selectedPeriod || "Today");
-  const [selectedProgramme, setSelectedProgramme] = useState(globalFilters?.selectedProgramme || "All Programmes");
-  const [startDateTime, setStartDateTime] = useState("");
-  const [endDateTime, setEndDateTime] = useState("");
-  const [showCustomDatePickers, setShowCustomDatePickers] = useState(false);
-  const [showDateInputs, setShowDateInputs] = useState(true);
+  // Dashboard data state
+  const [dashboardData, setDashboardData] = useState<DashboardWidgets | null>(null);
+  const [globalFilters, setGlobalFilters] = useState<GlobalFilters | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
 
-  // Update local filter states when globalFilters from API changes (only on initial load)
-  const [hasInitialized, setHasInitialized] = useState(false);
-
-  useEffect(() => {
-    if (globalFilters && !hasInitialized) {
-      setSelectedPeriod(globalFilters.selectedPeriod || "Today");
-      setSelectedProgramme(globalFilters.selectedProgramme || "All Programmes");
-      setHasInitialized(true);
-    }
-  }, [globalFilters, hasInitialized]);
-
-  const handlePeriodChange = (value: string) => {
-    setSelectedPeriod(value);
-    setShowCustomDatePickers(value === "Custom");
-    setShowDateInputs(true); // Always show inputs when period changes
-    if (value !== "Custom") {
-      setStartDateTime("");
-      setEndDateTime("");
-    }
-  };
-
-  const handleDateChange = (type: 'start' | 'end', value: string) => {
-    if (type === 'start') {
-      setStartDateTime(value);
-    } else {
-      setEndDateTime(value);
-    }
-
-    // Check if both dates are filled to hide inputs and show preview
-    const otherDate = type === 'start' ? endDateTime : startDateTime;
-    if (value && otherDate) {
-      setShowDateInputs(false);
-    }
-  };
-
-  const handlePreviewClick = () => {
-    setShowDateInputs(true);
-  };
-
-  const convertToEpochMilliseconds = (dateTimeString: string): number => {
-    return new Date(dateTimeString).getTime();
-  };
-
-  const formatCustomDateRange = (): string => {
-    if (startDateTime && endDateTime) {
-      const startDate = new Date(startDateTime);
-      const endDate = new Date(endDateTime);
-      const formatOptions: Intl.DateTimeFormatOptions = {
-        month: 'short',
-        day: 'numeric',
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
-      };
-      return `${startDate.toLocaleDateString('en-US', formatOptions)} - ${endDate.toLocaleDateString('en-US', formatOptions)}`;
-    }
-    return "Custom";
-  };
-
-  const handleApplyFilters = async () => {
-    let periodValue = selectedPeriod;
-
-    if (selectedPeriod === "Custom" && startDateTime && endDateTime) {
-      const startEpoch = convertToEpochMilliseconds(startDateTime);
-      const endEpoch = convertToEpochMilliseconds(endDateTime);
-      periodValue = `${startEpoch}:${endEpoch}`;
-    }
-
+  // Fetch dashboard data, parameterized by the current global filter selections
+  const fetchDashboardData = async () => {
     try {
       setIsLoading(true);
       setError(null);
@@ -132,13 +53,15 @@ const FilterControls: React.FC<FilterControlsProps> = ({
         throw new Error('No authentication token available');
       }
 
-      // Build URL with query parameters
+      // Build URL with the four global filter query parameters
       const url = buildApiUrl('/api/v1/analytics/dashboard/overview');
       const urlWithParams = new URL(url);
-      urlWithParams.searchParams.append('period', periodValue);
-      urlWithParams.searchParams.append('programme', selectedProgramme);
+      urlWithParams.searchParams.append('period', filters.period);
+      urlWithParams.searchParams.append('programme', filters.programme);
+      urlWithParams.searchParams.append('organisation', filters.organisation);
+      urlWithParams.searchParams.append('district', filters.district);
 
-      // Make authenticated API request with filters
+      // Make authenticated API request
       const response = await fetch(urlWithParams.toString(), {
         method: 'GET',
         headers: getAuthHeaders(token),
@@ -151,199 +74,33 @@ const FilterControls: React.FC<FilterControlsProps> = ({
       const data: OverviewDashboardApiResponse = await response.json();
       setDashboardData(data.data.widgets);
       setGlobalFilters(data.data.globalFilters);
+      dispatch(setAvailableValues({
+        programmes: data.data.globalFilters.availableProgrammes,
+        organisations: data.data.globalFilters.availableOrganisations,
+        districts: data.data.globalFilters.availableDistricts,
+      }));
     } catch (err) {
-      console.error('Failed to fetch filtered dashboard data:', err);
-      setError(err instanceof Error ? err.message : 'Failed to load filtered dashboard data');
+      console.error('Failed to fetch dashboard data:', err);
+      setError(err instanceof Error ? err.message : 'Failed to load dashboard data');
+      // Keep dashboardData as null to use fallback data
     } finally {
       setIsLoading(false);
     }
   };
 
-  return (
-    <div className="d-flex gap-2 align-items-center flex-wrap">
-      <Form.Select
-        size="sm"
-        value={selectedPeriod}
-        onChange={(e) => handlePeriodChange(e.target.value)}
-        style={{ width: "120px" }}
-      >
-        {globalFilters?.availablePeriods?.map((period: string) => (
-          <option key={period} value={period}>{period}</option>
-        )) || (
-          <>
-            <option>Today</option>
-            <option>Last Week</option>
-            <option>Last Month</option>
-            <option>Last Year</option>
-          </>
-        )}
-        {/* Add Custom option only if not already in API options */}
-        {!globalFilters?.availablePeriods?.includes("Custom") && (
-          <option>Custom</option>
-        )}
-      </Form.Select>
-
-      {showCustomDatePickers && (
-        <>
-          {showDateInputs ? (
-            <>
-              <div className="d-flex align-items-center gap-1">
-                <label className="form-label mb-0 small text-muted">From:</label>
-                <input
-                  type="datetime-local"
-                  className="form-control form-control-sm"
-                  value={startDateTime}
-                  onChange={(e) => handleDateChange('start', e.target.value)}
-                  style={{ width: "180px" }}
-                />
-              </div>
-              <div className="d-flex align-items-center gap-1">
-                <label className="form-label mb-0 small text-muted">To:</label>
-                <input
-                  type="datetime-local"
-                  className="form-control form-control-sm"
-                  value={endDateTime}
-                  onChange={(e) => handleDateChange('end', e.target.value)}
-                  style={{ width: "180px" }}
-                />
-              </div>
-            </>
-          ) : (
-            <div
-              className="btn btn-outline-secondary btn-sm d-flex align-items-center gap-1 px-3"
-              onClick={handlePreviewClick}
-              style={{ cursor: "pointer", fontSize: "12px" }}
-              title="Click to edit date range"
-            >
-              <i className="material-icons-outlined" style={{ fontSize: "16px" }}>edit_calendar</i>
-              {formatCustomDateRange()}
-            </div>
-          )}
-        </>
-      )}
-
-      <Form.Select
-        size="sm"
-        value={selectedProgramme}
-        onChange={(e) => setSelectedProgramme(e.target.value)}
-        style={{ width: "160px" }}
-      >
-        {globalFilters?.availableProgrammes?.map((programme: string) => (
-          <option key={programme} value={programme}>{programme}</option>
-        )) || (
-          <>
-            <option>All Programmes</option>
-            <option>Digital Literacy</option>
-            <option>Skills Training</option>
-            <option>Financial Education</option>
-            <option>Health Awareness</option>
-            <option>Youth Development</option>
-          </>
-        )}
-      </Form.Select>
-
-      <button
-        className="btn btn-primary btn-sm px-3"
-        onClick={handleApplyFilters}
-        disabled={showCustomDatePickers && (!startDateTime || !endDateTime)}
-      >
-        <i className="material-icons-outlined me-1" style={{ fontSize: "16px" }}>filter_alt</i>
-        Filter
-      </button>
-    </div>
-  );
-};
-
-
-
-const Overview: React.FC = () => {
-  const { user, token } = useSelector((state: RootState) => state.auth);
-
-  // Dashboard data state
-  const [dashboardData, setDashboardData] = useState<DashboardWidgets | null>(null);
-  const [globalFilters, setGlobalFilters] = useState<GlobalFilters | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
-
-  // Fetch dashboard data on component mount
+  // Fetch on mount, and re-fetch whenever a global filter selection changes
   useEffect(() => {
-    const fetchDashboardData = async () => {
-      try {
-        setIsLoading(true);
-        setError(null);
-
-        // Check if we have authentication token
-        if (!token) {
-          throw new Error('No authentication token available');
-        }
-
-        // Make authenticated API request
-        const url = buildApiUrl('/api/v1/analytics/dashboard/overview');
-        const response = await fetch(url, {
-          method: 'GET',
-          headers: getAuthHeaders(token),
-        });
-
-        if (!response.ok) {
-          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-        }
-
-        const data: OverviewDashboardApiResponse = await response.json();
-        setDashboardData(data.data.widgets);
-        setGlobalFilters(data.data.globalFilters);
-      } catch (err) {
-        console.error('Failed to fetch dashboard data:', err);
-        setError(err instanceof Error ? err.message : 'Failed to load dashboard data');
-        // Keep dashboardData as null to use fallback data
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    // Only fetch if we have a token
     if (token) {
       fetchDashboardData();
     } else {
       setError('Authentication required');
       setIsLoading(false);
     }
-  }, [token]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [token, filters.period, filters.programme, filters.organisation, filters.district]);
 
   // Retry function for manual retry
   const retryFetchData = () => {
-    const fetchDashboardData = async () => {
-      try {
-        setIsLoading(true);
-        setError(null);
-
-        // Check if we have authentication token
-        if (!token) {
-          throw new Error('No authentication token available');
-        }
-
-        // Make authenticated API request
-        const url = buildApiUrl('/api/v1/analytics/dashboard/overview');
-        const response = await fetch(url, {
-          method: 'GET',
-          headers: getAuthHeaders(token),
-        });
-
-        if (!response.ok) {
-          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-        }
-
-        const data: OverviewDashboardApiResponse = await response.json();
-        setDashboardData(data.data.widgets);
-        setGlobalFilters(data.data.globalFilters);
-      } catch (err) {
-        console.error('Failed to fetch dashboard data:', err);
-        setError(err instanceof Error ? err.message : 'Failed to load dashboard data');
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    // Only fetch if we have a token
     if (token) {
       fetchDashboardData();
     } else {
@@ -799,14 +556,6 @@ const Overview: React.FC = () => {
               {isLoading ? 'Loading...' : dashboardData && !error ? 'Live Data' : 'Fallback Data'}
             </span>
           </div>
-          <FilterControls
-            token={token}
-            globalFilters={globalFilters}
-            setDashboardData={setDashboardData}
-            setGlobalFilters={setGlobalFilters}
-            setIsLoading={setIsLoading}
-            setError={setError}
-          />
         </div>
       </div>
 

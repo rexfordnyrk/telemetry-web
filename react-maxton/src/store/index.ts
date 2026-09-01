@@ -7,6 +7,7 @@ import deviceReducer from "./slices/deviceSlice";
 import deviceAssignmentReducer from "./slices/deviceAssignmentSlice";
 import visitReducer from "./slices/visitSlice";
 import rolesPermissionsReducer from "./slices/rolesPermissionsSlice";
+import globalFiltersReducer from "./slices/globalFiltersSlice";
 
 export const store = configureStore({
   reducer: {
@@ -18,6 +19,7 @@ export const store = configureStore({
     deviceAssignments: deviceAssignmentReducer,
     visits: visitReducer,
     rolesPermissions: rolesPermissionsReducer,
+    globalFilters: globalFiltersReducer,
   },
 });
 
