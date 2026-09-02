@@ -8,6 +8,7 @@ import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { setAvailableValues } from "../store/slices/globalFiltersSlice";
 import { buildApiUrl, getAuthHeaders } from "../config/api";
 import { OverviewDashboardApiResponse, DashboardWidgets, GlobalFilters } from "../types/dashboard";
+import ExportMenu from "../components/ExportMenu";
 
 // Import dashboard components
 import {
@@ -556,6 +557,7 @@ const Overview: React.FC = () => {
               {isLoading ? 'Loading...' : dashboardData && !error ? 'Live Data' : 'Fallback Data'}
             </span>
           </div>
+          <ExportMenu />
         </div>
       </div>
 

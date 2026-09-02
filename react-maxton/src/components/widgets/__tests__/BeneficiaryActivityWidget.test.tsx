@@ -1,5 +1,8 @@
 import React from "react";
 import { render, screen } from "@testing-library/react";
+import { Provider } from "react-redux";
+import { configureStore } from "@reduxjs/toolkit";
+import globalFilters from "../../../store/slices/globalFiltersSlice";
 import BeneficiaryActivityWidget from "../BeneficiaryActivityWidget";
 
 const baseRow = {
@@ -14,9 +17,14 @@ const baseRow = {
   total_net_usage_bytes: 0,
 };
 
+function renderWithStore(ui: React.ReactElement) {
+  const store = configureStore({ reducer: { globalFilters } });
+  return render(<Provider store={store}>{ui}</Provider>);
+}
+
 describe("BeneficiaryActivityWidget — null field rendering", () => {
   it("renders em-dash for null last_synced_at", () => {
-    render(
+    renderWithStore(
       <BeneficiaryActivityWidget
         rows={[{ ...baseRow, last_synced_at: null, most_used_app: null }]}
       />
@@ -26,7 +34,7 @@ describe("BeneficiaryActivityWidget — null field rendering", () => {
   });
 
   it("renders app name and package when most_used_app is present", () => {
-    render(
+    renderWithStore(
       <BeneficiaryActivityWidget
         rows={[{
           ...baseRow,
@@ -40,7 +48,7 @@ describe("BeneficiaryActivityWidget — null field rendering", () => {
   });
 
   it("never renders an empty string in a cell", () => {
-    const { container } = render(
+    const { container } = renderWithStore(
       <BeneficiaryActivityWidget
         rows={[{ ...baseRow, last_synced_at: null, most_used_app: null }]}
       />
@@ -51,7 +59,7 @@ describe("BeneficiaryActivityWidget — null field rendering", () => {
   });
 
   it("renders empty-state message when rows is an empty array", () => {
-    render(
+    renderWithStore(
       <BeneficiaryActivityWidget
         rows={[]}
       />

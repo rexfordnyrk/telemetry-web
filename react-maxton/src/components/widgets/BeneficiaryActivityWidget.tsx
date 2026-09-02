@@ -1,6 +1,8 @@
 import React from "react";
 import { Card, Dropdown, Table } from "react-bootstrap";
 import { BeneficiaryActivityRow } from "../../types/dashboard";
+import { useAppSelector } from "../../store/hooks";
+import { downloadCsv } from "../../utils/downloadCsv";
 
 interface BeneficiaryActivity {
   participant: string;
@@ -155,6 +157,22 @@ export const BeneficiaryActivityTable: React.FC<BeneficiaryActivityTableProps> =
   showDropdown = true,
 }) => {
   const activityData = defaultBeneficiaryData;
+  const g = useAppSelector((s) => s.globalFilters);
+
+  const handleExport = async () => {
+    const params = new URLSearchParams({
+      period: g.period,
+      programme: g.programme,
+      organisation: g.organisation,
+      district: g.district,
+    });
+    try {
+      await downloadCsv("/analytics/export/beneficiary-activity.csv", params);
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error("Export failed:", err);
+    }
+  };
 
   if (rows !== undefined) {
     return (
@@ -177,7 +195,7 @@ export const BeneficiaryActivityTable: React.FC<BeneficiaryActivityTableProps> =
                   </span>
                 </Dropdown.Toggle>
                 <Dropdown.Menu>
-                  <Dropdown.Item onClick={() => console.log('Export Data')}>Export Data</Dropdown.Item>
+                  <Dropdown.Item onClick={handleExport}>Export Data</Dropdown.Item>
                   <Dropdown.Item onClick={() => console.log('View Details')}>View Details</Dropdown.Item>
                   <Dropdown.Item onClick={() => console.log('Settings')}>Settings</Dropdown.Item>
                 </Dropdown.Menu>
@@ -245,7 +263,7 @@ export const BeneficiaryActivityTable: React.FC<BeneficiaryActivityTableProps> =
                 </span>
               </Dropdown.Toggle>
               <Dropdown.Menu>
-                <Dropdown.Item onClick={() => console.log('Export Data')}>Export Data</Dropdown.Item>
+                <Dropdown.Item onClick={handleExport}>Export Data</Dropdown.Item>
                 <Dropdown.Item onClick={() => console.log('View Details')}>View Details</Dropdown.Item>
                 <Dropdown.Item onClick={() => console.log('Settings')}>Settings</Dropdown.Item>
               </Dropdown.Menu>
