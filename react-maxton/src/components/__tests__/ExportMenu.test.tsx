@@ -7,9 +7,17 @@ import ExportMenu from "../ExportMenu";
 
 jest.mock("../../utils/downloadCsv", () => ({ downloadCsv: jest.fn() }));
 
+// Minimal stub matching the shape ExportMenu reads (state.auth.token); the
+// real authSlice has its own thunks/setup not relevant to this component.
+const auth = (state = { token: "test-token" }, _action: any) => state;
+
+function makeStore() {
+  return configureStore({ reducer: { globalFilters, auth } });
+}
+
 describe("ExportMenu", () => {
   it("renders four dataset items", () => {
-    const store = configureStore({ reducer: { globalFilters } });
+    const store = makeStore();
     render(<Provider store={store}><ExportMenu /></Provider>);
     fireEvent.click(screen.getByRole("button", { name: /export/i }));
     expect(screen.getByText(/dashboard summary/i)).toBeInTheDocument();
@@ -20,7 +28,7 @@ describe("ExportMenu", () => {
 
   it("passes global filter params to downloadCsv", () => {
     const { downloadCsv } = require("../../utils/downloadCsv");
-    const store = configureStore({ reducer: { globalFilters } });
+    const store = makeStore();
     store.dispatch({ type: "globalFilters/setProgramme", payload: "Alpha" });
     render(<Provider store={store}><ExportMenu /></Provider>);
     fireEvent.click(screen.getByRole("button", { name: /export/i }));
@@ -28,6 +36,7 @@ describe("ExportMenu", () => {
     expect(downloadCsv).toHaveBeenCalledWith(
       "/analytics/export/beneficiary-activity.csv",
       expect.any(URLSearchParams),
+      "test-token",
     );
     const call = (downloadCsv as jest.Mock).mock.calls[0];
     expect(call[1].get("programme")).toBe("Alpha");

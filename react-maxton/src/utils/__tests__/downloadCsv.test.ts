@@ -31,4 +31,11 @@ describe("downloadCsv", () => {
       downloadCsv("/analytics/export/summary.csv", new URLSearchParams()),
     ).rejects.toThrow();
   });
+
+  it("includes Authorization header when token is provided", async () => {
+    await downloadCsv("/analytics/export/summary.csv", new URLSearchParams(), "abc123");
+    const call = (global.fetch as jest.Mock).mock.calls[0];
+    const headers = call[1].headers as Record<string, string>;
+    expect(headers.Authorization).toBe("Bearer abc123");
+  });
 });

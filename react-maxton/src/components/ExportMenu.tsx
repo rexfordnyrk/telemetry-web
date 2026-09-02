@@ -12,6 +12,7 @@ const DATASETS: { label: string; path: string }[] = [
 
 const ExportMenu: React.FC = () => {
   const g = useAppSelector((s) => s.globalFilters);
+  const token = useAppSelector((s) => s.auth.token);
 
   const trigger = async (path: string) => {
     const params = new URLSearchParams({
@@ -21,7 +22,7 @@ const ExportMenu: React.FC = () => {
       district: g.district,
     });
     try {
-      await downloadCsv(path, params);
+      await downloadCsv(path, params, token);
     } catch (err) {
       // eslint-disable-next-line no-console
       console.error("Export failed:", err);

@@ -1,8 +1,12 @@
 import { buildApiUrl, getAuthHeaders } from "../config/api";
 
-export async function downloadCsv(path: string, params: URLSearchParams): Promise<void> {
+export async function downloadCsv(
+  path: string,
+  params: URLSearchParams,
+  token?: string | null,
+): Promise<void> {
   const url = buildApiUrl(path) + "?" + params.toString();
-  const res = await fetch(url, { headers: getAuthHeaders() });
+  const res = await fetch(url, { headers: getAuthHeaders(token ?? undefined) });
   if (!res.ok) throw new Error(`Export failed: ${res.status}`);
   const blob = await res.blob();
   const objectUrl = URL.createObjectURL(blob);

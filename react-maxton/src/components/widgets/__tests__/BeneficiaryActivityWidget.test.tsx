@@ -17,8 +17,11 @@ const baseRow = {
   total_net_usage_bytes: 0,
 };
 
+// Minimal stub matching the shape the widget reads (state.auth.token).
+const auth = (state = { token: "test-token" }, _action: any) => state;
+
 function renderWithStore(ui: React.ReactElement) {
-  const store = configureStore({ reducer: { globalFilters } });
+  const store = configureStore({ reducer: { globalFilters, auth } });
   return render(<Provider store={store}>{ui}</Provider>);
 }
 

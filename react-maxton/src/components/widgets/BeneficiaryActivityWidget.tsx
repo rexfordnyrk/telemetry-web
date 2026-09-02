@@ -158,6 +158,7 @@ export const BeneficiaryActivityTable: React.FC<BeneficiaryActivityTableProps> =
 }) => {
   const activityData = defaultBeneficiaryData;
   const g = useAppSelector((s) => s.globalFilters);
+  const token = useAppSelector((s) => s.auth.token);
 
   const handleExport = async () => {
     const params = new URLSearchParams({
@@ -167,7 +168,7 @@ export const BeneficiaryActivityTable: React.FC<BeneficiaryActivityTableProps> =
       district: g.district,
     });
     try {
-      await downloadCsv("/analytics/export/beneficiary-activity.csv", params);
+      await downloadCsv("/analytics/export/beneficiary-activity.csv", params, token);
     } catch (err) {
       // eslint-disable-next-line no-console
       console.error("Export failed:", err);
