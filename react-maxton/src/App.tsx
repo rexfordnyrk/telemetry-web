@@ -58,6 +58,7 @@ import MfaChallenge from "./pages/MfaChallenge";
 import SecuritySettings from "./pages/SecuritySettings";
 import MyProfile from "./pages/MyProfile";
 import AuthAuditLog from "./pages/AuthAuditLog";
+import AlertSettings from "./pages/AlertSettings";
 import PermissionRoute from "./components/PermissionRoute";
 
 // Utility components
@@ -335,6 +336,18 @@ function App() {
                     <ProtectedRoute>
                       <PermissionRoute requiredPermissions={['read_auth_events']}>
                         <AuthAuditLog />
+                      </PermissionRoute>
+                    </ProtectedRoute>
+                  }
+                />
+
+                {/* Alert settings - permission gated */}
+                <Route
+                  path="/settings/alerts"
+                  element={
+                    <ProtectedRoute>
+                      <PermissionRoute requiredPermissions={['manage_alert_rules']}>
+                        <AlertSettings />
                       </PermissionRoute>
                     </ProtectedRoute>
                   }

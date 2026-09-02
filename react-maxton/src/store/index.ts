@@ -1,6 +1,7 @@
 import { configureStore } from "@reduxjs/toolkit";
 import userReducer from "./slices/userSlice";
-import alertReducer from "./slices/alertSlice";
+import toastAlertReducer from "./slices/alertSlice";
+import alertsReducer from "./slices/alertsSlice";
 import authReducer from "./slices/authSlice";
 import beneficiaryReducer from "./slices/beneficiarySlice";
 import deviceReducer from "./slices/deviceSlice";
@@ -12,7 +13,8 @@ import globalFiltersReducer from "./slices/globalFiltersSlice";
 export const store = configureStore({
   reducer: {
     users: userReducer,
-    alerts: alertReducer,
+    toastAlerts: toastAlertReducer,
+    alerts: alertsReducer,
     auth: authReducer,
     beneficiaries: beneficiaryReducer,
     devices: deviceReducer,

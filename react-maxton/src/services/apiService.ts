@@ -545,3 +545,15 @@ export const analyticsAPI = {
   getDeviceUsage: (deviceId: string, period: string) => ApiService.get(API_CONFIG.ENDPOINTS.ANALYTICS.DEVICE_USAGE(deviceId, period)),
   getBeneficiaryUsage: (beneficiaryId: string, period: string) => ApiService.get(API_CONFIG.ENDPOINTS.ANALYTICS.BENEFICIARY_USAGE(beneficiaryId, period)),
 };
+
+/**
+ * Alert rules and alert events API methods
+ * These methods manage super-admin configurable alert rules (device_offline, usage_spike)
+ * and expose the recent alert event log. Requires the manage_alert_rules permission.
+ */
+export const alertsAPI = {
+  listRules: () => ApiService.get('/api/v1/alerts/rules'),
+  updateRule: (ruleType: string, body: { is_enabled: boolean; params: any }) =>
+    ApiService.put(`/api/v1/alerts/rules/${ruleType}`, body),
+  listEvents: (limit = 100) => ApiService.get(`/api/v1/alerts/events?limit=${limit}`),
+};

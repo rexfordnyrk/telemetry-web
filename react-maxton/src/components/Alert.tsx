@@ -4,7 +4,7 @@ import { removeAlert } from "../store/slices/alertSlice";
 
 const Alert: React.FC = () => {
   const dispatch = useAppDispatch();
-  const alerts = useAppSelector((state) => state.alerts.alerts);
+  const alerts = useAppSelector((state) => state.toastAlerts.alerts);
 
   const getAlertClasses = (type: string) => {
     const baseClasses =
