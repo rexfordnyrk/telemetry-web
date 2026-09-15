@@ -79,6 +79,7 @@ const slice = createSlice({
       state.programme = SENTINELS.programme;
       state.organisation = SENTINELS.organisation;
       state.district = SENTINELS.district;
+      state.period = SENTINELS.period;
       saveToStorage(state);
     },
   },
