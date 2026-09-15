@@ -39,6 +39,12 @@ export const navigationData: NavigationItem[] = [
         path: "/reports/connectivity",
         icon: "arrow_right",
       },
+      {
+        id: "reports-schedules",
+        title: "Scheduled reports",
+        path: "/reports/schedules",
+        icon: "arrow_right",
+      },
     ],
   },
   {

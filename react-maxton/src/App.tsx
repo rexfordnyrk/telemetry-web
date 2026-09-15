@@ -50,6 +50,8 @@ import MainComponents from "./pages/MainComponents";
 import EcommerceComponents from "./pages/EcommerceComponents";
 import Overview from "./pages/Overview";
 import ConnectivityReport from "./pages/reports/ConnectivityReport";
+import Schedules from "./pages/reports/Schedules";
+import RunsHistory from "./pages/reports/RunsHistory";
 import CicVisits from "./pages/CicVisits";
 import SettingsLocality from "./pages/SettingsLocality";
 import SettingsPartners from "./pages/SettingsPartners";
@@ -254,6 +256,24 @@ function App() {
                   element={
                     <ProtectedRoute>
                       <ConnectivityReport />
+                    </ProtectedRoute>
+                  }
+                />
+
+                {/* Scheduled reports (§7.7 Phase 3 Part 3) */}
+                <Route
+                  path="/reports/schedules"
+                  element={
+                    <ProtectedRoute>
+                      <Schedules />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/reports/schedules/:id/runs"
+                  element={
+                    <ProtectedRoute>
+                      <RunsHistory />
                     </ProtectedRoute>
                   }
                 />
