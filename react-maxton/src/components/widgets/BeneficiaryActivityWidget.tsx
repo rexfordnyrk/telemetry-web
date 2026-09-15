@@ -168,7 +168,7 @@ export const BeneficiaryActivityTable: React.FC<BeneficiaryActivityTableProps> =
       district: g.district,
     });
     try {
-      await downloadCsv("/analytics/export/beneficiary-activity.csv", params, token);
+      await downloadCsv("/api/v1/analytics/export/beneficiary-activity.csv", params, token);
     } catch (err) {
       // eslint-disable-next-line no-console
       console.error("Export failed:", err);

@@ -34,7 +34,7 @@ describe("ExportMenu", () => {
     fireEvent.click(screen.getByRole("button", { name: /export/i }));
     fireEvent.click(screen.getByText(/beneficiary activity/i));
     expect(downloadCsv).toHaveBeenCalledWith(
-      "/analytics/export/beneficiary-activity.csv",
+      "/api/v1/analytics/export/beneficiary-activity.csv",
       expect.any(URLSearchParams),
       "test-token",
     );

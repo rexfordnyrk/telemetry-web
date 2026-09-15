@@ -4,10 +4,10 @@ import { useAppSelector } from "../store/hooks";
 import { downloadCsv } from "../utils/downloadCsv";
 
 const DATASETS: { label: string; path: string }[] = [
-  { label: "Dashboard Summary",    path: "/analytics/export/summary.csv" },
-  { label: "Beneficiary Activity", path: "/analytics/export/beneficiary-activity.csv" },
-  { label: "App Usage",            path: "/analytics/export/app-usage.csv" },
-  { label: "Programme Breakdown",  path: "/analytics/export/programme-breakdown.csv" },
+  { label: "Dashboard Summary",    path: "/api/v1/analytics/export/summary.csv" },
+  { label: "Beneficiary Activity", path: "/api/v1/analytics/export/beneficiary-activity.csv" },
+  { label: "App Usage",            path: "/api/v1/analytics/export/app-usage.csv" },
+  { label: "Programme Breakdown",  path: "/api/v1/analytics/export/programme-breakdown.csv" },
 ];
 
 const ExportMenu: React.FC = () => {
