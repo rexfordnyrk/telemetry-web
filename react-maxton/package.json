@@ -48,7 +48,10 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "e2e": "playwright test",
+    "e2e:ui": "playwright test --ui",
+    "e2e:report": "playwright show-report"
   },
   "eslintConfig": {
     "extends": [
@@ -74,6 +77,7 @@
     }
   },
   "devDependencies": {
+    "@playwright/test": "^1.63.0",
     "@types/react-datepicker": "^6.2.0"
   }
 }
