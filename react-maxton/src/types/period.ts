@@ -26,3 +26,13 @@ export function valueFromLabel(label: string): PeriodValue {
 export function serializeForApi(v: PeriodValue): string {
   return typeof v === 'string' ? v : `${v.start}:${v.end}`;
 }
+
+export function customRangePayload(start: Date, end: Date): { start: number; end: number } {
+  const DAY_MS = 24 * 60 * 60 * 1000;
+  // Extend end to the last ms of the picked day so a single-day pick (start == end)
+  // stays a non-empty range on the backend (see ParsePeriod: end > start).
+  return {
+    start: start.getTime(),
+    end: end.getTime() + DAY_MS - 1,
+  };
+}

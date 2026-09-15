@@ -1,7 +1,7 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
-import globalFilters from '../../store/slices/globalFiltersSlice';
+import globalFilters, { setPeriod } from '../../store/slices/globalFiltersSlice';
 import FiltersButton from '../FiltersButton';
 
 const mkStore = () => configureStore({ reducer: { globalFilters, auth: () => ({}) as any } });
@@ -18,4 +18,12 @@ test('Done disabled while range invalid', () => {
   fireEvent.click(screen.getByRole('button', { name: /filters/i }));
   fireEvent.change(screen.getByLabelText(/period/i), { target: { value: 'custom' } });
   expect(screen.getByRole('button', { name: /done/i })).toBeDisabled();
+});
+
+test('opens with the currently active period selected', () => {
+  const store = mkStore();
+  store.dispatch(setPeriod('week'));
+  render(<Provider store={store}><FiltersButton /></Provider>);
+  fireEvent.click(screen.getByRole('button', { name: /filters/i }));
+  expect(screen.getByLabelText(/period/i)).toHaveValue('week');
 });

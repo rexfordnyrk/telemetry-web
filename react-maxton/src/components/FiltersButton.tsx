@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Modal, Form, Button } from "react-bootstrap";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -6,7 +6,7 @@ import { useAppDispatch, useAppSelector } from "../store/hooks";
 import {
   setProgramme, setOrganisation, setDistrict, setPeriod, resetFilters,
 } from "../store/slices/globalFiltersSlice";
-import { PeriodValue, PeriodSlug, PERIOD_LABELS } from "../types/period";
+import { PeriodValue, PeriodSlug, PERIOD_LABELS, customRangePayload } from "../types/period";
 
 function activeCount(g: {
   programme: string; organisation: string; district: string; period: PeriodValue;
@@ -29,6 +29,21 @@ const FiltersButton: React.FC = () => {
   const count = activeCount(g);
   const isCustom = slugOrCustom === 'custom';
 
+  // Hydrate local state from redux when modal opens
+  useEffect(() => {
+    if (!show) return;
+    const p = g.period;
+    if (typeof p === 'string') {
+      setSlugOrCustom(p);
+      setStart(null);
+      setEnd(null);
+    } else {
+      setSlugOrCustom('custom');
+      setStart(new Date(p.start));
+      setEnd(new Date(p.end));
+    }
+  }, [show, g.period]);
+
   // Compute validity
   let invalidReason: string | null = null;
   if (isCustom) {
@@ -44,7 +59,7 @@ const FiltersButton: React.FC = () => {
   const handleDone = () => {
     if (isCustom) {
       if (start && end) {
-        dispatch(setPeriod({ start: start.getTime(), end: end.getTime() }));
+        dispatch(setPeriod(customRangePayload(start, end)));
       }
     } else {
       dispatch(setPeriod(slugOrCustom as PeriodSlug));
