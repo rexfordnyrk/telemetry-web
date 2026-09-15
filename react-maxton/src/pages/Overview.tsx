@@ -36,6 +36,10 @@ import {
   DataConsumerAppsWidget,
 } from "../components/widgets";
 
+// Import toggles (§7.7 phase-3 part-5)
+import CompareToPreviousToggle from '../components/widgets/CompareToPreviousToggle';
+import ForecastToggle from '../components/widgets/ForecastToggle';
+
 const Overview: React.FC = () => {
   const { user, token } = useSelector((state: RootState) => state.auth);
   const dispatch = useAppDispatch();
@@ -54,6 +58,10 @@ const Overview: React.FC = () => {
   // Per-widget error map so individual widgets can surface their own error
   // state via WidgetShell without needing a page-wide error banner.
   const [errors, setErrors] = useState<Record<string, string | null>>({});
+
+  // Toggles for compare and forecast (§7.7 phase-3 part-5)
+  const [compareOn, setCompareOn] = useState<boolean>(false);
+  const [forecastOn, setForecastOn] = useState<boolean>(false);
 
   // Fetch dashboard data, parameterized by the current global filter selections
   const fetchDashboardData = async () => {
@@ -75,6 +83,11 @@ const Overview: React.FC = () => {
       urlWithParams.searchParams.append('organisation', filters.organisation);
       urlWithParams.searchParams.append('district', filters.district);
 
+      // Append compare parameter when compareOn (§7.7 phase-3 part-5)
+      if (compareOn) {
+        urlWithParams.searchParams.append('compare', 'previous');
+      }
+
       // Make authenticated API request
       const response = await fetch(urlWithParams.toString(), {
         method: 'GET',
@@ -87,6 +100,12 @@ const Overview: React.FC = () => {
 
       const data: OverviewDashboardApiResponse = await response.json();
       setDashboardData(data.data.widgets);
+
+      // Log previous data if compare was requested (§7.7 phase-3 part-5)
+      if (compareOn && (data.data.widgets as any).previous) {
+        console.info('previous:', (data.data.widgets as any).previous);
+      }
+
       dispatch(setAvailableValues({
         programmes: data.data.globalFilters.availableProgrammes,
         organisations: data.data.globalFilters.availableOrganisations,
@@ -106,7 +125,7 @@ const Overview: React.FC = () => {
     }
   };
 
-  // Fetch on mount, and re-fetch whenever a global filter selection changes
+  // Fetch on mount, and re-fetch whenever a global filter selection changes or compareOn changes
   useEffect(() => {
     if (token) {
       fetchDashboardData();
@@ -115,10 +134,22 @@ const Overview: React.FC = () => {
       setIsLoading(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [token, filters.period, filters.programme, filters.organisation, filters.district]);
+  }, [token, filters.period, filters.programme, filters.organisation, filters.district, compareOn]);
 
   // Auto-refresh every 120s, but only while the tab is visible (DEF-577).
   useVisiblePolling(fetchDashboardData, 120_000);
+
+  // Fetch forecast when forecastOn flips true (§7.7 phase-3 part-5)
+  useEffect(() => {
+    if (!forecastOn) return;
+    const params = new URLSearchParams();
+    params.set('metric', 'avg_screen_time');
+    params.set('horizonDays', '14');
+    params.set('period', serializeForApi(filters.period));
+    fetch(buildApiUrl('/api/v1/analytics/forecast') + '?' + params.toString(), { headers: getAuthHeaders(token) })
+      .then((r) => r.json())
+      .then((json) => console.info('forecast:', json?.data));
+  }, [forecastOn, filters.period, token]);
 
   // Retry function for manual retry
   const retryFetchData = () => {
@@ -750,6 +781,12 @@ const Overview: React.FC = () => {
         </Col>
 
         <Col xxl={4}>
+          {/* Toggles (§7.7 phase-3 part-5) */}
+          <div className="d-flex gap-3 align-items-center mb-2 small">
+            <CompareToPreviousToggle value={compareOn} onChange={setCompareOn} />
+            <ForecastToggle value={forecastOn} onChange={setForecastOn} />
+          </div>
+
           <Row className="g-3 mb-3">
             <Col md={6} className="d-flex align-items-stretch">
               {(() => {

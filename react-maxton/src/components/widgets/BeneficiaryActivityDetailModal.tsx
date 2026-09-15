@@ -12,9 +12,11 @@ export interface BeneficiaryActivityDetailModalProps {
 }
 
 interface Row {
+  beneficiary_id?: string; // may be present when full=1
   name: string;
   most_used_app: { name: string; package: string } | null;
   last_synced_at: string | null;
+  percentile_rank?: number | null; // new — backend sends omitempty when unavailable
 }
 
 const BeneficiaryActivityDetailModal: React.FC<BeneficiaryActivityDetailModalProps> = ({ show, onHide }) => {
@@ -72,6 +74,7 @@ const BeneficiaryActivityDetailModal: React.FC<BeneficiaryActivityDetailModalPro
                   <th>Participant</th>
                   <th>Most Used App</th>
                   <th>Last Synced</th>
+                  <th>Percentile</th>
                 </tr>
               </thead>
               <tbody>
@@ -80,6 +83,7 @@ const BeneficiaryActivityDetailModal: React.FC<BeneficiaryActivityDetailModalPro
                     <td>{r.name}</td>
                     <td>{renderMostUsedApp(r.most_used_app)}</td>
                     <td>{renderLastSynced(r.last_synced_at)}</td>
+                    <td>{typeof r.percentile_rank === 'number' ? `${r.percentile_rank.toFixed(0)}%` : '—'}</td>
                   </tr>
                 ))}
               </tbody>

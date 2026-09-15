@@ -52,6 +52,8 @@ import Overview from "./pages/Overview";
 import ConnectivityReport from "./pages/reports/ConnectivityReport";
 import Schedules from "./pages/reports/Schedules";
 import RunsHistory from "./pages/reports/RunsHistory";
+import Correlation from "./pages/reports/Correlation";
+import Benchmarking from "./pages/reports/Benchmarking";
 import CicVisits from "./pages/CicVisits";
 import SettingsLocality from "./pages/SettingsLocality";
 import SettingsPartners from "./pages/SettingsPartners";
@@ -274,6 +276,24 @@ function App() {
                   element={
                     <ProtectedRoute>
                       <RunsHistory />
+                    </ProtectedRoute>
+                  }
+                />
+
+                {/* Advanced analytics (§7.7 Phase 3 Part 5) */}
+                <Route
+                  path="/reports/correlation"
+                  element={
+                    <ProtectedRoute>
+                      <Correlation />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/reports/benchmarking"
+                  element={
+                    <ProtectedRoute>
+                      <Benchmarking />
                     </ProtectedRoute>
                   }
                 />

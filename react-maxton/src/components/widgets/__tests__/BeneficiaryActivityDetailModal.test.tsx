@@ -43,3 +43,43 @@ test('renders empty message when no rows', async () => {
   render(<Provider store={mkStore()}><BeneficiaryActivityDetailModal show onHide={() => {}} /></Provider>);
   expect(await screen.findByText(/no beneficiary activity/i)).toBeInTheDocument();
 });
+
+test('renders percentile_rank: 72 as "72%"', async () => {
+  (global.fetch as jest.Mock).mockReset();
+  (global.fetch as jest.Mock).mockResolvedValue({ ok: true, json: () => Promise.resolve({
+    data: { widgets: { beneficiary_activity_rows: [
+      { name: 'Charlie', most_used_app: null, last_synced_at: null, percentile_rank: 72 },
+    ]}}
+  }) });
+  render(<Provider store={mkStore()}><BeneficiaryActivityDetailModal show onHide={() => {}} /></Provider>);
+  expect(await screen.findByText('Charlie')).toBeInTheDocument();
+  expect(screen.getByText('72%')).toBeInTheDocument();
+});
+
+test('renders percentile_rank: null as "—"', async () => {
+  (global.fetch as jest.Mock).mockReset();
+  (global.fetch as jest.Mock).mockResolvedValue({ ok: true, json: () => Promise.resolve({
+    data: { widgets: { beneficiary_activity_rows: [
+      { name: 'David', most_used_app: null, last_synced_at: null, percentile_rank: null },
+    ]}}
+  }) });
+  render(<Provider store={mkStore()}><BeneficiaryActivityDetailModal show onHide={() => {}} /></Provider>);
+  expect(await screen.findByText('David')).toBeInTheDocument();
+  // Verify percentile column is rendered with "—"
+  const cells = screen.getAllByRole('row');
+  expect(cells[cells.length - 1].textContent).toContain('—');
+});
+
+test('renders missing percentile_rank as "—"', async () => {
+  (global.fetch as jest.Mock).mockReset();
+  (global.fetch as jest.Mock).mockResolvedValue({ ok: true, json: () => Promise.resolve({
+    data: { widgets: { beneficiary_activity_rows: [
+      { name: 'Eve', most_used_app: null, last_synced_at: null },
+    ]}}
+  }) });
+  render(<Provider store={mkStore()}><BeneficiaryActivityDetailModal show onHide={() => {}} /></Provider>);
+  expect(await screen.findByText('Eve')).toBeInTheDocument();
+  // Verify percentile column is rendered with "—"
+  const cells = screen.getAllByRole('row');
+  expect(cells[cells.length - 1].textContent).toContain('—');
+});
