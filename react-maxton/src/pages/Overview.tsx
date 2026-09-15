@@ -7,7 +7,7 @@ import { RootState } from "../store";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { setAvailableValues } from "../store/slices/globalFiltersSlice";
 import { buildApiUrl, getAuthHeaders } from "../config/api";
-import { OverviewDashboardApiResponse, DashboardWidgets, GlobalFilters } from "../types/dashboard";
+import { OverviewDashboardApiResponse, DashboardWidgets } from "../types/dashboard";
 import ExportMenu from "../components/ExportMenu";
 
 // Import dashboard components
@@ -39,7 +39,6 @@ const Overview: React.FC = () => {
 
   // Dashboard data state
   const [dashboardData, setDashboardData] = useState<DashboardWidgets | null>(null);
-  const [globalFilters, setGlobalFilters] = useState<GlobalFilters | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -74,7 +73,6 @@ const Overview: React.FC = () => {
 
       const data: OverviewDashboardApiResponse = await response.json();
       setDashboardData(data.data.widgets);
-      setGlobalFilters(data.data.globalFilters);
       dispatch(setAvailableValues({
         programmes: data.data.globalFilters.availableProgrammes,
         organisations: data.data.globalFilters.availableOrganisations,
