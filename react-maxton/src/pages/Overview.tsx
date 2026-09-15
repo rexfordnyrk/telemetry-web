@@ -10,6 +10,8 @@ import { buildApiUrl, getAuthHeaders } from "../config/api";
 import { OverviewDashboardApiResponse, DashboardWidgets } from "../types/dashboard";
 import ExportMenu from "../components/ExportMenu";
 import FiltersButton from "../components/FiltersButton";
+import { useVisiblePolling } from "../hooks/useVisiblePolling";
+import { WidgetShell, WidgetState } from "../components/dashboard/WidgetShell";
 
 // Import dashboard components
 import {
@@ -43,10 +45,20 @@ const Overview: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Manual-refresh in-flight flag (DEF-533-535, DEF-577): drives the disabled
+  // state of the refresh button independent of the initial page-load spinner.
+  const [refreshing, setRefreshing] = useState<boolean>(false);
+  // Timestamp of the last successful fetch, used for the "Updated N ago" note.
+  const [lastRefreshedAt, setLastRefreshedAt] = useState<Date | null>(null);
+  // Per-widget error map so individual widgets can surface their own error
+  // state via WidgetShell without needing a page-wide error banner.
+  const [errors, setErrors] = useState<Record<string, string | null>>({});
+
   // Fetch dashboard data, parameterized by the current global filter selections
   const fetchDashboardData = async () => {
     try {
       setIsLoading(true);
+      setRefreshing(true);
       setError(null);
 
       // Check if we have authentication token
@@ -79,12 +91,17 @@ const Overview: React.FC = () => {
         organisations: data.data.globalFilters.availableOrganisations,
         districts: data.data.globalFilters.availableDistricts,
       }));
+      setLastRefreshedAt(new Date());
+      setErrors((prev) => ({ ...prev, beneficiary_activity: null }));
     } catch (err) {
       console.error('Failed to fetch dashboard data:', err);
-      setError(err instanceof Error ? err.message : 'Failed to load dashboard data');
+      const message = err instanceof Error ? err.message : 'Failed to load dashboard data';
+      setError(message);
+      setErrors((prev) => ({ ...prev, beneficiary_activity: message }));
       // Keep dashboardData as null to use fallback data
     } finally {
       setIsLoading(false);
+      setRefreshing(false);
     }
   };
 
@@ -99,6 +116,9 @@ const Overview: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token, filters.period, filters.programme, filters.organisation, filters.district]);
 
+  // Auto-refresh every 120s, but only while the tab is visible (DEF-577).
+  useVisiblePolling(fetchDashboardData, 120_000);
+
   // Retry function for manual retry
   const retryFetchData = () => {
     if (token) {
@@ -107,6 +127,18 @@ const Overview: React.FC = () => {
       setError('Authentication required');
       setIsLoading(false);
     }
+  };
+
+  // Small inline "time ago" formatter for the manual-refresh status note.
+  // Kept local to this file (see task-8 notes) rather than sharing the
+  // widget's internal relativeTime() to avoid touching BeneficiaryActivityWidget.
+  const formatLastRefreshed = (d: Date | null): string => {
+    if (!d) return '';
+    const s = Math.round((Date.now() - d.getTime()) / 1000);
+    if (s < 60) return 'Updated just now';
+    if (s < 3600) return `Updated ${Math.floor(s / 60)}m ago`;
+    if (s < 86400) return `Updated ${Math.floor(s / 3600)}h ago`;
+    return `Updated ${Math.floor(s / 86400)}d ago`;
   };
 
   // Generate user initials if no avatar
@@ -556,6 +588,25 @@ const Overview: React.FC = () => {
               {isLoading ? 'Loading...' : dashboardData && !error ? 'Live Data' : 'Fallback Data'}
             </span>
           </div>
+          {/* Persistent last-refreshed indicator + manual refresh (visible on
+              the happy path too, not just while showing the fallback alert). */}
+          <div className="d-flex align-items-center gap-1">
+            <button
+              type="button"
+              className="btn btn-sm btn-outline-secondary d-inline-flex align-items-center justify-content-center"
+              onClick={fetchDashboardData}
+              disabled={refreshing}
+              aria-label="Refresh dashboard data"
+              title="Refresh dashboard data"
+            >
+              <i className={`bx bx-refresh${refreshing ? ' bx-spin' : ''}`}></i>
+            </button>
+            {lastRefreshedAt && (
+              <small className="text-muted" data-testid="header-last-refreshed-note">
+                {formatLastRefreshed(lastRefreshedAt)}
+              </small>
+            )}
+          </div>
           <FiltersButton />
           <ExportMenu />
         </div>
@@ -582,7 +633,7 @@ const Overview: React.FC = () => {
             <button
               className="btn btn-sm btn-outline-warning"
               onClick={retryFetchData}
-              disabled={isLoading}
+              disabled={refreshing}
             >
               <i className="bx bx-refresh me-1"></i>
               Retry Loading Data
@@ -898,12 +949,35 @@ const Overview: React.FC = () => {
           {(() => {
             const beneficiaryActivityData = getWidgetData('beneficiaryActivity', fallbackData.beneficiaryActivity);
             const rows = dashboardData?.beneficiary_activity_rows;
+
+            // Derive WidgetShell state: loading only until the first response
+            // resolves (rows still undefined), error takes precedence once a
+            // fetch has actually failed, empty when the API returned zero
+            // rows, ok otherwise (including while showing fallback data).
+            let beneficiaryActivityState: WidgetState;
+            if (isLoading && rows === undefined) {
+              beneficiaryActivityState = 'loading';
+            } else if (errors.beneficiary_activity) {
+              beneficiaryActivityState = 'error';
+            } else if (rows !== undefined && rows.length === 0) {
+              beneficiaryActivityState = 'empty';
+            } else {
+              beneficiaryActivityState = 'ok';
+            }
+
             return (
-              <BeneficiaryActivityWidget
-                data={beneficiaryActivityData}
-                rows={rows}
-                showDropdown={beneficiaryActivityData.showDropdown}
-              />
+              <WidgetShell
+                state={beneficiaryActivityState}
+                emptyMessage="No beneficiary activity in this period."
+                errorMessage={errors.beneficiary_activity || 'Failed to load beneficiary activity.'}
+                onRetry={fetchDashboardData}
+              >
+                <BeneficiaryActivityWidget
+                  data={beneficiaryActivityData}
+                  rows={rows}
+                  showDropdown={beneficiaryActivityData.showDropdown}
+                />
+              </WidgetShell>
             );
           })()}
         </Col>
