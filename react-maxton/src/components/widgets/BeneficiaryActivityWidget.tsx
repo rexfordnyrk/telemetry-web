@@ -3,6 +3,7 @@ import { Card, Dropdown, Table } from "react-bootstrap";
 import { BeneficiaryActivityRow } from "../../types/dashboard";
 import { useAppSelector } from "../../store/hooks";
 import { downloadCsv } from "../../utils/downloadCsv";
+import { serializeForApi } from "../../types/period";
 
 interface BeneficiaryActivity {
   participant: string;
@@ -162,7 +163,7 @@ export const BeneficiaryActivityTable: React.FC<BeneficiaryActivityTableProps> =
 
   const handleExport = async () => {
     const params = new URLSearchParams({
-      period: g.period,
+      period: serializeForApi(g.period),
       programme: g.programme,
       organisation: g.organisation,
       district: g.district,

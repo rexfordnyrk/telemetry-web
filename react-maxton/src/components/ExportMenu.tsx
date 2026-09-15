@@ -2,6 +2,7 @@ import React from "react";
 import { Dropdown } from "react-bootstrap";
 import { useAppSelector } from "../store/hooks";
 import { downloadCsv } from "../utils/downloadCsv";
+import { serializeForApi } from "../types/period";
 
 const DATASETS: { label: string; path: string }[] = [
   { label: "Dashboard Summary",    path: "/api/v1/analytics/export/summary.csv" },
@@ -16,7 +17,7 @@ const ExportMenu: React.FC = () => {
 
   const trigger = async (path: string) => {
     const params = new URLSearchParams({
-      period: g.period,
+      period: serializeForApi(g.period),
       programme: g.programme,
       organisation: g.organisation,
       district: g.district,

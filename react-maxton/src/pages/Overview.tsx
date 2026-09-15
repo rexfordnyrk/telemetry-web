@@ -8,6 +8,7 @@ import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { setAvailableValues } from "../store/slices/globalFiltersSlice";
 import { buildApiUrl, getAuthHeaders } from "../config/api";
 import { OverviewDashboardApiResponse, DashboardWidgets } from "../types/dashboard";
+import { serializeForApi } from "../types/period";
 import ExportMenu from "../components/ExportMenu";
 import FiltersButton from "../components/FiltersButton";
 import { useVisiblePolling } from "../hooks/useVisiblePolling";
@@ -69,7 +70,7 @@ const Overview: React.FC = () => {
       // Build URL with the four global filter query parameters
       const url = buildApiUrl('/api/v1/analytics/dashboard/overview');
       const urlWithParams = new URL(url);
-      urlWithParams.searchParams.append('period', filters.period);
+      urlWithParams.searchParams.append('period', serializeForApi(filters.period));
       urlWithParams.searchParams.append('programme', filters.programme);
       urlWithParams.searchParams.append('organisation', filters.organisation);
       urlWithParams.searchParams.append('district', filters.district);

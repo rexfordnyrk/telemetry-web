@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { PeriodValue, PERIOD_LABELS, valueFromLabel } from "../../types/period";
 
 export const STORAGE_KEY = "dare.globalFilters.v1";
 
@@ -6,7 +7,7 @@ export interface GlobalFilterState {
   programme: string;
   organisation: string;
   district: string;
-  period: string;
+  period: PeriodValue;
   availableProgrammes: string[];
   availableOrganisations: string[];
   availableDistricts: string[];
@@ -16,7 +17,7 @@ const SENTINELS = {
   programme: "All Programmes",
   organisation: "All Organisations",
   district: "All Districts",
-  period: "Today",
+  period: "today" as PeriodValue,
 };
 
 const defaults = (): GlobalFilterState => ({
@@ -26,12 +27,30 @@ const defaults = (): GlobalFilterState => ({
   availableDistricts: [SENTINELS.district],
 });
 
+function migratePeriod(v: unknown): PeriodValue {
+  if (typeof v === "string") {
+    if (v in PERIOD_LABELS) return v as PeriodValue;
+    return valueFromLabel(v);
+  }
+  if (v && typeof v === "object" && "start" in v && "end" in v) {
+    const r = v as { start: unknown; end: unknown };
+    if (typeof r.start === "number" && typeof r.end === "number") {
+      return { start: r.start, end: r.end };
+    }
+  }
+  return "today";
+}
+
 function loadFromStorage(): GlobalFilterState {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return defaults();
     const parsed = JSON.parse(raw);
-    return { ...defaults(), ...parsed };
+    return {
+      ...defaults(),
+      ...parsed,
+      period: migratePeriod(parsed.period),
+    };
   } catch {
     return defaults();
   }
@@ -64,7 +83,7 @@ const slice = createSlice({
       state.district = action.payload;
       saveToStorage(state);
     },
-    setPeriod(state, action: PayloadAction<string>) {
+    setPeriod(state, action: PayloadAction<PeriodValue>) {
       state.period = action.payload;
       saveToStorage(state);
     },

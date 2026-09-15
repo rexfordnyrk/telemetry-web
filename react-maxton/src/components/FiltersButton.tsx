@@ -1,17 +1,18 @@
 import React, { useState } from "react";
 import { Modal, Form, Button } from "react-bootstrap";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import {
   setProgramme, setOrganisation, setDistrict, setPeriod, resetFilters,
 } from "../store/slices/globalFiltersSlice";
-
-const PERIOD_OPTIONS = ["Today", "Yesterday", "Last 7 Days", "This Month", "This Year"];
+import { PeriodValue, PeriodSlug, PERIOD_LABELS } from "../types/period";
 
 function activeCount(g: {
-  programme: string; organisation: string; district: string; period: string;
+  programme: string; organisation: string; district: string; period: PeriodValue;
 }): number {
   let n = 0;
-  if (g.period !== "Today") n++;
+  if (g.period !== "today") n++;
   if (!/^all\b/i.test(g.programme)) n++;
   if (!/^all\b/i.test(g.organisation)) n++;
   if (!/^all\b/i.test(g.district)) n++;
@@ -22,7 +23,34 @@ const FiltersButton: React.FC = () => {
   const dispatch = useAppDispatch();
   const g = useAppSelector((s) => s.globalFilters);
   const [show, setShow] = useState(false);
+  const [slugOrCustom, setSlugOrCustom] = useState<PeriodSlug | 'custom'>('today');
+  const [start, setStart] = useState<Date | null>(null);
+  const [end, setEnd] = useState<Date | null>(null);
   const count = activeCount(g);
+  const isCustom = slugOrCustom === 'custom';
+
+  // Compute validity
+  let invalidReason: string | null = null;
+  if (isCustom) {
+    if (!start || !end) {
+      invalidReason = "Pick both start and end dates.";
+    } else if (end < start) {
+      invalidReason = "End must be on or after start.";
+    } else if ((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24) > 366) {
+      invalidReason = "Range must be 366 days or less.";
+    }
+  }
+
+  const handleDone = () => {
+    if (isCustom) {
+      if (start && end) {
+        dispatch(setPeriod({ start: start.getTime(), end: end.getTime() }));
+      }
+    } else {
+      dispatch(setPeriod(slugOrCustom as PeriodSlug));
+    }
+    setShow(false);
+  };
 
   return (
     <>
@@ -44,16 +72,31 @@ const FiltersButton: React.FC = () => {
           <Modal.Title>Filters</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <Form.Group controlId="gfb-period" className="mb-3">
-            <Form.Label>Period</Form.Label>
+          <Form.Group className="mb-3">
+            <Form.Label htmlFor="period-select">Period</Form.Label>
             <Form.Select
-              value={g.period}
-              onChange={(e) => dispatch(setPeriod(e.target.value))}>
-              {PERIOD_OPTIONS.map((p) => (
-                <option key={p} value={p}>{p}</option>
+              id="period-select"
+              value={slugOrCustom}
+              onChange={(e) => setSlugOrCustom(e.target.value as PeriodSlug | 'custom')}>
+              {Object.entries(PERIOD_LABELS).map(([slug, label]) => (
+                <option key={slug} value={slug}>{label}</option>
               ))}
+              <option value="custom">Custom range…</option>
             </Form.Select>
           </Form.Group>
+
+          {isCustom && (
+            <div data-testid="custom-range-picker" className="mb-3">
+              <div className="d-flex gap-2">
+                <DatePicker selected={start} onChange={setStart} selectsStart startDate={start} endDate={end}
+                            className="form-control" placeholderText="Start date" />
+                <DatePicker selected={end}   onChange={setEnd}   selectsEnd   startDate={start} endDate={end}
+                            minDate={start ?? undefined}
+                            className="form-control" placeholderText="End date" />
+              </div>
+              {invalidReason && <Form.Text className="text-danger">{invalidReason}</Form.Text>}
+            </div>
+          )}
 
           <Form.Group controlId="gfb-programme" className="mb-3">
             <Form.Label>Programme</Form.Label>
@@ -95,7 +138,7 @@ const FiltersButton: React.FC = () => {
             onClick={() => dispatch(resetFilters())}>
             Clear all
           </Button>
-          <Button variant="primary" onClick={() => setShow(false)}>Done</Button>
+          <Button variant="primary" onClick={handleDone} disabled={isCustom && invalidReason !== null}>Done</Button>
         </Modal.Footer>
       </Modal>
     </>
