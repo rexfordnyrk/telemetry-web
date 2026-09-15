@@ -9,6 +9,7 @@ import { setAvailableValues } from "../store/slices/globalFiltersSlice";
 import { buildApiUrl, getAuthHeaders } from "../config/api";
 import { OverviewDashboardApiResponse, DashboardWidgets } from "../types/dashboard";
 import ExportMenu from "../components/ExportMenu";
+import FiltersButton from "../components/FiltersButton";
 
 // Import dashboard components
 import {
@@ -555,6 +556,7 @@ const Overview: React.FC = () => {
               {isLoading ? 'Loading...' : dashboardData && !error ? 'Live Data' : 'Fallback Data'}
             </span>
           </div>
+          <FiltersButton />
           <ExportMenu />
         </div>
       </div>

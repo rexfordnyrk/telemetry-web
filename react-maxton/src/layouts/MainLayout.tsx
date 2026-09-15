@@ -4,7 +4,6 @@ import Header from "../components/Header";
 import Sidebar from "../components/Sidebar";
 import ThemeCustomizer from "../components/ThemeCustomizer";
 import ErrorBoundary from "../components/ErrorBoundary";
-import GlobalFilterBar from "../components/GlobalFilterBar";
 import SessionTimeoutWarning from "../components/SessionTimeoutWarning";
 import { useSessionManager } from "../hooks/useSessionManager";
 import { ComponentProps } from "../types";
@@ -30,11 +29,6 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children, title }) => {
 
       <main className="main-wrapper">
         <div className="main-content">
-          {isAuthenticated && (
-            <ErrorBoundary>
-              <GlobalFilterBar />
-            </ErrorBoundary>
-          )}
           {title && (
             <div className="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
               <div className="breadcrumb-title pe-3">{title}</div>

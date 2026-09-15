@@ -36,31 +36,3 @@
     transform: rotate(360deg);
   }
 }
-
-/* Global filter toolbar — sits below header, above page breadcrumb.
-   Reads as chrome via muted bg + bottom border; adapts to blue/dark themes. */
-.global-filter-bar {
-  background: rgba(0, 0, 0, 0.03);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
-  border-radius: 4px;
-  font-size: 0.85rem;
-}
-.global-filter-bar .form-label {
-  font-weight: 500;
-}
-.global-filter-bar .form-select-sm {
-  font-size: 0.85rem;
-  padding-top: 0.15rem;
-  padding-bottom: 0.15rem;
-}
-[data-bs-theme="dark"] .global-filter-bar,
-.dark-theme .global-filter-bar,
-.blue-theme .global-filter-bar {
-  background: rgba(255, 255, 255, 0.04);
-  border-bottom-color: rgba(255, 255, 255, 0.08);
-}
-[data-bs-theme="dark"] .global-filter-bar .text-secondary,
-.dark-theme .global-filter-bar .text-secondary,
-.blue-theme .global-filter-bar .text-secondary {
-  color: rgba(255, 255, 255, 0.65) !important;
-}
