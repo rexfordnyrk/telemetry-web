@@ -341,21 +341,6 @@ const UserDetails: React.FC = () => {
     }
   };
 
-  const handleReset = () => {
-    setFormData({
-      first_name: user.first_name,
-      last_name: user.last_name,
-      username: user.username,
-      phone: user.phone,
-      email: user.email,
-      designation: user.designation,
-      organization: user.organization,
-      photo: null,
-    });
-    setPhotoPreview(user.photo || null);
-    setIsEditing(false);
-  };
-
   const handleCancel = () => {
     setFormData({
       first_name: user.first_name,

@@ -149,7 +149,7 @@ const StatCardWidget: React.FC<StatCardWidgetProps> = ({
         chartRef.current.destroy();
       }
     };
-  }, [title, data, categories, colors, gradientColors, height, chartType, chartId]);
+  }, [title, data, categories, colors, gradientColors, height, chartType, chartId, backgroundColor]);
 
   return (
     <div className="card overflow-hidden w-100 rounded-4">

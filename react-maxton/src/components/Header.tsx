@@ -3,7 +3,7 @@ import { Dropdown, Nav, Navbar, Offcanvas } from "react-bootstrap";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { useLayout } from "../context/LayoutContext";
-import { User, Notification } from "../types";
+import { Notification } from "../types";
 import { RootState, AppDispatch } from "../store";
 import { logoutUser } from "../store/slices/authSlice";
 

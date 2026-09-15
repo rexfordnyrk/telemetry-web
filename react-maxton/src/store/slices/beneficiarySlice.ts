@@ -3,6 +3,7 @@ import { RootState } from '../index';
 import { buildApiUrl, getAuthHeaders } from '../../config/api';
 import { handleApiError } from '../../utils/apiUtils';
 import { normalizeDateForApi } from '../../utils/dateNormalize';
+import type { CSVImportError as SharedCSVImportError, CSVImportResult as SharedCSVImportResult } from '../../types/csvImport';
 
 // Define the Beneficiary type (adjust fields as needed)
 export interface Beneficiary {
@@ -69,7 +70,6 @@ export interface CSVImportRow {
 // Re-export shared CSV import contract so existing imports of these types
 // from this slice keep working while the CIC-visit importer (§7.3) uses the
 // same shape from src/types/csvImport.ts.
-import type { CSVImportError as SharedCSVImportError, CSVImportResult as SharedCSVImportResult } from "../../types/csvImport";
 export type CSVImportError = SharedCSVImportError;
 export type CSVImportResult = SharedCSVImportResult;
 

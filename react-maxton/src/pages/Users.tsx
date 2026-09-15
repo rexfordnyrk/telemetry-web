@@ -136,7 +136,6 @@ const Users: React.FC = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const { users, loading, error } = useAppSelector((state) => state.users);
-  const { user } = useAppSelector((state) => state.auth);
   const permissions = usePermissions();
   
   const [showModal, setShowModal] = useState(false);

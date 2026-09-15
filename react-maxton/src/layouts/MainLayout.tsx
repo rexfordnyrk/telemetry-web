@@ -15,7 +15,7 @@ interface MainLayoutProps extends ComponentProps {
 }
 
 const MainLayout: React.FC<MainLayoutProps> = ({ children, title }) => {
-  const { user, isAuthenticated } = useSelector((state: RootState) => state.auth);
+  const { isAuthenticated } = useSelector((state: RootState) => state.auth);
   const { showWarning, warningMinutes, stayLoggedIn, handleIdleLogout } =
     useSessionManager();
 

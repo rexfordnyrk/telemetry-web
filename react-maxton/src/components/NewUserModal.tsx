@@ -143,7 +143,7 @@ const NewUserModal: React.FC<NewUserModalProps> = ({ show, onClose, onBeforeSucc
       };
 
       // Dispatch the createUser action
-      const result = await dispatch(createUser(userData)).unwrap();
+      await dispatch(createUser(userData)).unwrap();
 
       dispatch(
         addAlert({

@@ -208,31 +208,6 @@ const Beneficiaries: React.FC = () => {
     };
   }, [navigate, memoizedBeneficiaries]);
 
-  // Helper to get status badge
-  const getStatusElement = (status: string) => {
-    const statusConfig = {
-      active: { bg: "success", text: "Active" },
-      inactive: { bg: "danger", text: "Inactive" },
-      pending: { bg: "warning", text: "Pending" },
-      suspended: { bg: "secondary", text: "Suspended" },
-    };
-    const config = statusConfig[status as keyof typeof statusConfig] || statusConfig.pending;
-    return (
-      <span className={`dash-lable mb-0 bg-${config.bg} bg-opacity-10 text-${config.bg} rounded-2`}>
-        {config.text}
-      </span>
-    );
-  };
-
-  // Helper to get initials from name
-  const getInitials = (name: string) => {
-    return name
-      .split(" ")
-      .map((n) => n[0])
-      .join("")
-      .toUpperCase();
-  };
-
   // Handle action button clicks
   const handleActionClick = (beneficiary: any, action: "disable" | "delete") => {
     setTargetBeneficiary(beneficiary);

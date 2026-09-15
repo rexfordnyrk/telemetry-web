@@ -10,7 +10,6 @@ import {
   selectAssignmentsPageData,
   selectBasicStats,
   selectPagePagination,
-  clearSearchParams
 } from '../store/slices/deviceAssignmentSlice';
 import { fetchDevices, fetchUnassignedDevices } from '../store/slices/deviceSlice';
 import { fetchUnassignedBeneficiaries } from '../store/slices/beneficiarySlice';
@@ -104,15 +103,6 @@ const DeviceAssignments: React.FC = () => {
       page,
       limit: 100,
     }));
-  };
-
-  /**
-   * Clear all filters
-   */
-  const handleClearFilters = () => {
-    setQuickSearch('');
-    dispatch(clearSearchParams());
-    dispatch(fetchAssignmentsPage({ page: 1, limit: 100 }));
   };
 
   /**

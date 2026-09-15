@@ -18,7 +18,7 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../store';
-import { setToken, clearAuth, setInitialized } from '../store/slices/authSlice';
+import { setToken, clearAuth } from '../store/slices/authSlice';
 import { logJWTClaims, isTokenExpired, decodeJWT } from '../utils/jwtUtils';
 
 /**

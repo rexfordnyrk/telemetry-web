@@ -89,7 +89,9 @@ export const useDataTable = (
     return () => {
       clearTimeout(timeoutId);
     };
-    // Re-init only when structural options change (columns/dom/order/etc.) or shouldInitialize toggles
+    // Re-init only when structural options change (columns/dom/order/etc.) or shouldInitialize toggles;
+    // `data` and `isServerSide` are intentionally excluded — data updates flow through a separate effect below.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [shouldInitialize, destroyDataTable, tableId, options, manageDataInternally]);
 
   // On data changes, update via DataTables API instead of destroying (skip for server-side; ajax drives data)
@@ -106,7 +108,7 @@ export const useDataTable = (
     } catch (error) {
       console.warn('Error updating DataTable rows via API:', error);
     }
-  }, [data, manageDataInternally]);
+  }, [data, manageDataInternally, isServerSide]);
 
   useEffect(() => {
     return () => {

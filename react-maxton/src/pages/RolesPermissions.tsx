@@ -47,7 +47,7 @@ const RolesPermissions: React.FC = () => {
 
   // Local state for UI
   const [showModal, setShowModal] = useState(false);
-  const [modalAction, setModalAction] = useState<"delete">("delete");
+  const [, setModalAction] = useState<"delete">("delete");
   const [targetRole, setTargetRole] = useState<Role | null>(null);
   const [showNewRoleModal, setShowNewRoleModal] = useState(false);
   const [editRole, setEditRole] = useState<Role | null>(null);
@@ -78,7 +78,7 @@ const RolesPermissions: React.FC = () => {
   const memoizedRoles = useMemo(() => roles, [roles]);
 
   // Initialize DataTable using custom hook
-  const { isInitialized, destroyDataTable } = useDataTable(
+  const { destroyDataTable } = useDataTable(
     "roles-datatable",
     memoizedRoles,
     {
