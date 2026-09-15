@@ -29,6 +29,19 @@ export const navigationData: NavigationItem[] = [
     ],
   },
   {
+    id: "reports",
+    title: "Reports",
+    icon: "bar_chart",
+    children: [
+      {
+        id: "reports-connectivity",
+        title: "Connectivity",
+        path: "/reports/connectivity",
+        icon: "arrow_right",
+      },
+    ],
+  },
+  {
     id: "widgets",
     title: "Widgets",
     icon: "widgets",

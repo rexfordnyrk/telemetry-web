@@ -49,6 +49,7 @@ import NotFound from "./pages/NotFound";
 import MainComponents from "./pages/MainComponents";
 import EcommerceComponents from "./pages/EcommerceComponents";
 import Overview from "./pages/Overview";
+import ConnectivityReport from "./pages/reports/ConnectivityReport";
 import CicVisits from "./pages/CicVisits";
 import SettingsLocality from "./pages/SettingsLocality";
 import SettingsPartners from "./pages/SettingsPartners";
@@ -243,6 +244,16 @@ function App() {
                   element={
                     <ProtectedRoute>
                       <Overview />
+                    </ProtectedRoute>
+                  }
+                />
+
+                {/* Connectivity report (§7.7 Phase 2 Part 2) */}
+                <Route
+                  path="/reports/connectivity"
+                  element={
+                    <ProtectedRoute>
+                      <ConnectivityReport />
                     </ProtectedRoute>
                   }
                 />
