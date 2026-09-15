@@ -1,8 +1,9 @@
 import React from "react";
-import { render, screen } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { Provider } from "react-redux";
 import { configureStore } from "@reduxjs/toolkit";
 import globalFilters from "../../../store/slices/globalFiltersSlice";
+import { BeneficiaryActivityTable } from "../BeneficiaryActivityWidget";
 import BeneficiaryActivityWidget from "../BeneficiaryActivityWidget";
 
 const baseRow = {
@@ -68,5 +69,25 @@ describe("BeneficiaryActivityWidget — null field rendering", () => {
       />
     );
     expect(screen.getByText("No beneficiary activity in this period.")).toBeInTheDocument();
+  });
+});
+
+describe("BeneficiaryActivityWidget — modal and column picker", () => {
+  beforeEach(() => localStorage.clear());
+
+  it("View Details opens the detail modal", async () => {
+    jest.spyOn(global, 'fetch').mockResolvedValue({ ok: true, json: () => Promise.resolve({ data: { widgets: { beneficiary_activity_rows: [] } } }) } as any);
+    renderWithStore(<BeneficiaryActivityTable rows={[]} />);
+    fireEvent.click(screen.getByRole('button', { name: /more_vert|options/i }));
+    fireEvent.click(screen.getByText('View Details'));
+    expect(await screen.findByText(/full details/i)).toBeInTheDocument();
+  });
+
+  it("unchecking a column via Settings hides its header on next render", () => {
+    localStorage.setItem('widget:beneficiary-activity:columns', JSON.stringify(['name', 'last_synced']));
+    renderWithStore(<BeneficiaryActivityTable rows={[]} />);
+    expect(screen.queryByText('Most Used App')).toBeNull();
+    expect(screen.getByText('Name')).toBeInTheDocument();
+    expect(screen.getByText('Last Synced')).toBeInTheDocument();
   });
 });

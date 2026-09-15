@@ -1,9 +1,13 @@
-import React from "react";
+import React, { useState } from "react";
 import { Card, Dropdown, Table } from "react-bootstrap";
 import { BeneficiaryActivityRow } from "../../types/dashboard";
 import { useAppSelector } from "../../store/hooks";
 import { downloadCsv } from "../../utils/downloadCsv";
 import { serializeForApi } from "../../types/period";
+import { renderLastSynced, renderMostUsedApp } from "./beneficiaryActivityHelpers";
+import BeneficiaryActivityDetailModal from './BeneficiaryActivityDetailModal';
+import ColumnsPickerPopover, { ColumnDef } from './ColumnsPickerPopover';
+import { WidgetPrefs, loadPrefs } from '../../utils/widgetPrefs';
 
 interface BeneficiaryActivity {
   participant: string;
@@ -36,32 +40,13 @@ interface BeneficiaryActivityWidgetProps {
   showDropdown?: boolean;
 }
 
-const EMPTY = "—";
-
-function relativeTime(d: Date): string {
-  const s = Math.round((Date.now() - d.getTime()) / 1000);
-  if (s < 60) return "just now";
-  if (s < 3600) return `${Math.floor(s / 60)}m ago`;
-  if (s < 86400) return `${Math.floor(s / 3600)}h ago`;
-  return `${Math.floor(s / 86400)}d ago`;
-}
-
-const renderLastSynced = (v: string | null) => {
-  if (!v) return EMPTY;
-  const d = new Date(v);
-  if (isNaN(d.getTime())) return EMPTY;
-  return <span title={d.toLocaleString()}>{relativeTime(d)}</span>;
-};
-
-const renderMostUsedApp = (a: { name: string; package: string } | null) => {
-  if (!a) return EMPTY;
-  return (
-    <>
-      <div>{a.name}</div>
-      <small className="text-muted">{a.package}</small>
-    </>
-  );
-};
+const WIDGET_ID = 'beneficiary-activity';
+const ALL_COLUMNS: ColumnDef[] = [
+  { id: 'name', label: 'Name' },
+  { id: 'most_used_app', label: 'Most Used App' },
+  { id: 'last_synced', label: 'Last Synced' },
+];
+const DEFAULT_PREFS: WidgetPrefs = { visibleColumns: ['name', 'most_used_app', 'last_synced'], rowsPerPage: 10 };
 
 const defaultBeneficiaryData: BeneficiaryActivityData = {
   title: "Beneficiary Activity Overview",
@@ -157,6 +142,8 @@ export const BeneficiaryActivityTable: React.FC<BeneficiaryActivityTableProps> =
   rows,
   showDropdown = true,
 }) => {
+  const [detailOpen, setDetailOpen] = useState(false);
+  const [prefs, setPrefs] = useState<WidgetPrefs>(() => loadPrefs(WIDGET_ID, DEFAULT_PREFS));
   const activityData = defaultBeneficiaryData;
   const g = useAppSelector((s) => s.globalFilters);
   const token = useAppSelector((s) => s.auth.token);
@@ -178,6 +165,7 @@ export const BeneficiaryActivityTable: React.FC<BeneficiaryActivityTableProps> =
 
   if (rows !== undefined) {
     return (
+      <>
       <Card className="rounded-4 w-100">
         <Card.Body>
           <div className="d-flex align-items-start justify-content-between mb-3">
@@ -198,8 +186,16 @@ export const BeneficiaryActivityTable: React.FC<BeneficiaryActivityTableProps> =
                 </Dropdown.Toggle>
                 <Dropdown.Menu>
                   <Dropdown.Item onClick={handleExport}>Export Data</Dropdown.Item>
-                  <Dropdown.Item onClick={() => console.log('View Details')}>View Details</Dropdown.Item>
-                  <Dropdown.Item onClick={() => console.log('Settings')}>Settings</Dropdown.Item>
+                  <Dropdown.Item onClick={() => setDetailOpen(true)}>View Details</Dropdown.Item>
+                  <ColumnsPickerPopover
+                    widgetId={WIDGET_ID}
+                    allColumns={ALL_COLUMNS}
+                    defaults={DEFAULT_PREFS}
+                    onChange={setPrefs}
+                    trigger={
+                      <div className="dropdown-item" role="button" style={{ cursor: 'pointer' }}>Settings</div>
+                    }
+                  />
                 </Dropdown.Menu>
               </Dropdown>
             )}
@@ -208,31 +204,37 @@ export const BeneficiaryActivityTable: React.FC<BeneficiaryActivityTableProps> =
             <Table className="align-middle mb-0 table-striped">
               <thead>
                 <tr>
-                  <th>Name</th>
-                  <th>Most Used App</th>
-                  <th>Last Synced</th>
+                  {prefs.visibleColumns.includes('name') && <th>Name</th>}
+                  {prefs.visibleColumns.includes('most_used_app') && <th>Most Used App</th>}
+                  {prefs.visibleColumns.includes('last_synced') && <th>Last Synced</th>}
                 </tr>
               </thead>
               <tbody>
                 {rows.length > 0 ? (
-                  rows.map((row, index) => (
+                  rows.slice(0, prefs.rowsPerPage).map((row, index) => (
                     <tr key={index}>
-                      <td>
-                        <div>
-                          <h6 className="mb-0">{row.name}</h6>
-                        </div>
-                      </td>
-                      <td>
-                        <div>{renderMostUsedApp(row.most_used_app)}</div>
-                      </td>
-                      <td>
-                        <div>{renderLastSynced(row.last_synced_at)}</div>
-                      </td>
+                      {prefs.visibleColumns.includes('name') && (
+                        <td>
+                          <div>
+                            <h6 className="mb-0">{row.name}</h6>
+                          </div>
+                        </td>
+                      )}
+                      {prefs.visibleColumns.includes('most_used_app') && (
+                        <td>
+                          <div>{renderMostUsedApp(row.most_used_app)}</div>
+                        </td>
+                      )}
+                      {prefs.visibleColumns.includes('last_synced') && (
+                        <td>
+                          <div>{renderLastSynced(row.last_synced_at)}</div>
+                        </td>
+                      )}
                     </tr>
                   ))
                 ) : (
                   <tr>
-                    <td colSpan={3} className="text-center text-muted py-3">
+                    <td colSpan={prefs.visibleColumns.length || 1} className="text-center text-muted py-3">
                       No beneficiary activity in this period.
                     </td>
                   </tr>
@@ -242,6 +244,8 @@ export const BeneficiaryActivityTable: React.FC<BeneficiaryActivityTableProps> =
           </div>
         </Card.Body>
       </Card>
+      <BeneficiaryActivityDetailModal show={detailOpen} onHide={() => setDetailOpen(false)} />
+      </>
     );
   }
 
