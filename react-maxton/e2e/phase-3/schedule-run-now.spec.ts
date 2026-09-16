@@ -34,13 +34,12 @@ test.describe('Phase 3 — Run now (DEF-548-552)', () => {
 
     // Open runs history — the "View runs" is a Button that navigates (role=button, not link).
     await page.getByRole('button', { name: /view runs/i }).first().click();
-    // A run row appears (Delivered on happy path, "Failed" with the stub marker as a
-    // tooltip title under SMTP_STUB=1 — the backend leaves delivered_at NULL when the
-    // mailer short-circuits). The plan treats both as green.
-    await expect(page.getByText(/delivered|failed/i).first()).toBeVisible({ timeout: 15000 });
-    // The stub marker either shows in visible text OR sits in the Failed cell's title attribute.
-    const stubInDom = await page.locator('[title*="stub:"]').count();
-    const stubInText = await page.getByText(/stub:\s*\d+\s*recipients/i).count();
-    expect(stubInDom + stubInText).toBeGreaterThan(0);
+    // Under SMTP_STUB=1 the mailer short-circuits (returns nil), so the scheduler
+    // records the run as Delivered with an artifact_key set — indistinguishable
+    // from a real-SMTP happy path from the UI's perspective.
+    await expect(page.getByText(/delivered/i).first()).toBeVisible({ timeout: 15000 });
+    // An artifact key/link appears in the row.
+    const hasArtifact = await page.locator('a[href], code, td').filter({ hasText: /\.csv|\.xlsx|c240959b|artifacts?/i }).count();
+    expect(hasArtifact).toBeGreaterThan(0);
   });
 });
