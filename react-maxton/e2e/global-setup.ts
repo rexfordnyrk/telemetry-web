@@ -7,14 +7,16 @@ const API_URL = process.env.E2E_API_URL ?? 'http://localhost:8080';
 async function ping(url: string): Promise<boolean> {
   try {
     const r = await fetch(url);
-    return r.ok;
+    return r.status < 500;
   } catch { return false; }
 }
 
 async function globalSetup() {
-  // 1. Backend reachable
-  if (!(await ping(`${API_URL}/api/v1/health`))) {
-    throw new Error(`backend not reachable at ${API_URL}/api/v1/health — start it first`);
+  // 1. Backend reachable — probe the login endpoint (a POST with no body returns 400,
+  // which still proves the port is answering HTTP). /api/v1/health is in the JWT
+  // whitelist but not registered, so it 404s.
+  if (!(await ping(`${API_URL}/api/v1/auth/login`))) {
+    throw new Error(`backend not reachable at ${API_URL} — start it first`);
   }
 
   // 2. Seed
@@ -28,11 +30,11 @@ async function globalSetup() {
     throw new Error(`seed-e2e failed: ${seed.stdout}\n${seed.stderr}`);
   }
 
-  // 3. Login as admin
+  // 3. Login as admin. Login endpoint expects `username` (accepts email as username too).
   const res = await fetch(`${API_URL}/api/v1/auth/login`, {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
-    body: JSON.stringify({ email: 'admin@e2e.test', password: 'E2eAdmin!2026' }),
+    body: JSON.stringify({ username: 'admin@e2e.test', password: 'E2eAdmin!2026' }),
   });
   if (!res.ok) throw new Error(`login failed: ${res.status} ${await res.text()}`);
   const body = await res.json();

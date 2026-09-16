@@ -10,20 +10,22 @@ test.describe('Phase 3 — Scheduled reports CRUD', () => {
     // Open the create modal
     await page.getByRole('button', { name: /new scheduled report|new schedule|create/i }).first().click();
 
-    // Fill name
-    await page.getByLabel(/name/i).first().fill(uniqueName);
+    // Fill name — Modal uses aria-label="Report name".
+    await page.getByLabel('Report name').fill(uniqueName);
 
-    // Report type: pick Beneficiary activity (or whatever the seeded list has)
-    const typeSelect = page.getByLabel(/report type|type/i).first();
+    // Report type
+    const typeSelect = page.getByLabel('Report type');
     await typeSelect.selectOption({ label: /beneficiary/i }).catch(() => typeSelect.selectOption({ index: 0 }));
 
     // Format: CSV
-    await page.getByLabel(/format/i).selectOption('csv');
+    await page.getByLabel('Report format').selectOption('csv');
 
-    // Cadence: daily 12:00 UTC — CadenceEditor exposes cadence, time, timezone selects.
-    await page.getByLabel(/cadence/i).selectOption('daily');
-    await page.getByLabel(/^time$/i).fill('12:00');
-    await page.getByLabel(/timezone|time zone/i).selectOption('UTC');
+    // Cadence: daily 12:00 UTC — CadenceEditor exposes kind/time/timezone with exact aria-labels.
+    await page.getByLabel('Cadence kind').selectOption('daily');
+    await page.getByLabel('Cadence time', { exact: true }).fill('12:00');
+    // Timezone list is Intl.supportedValuesOf('timeZone') — UTC may not be present as a top-level
+    // key on all Chromium builds. Picking the first option is sufficient for the CRUD flow.
+    await page.getByLabel('Cadence timezone').selectOption({ index: 0 });
 
     // Recipient: type email + press enter (RecipientInput chip UI)
     const recipientInput = page.getByPlaceholder(/add recipient|email/i).or(page.getByLabel(/recipient/i));
@@ -38,7 +40,7 @@ test.describe('Phase 3 — Scheduled reports CRUD', () => {
 
     // Edit: change format to XLSX
     await page.getByRole('button', { name: /edit/i }).first().click();
-    await page.getByLabel(/format/i).selectOption('xlsx');
+    await page.getByLabel('Report format').selectOption('xlsx');
     await page.getByRole('button', { name: /save/i }).last().click();
     await expect(page.getByText(/xlsx/i).first()).toBeVisible({ timeout: 10000 });
 

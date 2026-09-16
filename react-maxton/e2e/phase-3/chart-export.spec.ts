@@ -1,9 +1,9 @@
 import { test, expect } from '../fixtures/auth';
+import { gotoDashboard } from '../util';
 
 test.describe('Phase 3 — Chart export menu', () => {
   test('PNG and SVG downloads fire from the export dropdown', async ({ authedPage: page }) => {
-    await page.goto('/dashboard');
-    await page.waitForResponse((res) => res.url().includes('/dashboard/overview') && res.ok(), { timeout: 15000 });
+    await gotoDashboard(page);
     // Find the export menu trigger — a Bootstrap Dropdown; look for a button opening a menu with "Export as PNG".
     // ChartExportMenu is mounted on one widget in Phase 3 Part 5 scope.
     const exportTrigger = page.getByRole('button', { name: /export|download/i }).first();

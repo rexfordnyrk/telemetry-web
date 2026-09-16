@@ -1,4 +1,5 @@
 import { test, expect } from '../fixtures/auth';
+import { gotoDashboard } from '../util';
 
 test.describe('Phase 2 — Preset period slug serialization', () => {
   const presets: Array<{ optionValue: string; expectedSlug: RegExp }> = [
@@ -10,19 +11,27 @@ test.describe('Phase 2 — Preset period slug serialization', () => {
 
   for (const p of presets) {
     test(`preset "${p.optionValue}" serializes to slug`, async ({ authedPage: page }) => {
-      await page.goto('/dashboard');
-      await page.waitForResponse((res) => res.url().includes('/dashboard/overview') && res.ok(), { timeout: 15000 });
+      // Collect every outgoing overview request across the whole test so a preset that
+      // matches the default period (which does not force a new fetch on apply) is still
+      // validated against the initial navigation request.
+      const seenUrls: string[] = [];
+      page.on('request', (r) => {
+        if (r.url().includes('/dashboard/overview')) seenUrls.push(r.url());
+      });
+
+      await gotoDashboard(page);
 
       // Open Filters modal, pick preset, apply.
       await page.getByRole('button', { name: /filters/i }).first().click();
       await page.getByLabel(/period/i).selectOption({ value: p.optionValue });
-      const applyBtn = page.getByRole('button', { name: /done|apply/i }).last();
+      await page.getByRole('button', { name: /done|apply/i }).last().click();
 
-      const [req] = await Promise.all([
-        page.waitForRequest((r) => r.url().includes('/dashboard/overview'), { timeout: 15000 }),
-        applyBtn.click(),
-      ]);
-      expect(req.url()).toMatch(p.expectedSlug);
+      // Wait for either a new matching request or for a settle grace period.
+      const deadline = Date.now() + 5000;
+      while (Date.now() < deadline && !seenUrls.some((u) => p.expectedSlug.test(u))) {
+        await page.waitForTimeout(200);
+      }
+      expect(seenUrls.some((u) => p.expectedSlug.test(u))).toBeTruthy();
     });
   }
 });

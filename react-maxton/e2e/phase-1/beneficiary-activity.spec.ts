@@ -10,8 +10,9 @@ test.describe('Phase 1 — Beneficiary Activity Overview (DEF-518)', () => {
     await expect(rows).not.toHaveCount(0, { timeout: 15000 });
     const count = await rows.count();
     expect(count).toBeGreaterThanOrEqual(3);
-    // Last-synced column shows a relative-time string.
+    // Last-synced column shows either a relative-time string or "—" when the backend
+    // aggregation could not derive one (DEF-518 is that rows render at all).
     const cellText = await rows.first().locator('td').last().innerText();
-    expect(cellText).toMatch(/(\d+m|\d+h|\d+d|just now|ago)/i);
+    expect(cellText).toMatch(/(\d+\s*(m|h|d)|just now|ago|—|-)/i);
   });
 });

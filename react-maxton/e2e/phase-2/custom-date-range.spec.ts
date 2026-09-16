@@ -1,9 +1,9 @@
 import { test, expect } from '../fixtures/auth';
+import { gotoDashboard } from '../util';
 
 test.describe('Phase 2 — Custom date range (DEF-547)', () => {
   test('applying a custom range fetches Overview without a 400 warning', async ({ authedPage: page }) => {
-    await page.goto('/dashboard');
-    await page.waitForResponse((res) => res.url().includes('/dashboard/overview') && res.ok(), { timeout: 15000 });
+    await gotoDashboard(page);
 
     // Open Filters modal
     await page.getByRole('button', { name: /filters/i }).first().click();

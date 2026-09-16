@@ -146,7 +146,7 @@ const Overview: React.FC = () => {
     params.set('metric', 'avg_screen_time');
     params.set('horizonDays', '14');
     params.set('period', serializeForApi(filters.period));
-    fetch(buildApiUrl('/api/v1/analytics/forecast') + '?' + params.toString(), { headers: getAuthHeaders(token) })
+    fetch(buildApiUrl('/api/v1/analytics/forecast') + '?' + params.toString(), { headers: getAuthHeaders(token ?? undefined) })
       .then((r) => r.json())
       .then((json) => console.info('forecast:', json?.data));
   }, [forecastOn, filters.period, token]);
