@@ -10,6 +10,7 @@ import { addAlert } from "../store/slices/alertSlice";
 import { useDataTable } from "../hooks/useDataTable";
 import { fetchDeviceDetails, clearDeviceDetails, updateDevice } from "../store/slices/deviceSlice";
 import LocationHistoryMap from "../components/LocationHistoryMap";
+import DeviceAssignmentModal from "../components/DeviceAssignmentModal";
 
 const DeviceDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -28,6 +29,15 @@ const DeviceDetails: React.FC = () => {
 
   // Tab state
   const [activeTab, setActiveTab] = useState("home");
+
+  // §7.8 phase-3d: unassign action state
+  const [showUnassignModal, setShowUnassignModal] = useState(false);
+
+  // Compute active assignment for the unassign button (DEF-459, DEF-468)
+  const activeAssignment = device?.assignment_history?.find(
+    (a) => a.is_active && !a.unassigned_at,
+  );
+  const canUnassign = Boolean(activeAssignment && device?.current_beneficiary_id);
 
   // Fetch device details when component mounts
   useEffect(() => {
@@ -942,25 +952,37 @@ const DeviceDetails: React.FC = () => {
             </div>
           </div>
 
-          {/* Tabs */}
-          <Nav
-            variant="tabs"
-            activeKey={activeTab}
-            onSelect={(selectedKey) => setActiveTab(selectedKey || "home")}
-          >
-            <Nav.Item>
-              <Nav.Link eventKey="home">Home</Nav.Link>
-            </Nav.Item>
-            <Nav.Item>
-              <Nav.Link eventKey="usage">Usage</Nav.Link>
-            </Nav.Item>
-            <Nav.Item>
-              <Nav.Link eventKey="device-history">Device History</Nav.Link>
-            </Nav.Item>
-            <Nav.Item>
-              <Nav.Link eventKey="location-history">Location History</Nav.Link>
-            </Nav.Item>
-          </Nav>
+          {/* Right-aligned actions + tabs */}
+          <div className="d-flex align-items-center gap-3">
+            {canUnassign && (
+              <button
+                type="button"
+                className="btn btn-outline-danger d-flex align-items-center gap-2"
+                onClick={() => setShowUnassignModal(true)}
+              >
+                <i className="material-symbols-outlined" style={{ fontSize: 18 }}>link_off</i>
+                <span>Unassign device</span>
+              </button>
+            )}
+            <Nav
+              variant="tabs"
+              activeKey={activeTab}
+              onSelect={(selectedKey) => setActiveTab(selectedKey || "home")}
+            >
+              <Nav.Item>
+                <Nav.Link eventKey="home">Home</Nav.Link>
+              </Nav.Item>
+              <Nav.Item>
+                <Nav.Link eventKey="usage">Usage</Nav.Link>
+              </Nav.Item>
+              <Nav.Item>
+                <Nav.Link eventKey="device-history">Device History</Nav.Link>
+              </Nav.Item>
+              <Nav.Item>
+                <Nav.Link eventKey="location-history">Location History</Nav.Link>
+              </Nav.Item>
+            </Nav>
+          </div>
         </div>
 
         {/* Tab Content */}
@@ -988,6 +1010,21 @@ const DeviceDetails: React.FC = () => {
           </Tab.Pane>
         </Tab.Content>
       </div>
+
+      {/* §7.8 phase-3d: Unassign device modal (DEF-459, DEF-468) */}
+      {device && activeAssignment && (
+        <DeviceAssignmentModal
+          show={showUnassignModal}
+          onHide={() => setShowUnassignModal(false)}
+          mode="unassign"
+          device={device as any}
+          assignmentId={activeAssignment.id}
+          onSuccess={() => {
+            setShowUnassignModal(false);
+            if (id) dispatch(fetchDeviceDetails(id));
+          }}
+        />
+      )}
     </MainLayout>
   );
 };
