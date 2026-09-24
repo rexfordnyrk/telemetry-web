@@ -33,6 +33,7 @@ export interface Device {
   created_at: string;
   updated_at: string;
   deleted_at?: string | null;
+  device_timezone?: string | null; // §7.8 phase-4 (DEF-466): IANA name reported by mobile
 }
 
 // Define the detailed Device interface for device details page
@@ -121,6 +122,8 @@ export interface DeviceDetails extends Device {
     records_synced: number;
     sync_duration_ms: number;
     created_at: string;
+    error_message?: string | null;   // §7.8 phase-3c: from sync_logs.error_message
+    warning_message?: string | null; // §7.8 phase-3c: from sync_logs.warning_message
   }>;
 }
 

@@ -11,6 +11,8 @@ import { useDataTable } from "../hooks/useDataTable";
 import { fetchDeviceDetails, clearDeviceDetails, updateDevice } from "../store/slices/deviceSlice";
 import LocationHistoryMap from "../components/LocationHistoryMap";
 import DeviceAssignmentModal from "../components/DeviceAssignmentModal";
+import { SyncHistoryErrorRow } from "../components/SyncHistoryErrorRow";
+import { formatDeviceTime } from "../lib/formatDeviceTime";
 
 const DeviceDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -32,6 +34,16 @@ const DeviceDetails: React.FC = () => {
 
   // §7.8 phase-3d: unassign action state
   const [showUnassignModal, setShowUnassignModal] = useState(false);
+
+  // §7.8 phase-3c: expanded sync-history detail rows (error/warning text)
+  const [expandedSyncRows, setExpandedSyncRows] = useState<Set<string>>(new Set());
+  const toggleSyncRow = (rowId: string) => {
+    setExpandedSyncRows((prev) => {
+      const next = new Set(prev);
+      if (next.has(rowId)) next.delete(rowId); else next.add(rowId);
+      return next;
+    });
+  };
 
   // Compute active assignment for the unassign button (DEF-459, DEF-468)
   const activeAssignment = device?.assignment_history?.find(
@@ -865,38 +877,73 @@ const DeviceDetails: React.FC = () => {
                     <th>Status</th>
                     <th>Records Synced</th>
                     <th>Duration</th>
+                    <th style={{ width: 60 }}>Details</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {device?.sync_history?.map((sync) => (
-                    <tr key={sync.id}>
-                      <td>{new Date(sync.created_at).toLocaleString()}</td>
-                      <td>
-                        <span
-                          className={`dash-lable mb-0 bg-${
-                            sync.sync_type === "full_sync" ? "primary" : "info"
-                          } bg-opacity-10 text-${
-                            sync.sync_type === "full_sync" ? "primary" : "info"
-                          } rounded-2`}
-                        >
-                          {sync.sync_type.replace("_", " ").toUpperCase()}
-                        </span>
-                      </td>
-                      <td>
-                        <span
-                          className={`dash-lable mb-0 bg-${
-                            sync.status === "completed" ? "success" : "danger"
-                          } bg-opacity-10 text-${
-                            sync.status === "completed" ? "success" : "danger"
-                          } rounded-2`}
-                        >
-                          {sync.status.toUpperCase()}
-                        </span>
-                      </td>
-                      <td>{sync.records_synced ? sync.records_synced.toLocaleString() : "0"}</td>
-                      <td>{sync.sync_duration_ms ? (sync.sync_duration_ms / 1000).toFixed(2) + "s" : "-"}</td>
-                    </tr>
-                  ))}
+                  {device?.sync_history?.map((sync) => {
+                    const hasDetails = Boolean(sync.error_message || sync.warning_message);
+                    const isExpanded = expandedSyncRows.has(sync.id);
+                    const { display: dateDisplay, tooltip: dateTooltip } = formatDeviceTime(
+                      sync.created_at,
+                      device?.device_timezone,
+                    );
+                    return (
+                      <React.Fragment key={sync.id}>
+                        <tr>
+                          <td><span title={dateTooltip}>{dateDisplay}</span></td>
+                          <td>
+                            <span
+                              className={`dash-lable mb-0 bg-${
+                                sync.sync_type === "full_sync" ? "primary" : "info"
+                              } bg-opacity-10 text-${
+                                sync.sync_type === "full_sync" ? "primary" : "info"
+                              } rounded-2`}
+                            >
+                              {sync.sync_type.replace("_", " ").toUpperCase()}
+                            </span>
+                          </td>
+                          <td>
+                            <span
+                              className={`dash-lable mb-0 bg-${
+                                sync.status === "completed" ? "success" : "danger"
+                              } bg-opacity-10 text-${
+                                sync.status === "completed" ? "success" : "danger"
+                              } rounded-2`}
+                            >
+                              {sync.status.toUpperCase()}
+                            </span>
+                          </td>
+                          <td>{sync.records_synced ? sync.records_synced.toLocaleString() : "0"}</td>
+                          <td>{sync.sync_duration_ms ? (sync.sync_duration_ms / 1000).toFixed(2) + "s" : "-"}</td>
+                          <td>
+                            {hasDetails ? (
+                              <button
+                                type="button"
+                                className="btn btn-sm btn-outline-secondary"
+                                onClick={() => toggleSyncRow(sync.id)}
+                                aria-label={isExpanded ? "Hide details" : "Show details"}
+                                aria-expanded={isExpanded}
+                              >
+                                <i className="material-symbols-outlined" style={{ fontSize: 16, verticalAlign: 'middle' }}>
+                                  {isExpanded ? 'expand_less' : 'expand_more'}
+                                </i>
+                              </button>
+                            ) : (
+                              <span className="text-body-tertiary">—</span>
+                            )}
+                          </td>
+                        </tr>
+                        {isExpanded && (
+                          <SyncHistoryErrorRow
+                            colSpan={6}
+                            errorMessage={sync.error_message}
+                            warningMessage={sync.warning_message}
+                          />
+                        )}
+                      </React.Fragment>
+                    );
+                  })}
                 </tbody>
                 <tfoot>
                   <tr>
@@ -905,6 +952,7 @@ const DeviceDetails: React.FC = () => {
                     <th>Status</th>
                     <th>Records Synced</th>
                     <th>Duration</th>
+                    <th>Details</th>
                   </tr>
                 </tfoot>
               </table>
