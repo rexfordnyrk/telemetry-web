@@ -70,7 +70,14 @@ const DeviceDetails: React.FC = () => {
     "assignment-history-datatable",
     device?.assignment_history || [],
   );
-  useDataTable("sync-history-datatable", device?.sync_history || []);
+  // §7.8 phase-3c (DEF-005): the sync-history table renders expandable
+  // detail rows that React inserts as sibling <tr>s. jQuery DataTables'
+  // "enhance existing HTML" mode owns the tbody and drops any row it
+  // didn't add via row().child() — so the expand button clicked but the
+  // detail row never appeared in the real browser (caught by Wave 4
+  // Playwright). Sync history is capped at 20 rows so DataTables' search
+  // / paging chrome brings little value; disable it here.
+  useDataTable("sync-history-datatable", device?.sync_history || [], {}, false);
   useDataTable("installed-apps-datatable", device?.installed_apps || []);
 
   // Form state for editing

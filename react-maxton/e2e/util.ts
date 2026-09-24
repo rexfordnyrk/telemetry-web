@@ -33,3 +33,12 @@ export function gotoDashboard(page: Page) {
     (r) => r.url().includes('/analytics/dashboard/overview') && r.ok(),
   );
 }
+
+/** Device Details page helper (§7.8 phase-7.8-sync). */
+export function gotoDeviceDetails(page: Page, deviceId: string) {
+  return gotoAndWait(
+    page,
+    `/device-management/devices/${deviceId}`,
+    (r) => r.url().includes(`/devices/${deviceId}/device-details`) && r.ok(),
+  );
+}
