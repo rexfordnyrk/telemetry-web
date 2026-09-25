@@ -45,6 +45,13 @@ const RolesPermissions: React.FC = () => {
     deleteLoading,
   } = useAppSelector((state) => state.rolesPermissions);
 
+  // Type for structured delete role errors
+  type DeleteRoleError = {
+    code: string;
+    message: string;
+    assignedCount?: number;
+  };
+
   // Local state for UI
   const [showModal, setShowModal] = useState(false);
   const [, setModalAction] = useState<"delete">("delete");
@@ -52,6 +59,7 @@ const RolesPermissions: React.FC = () => {
   const [showNewRoleModal, setShowNewRoleModal] = useState(false);
   const [editRole, setEditRole] = useState<Role | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const [deleteError, setDeleteError] = useState<DeleteRoleError | null>(null);
 
   // Track pending permission changes
   const [pendingAdditions, setPendingAdditions] = useState<Permission[]>([]);
@@ -284,6 +292,43 @@ const RolesPermissions: React.FC = () => {
     setShowModal(true);
   };
 
+  /**
+   * Try to extract a structured error body from a caught delete-role failure.
+   * Handles two paths:
+   *   1. Wave-2 slice reject value: { code, message, assignedCount }
+   *   2. Pre-Wave-2 axios error: error.response.data.{code, message, assigned_count}
+   * Returns null when the caught error has no recognizable structured shape,
+   * signaling the caller to fall back to a generic toast.
+   */
+  const extractDeleteError = (error: unknown): DeleteRoleError | null => {
+    // Path 1: slice reject value (post-Wave-2)
+    if (typeof error === "object" && error !== null && "code" in error) {
+      const e = error as { code?: unknown; message?: unknown; assignedCount?: unknown };
+      if (typeof e.code === "string" && typeof e.message === "string") {
+        return {
+          code: e.code,
+          message: e.message,
+          assignedCount: typeof e.assignedCount === "number" ? e.assignedCount : undefined,
+        };
+      }
+    }
+    // Path 2: raw axios error (pre-Wave-2)
+    if (typeof error === "object" && error !== null && "response" in error) {
+      const data = (error as { response?: { data?: unknown } }).response?.data;
+      if (typeof data === "object" && data !== null && "code" in data) {
+        const d = data as { code?: unknown; message?: unknown; assigned_count?: unknown };
+        if (typeof d.code === "string" && typeof d.message === "string") {
+          return {
+            code: d.code,
+            message: d.message,
+            assignedCount: typeof d.assigned_count === "number" ? d.assigned_count : undefined,
+          };
+        }
+      }
+    }
+    return null;
+  };
+
   // Confirm delete action
   const handleConfirmAction = async () => {
     if (!targetRole) return;
@@ -305,23 +350,25 @@ const RolesPermissions: React.FC = () => {
       }
     } catch (error) {
       console.error("Failed to delete role:", error);
-      const message =
-        typeof error === "string"
-          ? error
-          : error instanceof Error
-            ? error.message
-            : `Failed to delete role "${targetRole.name}". Please try again.`;
-      dispatch(
-        addAlert({
-          type: "danger",
-          title: "Error",
-          message,
-        })
-      );
+      const structured = extractDeleteError(error);
+      if (structured?.code === "role_has_active_users") {
+        // Keep the modal open, show inline warning; do NOT close or toast.
+        setDeleteError(structured);
+        // Deliberately skip setShowModal(false) — user reviews the warning.
+        return;
+      }
+      // Any other error — legacy behavior: toast + close modal.
+      const message = structured?.message
+        ?? (typeof error === "string" ? error
+            : error instanceof Error ? error.message
+            : `Failed to delete role "${targetRole.name}". Please try again.`);
+      dispatch(addAlert({ type: "danger", title: "Error", message }));
     }
 
+    // Only reach here on success OR generic-error path — clean up.
     setShowModal(false);
     setTargetRole(null);
+    setDeleteError(null);
   };
 
   // Handle successful role creation/update
@@ -780,7 +827,7 @@ const RolesPermissions: React.FC = () => {
                 backgroundColor: "rgba(0, 0, 0, 0.5)",
                 zIndex: 10000,
               }}
-              onClick={() => setShowModal(false)}
+              onClick={() => { setShowModal(false); setDeleteError(null); }}
               aria-hidden="true"
             />
             <div
@@ -802,11 +849,23 @@ const RolesPermissions: React.FC = () => {
                 <button
                   type="button"
                   className="btn-close"
-                  onClick={() => setShowModal(false)}
+                  onClick={() => { setShowModal(false); setDeleteError(null); }}
                   aria-label="Close"
                 />
               </div>
               <div className="card-body p-4">
+                {deleteError?.code === "role_has_active_users" && (
+                  <div className="alert alert-warning d-flex align-items-start gap-2 mb-3" role="alert">
+                    <i className="material-icons-outlined" style={{ fontSize: "20px", flexShrink: 0 }}>
+                      group
+                    </i>
+                    <div>
+                      <strong>Cannot delete yet.</strong>
+                      <div className="mt-1">{deleteError.message}</div>
+                    </div>
+                  </div>
+                )}
+
                 <p>
                   Are you sure you want to delete role{" "}
                   <strong>{targetRole?.name}</strong>?
@@ -833,7 +892,7 @@ const RolesPermissions: React.FC = () => {
                   <button
                     type="button"
                     className="btn btn-grd-royal px-4 rounded-0"
-                    onClick={() => setShowModal(false)}
+                    onClick={() => { setShowModal(false); setDeleteError(null); }}
                   >
                     Cancel
                   </button>
