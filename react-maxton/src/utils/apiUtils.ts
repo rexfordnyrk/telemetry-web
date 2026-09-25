@@ -7,6 +7,36 @@ import { toast } from 'react-toastify';
 import { ServerError, sessionExpired, refreshSession } from '../store/slices/authSlice';
 import { getAuthHeaders } from '../config/api';
 
+/**
+ * The JSON shape produced by backend/internal/errormap.AppError.
+ * All new/updated Role and Permission handlers return this shape on
+ * error responses (see docs/fixes/web/7.9-roles-permissions/designs/
+ * phase-2-validation-errormap.md §"Response shape").
+ */
+export type AppErrorBody = {
+  code: string;
+  message: string;
+  field?: string;
+  // Extra keys such as assigned_count for role_has_active_users
+  [k: string]: unknown;
+};
+
+/**
+ * Narrow type guard for the new structured error envelope.
+ * Consumers may narrow `unknown` from a caught `axios` error's
+ * `response?.data` to AppErrorBody with this guard.
+ */
+export function isStructuredError(x: unknown): x is AppErrorBody {
+  return (
+    typeof x === "object" &&
+    x !== null &&
+    "code" in x &&
+    "message" in x &&
+    typeof (x as { code: unknown }).code === "string" &&
+    typeof (x as { message: unknown }).message === "string"
+  );
+}
+
 const AUTH_ERROR_CODES = [
   'Authorization header is required',
   'Invalid authorization header format',
@@ -54,6 +84,29 @@ const isAuthError = (errorData: ServerError): boolean => {
   return AUTH_ERROR_CODES.includes(errorData.error);
 };
 
+const SENSITIVE_ERROR_SUBSTRINGS = [
+  "sqlstate",
+  "pq:",
+  "duplicate key",
+  "violates",
+];
+
+/**
+ * Defense in depth: any legacy string that looks like it came from a
+ * pq driver or postgres SQLSTATE gets replaced with a generic user-safe
+ * message. Only applied to the string-return branch of handleApiError —
+ * structured AppErrorBody responses are never subjected to this filter
+ * because they are already sanitized upstream by backend/internal/errormap.
+ */
+function sanitizeLegacyErrorText(raw: string, fallback: string): string {
+  if (raw.length > 120) return fallback;
+  const lc = raw.toLowerCase();
+  for (const needle of SENSITIVE_ERROR_SUBSTRINGS) {
+    if (lc.includes(needle)) return fallback;
+  }
+  return raw;
+}
+
 export const handleApiError = async (
   response: Response,
   errorMessage: string,
@@ -63,6 +116,11 @@ export const handleApiError = async (
 ): Promise<string> => {
   try {
     const errorData: ServerError = await response.json();
+
+    // Short-circuit for structured error envelope (already sanitized upstream)
+    if (isStructuredError(errorData)) {
+      return errorData.message;
+    }
 
     if (response.status === 401 && errorData.error === 'token_version_stale') {
       if (dispatch) {
@@ -100,13 +158,14 @@ export const handleApiError = async (
       }
     }
 
-    return (
+    const candidate = (
       errorData.error_description ||
       errorData.Description ||
       errorData.description ||
       errorData.error ||
       errorMessage
     );
+    return sanitizeLegacyErrorText(String(candidate), "Something went wrong. Please try again.");
   } catch {
     if (response.status === 401) {
       if (dispatch) {

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { createRole, updateRole, Role } from "../store/slices/rolesPermissionsSlice";
 import { addAlert } from "../store/slices/alertSlice";
@@ -15,6 +15,7 @@ const NewRoleModal: React.FC<NewRoleModalProps> = ({ show, onClose, onSuccess, e
   const { createLoading, updateLoading, rolesError } = useAppSelector(
     (state) => state.rolesPermissions
   );
+  const roles = useAppSelector((state) => state.rolesPermissions.roles);
 
   const isEditMode = !!editRole;
   const loading = isEditMode ? updateLoading : createLoading;
@@ -144,6 +145,19 @@ const NewRoleModal: React.FC<NewRoleModalProps> = ({ show, onClose, onSuccess, e
     onClose();
   };
 
+  /**
+   * Case-insensitive collision hint. Silent for empty input and for the
+   * role currently being edited (matching itself must not warn).
+   * Server (Phase 2b) is authoritative; this is only a live UX hint.
+   */
+  const duplicateHint = useMemo<string | null>(() => {
+    const trimmed = formData.name.trim().toLowerCase();
+    if (!trimmed || trimmed.length < 2) return null;
+    if (editRole && editRole.name.toLowerCase() === trimmed) return null;
+    const collision = roles.find((r) => r.name.toLowerCase() === trimmed);
+    return collision ? `A role named "${collision.name}" already exists.` : null;
+  }, [formData.name, roles, editRole]);
+
   if (!show) return null;
 
   return (
@@ -208,6 +222,14 @@ const NewRoleModal: React.FC<NewRoleModalProps> = ({ show, onClose, onSuccess, e
                   <small className="text-muted">
                     Only letters, numbers, underscores, and hyphens allowed
                   </small>
+                  {duplicateHint && !validationErrors.name && (
+                    <div className="mt-1 small text-warning d-flex align-items-center gap-1">
+                      <i className="material-symbols-outlined" style={{ fontSize: "14px" }}>
+                        warning
+                      </i>
+                      <span>{duplicateHint}</span>
+                    </div>
+                  )}
                 </div>
 
                 <div className="col-md-12">
