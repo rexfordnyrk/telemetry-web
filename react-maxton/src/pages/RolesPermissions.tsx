@@ -187,6 +187,25 @@ const RolesPermissions: React.FC = () => {
     }
   };
 
+  // Bulk-add every currently-visible available permission to pendingAdditions.
+  // Deduplicates: skips any permission already in pendingAdditions.
+  const handleSelectAllVisible = () => {
+    const visible = getAvailablePermissions();
+    if (visible.length === 0) return;
+    setPendingAdditions((prev) => {
+      const existingIds = new Set(prev.map((p) => p.id));
+      const toAdd = visible.filter((p) => !existingIds.has(p.id));
+      return toAdd.length === 0 ? prev : [...prev, ...toAdd];
+    });
+  };
+
+  // Clear both pending buckets (additions AND restorations).
+  // Assigned-but-not-removed permissions are unaffected.
+  const handleClearAllPending = () => {
+    setPendingAdditions([]);
+    setPendingRemovals([]);
+  };
+
   // Handle removing a permission (add to pending removals)
   const handleRemovePermission = (permission: Permission) => {
     // Check if this permission was in pending additions
@@ -703,6 +722,30 @@ const RolesPermissions: React.FC = () => {
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                           />
+                        </div>
+                        <div className="d-flex align-items-center gap-2 mb-2">
+                          <button
+                            type="button"
+                            className="btn btn-sm btn-outline-primary"
+                            onClick={handleSelectAllVisible}
+                            disabled={getAvailablePermissions().length === 0}
+                            title={searchTerm ? `Add all ${getAvailablePermissions().length} matching permissions to pending` : `Add all ${getAvailablePermissions().length} available permissions to pending`}
+                          >
+                            <i className="material-icons-outlined me-1" style={{ fontSize: "14px", verticalAlign: "middle" }}>
+                              done_all
+                            </i>
+                            Select all visible ({getAvailablePermissions().length})
+                          </button>
+                          {(pendingAdditions.length > 0 || pendingRemovals.length > 0) && (
+                            <button
+                              type="button"
+                              className="btn btn-sm btn-link text-muted p-0"
+                              onClick={handleClearAllPending}
+                              title="Discard all staged additions and restorations"
+                            >
+                              Clear selection ({pendingAdditions.length + pendingRemovals.length})
+                            </button>
+                          )}
                         </div>
                         {permissionsLoading ? (
                           <div className="text-center py-3">
