@@ -1,7 +1,58 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { RootState } from '../index';
 import { buildApiUrl, getAuthHeaders, API_CONFIG } from '../../config/api';
-import { handleApiError } from '../../utils/apiUtils';
+import { handleApiError, isStructuredError, AppErrorBody } from '../../utils/apiUtils';
+
+/**
+ * Structured reject payload for role CRUD thunks (§7.9 phase-2b).
+ * When the backend returns an errormap envelope, the thunk rejects with
+ * this shape so consumers can inspect `.code` (e.g. "role_has_active_users")
+ * and `.assignedCount` in addition to `.message`. When the backend returns
+ * a legacy string error, the thunk falls back to rejecting with a plain
+ * string — `.rejected` reducers coerce both to the state's `rolesError`.
+ */
+export type RoleActionError = {
+  code: string;
+  message: string;
+  field?: string;
+  assignedCount?: number;
+};
+
+/**
+ * Peek at a non-ok fetch Response for a structured errormap body. Uses
+ * response.clone() so the original body is still available for the
+ * string-path handleApiError call site. Returns null when the body is
+ * missing or not structured.
+ */
+async function extractStructuredErrorFromResponse(
+  response: Response
+): Promise<RoleActionError | null> {
+  try {
+    const body = await response.clone().json();
+    if (isStructuredError(body)) {
+      const e = body as AppErrorBody;
+      return {
+        code: e.code,
+        message: e.message,
+        field: typeof e.field === 'string' ? e.field : undefined,
+        assignedCount:
+          typeof e.assigned_count === 'number' ? (e.assigned_count as number) : undefined,
+      };
+    }
+  } catch {
+    /* body is empty or not JSON — fall through to string path */
+  }
+  return null;
+}
+
+function rolesErrorFromPayload(payload: unknown, fallback: string): string {
+  if (typeof payload === 'string') return payload;
+  if (payload && typeof payload === 'object' && 'message' in payload) {
+    const m = (payload as { message: unknown }).message;
+    if (typeof m === 'string') return m;
+  }
+  return fallback;
+}
 
 // ============================================================================
 // TYPE DEFINITIONS
@@ -221,15 +272,19 @@ export const createRole = createAsyncThunk(
         headers: getAuthHeaders(token),
         body: JSON.stringify(roleData),
       });
-      
+
       if (!response.ok) {
+        const structured = await extractStructuredErrorFromResponse(response);
+        if (structured) {
+          return rejectWithValue(structured);
+        }
         const errorMessage = await handleApiError(response, 'Failed to create role', dispatch);
-        throw new Error(errorMessage);
+        return rejectWithValue(errorMessage);
       }
-      
+
       const data = await response.json();
       return data.data || data;
-      
+
     } catch (error) {
       console.error('Error creating role:', error);
       return rejectWithValue(
@@ -248,27 +303,31 @@ export const updateRole = createAsyncThunk(
     try {
       const state = getState() as RootState;
       const token = state.auth.token;
-      
+
       if (!token) {
         throw new Error('No authentication token available');
       }
-      
+
       const url = buildApiUrl(API_CONFIG.ENDPOINTS.ROLES.UPDATE(id));
-      
+
       const response = await fetch(url, {
         method: 'PUT',
         headers: getAuthHeaders(token),
         body: JSON.stringify(roleData),
       });
-      
+
       if (!response.ok) {
+        const structured = await extractStructuredErrorFromResponse(response);
+        if (structured) {
+          return rejectWithValue(structured);
+        }
         const errorMessage = await handleApiError(response, 'Failed to update role', dispatch);
-        throw new Error(errorMessage);
+        return rejectWithValue(errorMessage);
       }
-      
+
       const data = await response.json();
       return data.data || data;
-      
+
     } catch (error) {
       console.error('Error updating role:', error);
       return rejectWithValue(
@@ -287,19 +346,26 @@ export const deleteRole = createAsyncThunk(
     try {
       const state = getState() as RootState;
       const token = state.auth.token;
-      
+
       if (!token) {
         throw new Error('No authentication token available');
       }
-      
+
       const url = buildApiUrl(API_CONFIG.ENDPOINTS.ROLES.DELETE(roleId));
-      
+
       const response = await fetch(url, {
         method: 'DELETE',
         headers: getAuthHeaders(token),
       });
-      
+
       if (!response.ok) {
+        // §7.9 phase-2b: try structured errormap envelope first so the
+        // delete-modal in RolesPermissions.tsx can render the friendly
+        // role_has_active_users warning with assignedCount inline.
+        const structured = await extractStructuredErrorFromResponse(response);
+        if (structured) {
+          return rejectWithValue(structured);
+        }
         const errorMessage = await handleApiError(
           response,
           'Failed to delete role',
@@ -307,9 +373,9 @@ export const deleteRole = createAsyncThunk(
         );
         return rejectWithValue(errorMessage);
       }
-      
+
       return roleId;
-      
+
     } catch (error) {
       console.error('Error deleting role:', error);
       return rejectWithValue(
@@ -573,7 +639,7 @@ const rolesPermissionsSlice = createSlice({
       })
       .addCase(createRole.rejected, (state, action) => {
         state.createLoading = false;
-        state.rolesError = action.payload as string || 'Failed to create role';
+        state.rolesError = rolesErrorFromPayload(action.payload, 'Failed to create role');
       });
 
     // ========== UPDATE ROLE ==========
@@ -595,7 +661,7 @@ const rolesPermissionsSlice = createSlice({
       })
       .addCase(updateRole.rejected, (state, action) => {
         state.updateLoading = false;
-        state.rolesError = action.payload as string || 'Failed to update role';
+        state.rolesError = rolesErrorFromPayload(action.payload, 'Failed to update role');
       });
 
     // ========== DELETE ROLE ==========
@@ -615,7 +681,7 @@ const rolesPermissionsSlice = createSlice({
       })
       .addCase(deleteRole.rejected, (state, action) => {
         state.deleteLoading = false;
-        state.rolesError = action.payload as string || 'Failed to delete role';
+        state.rolesError = rolesErrorFromPayload(action.payload, 'Failed to delete role');
       });
 
     // ========== FETCH PERMISSIONS ==========
